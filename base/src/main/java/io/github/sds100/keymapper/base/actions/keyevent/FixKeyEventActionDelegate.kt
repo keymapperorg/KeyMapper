@@ -5,7 +5,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -52,19 +52,19 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
-    private val proModeStatus: Flow<ProModeStatus> =
+    private val expertModeStatus: Flow<ExpertModeStatus> =
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeConnectionManager.connectionState.map { state ->
                 when (state) {
-                    is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
-                    is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                    is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                    is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
                 }
             }
         } else {
-            flowOf(ProModeStatus.UNSUPPORTED)
+            flowOf(ExpertModeStatus.UNSUPPORTED)
         }
 
-    private val isProModeSelected: Flow<Boolean> =
+    private val isExpertModeSelected: Flow<Boolean> =
         preferenceRepository.get(Keys.keyEventActionsUseSystemBridge)
             .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
 
@@ -82,26 +82,26 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildStateFlow(): Flow<FixKeyEventActionState> {
-        return isProModeSelected.flatMapLatest { isProModeSelected ->
-            if (isProModeSelected) {
+        return isExpertModeSelected.flatMapLatest { isExpertModeSelected ->
+            if (isExpertModeSelected) {
                 combine(
-                    proModeStatus,
+                    expertModeStatus,
                     controlAccessibilityServiceUseCase.serviceState,
-                ) { proModeStatus, serviceState ->
-                    FixKeyEventActionState.ProMode(
-                        proModeStatus = proModeStatus,
+                ) { expertModeStatus, serviceState ->
+                    FixKeyEventActionState.ExpertMode(
+                        expertModeStatus = expertModeStatus,
                         isAccessibilityServiceEnabled =
                         serviceState == AccessibilityServiceState.ENABLED,
                     )
                 }
             } else {
                 combine(
-                    proModeStatus,
+                    expertModeStatus,
                     setupInputMethodUseCase.isEnabled,
                     setupInputMethodUseCase.isChosen,
                     controlAccessibilityServiceUseCase.serviceState,
                     preferenceRepository.get(Keys.changeImeOnInputFocus),
-                ) { proModeStatus, isEnabled, isChosen, serviceState, changeImeOnInputFocus ->
+                ) { expertModeStatus, isEnabled, isChosen, serviceState, changeImeOnInputFocus ->
                     val enablingRequiresUserInput =
                         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
@@ -111,7 +111,7 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
                         enablingRequiresUserInput = enablingRequiresUserInput,
                         isAccessibilityServiceEnabled =
                         serviceState == AccessibilityServiceState.ENABLED,
-                        proModeStatus = proModeStatus,
+                        expertModeStatus = expertModeStatus,
                         isAutoSwitchImeEnabled = changeImeOnInputFocus
                             ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
                     )
@@ -134,9 +134,9 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
         }
     }
 
-    override fun onEnableProModeForKeyEventActionsClick() {
+    override fun onEnableExpertModeForKeyEventActionsClick() {
         viewModelScope.launch {
-            navigate("fix_key_event_action_pro_mode", NavDestination.ProMode)
+            navigate("fix_key_event_action_expert_mode", NavDestination.ExpertMode)
         }
     }
 
@@ -154,7 +154,7 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
         }
     }
 
-    override fun onSelectProMode() {
+    override fun onSelectExpertMode() {
         preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, true)
     }
 
@@ -175,10 +175,10 @@ interface FixKeyEventActionDelegate {
     fun showFixKeyEventActionBottomSheet()
     fun dismissFixKeyEventActionBottomSheet()
     fun onEnableAccessibilityServiceClick()
-    fun onEnableProModeForKeyEventActionsClick()
+    fun onEnableExpertModeForKeyEventActionsClick()
     fun onEnableImeClick()
     fun onChooseImeClick()
-    fun onSelectProMode()
+    fun onSelectExpertMode()
     fun onSelectInputMethod()
     fun onAutoSwitchImeCheckedChange(checked: Boolean)
 }

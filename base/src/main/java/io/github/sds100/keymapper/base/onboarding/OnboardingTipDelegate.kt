@@ -49,8 +49,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
         private const val PARALLEL_TRIGGER_TIP_ID = "parallel_trigger_tip"
         private const val SEQUENCE_TRIGGER_TIP_ID = "sequence_trigger_tip"
         private const val TRIGGER_CONSTRAINTS_TIP_ID = "trigger_constraints_tip"
-        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID = "caps_lock_pro_mode_compatibility_tip"
-        const val VOLUME_BUTTONS_PRO_MODE_TIP_ID = "volume_buttons_pro_mode_tip"
+        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID = "caps_lock_expert_mode_compatibility_tip"
+        const val VOLUME_BUTTONS_PRO_MODE_TIP_ID = "volume_buttons_expert_mode_tip"
         const val SCREEN_PINNING_TIP_ID = "screen_pinning_tip"
         const val IME_DETECTION_TIP_ID = "ime_detection_tip"
         const val RINGER_MODE_TIP_ID = "ringer_mode_tip"
@@ -74,13 +74,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
         false,
     )
 
-    private var shownCapsLockProModeTip: Boolean by PrefDelegate(
-        Keys.shownCapsLockProModeTip,
+    private var shownCapsLockExpertModeTip: Boolean by PrefDelegate(
+        Keys.shownCapsLockExpertModeTip,
         false,
     )
 
-    private var shownVolumeButtonsProModeTip: Boolean by PrefDelegate(
-        Keys.shownVolumeButtonsProModeTip,
+    private var shownVolumeButtonsExpertModeTip: Boolean by PrefDelegate(
+        Keys.shownVolumeButtonsExpertModeTip,
         false,
     )
 
@@ -141,13 +141,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
         when (tipId) {
             RINGER_MODE_TIP_ID -> {
                 viewModelScope.launch {
-                    navigate("ringer_mode_tip_pro_mode", NavDestination.ProMode)
+                    navigate("ringer_mode_tip_expert_mode", NavDestination.ExpertMode)
                 }
             }
 
             VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
                 viewModelScope.launch {
-                    navigate("volume_buttons_pro_mode_tip", NavDestination.ProMode)
+                    navigate("volume_buttons_expert_mode_tip", NavDestination.ExpertMode)
                 }
             }
         }
@@ -188,8 +188,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
             showPowerButtonEmergencyTip -> {
                 val tipModel = OnboardingTipModel(
                     id = POWER_BUTTON_EMERGENCY_TIP_ID,
-                    title = getString(R.string.pro_mode_emergency_tip_title),
-                    message = getString(R.string.pro_mode_emergency_tip_text),
+                    title = getString(R.string.expert_mode_emergency_tip_title),
+                    message = getString(R.string.expert_mode_emergency_tip_text),
                     isDismissable = false,
                 )
 
@@ -218,24 +218,24 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 triggerTip.value = tipModel
             }
 
-            hasVolumeKey && !shownVolumeButtonsProModeTip -> {
+            hasVolumeKey && !shownVolumeButtonsExpertModeTip -> {
                 val tip = OnboardingTipModel(
                     id = VOLUME_BUTTONS_PRO_MODE_TIP_ID,
-                    title = getString(R.string.tip_volume_buttons_pro_mode_title),
-                    message = getString(R.string.tip_volume_buttons_pro_mode_text),
+                    title = getString(R.string.tip_volume_buttons_expert_mode_title),
+                    message = getString(R.string.tip_volume_buttons_expert_mode_text),
                     isDismissable = true,
-                    buttonText = getString(R.string.tip_volume_buttons_pro_mode_button),
+                    buttonText = getString(R.string.tip_volume_buttons_expert_mode_button),
                 )
                 triggerTip.value = tip
             }
 
-            hasCapsLockKey && !shownCapsLockProModeTip -> {
+            hasCapsLockKey && !shownCapsLockExpertModeTip -> {
                 val tip = OnboardingTipModel(
                     id = CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID,
-                    title = getString(R.string.tip_caps_lock_pro_mode_title),
-                    message = getString(R.string.tip_caps_lock_pro_mode_text),
+                    title = getString(R.string.tip_caps_lock_expert_mode_title),
+                    message = getString(R.string.tip_caps_lock_expert_mode_text),
                     isDismissable = true,
-                    buttonText = getString(R.string.tip_caps_lock_pro_mode_button),
+                    buttonText = getString(R.string.tip_caps_lock_expert_mode_button),
                 )
                 triggerTip.value = tip
             }
@@ -293,11 +293,11 @@ class OnboardingTipDelegateImpl @Inject constructor(
             }
 
             CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
-                shownCapsLockProModeTip = true
+                shownCapsLockExpertModeTip = true
             }
 
             VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
-                shownVolumeButtonsProModeTip = true
+                shownVolumeButtonsExpertModeTip = true
             }
 
             SCREEN_PINNING_TIP_ID -> {

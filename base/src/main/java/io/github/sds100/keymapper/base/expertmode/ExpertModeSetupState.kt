@@ -1,8 +1,8 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 
-data class ProModeSetupState(
+data class ExpertModeSetupState(
     val stepNumber: Int,
     val stepCount: Int,
     val step: SystemBridgeSetupStep,

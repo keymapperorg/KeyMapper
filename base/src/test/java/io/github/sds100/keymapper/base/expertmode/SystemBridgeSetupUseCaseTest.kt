@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.Keys

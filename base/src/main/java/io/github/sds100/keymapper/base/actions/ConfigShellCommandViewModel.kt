@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -44,16 +44,16 @@ class ConfigShellCommandViewModel @Inject constructor(
     private var testJob: Job? = null
 
     init {
-        // Update ProModeStatus in state
+        // Update ExpertModeStatus in state
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             viewModelScope.launch {
                 systemBridgeConnectionManager.connectionState.map { connectionState ->
                     when (connectionState) {
-                        is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
-                        is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                        is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                        is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
                     }
-                }.collect { proModeStatus ->
-                    state = state.copy(proModeStatus = proModeStatus)
+                }.collect { expertModeStatus ->
+                    state = state.copy(expertModeStatus = expertModeStatus)
                 }
             }
         }
@@ -172,9 +172,12 @@ class ConfigShellCommandViewModel @Inject constructor(
         }
     }
 
-    fun onSetupProModeClick() {
+    fun onSetupExpertModeClick() {
         viewModelScope.launch {
-            navigationProvider.navigate("shell_command_setup_pro_mode", NavDestination.ProModeSetup)
+            navigationProvider.navigate(
+                "shell_command_setup_expert_mode",
+                NavDestination.ExpertModeSetup,
+            )
         }
     }
 

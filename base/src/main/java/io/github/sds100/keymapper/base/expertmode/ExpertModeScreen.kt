@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import android.os.Build
 import android.provider.Settings
@@ -76,20 +76,20 @@ import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
-fun ProModeScreen(modifier: Modifier = Modifier, viewModel: ProModeViewModel) {
-    val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
-    val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
+fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewModel) {
+    val expertModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
+    val expertModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
     val autoStartBootEnabled by viewModel.autoStartBootEnabled.collectAsStateWithLifecycle()
 
-    ProModeScreen(
+    ExpertModeScreen(
         modifier = modifier,
         onBackClick = viewModel::onBackClick,
         onHelpClick = { viewModel.showInfoCard() },
         showHelpIcon = !viewModel.showInfoCard,
     ) {
         Content(
-            warningState = proModeWarningState,
-            setupState = proModeSetupState,
+            warningState = expertModeWarningState,
+            setupState = expertModeSetupState,
             showInfoCard = viewModel.showInfoCard,
             onInfoCardDismiss = { viewModel.hideInfoCard() },
             onWarningButtonClick = viewModel::onWarningButtonClick,
@@ -106,7 +106,7 @@ fun ProModeScreen(modifier: Modifier = Modifier, viewModel: ProModeViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProModeScreen(
+private fun ExpertModeScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
@@ -117,7 +117,7 @@ private fun ProModeScreen(
         modifier = modifier.displayCutoutPadding(),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.pro_mode_app_bar_title)) },
+                title = { Text(stringResource(R.string.expert_mode_app_bar_title)) },
                 actions = {
                     AnimatedVisibility(
                         visible = showHelpIcon,
@@ -128,7 +128,7 @@ private fun ProModeScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
                                 contentDescription = stringResource(
-                                    R.string.pro_mode_info_card_show_content_description,
+                                    R.string.expert_mode_info_card_show_content_description,
                                 ),
                             )
                         }
@@ -169,8 +169,8 @@ private fun ProModeScreen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    warningState: ProModeWarningState,
-    setupState: State<ProModeState>,
+    warningState: ExpertModeWarningState,
+    setupState: State<ExpertModeState>,
     showInfoCard: Boolean,
     onInfoCardDismiss: () -> Unit = {},
     onWarningButtonClick: () -> Unit = {},
@@ -188,7 +188,7 @@ private fun Content(
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
         ) {
-            ProModeInfoCard(
+            ExpertModeInfoCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
@@ -210,7 +210,7 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (warningState is ProModeWarningState.Understood) {
+        if (warningState is ExpertModeWarningState.Understood) {
             when (setupState) {
                 is State.Loading -> {
                     CircularProgressIndicator(
@@ -235,7 +235,7 @@ private fun Content(
         } else {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
-                text = stringResource(R.string.pro_mode_settings_unavailable_text),
+                text = stringResource(R.string.expert_mode_settings_unavailable_text),
                 textAlign = TextAlign.Center,
             )
         }
@@ -245,7 +245,7 @@ private fun Content(
 @Composable
 private fun LoadedContent(
     modifier: Modifier,
-    state: ProModeState,
+    state: ExpertModeState,
     onRootButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit,
     onStopServiceClick: () -> Unit,
@@ -258,16 +258,16 @@ private fun LoadedContent(
         OptionsHeaderRow(
             modifier = Modifier.padding(horizontal = 16.dp),
             icon = Icons.Rounded.Checklist,
-            text = stringResource(R.string.pro_mode_set_up_title),
+            text = stringResource(R.string.expert_mode_set_up_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Show notification permission warning if permission not granted
-        if (state is ProModeState.Stopped && !state.isNotificationPermissionGranted) {
+        if (state is ExpertModeState.Stopped && !state.isNotificationPermissionGranted) {
             val text =
                 stringResource(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_description,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_description,
                 )
 
             SetupCard(
@@ -283,7 +283,7 @@ private fun LoadedContent(
                     )
                 },
                 title = stringResource(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_title,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_title,
                 ),
                 content = {
                     Text(
@@ -292,7 +292,7 @@ private fun LoadedContent(
                     )
                 },
                 buttonText = stringResource(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_button,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_button,
                 ),
                 onButtonClick = onRequestNotificationPermissionClick,
             )
@@ -300,7 +300,7 @@ private fun LoadedContent(
         }
 
         when (state) {
-            is ProModeState.Started -> {
+            is ExpertModeState.Started -> {
                 if (!state.isDefaultUsbModeCompatible) {
                     IncompatibleUsbModeCard(
                         modifier = Modifier
@@ -311,7 +311,7 @@ private fun LoadedContent(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                ProModeStartedCard(
+                ExpertModeStartedCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
@@ -319,7 +319,7 @@ private fun LoadedContent(
                 )
             }
 
-            is ProModeState.Stopped -> {
+            is ExpertModeState.Stopped -> {
                 if (state.isRootGranted) {
                     SetupCard(
                         modifier = Modifier
@@ -333,15 +333,15 @@ private fun LoadedContent(
                                 tint = LocalCustomColorsPalette.current.magiskTeal,
                             )
                         },
-                        title = stringResource(R.string.pro_mode_root_detected_title),
+                        title = stringResource(R.string.expert_mode_root_detected_title),
                         content = {
                             Text(
-                                text = stringResource(R.string.pro_mode_root_detected_text),
+                                text = stringResource(R.string.expert_mode_root_detected_text),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         },
                         buttonText = stringResource(
-                            R.string.pro_mode_root_detected_button_start_service,
+                            R.string.expert_mode_root_detected_button_start_service,
                         ),
                         onButtonClick = onRootButtonClick,
                         enabled = state.isNotificationPermissionGranted,
@@ -353,14 +353,17 @@ private fun LoadedContent(
 
                 val shizukuButtonText: String? = when (state.shizukuSetupState) {
                     ShizukuSetupState.INSTALLED -> stringResource(
-                        R.string.pro_mode_shizuku_detected_button_start,
+                        R.string.expert_mode_shizuku_detected_button_start,
                     )
+
                     ShizukuSetupState.STARTED -> stringResource(
-                        R.string.pro_mode_shizuku_detected_button_request_permission,
+                        R.string.expert_mode_shizuku_detected_button_request_permission,
                     )
+
                     ShizukuSetupState.PERMISSION_GRANTED -> stringResource(
-                        R.string.pro_mode_shizuku_detected_button_start_service,
+                        R.string.expert_mode_shizuku_detected_button_start_service,
                     )
+
                     ShizukuSetupState.NOT_FOUND -> null
                 }
 
@@ -376,10 +379,10 @@ private fun LoadedContent(
                                 contentDescription = null,
                             )
                         },
-                        title = stringResource(R.string.pro_mode_shizuku_detected_title),
+                        title = stringResource(R.string.expert_mode_shizuku_detected_title),
                         content = {
                             Text(
-                                text = stringResource(R.string.pro_mode_shizuku_detected_text),
+                                text = stringResource(R.string.expert_mode_shizuku_detected_text),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         },
@@ -394,9 +397,10 @@ private fun LoadedContent(
 
                 val setupKeyMapperText: String = when {
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> stringResource(
-                        R.string.pro_mode_set_up_with_key_mapper_button_incompatible,
+                        R.string.expert_mode_set_up_with_key_mapper_button_incompatible,
                     )
-                    else -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button)
+
+                    else -> stringResource(R.string.expert_mode_set_up_with_key_mapper_button)
                 }
 
                 SetupCard(
@@ -411,7 +415,7 @@ private fun LoadedContent(
                             contentDescription = null,
                         )
                     },
-                    title = stringResource(R.string.pro_mode_set_up_with_key_mapper_title),
+                    title = stringResource(R.string.expert_mode_set_up_with_key_mapper_title),
                     content = {},
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
@@ -429,15 +433,15 @@ private fun LoadedContent(
         OptionsHeaderRow(
             modifier = Modifier.padding(horizontal = 16.dp),
             icon = Icons.Rounded.Tune,
-            text = stringResource(R.string.pro_mode_options_title),
+            text = stringResource(R.string.expert_mode_options_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         SwitchPreferenceCompose(
             modifier = Modifier.padding(horizontal = 8.dp),
-            title = stringResource(R.string.title_pref_pro_mode_auto_start),
-            text = stringResource(R.string.summary_pref_pro_mode_auto_start),
+            title = stringResource(R.string.title_pref_expert_mode_auto_start),
+            text = stringResource(R.string.summary_pref_expert_mode_auto_start),
             icon = Icons.Rounded.RestartAlt,
             isChecked = autoStartAtBoot,
             onCheckedChange = onAutoStartAtBootToggled,
@@ -461,12 +465,12 @@ private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
             )
         },
         title = stringResource(
-            R.string.pro_mode_setup_wizard_change_default_usb_configuration_title,
+            R.string.expert_mode_setup_wizard_change_default_usb_configuration_title,
         ),
         content = {
             Text(
                 text = stringResource(
-                    R.string.pro_mode_setup_wizard_change_default_usb_configuration_description,
+                    R.string.expert_mode_setup_wizard_change_default_usb_configuration_description,
                 ),
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -488,10 +492,10 @@ private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
 @Composable
 private fun WarningCard(
     modifier: Modifier = Modifier,
-    state: ProModeWarningState,
+    state: ExpertModeWarningState,
     onButtonClick: () -> Unit = {},
 ) {
-    val borderStroke = if (state is ProModeWarningState.Understood) {
+    val borderStroke = if (state is ExpertModeWarningState.Understood) {
         CardDefaults.outlinedCardBorder()
     } else {
         BorderStroke(1.dp, MaterialTheme.colorScheme.error)
@@ -513,7 +517,7 @@ private fun WarningCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = stringResource(R.string.pro_mode_warning_title),
+                text = stringResource(R.string.expert_mode_warning_title),
                 style = MaterialTheme.typography.titleMedium,
             )
         }
@@ -522,7 +526,7 @@ private fun WarningCard(
 
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.pro_mode_warning_text),
+            text = stringResource(R.string.expert_mode_warning_text),
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -533,29 +537,30 @@ private fun WarningCard(
                 .align(Alignment.End)
                 .padding(horizontal = 16.dp),
             onClick = onButtonClick,
-            enabled = state is ProModeWarningState.Idle,
+            enabled = state is ExpertModeWarningState.Idle,
             colors = ButtonDefaults.filledTonalButtonColors(
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = MaterialTheme.colorScheme.onError,
             ),
         ) {
-            if (state is ProModeWarningState.Understood) {
+            if (state is ExpertModeWarningState.Understood) {
                 Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
 
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
             val text = when (state) {
-                is ProModeWarningState.CountingDown -> stringResource(
-                    R.string.pro_mode_warning_understand_button_countdown,
+                is ExpertModeWarningState.CountingDown -> stringResource(
+                    R.string.expert_mode_warning_understand_button_countdown,
                     state.seconds,
                 )
 
-                ProModeWarningState.Idle -> stringResource(
-                    R.string.pro_mode_warning_understand_button_not_completed,
+                ExpertModeWarningState.Idle -> stringResource(
+                    R.string.expert_mode_warning_understand_button_not_completed,
                 )
-                ProModeWarningState.Understood -> stringResource(
-                    R.string.pro_mode_warning_understand_button_completed,
+
+                ExpertModeWarningState.Understood -> stringResource(
+                    R.string.expert_mode_warning_understand_button_completed,
                 )
             }
 
@@ -567,7 +572,7 @@ private fun WarningCard(
 }
 
 @Composable
-private fun ProModeStartedCard(modifier: Modifier = Modifier, onStopClick: () -> Unit = {}) {
+private fun ExpertModeStartedCard(modifier: Modifier = Modifier, onStopClick: () -> Unit = {}) {
     OutlinedCard(modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -586,7 +591,7 @@ private fun ProModeStartedCard(modifier: Modifier = Modifier, onStopClick: () ->
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp),
-                text = stringResource(R.string.pro_mode_service_started),
+                text = stringResource(R.string.expert_mode_service_started),
                 style = MaterialTheme.typography.titleMedium,
             )
 
@@ -598,7 +603,7 @@ private fun ProModeStartedCard(modifier: Modifier = Modifier, onStopClick: () ->
                     contentColor = MaterialTheme.colorScheme.error,
                 ),
             ) {
-                Text(stringResource(R.string.pro_mode_stop_service_button))
+                Text(stringResource(R.string.expert_mode_stop_service_button))
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -672,7 +677,7 @@ private fun SetupCard(
 }
 
 @Composable
-private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}) {
+private fun ExpertModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}) {
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
@@ -695,7 +700,7 @@ private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = stringResource(R.string.pro_mode_info_card_title),
+                        text = stringResource(R.string.expert_mode_info_card_title),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -704,7 +709,7 @@ private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = stringResource(R.string.pro_mode_info_card_description),
+                    text = stringResource(R.string.expert_mode_info_card_description),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -718,7 +723,7 @@ private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = stringResource(
-                        R.string.pro_mode_info_card_dismiss_content_description,
+                        R.string.expert_mode_info_card_dismiss_content_description,
                     ),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -731,11 +736,11 @@ private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        ProModeScreen {
+        ExpertModeScreen {
             Content(
-                warningState = ProModeWarningState.Understood,
+                warningState = ExpertModeWarningState.Understood,
                 setupState = State.Data(
-                    ProModeState.Stopped(
+                    ExpertModeState.Stopped(
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = true,
@@ -755,10 +760,10 @@ private fun Preview() {
 @Composable
 private fun PreviewDark() {
     KeyMapperTheme(darkTheme = true) {
-        ProModeScreen {
+        ExpertModeScreen {
             Content(
-                warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeState.Started(isDefaultUsbModeCompatible = true)),
+                warningState = ExpertModeWarningState.Understood,
+                setupState = State.Data(ExpertModeState.Started(isDefaultUsbModeCompatible = true)),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = true,
@@ -772,9 +777,9 @@ private fun PreviewDark() {
 @Composable
 private fun PreviewCountingDown() {
     KeyMapperTheme {
-        ProModeScreen {
+        ExpertModeScreen {
             Content(
-                warningState = ProModeWarningState.CountingDown(
+                warningState = ExpertModeWarningState.CountingDown(
                     seconds = 5,
                 ),
                 setupState = State.Loading,
@@ -791,10 +796,12 @@ private fun PreviewCountingDown() {
 @Composable
 private fun PreviewStarted() {
     KeyMapperTheme {
-        ProModeScreen {
+        ExpertModeScreen {
             Content(
-                warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeState.Started(isDefaultUsbModeCompatible = false)),
+                warningState = ExpertModeWarningState.Understood,
+                setupState = State.Data(
+                    ExpertModeState.Started(isDefaultUsbModeCompatible = false),
+                ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
@@ -808,11 +815,11 @@ private fun PreviewStarted() {
 @Composable
 private fun PreviewNotificationPermissionNotGranted() {
     KeyMapperTheme {
-        ProModeScreen {
+        ExpertModeScreen {
             Content(
-                warningState = ProModeWarningState.Understood,
+                warningState = ExpertModeWarningState.Understood,
                 setupState = State.Data(
-                    ProModeState.Stopped(
+                    ExpertModeState.Stopped(
                         isRootGranted = true,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = false,

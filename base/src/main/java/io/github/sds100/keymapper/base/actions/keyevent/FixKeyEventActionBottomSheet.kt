@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.Remove
@@ -44,15 +45,13 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.ui.compose.AccessibilityServiceRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.ExpertModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
-import io.github.sds100.keymapper.base.utils.ui.compose.ProModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.filledTonalButtonColorsError
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,9 +61,9 @@ fun FixKeyEventActionBottomSheet(
     sheetState: SheetState,
     onDismissRequest: () -> Unit = {},
     onSelectInputMethod: () -> Unit = {},
-    onSelectProMode: () -> Unit = {},
+    onSelectExpertMode: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onEnableInputMethodClick: () -> Unit = {},
     onChooseInputMethodClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
@@ -135,18 +134,18 @@ fun FixKeyEventActionBottomSheet(
                     )
                 }
 
-                val isProModeUnsupported = state.proModeStatus == ProModeStatus.UNSUPPORTED
+                val isExpertModeUnsupported = state.expertModeStatus == ExpertModeStatus.UNSUPPORTED
 
                 FixKeyEventActionOptionCard(
-                    onClick = onSelectProMode,
-                    selected = state is FixKeyEventActionState.ProMode,
-                    title = stringResource(R.string.pro_mode_app_bar_title),
-                    icon = KeyMapperIcons.ProModeIcon,
-                    enabled = !isProModeUnsupported,
+                    onClick = onSelectExpertMode,
+                    selected = state is FixKeyEventActionState.ExpertMode,
+                    title = stringResource(R.string.expert_mode_app_bar_title),
+                    icon = Icons.Outlined.OfflineBolt,
+                    enabled = !isExpertModeUnsupported,
                 ) {
-                    if (isProModeUnsupported) {
+                    if (isExpertModeUnsupported) {
                         Text(
-                            stringResource(R.string.trigger_setup_pro_mode_unsupported),
+                            stringResource(R.string.trigger_setup_expert_mode_unsupported),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.error,
                         )
@@ -154,11 +153,11 @@ fun FixKeyEventActionBottomSheet(
                         val annotatedText = buildAnnotatedString {
                             appendInlineContent("icon", "[icon]")
                             append(" ")
-                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_1))
+                            append(stringResource(R.string.fix_key_event_action_expert_mode_text_1))
                             appendLine()
                             appendInlineContent("icon", "[icon]")
                             append(" ")
-                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_2))
+                            append(stringResource(R.string.fix_key_event_action_expert_mode_text_2))
                         }
                         val inlineContent = mapOf(
                             Pair(
@@ -224,13 +223,13 @@ fun FixKeyEventActionBottomSheet(
                     )
                 }
 
-                is FixKeyEventActionState.ProMode -> {
-                    ProModeRequirementRow(
+                is FixKeyEventActionState.ExpertMode -> {
+                    ExpertModeRequirementRow(
                         modifier = Modifier.fillMaxWidth(),
                         isVisible = true,
-                        proModeStatus = state.proModeStatus,
+                        expertModeStatus = state.expertModeStatus,
                         buttonColors = ButtonDefaults.filledTonalButtonColorsError(),
-                        onClick = onEnableProModeClick,
+                        onClick = onEnableExpertModeClick,
                     )
                 }
             }
@@ -317,7 +316,7 @@ private fun InputMethodPreview() {
                 enablingRequiresUserInput = true,
                 isAccessibilityServiceEnabled = true,
                 isAutoSwitchImeEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                expertModeStatus = ExpertModeStatus.ENABLED,
             ),
         )
     }
@@ -326,7 +325,7 @@ private fun InputMethodPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun ProModePreview() {
+private fun ExpertModePreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
@@ -336,8 +335,8 @@ private fun ProModePreview() {
 
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
-            state = FixKeyEventActionState.ProMode(
-                proModeStatus = ProModeStatus.DISABLED,
+            state = FixKeyEventActionState.ExpertMode(
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 isAccessibilityServiceEnabled = true,
             ),
         )
@@ -347,7 +346,7 @@ private fun ProModePreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun ProModeUnsupportedPreview() {
+private fun ExpertModeUnsupportedPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
@@ -358,7 +357,7 @@ private fun ProModeUnsupportedPreview() {
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
             state = FixKeyEventActionState.InputMethod(
-                proModeStatus = ProModeStatus.UNSUPPORTED,
+                expertModeStatus = ExpertModeStatus.UNSUPPORTED,
                 isEnabled = false,
                 isChosen = false,
                 enablingRequiresUserInput = true,

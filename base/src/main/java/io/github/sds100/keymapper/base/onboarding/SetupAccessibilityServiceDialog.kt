@@ -167,7 +167,7 @@ private fun CantFindAccessibilitySettingsDialog(
         },
         confirmButton = {
             TextButton(onClick = onOpenGuide) {
-                Text(stringResource(R.string.pos_start_service_with_pro_mode))
+                Text(stringResource(R.string.pos_start_service_with_expert_mode))
             }
         },
         dismissButton = {

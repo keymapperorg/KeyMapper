@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
 @Composable
 fun OptionPageButton(
@@ -84,9 +83,9 @@ private fun Preview() {
     KeyMapperTheme {
         OptionPageButton(
             modifier = Modifier.fillMaxWidth(),
-            title = stringResource(R.string.title_pref_pro_mode),
-            text = stringResource(R.string.summary_pref_pro_mode),
-            icon = KeyMapperIcons.ProModeIcon,
+            title = stringResource(R.string.title_pref_expert_mode),
+            text = stringResource(R.string.summary_pref_expert_mode),
+            icon = Icons.Outlined.OfflineBolt,
             onClick = {},
         )
     }

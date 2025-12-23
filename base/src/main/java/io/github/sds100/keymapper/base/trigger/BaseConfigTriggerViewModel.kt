@@ -80,14 +80,14 @@ abstract class BaseConfigTriggerViewModel(
         private const val DEVICE_ID_ANY = "any"
         private const val DEVICE_ID_INTERNAL = "internal"
 
-        fun buildProModeSwitchState(
+        fun buildExpertModeSwitchState(
             recordTriggerState: RecordTriggerState,
-            isProModeRecordingEnabled: Boolean,
+            isExpertModeRecordingEnabled: Boolean,
             systemBridgeState: SystemBridgeConnectionState,
-        ): ProModeRecordSwitchState {
-            return ProModeRecordSwitchState(
+        ): ExpertModeRecordSwitchState {
+            return ExpertModeRecordSwitchState(
                 isVisible = systemBridgeState is SystemBridgeConnectionState.Connected,
-                isChecked = isProModeRecordingEnabled,
+                isChecked = isExpertModeRecordingEnabled,
                 isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
             )
         }
@@ -112,18 +112,18 @@ abstract class BaseConfigTriggerViewModel(
         RecordTriggerState.Idle,
     )
 
-    val proModeSwitchState: StateFlow<ProModeRecordSwitchState> =
+    val expertModeSwitchState: StateFlow<ExpertModeRecordSwitchState> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             combine(
                 recordTrigger.state,
                 recordTrigger.isEvdevRecordingEnabled,
                 systemBridgeConnectionManager.connectionState,
-                Companion::buildProModeSwitchState,
+                Companion::buildExpertModeSwitchState,
             )
                 .stateIn(
                     viewModelScope,
                     SharingStarted.Eagerly,
-                    ProModeRecordSwitchState(
+                    ExpertModeRecordSwitchState(
                         isVisible = false,
                         isChecked = false,
                         isEnabled = false,
@@ -131,7 +131,11 @@ abstract class BaseConfigTriggerViewModel(
                 )
         } else {
             MutableStateFlow(
-                ProModeRecordSwitchState(isVisible = false, isChecked = false, isEnabled = false),
+                ExpertModeRecordSwitchState(
+                    isVisible = false,
+                    isChecked = false,
+                    isEnabled = false,
+                ),
             )
         }
 
@@ -298,6 +302,7 @@ abstract class BaseConfigTriggerViewModel(
 
         when (keyMapState) {
             State.Loading -> return null
+
             is State.Data -> {
                 val trigger = keyMapState.data.trigger
                 val key = trigger.keys.find { it.uid == triggerKeyUid }
@@ -478,7 +483,9 @@ abstract class BaseConfigTriggerViewModel(
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
             val device = when (descriptor) {
                 DEVICE_ID_ANY -> KeyEventTriggerDevice.Any
+
                 DEVICE_ID_INTERNAL -> KeyEventTriggerDevice.Internal
+
                 else -> {
                     val device = config.getAvailableTriggerKeyDevices()
                         .filterIsInstance<KeyEventTriggerDevice.External>()
@@ -537,7 +544,7 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onProModeSwitchChange(isChecked: Boolean) =
+    fun onExpertModeSwitchChange(isChecked: Boolean) =
         recordTrigger.setEvdevRecordingEnabled(isChecked)
 
     fun handleServiceEventResult(result: KMResult<*>) {
@@ -549,11 +556,11 @@ abstract class BaseConfigTriggerViewModel(
     override fun onTipButtonClick(tipId: String) {
         when (tipId) {
             OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
-                showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
+                showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceExpertMode = true)
             }
 
             OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
-                showTriggerSetup(TriggerSetupShortcut.VOLUME, forceProMode = true)
+                showTriggerSetup(TriggerSetupShortcut.VOLUME, forceExpertMode = true)
             }
         }
     }
@@ -587,7 +594,7 @@ abstract class BaseConfigTriggerViewModel(
                     val response = showDialog("migrate_screen_off", dialog)
 
                     if (response == DialogResponse.POSITIVE) {
-                        showTriggerSetup(TriggerSetupShortcut.OTHER, forceProMode = true)
+                        showTriggerSetup(TriggerSetupShortcut.OTHER, forceExpertMode = true)
                     }
                 }
 
@@ -715,7 +722,9 @@ abstract class BaseConfigTriggerViewModel(
         showDeviceDescriptors: Boolean,
     ): String = when (device) {
         is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+
         is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+
         is KeyEventTriggerDevice.External -> {
             if (showDeviceDescriptors) {
                 InputDeviceUtils.appendDeviceDescriptorToName(

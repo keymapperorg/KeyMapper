@@ -135,11 +135,11 @@ fun HomeKeyMapListScreen(
             sheetState = sheetState,
             onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeForKeyEventActionsClick,
+            onEnableExpertModeClick = viewModel::onEnableExpertModeForKeyEventActionsClick,
             onEnableInputMethodClick = viewModel::onEnableImeClick,
             onChooseInputMethodClick = viewModel::onChooseImeClick,
             onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
-            onSelectProMode = viewModel::onSelectProMode,
+            onSelectExpertMode = viewModel::onSelectExpertMode,
             onSelectInputMethod = viewModel::onSelectInputMethod,
             onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
         )

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -25,10 +26,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class ProModeViewModel @Inject constructor(
+class ExpertModeViewModel @Inject constructor(
     private val useCase: SystemBridgeSetupUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
@@ -43,18 +43,18 @@ class ProModeViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val warningState: StateFlow<ProModeWarningState> =
+    val warningState: StateFlow<ExpertModeWarningState> =
         useCase.isWarningUnderstood
             .flatMapLatest { isUnderstood -> createWarningStateFlow(isUnderstood) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                ProModeWarningState.CountingDown(
+                ExpertModeWarningState.CountingDown(
                     WARNING_COUNT_DOWN_SECONDS,
                 ),
             )
 
-    val setupState: StateFlow<State<ProModeState>> =
+    val setupState: StateFlow<State<ExpertModeState>> =
         combine(
             useCase.isSystemBridgeConnected,
             useCase.isRootGranted,
@@ -82,17 +82,17 @@ class ProModeViewModel @Inject constructor(
         showInfoCard = true
     }
 
-    private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ProModeWarningState> =
+    private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ExpertModeWarningState> =
         if (isUnderstood) {
-            flowOf(ProModeWarningState.Understood)
+            flowOf(ExpertModeWarningState.Understood)
         } else {
             flow {
                 repeat(WARNING_COUNT_DOWN_SECONDS) {
-                    emit(ProModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
+                    emit(ExpertModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
                     delay(1000L)
                 }
 
-                emit(ProModeWarningState.Idle)
+                emit(ExpertModeWarningState.Idle)
             }
         }
 
@@ -139,7 +139,7 @@ class ProModeViewModel @Inject constructor(
 
     fun onSetupWithKeyMapperClick() {
         viewModelScope.launch {
-            navigate("setup_pro_mode_with_key_mapper", NavDestination.ProModeSetup)
+            navigate("setup_expert_mode_with_key_mapper", NavDestination.ExpertModeSetup)
         }
     }
 
@@ -157,17 +157,17 @@ class ProModeViewModel @Inject constructor(
         shizukuSetupState: ShizukuSetupState,
         isNotificationPermissionGranted: Boolean,
         isSystemBridgeStarting: Boolean,
-    ): State<ProModeState> {
+    ): State<ExpertModeState> {
         if (isSystemBridgeConnected) {
             return State.Data(
-                ProModeState.Started(
+                ExpertModeState.Started(
                     isDefaultUsbModeCompatible =
-                        useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
+                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
                 ),
             )
         } else {
             return State.Data(
-                ProModeState.Stopped(
+                ExpertModeState.Stopped(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
                     isNotificationPermissionGranted = isNotificationPermissionGranted,
@@ -178,19 +178,19 @@ class ProModeViewModel @Inject constructor(
     }
 }
 
-sealed class ProModeWarningState {
-    data class CountingDown(val seconds: Int) : ProModeWarningState()
-    data object Idle : ProModeWarningState()
-    data object Understood : ProModeWarningState()
+sealed class ExpertModeWarningState {
+    data class CountingDown(val seconds: Int) : ExpertModeWarningState()
+    data object Idle : ExpertModeWarningState()
+    data object Understood : ExpertModeWarningState()
 }
 
-sealed class ProModeState {
+sealed class ExpertModeState {
     data class Stopped(
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
         val isNotificationPermissionGranted: Boolean,
         val isStarting: Boolean,
-    ) : ProModeState()
+    ) : ExpertModeState()
 
-    data class Started(val isDefaultUsbModeCompatible: Boolean) : ProModeState()
+    data class Started(val isDefaultUsbModeCompatible: Boolean) : ExpertModeState()
 }

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import android.app.ActivityManager
 import android.os.Build
@@ -85,12 +85,12 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private val activityManager: ActivityManager = accessibilityService.getSystemService()!!
 
     private val isInteractive: StateFlow<Boolean> =
-        preferenceRepository.get(Keys.isProModeInteractiveSetupAssistantEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT }
+        preferenceRepository.get(Keys.isExpertModeInteractiveSetupAssistantEnabled)
+            .map { it ?: PreferenceDefaults.EXPERT_MODE_INTERACTIVE_SETUP_ASSISTANT }
             .stateIn(
                 coroutineScope,
                 SharingStarted.Eagerly,
-                PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT,
+                PreferenceDefaults.EXPERT_MODE_INTERACTIVE_SETUP_ASSISTANT,
             )
 
     private var interactionStep: InteractionStep? = null
@@ -203,11 +203,13 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             stopInteracting()
 
             showNotification(
-                getString(R.string.pro_mode_setup_notification_invalid_pairing_code_title),
-                getString(R.string.pro_mode_setup_notification_invalid_pairing_code_text),
+                getString(R.string.expert_mode_setup_notification_invalid_pairing_code_title),
+                getString(R.string.expert_mode_setup_notification_invalid_pairing_code_text),
                 actions = listOf(
                     KMNotificationAction.RemoteInput.PairingCode to
-                        getString(R.string.pro_mode_setup_notification_action_input_pairing_code),
+                        getString(
+                            R.string.expert_mode_setup_notification_action_input_pairing_code,
+                        ),
                 ),
             )
         }
@@ -226,8 +228,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         } else {
             Timber.e("Failed to start system bridge after pairing.")
             showNotification(
-                getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
-                getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
+                getString(R.string.expert_mode_setup_notification_start_system_bridge_failed_title),
+                getString(R.string.expert_mode_setup_notification_start_system_bridge_failed_text),
                 onClickAction = KMNotificationAction.Activity.MainActivity(
                     BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
                 ),
@@ -270,7 +272,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             channel = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
             title = title,
             text = text,
-            icon = R.drawable.pro_mode,
+            icon = R.drawable.offline_bolt_24px,
             onGoing = false,
             showOnLockscreen = false,
             autoCancel = true,
@@ -298,15 +300,15 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         when (step) {
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> {
                 showNotification(
-                    getString(R.string.pro_mode_setup_notification_tap_build_number_title),
-                    getString(R.string.pro_mode_setup_notification_tap_build_number_text),
+                    getString(R.string.expert_mode_setup_notification_tap_build_number_title),
+                    getString(R.string.expert_mode_setup_notification_tap_build_number_text),
                 )
             }
 
             SystemBridgeSetupStep.ADB_PAIRING -> {
                 showNotification(
-                    getString(R.string.pro_mode_setup_notification_pairing_title),
-                    getString(R.string.pro_mode_setup_notification_pairing_text),
+                    getString(R.string.expert_mode_setup_notification_pairing_title),
+                    getString(R.string.expert_mode_setup_notification_pairing_text),
                 )
 
                 interactionStep = InteractionStep.PAIR_DEVICE
@@ -328,15 +330,15 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
                 showNotification(
                     title = getString(
-                        R.string.pro_mode_setup_notification_pairing_button_not_found_title,
+                        R.string.expert_mode_setup_notification_pairing_button_not_found_title,
                     ),
                     text = getString(
-                        R.string.pro_mode_setup_notification_pairing_button_not_found_text,
+                        R.string.expert_mode_setup_notification_pairing_button_not_found_text,
                     ),
                     actions = listOf(
                         KMNotificationAction.RemoteInput.PairingCode to
                             getString(
-                                R.string.pro_mode_setup_notification_action_input_pairing_code,
+                                R.string.expert_mode_setup_notification_action_input_pairing_code,
                             ),
                     ),
                 )

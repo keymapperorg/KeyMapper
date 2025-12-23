@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
@@ -46,8 +47,6 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
 @Composable
 fun TriggerKeyListItem(
@@ -114,7 +113,7 @@ fun TriggerKeyListItem(
                         is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
                         is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
                         is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
-                        is TriggerKeyListItemModel.EvdevEvent -> KeyMapperIcons.ProModeIcon
+                        is TriggerKeyListItemModel.EvdevEvent -> Icons.Outlined.OfflineBolt
                         else -> null
                     }
 
@@ -133,9 +132,11 @@ fun TriggerKeyListItem(
                         AssistantTriggerType.ANY -> stringResource(
                             R.string.assistant_any_trigger_name,
                         )
+
                         AssistantTriggerType.VOICE -> stringResource(
                             R.string.assistant_voice_trigger_name,
                         )
+
                         AssistantTriggerType.DEVICE -> stringResource(
                             R.string.assistant_device_trigger_name,
                         )
@@ -147,6 +148,7 @@ fun TriggerKeyListItem(
                     )
 
                     is TriggerKeyListItemModel.KeyEvent -> model.keyName
+
                     is TriggerKeyListItemModel.EvdevEvent -> model.keyName
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
@@ -157,12 +159,15 @@ fun TriggerKeyListItem(
                         FingerprintGestureType.SWIPE_UP -> stringResource(
                             R.string.trigger_key_fingerprint_gesture_up,
                         )
+
                         FingerprintGestureType.SWIPE_DOWN -> stringResource(
                             R.string.trigger_key_fingerprint_gesture_down,
                         )
+
                         FingerprintGestureType.SWIPE_LEFT -> stringResource(
                             R.string.trigger_key_fingerprint_gesture_left,
                         )
+
                         FingerprintGestureType.SWIPE_RIGHT -> stringResource(
                             R.string.trigger_key_fingerprint_gesture_right,
                         )
@@ -182,7 +187,6 @@ fun TriggerKeyListItem(
                         is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
                         is TriggerKeyListItemModel.EvdevEvent -> model.extraInfo
                         is TriggerKeyListItemModel.FloatingButton -> model.layoutName
-
                         else -> null
                     }
 
@@ -278,33 +282,43 @@ fun TriggerKeyListItem(
 private fun getErrorMessage(error: TriggerError): String {
     return when (error) {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
+
         TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(
             R.string.trigger_error_cant_detect_in_phone_call,
         )
+
         TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(
             R.string.trigger_error_assistant_not_purchased,
         )
+
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(
             R.string.trigger_error_dpad_ime_not_selected,
         )
+
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(
             R.string.trigger_error_floating_button_deleted,
         )
+
         TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(
             R.string.trigger_error_floating_buttons_not_purchased,
         )
+
         TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(
             R.string.trigger_error_product_verification_failed,
         )
+
         TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> stringResource(
             R.string.trigger_error_system_bridge_unsupported,
         )
+
         TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(
             R.string.trigger_error_system_bridge_disconnected,
         )
+
         TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(
             R.string.trigger_error_evdev_device_not_found,
         )
+
         TriggerError.MIGRATE_SCREEN_OFF_TRIGGER -> stringResource(
             R.string.trigger_error_migrate_screen_off_key_map,
         )

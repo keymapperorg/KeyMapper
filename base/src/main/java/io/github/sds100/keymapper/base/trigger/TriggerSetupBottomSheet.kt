@@ -52,13 +52,13 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.ui.compose.AccessibilityServiceRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.ExpertModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
-import io.github.sds100.keymapper.base.utils.ui.compose.ProModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
@@ -79,9 +79,9 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.Volume,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            onUseExpertModeCheckedChange = delegate::onUseExpertModeCheckedChange,
         )
 
         is TriggerSetupState.Power -> PowerTriggerSetupBottomSheet(
@@ -89,7 +89,7 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.Power,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
         )
 
@@ -107,9 +107,9 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.Keyboard,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            onUseExpertModeCheckedChange = delegate::onUseExpertModeCheckedChange,
         )
 
         is TriggerSetupState.Mouse -> MouseTriggerSetupBottomSheet(
@@ -117,7 +117,7 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.Mouse,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
         )
 
@@ -126,9 +126,9 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.Other,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            onUseExpertModeCheckedChange = delegate::onUseExpertModeCheckedChange,
         )
 
         is TriggerSetupState.NotDetected -> NotDetectedSetupBottomSheet(
@@ -136,7 +136,7 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             state = triggerSetupState as TriggerSetupState.NotDetected,
             onDismissRequest = delegate::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
         )
 
@@ -149,8 +149,8 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
             onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
             onEnableInputMethodClick = delegate::onEnableImeClick,
             onChooseInputMethodClick = delegate::onChooseImeClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
-            onEnableProModeClick = delegate::onEnableProModeClick,
+            onUseExpertModeCheckedChange = delegate::onUseExpertModeCheckedChange,
+            onEnableExpertModeClick = delegate::onEnableExpertModeClick,
         )
 
         null -> {}
@@ -167,10 +167,10 @@ private fun GamepadTriggerSetupBottomSheet(
     onRecordTriggerClick: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
     onSelectButtonType: (TriggerSetupState.Gamepad.Type) -> Unit = { },
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onEnableInputMethodClick: () -> Unit = { },
     onChooseInputMethodClick: () -> Unit = { },
-    onUseProModeCheckedChange: (Boolean) -> Unit = {},
+    onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -208,6 +208,7 @@ private fun GamepadTriggerSetupBottomSheet(
 
         val selectedState = when (state) {
             is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
+
             is TriggerSetupState.Gamepad.SimpleButtons ->
                 TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
         }
@@ -219,12 +220,12 @@ private fun GamepadTriggerSetupBottomSheet(
             onStateSelected = onSelectButtonType,
         )
 
-        val isUseProModeChecked = when (state) {
+        val isUseExpertModeChecked = when (state) {
             is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseProModeChecked
+            is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseExpertModeChecked
         }
 
-        val isUseProModeEnabled = when (state) {
+        val isUseExpertModeEnabled = when (state) {
             is TriggerSetupState.Gamepad.Dpad -> false
             is TriggerSetupState.Gamepad.SimpleButtons -> true
         }
@@ -232,9 +233,9 @@ private fun GamepadTriggerSetupBottomSheet(
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.trigger_setup_screen_off_option),
-            isChecked = isUseProModeChecked,
-            isEnabled = isUseProModeEnabled,
-            onCheckedChange = onUseProModeCheckedChange,
+            isChecked = isUseExpertModeChecked,
+            isEnabled = isUseExpertModeEnabled,
+            onCheckedChange = onUseExpertModeCheckedChange,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
@@ -256,11 +257,11 @@ private fun GamepadTriggerSetupBottomSheet(
             }
 
             is TriggerSetupState.Gamepad.SimpleButtons -> {
-                ProModeRequirementRow(
+                ExpertModeRequirementRow(
                     modifier = Modifier.fillMaxWidth(),
-                    isVisible = state.isUseProModeChecked,
-                    proModeStatus = state.proModeStatus,
-                    onClick = onEnableProModeClick,
+                    isVisible = state.isUseExpertModeChecked,
+                    expertModeStatus = state.expertModeStatus,
+                    onClick = onEnableExpertModeClick,
                 )
             }
         }
@@ -283,7 +284,7 @@ private fun MouseTriggerSetupBottomSheet(
     state: TriggerSetupState.Mouse,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
@@ -323,10 +324,10 @@ private fun MouseTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
+        ExpertModeRequirementRow(
             isVisible = true,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
     }
 }
@@ -338,7 +339,7 @@ private fun PowerTriggerSetupBottomSheet(
     state: TriggerSetupState.Power,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
@@ -378,10 +379,10 @@ private fun PowerTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
+        ExpertModeRequirementRow(
             isVisible = true,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_information_title))
@@ -423,9 +424,9 @@ private fun VolumeTriggerSetupBottomSheet(
     state: TriggerSetupState.Volume,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
-    onUseProModeCheckedChange: (Boolean) -> Unit = {},
+    onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -457,9 +458,9 @@ private fun VolumeTriggerSetupBottomSheet(
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.trigger_setup_screen_off_option),
-            isChecked = state.isUseProModeChecked,
-            isEnabled = !state.forceProMode,
-            onCheckedChange = onUseProModeCheckedChange,
+            isChecked = state.isUseExpertModeChecked,
+            isEnabled = !state.forceExpertMode,
+            onCheckedChange = onUseExpertModeCheckedChange,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
@@ -469,10 +470,10 @@ private fun VolumeTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
-            isVisible = state.isUseProModeChecked,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+        ExpertModeRequirementRow(
+            isVisible = state.isUseExpertModeChecked,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
     }
 }
@@ -484,7 +485,7 @@ private fun NotDetectedSetupBottomSheet(
     state: TriggerSetupState.NotDetected,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
@@ -531,10 +532,10 @@ private fun NotDetectedSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
+        ExpertModeRequirementRow(
             isVisible = true,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_information_title))
@@ -569,9 +570,9 @@ private fun OtherTriggerSetupBottomSheet(
     state: TriggerSetupState.Other,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
-    onUseProModeCheckedChange: (Boolean) -> Unit = {},
+    onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -603,9 +604,9 @@ private fun OtherTriggerSetupBottomSheet(
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.trigger_setup_screen_off_option),
-            isChecked = state.isUseProModeChecked,
-            isEnabled = !state.forceProMode,
-            onCheckedChange = onUseProModeCheckedChange,
+            isChecked = state.isUseExpertModeChecked,
+            isEnabled = !state.forceExpertMode,
+            onCheckedChange = onUseExpertModeCheckedChange,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
@@ -615,10 +616,10 @@ private fun OtherTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
-            isVisible = state.isUseProModeChecked,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+        ExpertModeRequirementRow(
+            isVisible = state.isUseExpertModeChecked,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_information_title))
@@ -653,9 +654,9 @@ private fun KeyboardTriggerSetupBottomSheet(
     state: TriggerSetupState.Keyboard,
     onDismissRequest: () -> Unit = {},
     onEnableAccessibilityServiceClick: () -> Unit = {},
-    onEnableProModeClick: () -> Unit = {},
+    onEnableExpertModeClick: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
-    onUseProModeCheckedChange: (Boolean) -> Unit = {},
+    onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -687,9 +688,9 @@ private fun KeyboardTriggerSetupBottomSheet(
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.trigger_setup_screen_off_option),
-            isChecked = state.isUseProModeChecked,
-            isEnabled = !state.forceProMode,
-            onCheckedChange = onUseProModeCheckedChange,
+            isChecked = state.isUseExpertModeChecked,
+            isEnabled = !state.forceExpertMode,
+            onCheckedChange = onUseExpertModeCheckedChange,
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
@@ -699,10 +700,10 @@ private fun KeyboardTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        ProModeRequirementRow(
-            isVisible = state.isUseProModeChecked,
-            proModeStatus = state.proModeStatus,
-            onClick = onEnableProModeClick,
+        ExpertModeRequirementRow(
+            isVisible = state.isUseExpertModeChecked,
+            expertModeStatus = state.expertModeStatus,
+            onClick = onEnableExpertModeClick,
         )
     }
 }
@@ -910,7 +911,7 @@ private fun PowerButtonPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Power(
                 isAccessibilityServiceEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                expertModeStatus = ExpertModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
                 remapStatus = RemapStatus.SUPPORTED,
@@ -934,7 +935,7 @@ private fun PowerButtonDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Power(
                 isAccessibilityServiceEnabled = false,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
+                expertModeStatus = ExpertModeStatus.UNSUPPORTED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
                 remapStatus = RemapStatus.UNSUPPORTED,
@@ -958,11 +959,11 @@ private fun VolumeButtonPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Volume(
                 isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -983,11 +984,11 @@ private fun VolumeButtonDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Volume(
                 isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1052,11 +1053,11 @@ private fun KeyboardButtonEnabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Keyboard(
                 isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = false,
-                proModeStatus = ProModeStatus.DISABLED,
+                isUseExpertModeChecked = false,
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1077,11 +1078,11 @@ private fun KeyboardButtonDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Keyboard(
                 isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1102,7 +1103,7 @@ private fun MouseButtonPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Mouse(
                 isAccessibilityServiceEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                expertModeStatus = ExpertModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
                 remapStatus = RemapStatus.SUPPORTED,
@@ -1126,7 +1127,7 @@ private fun MouseButtonDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Mouse(
                 isAccessibilityServiceEnabled = false,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
+                expertModeStatus = ExpertModeStatus.UNSUPPORTED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
                 remapStatus = RemapStatus.UNSUPPORTED,
@@ -1150,11 +1151,11 @@ private fun OtherButtonPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1175,11 +1176,11 @@ private fun OtherButtonDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1250,11 +1251,11 @@ private fun GamepadSimpleButtonsPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Gamepad.SimpleButtons(
                 isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
+                isUseExpertModeChecked = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }
@@ -1275,11 +1276,11 @@ private fun GamepadSimpleButtonsDisabledPreview() {
             sheetState = sheetState,
             state = TriggerSetupState.Gamepad.SimpleButtons(
                 isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = false,
-                proModeStatus = ProModeStatus.DISABLED,
+                isUseExpertModeChecked = false,
+                expertModeStatus = ExpertModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
+                forceExpertMode = false,
             ),
         )
     }

@@ -17,12 +17,12 @@ import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.detection.KeyMapDetectionController
 import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
-import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.Constants
@@ -461,7 +461,9 @@ abstract class BaseAccessibilityServiceController(
             }
 
             is AccessibilityServiceEvent.HideKeyboard -> service.hideKeyboard()
+
             is AccessibilityServiceEvent.ShowKeyboard -> service.showKeyboard()
+
             is AccessibilityServiceEvent.ChangeIme ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     service.switchIme(event.imeId)

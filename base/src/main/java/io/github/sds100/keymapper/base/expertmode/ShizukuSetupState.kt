@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 enum class ShizukuSetupState {
     NOT_FOUND,

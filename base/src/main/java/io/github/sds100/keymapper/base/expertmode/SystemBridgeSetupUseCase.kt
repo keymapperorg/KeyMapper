@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import android.os.Build
 import android.os.Process
@@ -26,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -54,7 +53,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override val isWarningUnderstood: Flow<Boolean> =
-        preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
+        preferences.get(Keys.isExpertModeWarningUnderstood).map { it ?: false }
 
     private val isAdbAutoStartAllowed: Flow<Boolean> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -71,18 +70,18 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         }
 
     override fun onUnderstoodWarning() {
-        preferences.set(Keys.isProModeWarningUnderstood, true)
+        preferences.set(Keys.isExpertModeWarningUnderstood, true)
     }
 
     override val isSetupAssistantEnabled: Flow<Boolean> =
-        preferences.get(Keys.isProModeInteractiveSetupAssistantEnabled).map {
-            it ?: PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
+        preferences.get(Keys.isExpertModeInteractiveSetupAssistantEnabled).map {
+            it ?: PreferenceDefaults.EXPERT_MODE_INTERACTIVE_SETUP_ASSISTANT
         }
 
     override fun toggleSetupAssistant() {
-        preferences.update(Keys.isProModeInteractiveSetupAssistantEnabled) {
+        preferences.update(Keys.isExpertModeInteractiveSetupAssistantEnabled) {
             if (it == null) {
-                !PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
+                !PreferenceDefaults.EXPERT_MODE_INTERACTIVE_SETUP_ASSISTANT
             } else {
                 !it
             }
@@ -204,20 +203,20 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun isInfoDismissed(): Boolean {
-        return preferences.get(Keys.isProModeInfoDismissed).map { it ?: false }.firstBlocking()
+        return preferences.get(Keys.isExpertModeInfoDismissed).map { it ?: false }.firstBlocking()
     }
 
     override fun dismissInfo() {
-        preferences.set(Keys.isProModeInfoDismissed, true)
+        preferences.set(Keys.isExpertModeInfoDismissed, true)
     }
 
     override val isAutoStartBootEnabled: Flow<Boolean> =
         preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE }
+            .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
 
     override fun toggleAutoStartBoot() {
         preferences.update(Keys.isSystemBridgeKeepAliveEnabled) {
-            !(it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE)
+            !(it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE)
         }
     }
 

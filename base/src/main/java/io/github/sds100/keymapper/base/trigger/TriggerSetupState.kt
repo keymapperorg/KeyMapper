@@ -1,30 +1,30 @@
 package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 
 sealed class TriggerSetupState {
     data class Volume(
         val isAccessibilityServiceEnabled: Boolean,
-        val isUseProModeChecked: Boolean,
-        val proModeStatus: ProModeStatus,
+        val isUseExpertModeChecked: Boolean,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
-        val forceProMode: Boolean = false,
+        val forceExpertMode: Boolean = false,
     ) : TriggerSetupState()
 
     data class Keyboard(
         val isAccessibilityServiceEnabled: Boolean,
-        val isUseProModeChecked: Boolean,
-        val proModeStatus: ProModeStatus,
+        val isUseExpertModeChecked: Boolean,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
-        val forceProMode: Boolean = false,
+        val forceExpertMode: Boolean = false,
     ) : TriggerSetupState()
 
     data class Power(
         val isAccessibilityServiceEnabled: Boolean,
-        val proModeStatus: ProModeStatus,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
         val remapStatus: RemapStatus,
@@ -32,7 +32,7 @@ sealed class TriggerSetupState {
 
     data class Mouse(
         val isAccessibilityServiceEnabled: Boolean,
-        val proModeStatus: ProModeStatus,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
         val remapStatus: RemapStatus,
@@ -40,16 +40,16 @@ sealed class TriggerSetupState {
 
     data class Other(
         val isAccessibilityServiceEnabled: Boolean,
-        val isUseProModeChecked: Boolean,
-        val proModeStatus: ProModeStatus,
+        val isUseExpertModeChecked: Boolean,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
-        val forceProMode: Boolean = false,
+        val forceExpertMode: Boolean = false,
     ) : TriggerSetupState()
 
     data class NotDetected(
         val isAccessibilityServiceEnabled: Boolean,
-        val proModeStatus: ProModeStatus,
+        val expertModeStatus: ExpertModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
     ) : TriggerSetupState()
@@ -75,11 +75,11 @@ sealed class TriggerSetupState {
 
         data class SimpleButtons(
             override val isAccessibilityServiceEnabled: Boolean,
-            val isUseProModeChecked: Boolean,
-            val proModeStatus: ProModeStatus,
+            val isUseExpertModeChecked: Boolean,
+            val expertModeStatus: ExpertModeStatus,
             override val areRequirementsMet: Boolean,
             override val recordTriggerState: RecordTriggerState,
-            val forceProMode: Boolean = false,
+            val forceExpertMode: Boolean = false,
         ) : Gamepad()
     }
 

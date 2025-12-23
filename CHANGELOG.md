@@ -2,6 +2,8 @@
 
 #### TO BE RELEASED
 
+Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is free.
+
 ## Added
 
 - #1915 ask user to remove "adb shell" from Shell command.

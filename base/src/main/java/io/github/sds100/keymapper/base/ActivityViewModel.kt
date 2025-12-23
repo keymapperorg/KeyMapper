@@ -29,9 +29,9 @@ class ActivityViewModel @Inject constructor(
         setupAccessibilityServiceDelegate.showCantFindAccessibilitySettingsDialog()
     }
 
-    fun launchProModeSetup() {
+    fun launchExpertModeSetup() {
         viewModelScope.launch {
-            navigate("pro_mode_setup", NavDestination.ProModeSetup)
+            navigate("expert_mode_setup", NavDestination.ExpertModeSetup)
         }
     }
 }

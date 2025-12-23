@@ -54,7 +54,7 @@ class ConfigTriggerViewModel @Inject constructor(
 
     override fun onEditFloatingLayoutClick() {}
 
-    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceExpertMode: Boolean) {
         when (shortcut) {
             TriggerSetupShortcut.ASSISTANT,
             TriggerSetupShortcut.FLOATING_BUTTON_CUSTOM,
@@ -63,7 +63,7 @@ class ConfigTriggerViewModel @Inject constructor(
                     navigateToAdvancedTriggers("purchase_assistant_trigger")
                 }
 
-            else -> super.showTriggerSetup(shortcut, forceProMode)
+            else -> super.showTriggerSetup(shortcut, forceExpertMode)
         }
     }
 }

@@ -106,7 +106,7 @@ class NotificationController @Inject constructor(
         manageNotifications.createChannel(
             NotificationChannelModel(
                 id = CHANNEL_SETUP_ASSISTANT,
-                name = getString(R.string.pro_mode_setup_assistant_notification_channel),
+                name = getString(R.string.expert_mode_setup_assistant_notification_channel),
                 importance = NotificationManagerCompat.IMPORTANCE_MAX,
             ),
         )
@@ -162,16 +162,21 @@ class NotificationController @Inject constructor(
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
                 KMNotificationAction.IntentAction.RESUME_KEY_MAPS -> pauseMappings.resume()
+
                 KMNotificationAction.IntentAction.PAUSE_KEY_MAPS -> pauseMappings.pause()
+
                 KMNotificationAction.IntentAction.DISMISS_TOGGLE_KEY_MAPS_NOTIFICATION ->
                     manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
 
                 KMNotificationAction.IntentAction.STOP_ACCESSIBILITY_SERVICE ->
                     controlAccessibilityService.stopService()
+
                 KMNotificationAction.IntentAction.START_ACCESSIBILITY_SERVICE ->
                     attemptStartAccessibilityService()
+
                 KMNotificationAction.IntentAction.RESTART_ACCESSIBILITY_SERVICE ->
                     attemptRestartAccessibilityService()
+
                 KMNotificationAction.IntentAction.TOGGLE_KEY_MAPPER_IME ->
                     toggleCompatibleIme.toggle()
                         .onSuccess {
@@ -181,6 +186,7 @@ class NotificationController @Inject constructor(
                         }
 
                 KMNotificationAction.IntentAction.SHOW_KEYBOARD -> hideInputMethod.show()
+
                 else -> Unit // Ignore other notification actions
             }
         }.launchIn(coroutineScope)
@@ -416,10 +422,10 @@ class NotificationController @Inject constructor(
     private fun showSystemBridgeStartedNotification() {
         val model = NotificationModel(
             id = ID_SYSTEM_BRIDGE_STATUS,
-            title = getString(R.string.pro_mode_setup_notification_system_bridge_started_title),
-            text = getString(R.string.pro_mode_setup_notification_system_bridge_started_text),
+            title = getString(R.string.expert_mode_setup_notification_system_bridge_started_title),
+            text = getString(R.string.expert_mode_setup_notification_system_bridge_started_text),
             channel = CHANNEL_SETUP_ASSISTANT,
-            icon = R.drawable.pro_mode,
+            icon = R.drawable.offline_bolt_24px,
             onGoing = false,
             showOnLockscreen = false,
             autoCancel = true,

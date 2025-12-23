@@ -50,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
@@ -77,7 +77,7 @@ data class ShellCommandActionState(
     val timeoutSeconds: Int = 10,
     val isRunning: Boolean = false,
     val testResult: KMResult<ShellResult>? = null,
-    val proModeStatus: ProModeStatus = ProModeStatus.UNSUPPORTED,
+    val expertModeStatus: ExpertModeStatus = ExpertModeStatus.UNSUPPORTED,
 )
 
 @Composable
@@ -96,7 +96,7 @@ fun ShellCommandActionScreen(
         onKillClick = viewModel::onKillClick,
         onDoneClick = viewModel::onDoneClick,
         onCancelClick = viewModel::onCancelClick,
-        onSetupProModeClick = viewModel::onSetupProModeClick,
+        onSetupExpertModeClick = viewModel::onSetupExpertModeClick,
     )
 }
 
@@ -119,7 +119,7 @@ private fun ShellCommandActionScreen(
      */
     onDoneClick: () -> Boolean = { true },
     onCancelClick: () -> Unit = {},
-    onSetupProModeClick: () -> Unit = {},
+    onSetupExpertModeClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -225,7 +225,7 @@ private fun ShellCommandActionScreen(
                                 }
                             }
                         },
-                        onSetupProModeClick = onSetupProModeClick,
+                        onSetupExpertModeClick = onSetupExpertModeClick,
                     )
 
                     1 -> ShellCommandOutputContent(
@@ -250,7 +250,7 @@ private fun ShellCommandConfigurationContent(
     onExecutionModeChanged: (ShellExecutionMode) -> Unit,
     onTimeoutChanged: (Int) -> Unit,
     onTestClick: () -> Unit,
-    onSetupProModeClick: () -> Unit,
+    onSetupExpertModeClick: () -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
@@ -327,18 +327,18 @@ private fun ShellCommandConfigurationContent(
         )
 
         if (state.executionMode == ShellExecutionMode.ADB &&
-            state.proModeStatus != ProModeStatus.ENABLED
+            state.expertModeStatus != ExpertModeStatus.ENABLED
         ) {
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onSetupProModeClick,
-                enabled = state.proModeStatus != ProModeStatus.UNSUPPORTED,
+                onClick = onSetupExpertModeClick,
+                enabled = state.expertModeStatus != ExpertModeStatus.UNSUPPORTED,
             ) {
                 Text(
-                    if (state.proModeStatus == ProModeStatus.UNSUPPORTED) {
-                        stringResource(R.string.action_shell_command_setup_pro_mode_unsupported)
+                    if (state.expertModeStatus == ExpertModeStatus.UNSUPPORTED) {
+                        stringResource(R.string.action_shell_command_setup_expert_mode_unsupported)
                     } else {
-                        stringResource(R.string.action_shell_command_setup_pro_mode)
+                        stringResource(R.string.action_shell_command_setup_expert_mode)
                     },
                 )
             }
@@ -355,7 +355,7 @@ private fun ShellCommandConfigurationContent(
                     state.executionMode != ShellExecutionMode.ADB ||
                         (
                             state.executionMode == ShellExecutionMode.ADB &&
-                                state.proModeStatus == ProModeStatus.ENABLED
+                                state.expertModeStatus == ExpertModeStatus.ENABLED
                             )
                     ),
         ) {
@@ -575,14 +575,14 @@ private fun PreviewShellCommandActionScreenTesting() {
 
 @Preview
 @Composable
-private fun PreviewShellCommandActionScreenProModeUnsupported() {
+private fun PreviewShellCommandActionScreenExpertModeUnsupported() {
     KeyMapperTheme {
         ShellCommandActionScreen(
             state = ShellCommandActionState(
                 description = "ADB command example",
                 command = "echo 'Hello from ADB'",
                 executionMode = ShellExecutionMode.ADB,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
+                expertModeStatus = ExpertModeStatus.UNSUPPORTED,
             ),
         )
     }

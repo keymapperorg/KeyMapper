@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class ProModeSetupViewModel @Inject constructor(
+class ExpertModeSetupViewModel @Inject constructor(
     delegate: SystemBridgeSetupDelegate,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Accessibility
@@ -21,14 +21,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-
 abstract class SystemBridgeSetupDelegateImpl(
     val viewModelScope: CoroutineScope,
     private val useCase: SystemBridgeSetupUseCase,
     private val resourceProvider: ResourceProvider,
 ) : SystemBridgeSetupDelegate,
     ResourceProvider by resourceProvider {
-    override val setupState: StateFlow<State<ProModeSetupState>> =
+    override val setupState: StateFlow<State<ExpertModeSetupState>> =
         combine(
             useCase.nextSetupStep,
             useCase.isSetupAssistantEnabled,
@@ -53,7 +52,6 @@ abstract class SystemBridgeSetupDelegateImpl(
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
             SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
             SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
-
             SystemBridgeSetupStep.STARTED -> onFinishClick()
         }
     }
@@ -68,105 +66,105 @@ abstract class SystemBridgeSetupDelegateImpl(
         return when (step) {
             SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_enable_accessibility_service_title,
+                    R.string.expert_mode_setup_wizard_enable_accessibility_service_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_enable_accessibility_service_description,
+                    R.string.expert_mode_setup_wizard_enable_accessibility_service_description,
                 ),
                 icon = Icons.Rounded.Accessibility,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_enable_accessibility_service_button,
+                    R.string.expert_mode_setup_wizard_enable_accessibility_service_button,
                 ),
             )
 
             SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_title,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_description,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_description,
                 ),
                 icon = Icons.Rounded.Notifications,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_enable_notification_permission_button,
+                    R.string.expert_mode_setup_wizard_enable_notification_permission_button,
                 ),
             )
 
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_enable_developer_options_title,
+                    R.string.expert_mode_setup_wizard_enable_developer_options_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_enable_developer_options_description,
+                    R.string.expert_mode_setup_wizard_enable_developer_options_description,
                 ),
                 icon = Icons.Rounded.Build,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_go_to_settings_button,
+                    R.string.expert_mode_setup_wizard_go_to_settings_button,
                 ),
             )
 
             SystemBridgeSetupStep.WIFI_NETWORK -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_connect_wifi_title,
+                    R.string.expert_mode_setup_wizard_connect_wifi_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_connect_wifi_description,
+                    R.string.expert_mode_setup_wizard_connect_wifi_description,
                 ),
                 icon = KeyMapperIcons.SignalWifiNotConnected,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_go_to_settings_button,
+                    R.string.expert_mode_setup_wizard_go_to_settings_button,
                 ),
             )
 
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_enable_wireless_debugging_title,
+                    R.string.expert_mode_setup_wizard_enable_wireless_debugging_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_enable_wireless_debugging_description,
+                    R.string.expert_mode_setup_wizard_enable_wireless_debugging_description,
                 ),
                 icon = Icons.Rounded.BugReport,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_go_to_settings_button,
+                    R.string.expert_mode_setup_wizard_go_to_settings_button,
                 ),
             )
 
             SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_pair_wireless_debugging_title,
+                    R.string.expert_mode_setup_wizard_pair_wireless_debugging_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_pair_wireless_debugging_description,
+                    R.string.expert_mode_setup_wizard_pair_wireless_debugging_description,
                 ),
                 icon = Icons.Rounded.Link,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_go_to_settings_button,
+                    R.string.expert_mode_setup_wizard_go_to_settings_button,
                 ),
             )
 
             SystemBridgeSetupStep.START_SERVICE -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_start_service_title,
+                    R.string.expert_mode_setup_wizard_start_service_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_start_service_description,
+                    R.string.expert_mode_setup_wizard_start_service_description,
                 ),
                 icon = Icons.Rounded.PlayArrow,
                 buttonText = getString(
-                    R.string.pro_mode_root_detected_button_start_service,
+                    R.string.expert_mode_root_detected_button_start_service,
                 ),
             )
 
             SystemBridgeSetupStep.STARTED -> StepContent(
                 title = getString(
-                    R.string.pro_mode_setup_wizard_complete_title,
+                    R.string.expert_mode_setup_wizard_complete_title,
                 ),
                 message = getString(
-                    R.string.pro_mode_setup_wizard_complete_text,
+                    R.string.expert_mode_setup_wizard_complete_text,
                 ),
                 icon = Icons.Rounded.CheckCircleOutline,
                 buttonText = getString(
-                    R.string.pro_mode_setup_wizard_complete_button,
+                    R.string.expert_mode_setup_wizard_complete_button,
                 ),
             )
         }
@@ -176,7 +174,7 @@ abstract class SystemBridgeSetupDelegateImpl(
         step: SystemBridgeSetupStep,
         isSetupAssistantUserEnabled: Boolean,
         isStarting: Boolean,
-    ): State.Data<ProModeSetupState> {
+    ): State.Data<ExpertModeSetupState> {
         // Uncheck the setup assistant if the accessibility service is disabled since it is
         // required for the setup assistant to work
         val isSetupAssistantChecked = if (step == SystemBridgeSetupStep.ACCESSIBILITY_SERVICE) {
@@ -188,7 +186,7 @@ abstract class SystemBridgeSetupDelegateImpl(
         val stepContent = getStepContent(step)
 
         return State.Data(
-            ProModeSetupState(
+            ExpertModeSetupState(
                 stepNumber = step.stepIndex + 1,
                 stepCount = SystemBridgeSetupStep.entries.size,
                 step = step,
@@ -204,7 +202,7 @@ abstract class SystemBridgeSetupDelegateImpl(
 }
 
 interface SystemBridgeSetupDelegate {
-    val setupState: StateFlow<State<ProModeSetupState>>
+    val setupState: StateFlow<State<ExpertModeSetupState>>
     fun onSetupStepButtonClick()
     fun onSetupAssistantClick()
     fun getStepContent(step: SystemBridgeSetupStep): StepContent

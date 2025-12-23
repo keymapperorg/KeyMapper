@@ -60,9 +60,9 @@ object Keys {
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
     val shownTriggerConstraintsTip =
         booleanPreferencesKey("key_shown_trigger_constraints_tip")
-    val shownCapsLockProModeTip =
+    val shownCapsLockExpertModeTip =
         booleanPreferencesKey("key_shown_caps_lock_pro_mode_compatibility_tip")
-    val shownVolumeButtonsProModeTip =
+    val shownVolumeButtonsExpertModeTip =
         booleanPreferencesKey("key_shown_volume_buttons_pro_mode_tip")
     val shownScreenPinningTip =
         booleanPreferencesKey("key_shown_screen_pinning_tip")
@@ -122,13 +122,13 @@ object Keys {
 //    val skipTapTargetTutorial =
 //        booleanPreferencesKey("key_skip_tap_target_tutorial")
 
-    val isProModeWarningUnderstood =
+    val isExpertModeWarningUnderstood =
         booleanPreferencesKey("key_is_pro_mode_warning_understood")
 
-    val isProModeInteractiveSetupAssistantEnabled =
+    val isExpertModeInteractiveSetupAssistantEnabled =
         booleanPreferencesKey("key_is_pro_mode_setup_assistant_enabled")
 
-    val isProModeInfoDismissed =
+    val isExpertModeInfoDismissed =
         booleanPreferencesKey("key_is_pro_mode_info_dismissed")
 
     val isSystemBridgeKeepAliveEnabled =
@@ -160,7 +160,7 @@ object Keys {
      * This is stored as true when PRO Mode has been auto started after updating
      * to 4.0 and Key Mapper previously had root or shizuku permission.
      */
-    val handledUpgradeToProMode = booleanPreferencesKey("key_handled_upgrade_to_pro_mode")
+    val handledUpgradeToExpertMode = booleanPreferencesKey("key_handled_upgrade_to_pro_mode")
 
     val handledMigrateScreenOffKeyMapsNotification =
         booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")

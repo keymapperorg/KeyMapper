@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.Devices
@@ -69,14 +70,13 @@ import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
-private val isProModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
+private val isExpertModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Composable
@@ -149,9 +149,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
-            onProModeClick = {
-                if (isProModeSupported) {
-                    viewModel.onProModeClick()
+            onExpertModeClick = {
+                if (isExpertModeSupported) {
+                    viewModel.onExpertModeClick()
                 } else {
                     scope.launch {
                         snackbarHostState.showSnackbar(
@@ -245,7 +245,7 @@ private fun Content(
     onPauseResumeNotificationClick: () -> Unit = { },
     onDefaultOptionsClick: () -> Unit = { },
     onAutomaticBackupClick: () -> Unit = { },
-    onProModeClick: () -> Unit = { },
+    onExpertModeClick: () -> Unit = { },
     onAutomaticChangeImeClick: () -> Unit = { },
     onForceVibrateToggled: (Boolean) -> Unit = { },
     onLoggingToggled: (Boolean) -> Unit = { },
@@ -253,7 +253,7 @@ private fun Content(
     onShareLogcatClick: () -> Unit = { },
     onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
     onShowDeviceDescriptorsToggled: (Boolean) -> Unit = { },
-    onKeyEventActionMethodSelected: (isProModeSelected: Boolean) -> Unit = {},
+    onKeyEventActionMethodSelected: (isExpertModeSelected: Boolean) -> Unit = {},
 ) {
     Column(
         modifier
@@ -359,23 +359,23 @@ private fun Content(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            isProModeSelected = state.keyEventActionsUseSystemBridge,
+            isExpertModeSelected = state.keyEventActionsUseSystemBridge,
             onSelected = onKeyEventActionMethodSelected,
         )
 
         OptionPageButton(
-            title = stringResource(R.string.title_pref_pro_mode),
-            text = if (isProModeSupported) {
-                stringResource(R.string.summary_pref_pro_mode)
+            title = stringResource(R.string.title_pref_expert_mode),
+            text = if (isExpertModeSupported) {
+                stringResource(R.string.summary_pref_expert_mode)
             } else {
                 stringResource(
                     R.string.error_sdk_version_too_low,
                     BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
                 )
             },
-            icon = KeyMapperIcons.ProModeIcon,
-            onClick = onProModeClick,
-            enabled = isProModeSupported,
+            icon = Icons.Outlined.OfflineBolt,
+            onClick = onExpertModeClick,
+            enabled = isExpertModeSupported,
         )
 
         OptionPageButton(
@@ -428,13 +428,13 @@ private fun Content(
 @Composable
 private fun KeyEventActionMethodRow(
     modifier: Modifier = Modifier,
-    isProModeSelected: Boolean,
-    onSelected: (isProModeSelected: Boolean) -> Unit,
+    isExpertModeSelected: Boolean,
+    onSelected: (isExpertModeSelected: Boolean) -> Unit,
 ) {
     Column(modifier) {
         val buttonStates = listOf(
             false to stringResource(R.string.fix_key_event_action_input_method_title),
-            true to stringResource(R.string.pro_mode_app_bar_title),
+            true to stringResource(R.string.expert_mode_app_bar_title),
         )
 
         Text(
@@ -454,11 +454,11 @@ private fun KeyEventActionMethodRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            for ((isProMode, text) in buttonStates) {
+            for ((isExpertMode, text) in buttonStates) {
                 RadioButtonText(
                     text = text,
-                    isSelected = isProMode == isProModeSelected,
-                    onSelected = { onSelected(isProMode) },
+                    isSelected = isExpertMode == isExpertModeSelected,
+                    onSelected = { onSelected(isExpertMode) },
                 )
             }
         }

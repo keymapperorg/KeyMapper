@@ -4,7 +4,7 @@ import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -58,8 +58,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
         MutableStateFlow(null)
 
     private val isScreenOffChecked: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val isProModeLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val forceProMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val isExpertModeLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val forceExpertMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     private val selectedFingerprintGestureType: MutableStateFlow<FingerprintGestureType> =
         MutableStateFlow(FingerprintGestureType.SWIPE_DOWN)
@@ -67,16 +67,16 @@ class TriggerSetupDelegateImpl @Inject constructor(
     private val selectedGamePadType: MutableStateFlow<TriggerSetupState.Gamepad.Type> =
         MutableStateFlow(TriggerSetupState.Gamepad.Type.DPAD)
 
-    private val proModeStatus: Flow<ProModeStatus> =
+    private val expertModeStatus: Flow<ExpertModeStatus> =
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeConnectionManager.connectionState.map { state ->
                 when (state) {
-                    is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
-                    is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                    is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                    is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
                 }
             }
         } else {
-            flowOf(ProModeStatus.UNSUPPORTED)
+            flowOf(ExpertModeStatus.UNSUPPORTED)
         }
 
     override val triggerSetupState: StateFlow<TriggerSetupState?> =
@@ -93,17 +93,16 @@ class TriggerSetupDelegateImpl @Inject constructor(
                     TriggerSetupShortcut.GAMEPAD -> buildSetupGamepadTriggerFlow()
                     TriggerSetupShortcut.OTHER -> buildSetupOtherTriggerFlow()
                     TriggerSetupShortcut.NOT_DETECTED -> buildSetupNotDetectedFlow()
-
                     else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
                 }
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
-        isProModeLocked.value = true
-        this.forceProMode.value = forceProMode
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceExpertMode: Boolean) {
+        isExpertModeLocked.value = true
+        this.forceExpertMode.value = forceExpertMode
         // If force pro mode is enabled, automatically check the screen off option
-        if (forceProMode) {
+        if (forceExpertMode) {
             isScreenOffChecked.value = true
         }
         currentSetupShortcut.value = shortcut
@@ -114,23 +113,29 @@ class TriggerSetupDelegateImpl @Inject constructor(
             accessibilityServiceState,
             isScreenOffChecked,
             recordTriggerController.state,
-            proModeStatus,
-            forceProMode,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
+            expertModeStatus,
+            forceExpertMode,
+        ) {
+                serviceState,
+                isScreenOffChecked,
+                recordTriggerState,
+                expertModeStatus,
+                forceExpertMode,
+            ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
             } else {
                 serviceState == AccessibilityServiceState.ENABLED
             }
 
             TriggerSetupState.Volume(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isUseProModeChecked = isScreenOffChecked,
-                proModeStatus = proModeStatus,
+                isUseExpertModeChecked = isScreenOffChecked,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
-                forceProMode = forceProMode,
+                forceExpertMode = forceExpertMode,
             )
         }
     }
@@ -168,18 +173,18 @@ class TriggerSetupDelegateImpl @Inject constructor(
                         accessibilityServiceState,
                         isScreenOffChecked,
                         recordTriggerController.state,
-                        proModeStatus,
-                        forceProMode,
+                        expertModeStatus,
+                        forceExpertMode,
                     ) {
                             serviceState,
                             isScreenOffChecked,
                             recordTriggerState,
-                            proModeStatus,
-                            forceProMode,
+                            expertModeStatus,
+                            forceExpertMode,
                         ->
                         val areRequirementsMet = if (isScreenOffChecked) {
                             serviceState == AccessibilityServiceState.ENABLED &&
-                                proModeStatus == ProModeStatus.ENABLED
+                                expertModeStatus == ExpertModeStatus.ENABLED
                         } else {
                             serviceState == AccessibilityServiceState.ENABLED
                         }
@@ -187,11 +192,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
                         TriggerSetupState.Gamepad.SimpleButtons(
                             isAccessibilityServiceEnabled =
                             serviceState == AccessibilityServiceState.ENABLED,
-                            isUseProModeChecked = isScreenOffChecked,
-                            proModeStatus = proModeStatus,
+                            isUseExpertModeChecked = isScreenOffChecked,
+                            expertModeStatus = expertModeStatus,
                             areRequirementsMet = areRequirementsMet,
                             recordTriggerState = recordTriggerState,
-                            forceProMode = forceProMode,
+                            forceExpertMode = forceExpertMode,
                         )
                     }
                 }
@@ -204,23 +209,29 @@ class TriggerSetupDelegateImpl @Inject constructor(
             accessibilityServiceState,
             isScreenOffChecked,
             recordTriggerController.state,
-            proModeStatus,
-            forceProMode,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
+            expertModeStatus,
+            forceExpertMode,
+        ) {
+                serviceState,
+                isScreenOffChecked,
+                recordTriggerState,
+                expertModeStatus,
+                forceExpertMode,
+            ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
             } else {
                 serviceState == AccessibilityServiceState.ENABLED
             }
 
             TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isUseProModeChecked = isScreenOffChecked,
-                proModeStatus = proModeStatus,
+                isUseExpertModeChecked = isScreenOffChecked,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
-                forceProMode = forceProMode,
+                forceExpertMode = forceExpertMode,
             )
         }
     }
@@ -229,15 +240,15 @@ class TriggerSetupDelegateImpl @Inject constructor(
         return combine(
             accessibilityServiceState,
             recordTriggerController.state,
-            proModeStatus,
-        ) { serviceState, recordTriggerState, proModeStatus ->
+            expertModeStatus,
+        ) { serviceState, recordTriggerState, expertModeStatus ->
             val areRequirementsMet =
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
 
             TriggerSetupState.NotDetected(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                proModeStatus = proModeStatus,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
             )
@@ -249,23 +260,29 @@ class TriggerSetupDelegateImpl @Inject constructor(
             accessibilityServiceState,
             isScreenOffChecked,
             recordTriggerController.state,
-            proModeStatus,
-            forceProMode,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
+            expertModeStatus,
+            forceExpertMode,
+        ) {
+                serviceState,
+                isScreenOffChecked,
+                recordTriggerState,
+                expertModeStatus,
+                forceExpertMode,
+            ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
             } else {
                 serviceState == AccessibilityServiceState.ENABLED
             }
 
             TriggerSetupState.Keyboard(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isUseProModeChecked = isScreenOffChecked,
-                proModeStatus = proModeStatus,
+                isUseExpertModeChecked = isScreenOffChecked,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
-                forceProMode = forceProMode,
+                forceExpertMode = forceExpertMode,
             )
         }
     }
@@ -289,11 +306,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
         return combine(
             accessibilityServiceState,
             recordTriggerController.state,
-            proModeStatus,
-        ) { serviceState, recordTriggerState, proModeStatus ->
+            expertModeStatus,
+        ) { serviceState, recordTriggerState, expertModeStatus ->
             val areRequirementsMet =
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
 
             val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
                 if (areRequirementsMet) {
@@ -307,7 +324,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
             TriggerSetupState.Power(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                proModeStatus = proModeStatus,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
                 remapStatus = remapStatus,
@@ -319,11 +336,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
         return combine(
             accessibilityServiceState,
             recordTriggerController.state,
-            proModeStatus,
-        ) { serviceState, recordTriggerState, proModeStatus ->
+            expertModeStatus,
+        ) { serviceState, recordTriggerState, expertModeStatus ->
             val areRequirementsMet =
                 serviceState == AccessibilityServiceState.ENABLED &&
-                    proModeStatus == ProModeStatus.ENABLED
+                    expertModeStatus == ExpertModeStatus.ENABLED
 
             val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
                 if (areRequirementsMet) {
@@ -337,7 +354,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
             TriggerSetupState.Mouse(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                proModeStatus = proModeStatus,
+                expertModeStatus = expertModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
                 remapStatus = remapStatus,
@@ -351,9 +368,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
         }
     }
 
-    override fun onEnableProModeClick() {
+    override fun onEnableExpertModeClick() {
         viewModelScope.launch {
-            navigate("trigger_setup_enable_pro_mode", NavDestination.ProMode)
+            navigate("trigger_setup_enable_expert_mode", NavDestination.ExpertMode)
         }
     }
 
@@ -361,7 +378,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
         isScreenOffChecked.value = isChecked
     }
 
-    override fun onUseProModeCheckedChange(isChecked: Boolean) {
+    override fun onUseExpertModeCheckedChange(isChecked: Boolean) {
         isScreenOffChecked.value = isChecked
     }
 
@@ -373,14 +390,22 @@ class TriggerSetupDelegateImpl @Inject constructor(
         val setupState = triggerSetupState.value ?: return
 
         val enableEvdevRecording = when (setupState) {
-            is TriggerSetupState.Volume -> setupState.isUseProModeChecked
-            is TriggerSetupState.Keyboard -> setupState.isUseProModeChecked
+            is TriggerSetupState.Volume -> setupState.isUseExpertModeChecked
+
+            is TriggerSetupState.Keyboard -> setupState.isUseExpertModeChecked
+
             is TriggerSetupState.Power -> true
+
             is TriggerSetupState.FingerprintGesture -> false
+
             is TriggerSetupState.Mouse -> true
-            is TriggerSetupState.Other -> setupState.isUseProModeChecked
+
+            is TriggerSetupState.Other -> setupState.isUseExpertModeChecked
+
             is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isUseProModeChecked
+
+            is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isUseExpertModeChecked
+
             // Always enable pro mode recording to increase the chances of detecting
             // the key
             is TriggerSetupState.NotDetected -> true
@@ -442,12 +467,12 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
 interface TriggerSetupDelegate {
     val triggerSetupState: StateFlow<TriggerSetupState?>
-    fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean = false)
+    fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceExpertMode: Boolean = false)
     fun onDismissTriggerSetup()
     fun onEnableAccessibilityServiceClick()
-    fun onEnableProModeClick()
+    fun onEnableExpertModeClick()
     fun onScreenOffTriggerSetupCheckedChange(isChecked: Boolean)
-    fun onUseProModeCheckedChange(isChecked: Boolean)
+    fun onUseExpertModeCheckedChange(isChecked: Boolean)
     fun onTriggerSetupRecordClick()
     fun onFingerprintGestureTypeSelected(type: FingerprintGestureType)
     fun onAddFingerprintGestureClick()

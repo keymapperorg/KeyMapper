@@ -171,9 +171,9 @@ class SettingsViewModel @Inject constructor(
         useCase.requestRootPermission()
     }
 
-    fun onProModeClick() {
+    fun onExpertModeClick() {
         viewModelScope.launch {
-            navigate("pro_mode_settings", NavDestination.ProMode)
+            navigate("expert_mode_settings", NavDestination.ExpertMode)
         }
     }
 
@@ -323,9 +323,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onKeyEventActionMethodSelected(isProModeSelected: Boolean) {
+    fun onKeyEventActionMethodSelected(isExpertModeSelected: Boolean) {
         viewModelScope.launch {
-            useCase.setPreference(Keys.keyEventActionsUseSystemBridge, isProModeSelected)
+            useCase.setPreference(Keys.keyEventActionsUseSystemBridge, isExpertModeSelected)
         }
     }
 

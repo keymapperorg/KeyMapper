@@ -254,7 +254,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
             }
 
             ACTION_START_SYSTEM_BRIDGE -> {
-                viewModel.launchProModeSetup()
+                viewModel.launchExpertModeSetup()
 
                 // Only clear the intent if it is handled in case it is used elsewhere
                 this.intent = null

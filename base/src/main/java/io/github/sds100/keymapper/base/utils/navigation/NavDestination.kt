@@ -42,7 +42,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_SHELL_COMMAND_ACTION = "shell_command_action"
         const val ID_CHOOSE_SETTING = "choose_setting"
         const val ID_CREATE_NOTIFICATION_ACTION = "create_notification_action"
-        const val ID_PRO_MODE = "pro_mode"
+        const val ID_EXPERT_MODE = "expert_mode"
         const val ID_LOG = "log"
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
     }
@@ -189,13 +189,13 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ProMode : NavDestination<Unit>(isCompose = true) {
-        override val id: String = ID_PRO_MODE
+    data object ExpertMode : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_EXPERT_MODE
     }
 
     @Serializable
-    data object ProModeSetup : NavDestination<Unit>(isCompose = true) {
-        const val ID_PRO_MODE_SETUP = "pro_mode_setup_wizard"
+    data object ExpertModeSetup : NavDestination<Unit>(isCompose = true) {
+        const val ID_PRO_MODE_SETUP = "expert_mode_setup_wizard"
         override val id: String = ID_PRO_MODE_SETUP
     }
 

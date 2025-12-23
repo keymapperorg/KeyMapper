@@ -41,8 +41,8 @@ private fun Preview() {
     KeyMapperTheme {
         OptionButton(
             modifier = Modifier.fillMaxWidth(),
-            title = stringResource(R.string.title_pref_pro_mode),
-            text = stringResource(R.string.summary_pref_pro_mode),
+            title = stringResource(R.string.title_pref_expert_mode),
+            text = stringResource(R.string.summary_pref_expert_mode),
             onClick = {},
         )
     }

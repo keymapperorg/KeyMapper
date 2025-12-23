@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -187,7 +187,8 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private suspend fun handleAutoStartFromPreVersion4() {
         @Suppress("DEPRECATION")
-        val upgradedFromPreVersion4 = preferences.get(Keys.handledUpgradeToProMode).first() == null
+        val upgradedFromPreVersion4 =
+            preferences.get(Keys.handledUpgradeToExpertMode).first() == null
 
         if (!upgradedFromPreVersion4) {
             return
@@ -203,7 +204,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             )
 
             autoStart(AutoStartType.ROOT)
-            preferences.set(Keys.handledUpgradeToProMode, true)
+            preferences.set(Keys.handledUpgradeToExpertMode, true)
             preferences.set(Keys.keyEventActionsUseSystemBridge, true)
             return
         }
@@ -217,7 +218,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             )
 
             autoStart(AutoStartType.SHIZUKU)
-            preferences.set(Keys.handledUpgradeToProMode, true)
+            preferences.set(Keys.handledUpgradeToExpertMode, true)
             preferences.set(Keys.keyEventActionsUseSystemBridge, true)
             return
         }
@@ -236,7 +237,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 Timber.i("Auto starting system bridge with ADB")
                 showAutoStartNotification(
                     getString(
-                        R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text,
+                        R.string.expert_mode_setup_notification_auto_start_system_bridge_adb_text,
                     ),
                 )
 
@@ -247,7 +248,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 Timber.i("Auto starting system bridge with Shizuku")
                 showAutoStartNotification(
                     getString(
-                        R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text,
+                        R.string.expert_mode_setup_notification_auto_start_system_bridge_shizuku_text,
                     ),
                 )
                 connectionManager.startWithShizuku()
@@ -257,7 +258,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 Timber.i("Auto starting system bridge with root")
                 showAutoStartNotification(
                     getString(
-                        R.string.pro_mode_setup_notification_auto_start_system_bridge_root_text,
+                        R.string.expert_mode_setup_notification_auto_start_system_bridge_root_text,
                     ),
                 )
                 connectionManager.startWithRoot()
@@ -300,7 +301,7 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private suspend fun isAutoStartEnabled(): Boolean {
         return preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE }
+            .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
             .first()
     }
 
@@ -310,7 +311,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             channel = CHANNEL_SETUP_ASSISTANT,
             title = getString(R.string.system_bridge_died_notification_title),
             text = text,
-            icon = R.drawable.pro_mode,
+            icon = R.drawable.offline_bolt_24px,
             showOnLockscreen = true,
             onGoing = false,
             priority = NotificationCompat.PRIORITY_MAX,
@@ -326,10 +327,12 @@ class SystemBridgeAutoStarter @Inject constructor(
     private fun showAutoStartNotification(text: String) {
         val model = NotificationModel(
             id = ID_SYSTEM_BRIDGE_STATUS,
-            title = getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_title),
+            title = getString(
+                R.string.expert_mode_setup_notification_auto_start_system_bridge_title,
+            ),
             text = text,
             channel = CHANNEL_SETUP_ASSISTANT,
-            icon = R.drawable.pro_mode,
+            icon = R.drawable.offline_bolt_24px,
             priority = NotificationCompat.PRIORITY_MAX,
             onGoing = true,
             showIndeterminateProgress = true,
@@ -343,11 +346,13 @@ class SystemBridgeAutoStarter @Inject constructor(
         val model = NotificationModel(
             id = ID_SYSTEM_BRIDGE_STATUS,
             title = getString(
-                R.string.pro_mode_setup_notification_start_system_bridge_failed_title,
+                R.string.expert_mode_setup_notification_start_system_bridge_failed_title,
             ),
-            text = getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
+            text = getString(
+                R.string.expert_mode_setup_notification_start_system_bridge_failed_text,
+            ),
             channel = CHANNEL_SETUP_ASSISTANT,
-            icon = R.drawable.pro_mode,
+            icon = R.drawable.offline_bolt_24px,
             onGoing = false,
             showOnLockscreen = false,
             autoCancel = true,

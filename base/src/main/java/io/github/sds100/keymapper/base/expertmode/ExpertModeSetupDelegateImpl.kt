@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.promode
+package io.github.sds100.keymapper.base.expertmode
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @ViewModelScoped
-class ProModeSetupDelegateImpl @Inject constructor(
+class ExpertModeSetupDelegateImpl @Inject constructor(
     @Named("viewmodel")
     viewModelScope: CoroutineScope,
     useCase: SystemBridgeSetupUseCase,

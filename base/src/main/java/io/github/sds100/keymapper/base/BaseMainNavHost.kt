@@ -25,11 +25,11 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
+import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
 import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
-import io.github.sds100.keymapper.base.promode.ProModeScreen
-import io.github.sds100.keymapper.base.promode.ProModeSetupScreen
 import io.github.sds100.keymapper.base.settings.AutomaticChangeImeSettingsScreen
 import io.github.sds100.keymapper.base.settings.DefaultOptionsSettingsScreen
 import io.github.sds100.keymapper.base.settings.SettingsScreen
@@ -135,8 +135,8 @@ fun BaseMainNavHost(
             )
         }
 
-        composable<NavDestination.ProMode> {
-            ProModeScreen(
+        composable<NavDestination.ExpertMode> {
+            ExpertModeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(
@@ -151,8 +151,8 @@ fun BaseMainNavHost(
             )
         }
 
-        composable<NavDestination.ProModeSetup> {
-            ProModeSetupScreen(
+        composable<NavDestination.ExpertModeSetup> {
+            ExpertModeSetupScreen(
                 viewModel = hiltViewModel(),
             )
         }
