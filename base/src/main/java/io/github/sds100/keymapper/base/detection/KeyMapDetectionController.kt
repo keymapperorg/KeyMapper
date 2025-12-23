@@ -14,6 +14,9 @@ import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerState
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -33,11 +37,15 @@ class KeyMapDetectionController(
     private val inputEventHub: InputEventHub,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val recordTriggerController: RecordTriggerController,
+    private val preferences: PreferenceRepository,
 ) : InputEventHubCallback {
     companion object {
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
 
-        fun getEvdevGrabRequests(algorithm: KeyMapAlgorithm): List<GrabTargetKeyCode> {
+        fun getEvdevGrabRequests(
+            algorithm: KeyMapAlgorithm,
+            injectKeyEventActionsWithSystemBridge: Boolean = true,
+        ): List<GrabTargetKeyCode> {
             val deviceKeyEventMap = mutableMapOf<EvdevDeviceInfo, MutableSet<Int>>()
 
             for ((index, trigger) in algorithm.triggers.withIndex()) {
@@ -54,12 +62,16 @@ class KeyMapDetectionController(
                     .map { actionIndex -> algorithm.actionMap[actionIndex]?.data }
                     .filterNotNull()
 
-                val extraKeyCodes = actions
-                    .filterIsInstance<ActionData.InputKeyEvent>()
-                    .map { it.keyCode }
+                val extraKeyCodes = if (injectKeyEventActionsWithSystemBridge) {
+                    actions
+                        .filterIsInstance<ActionData.InputKeyEvent>()
+                        .map { it.keyCode }
+                } else {
+                    emptyList()
+                }
 
                 for (device in evdevDevices) {
-                    deviceKeyEventMap.getOrPut(device, { mutableSetOf() }).addAll(extraKeyCodes)
+                    deviceKeyEventMap.getOrPut(device) { mutableSetOf() }.addAll(extraKeyCodes)
                 }
             }
 
@@ -74,6 +86,11 @@ class KeyMapDetectionController(
             }
         }
     }
+
+    private val injectKeyEventsWithSystemBridge: StateFlow<Boolean> =
+        preferences.get(Keys.keyEventActionsUseSystemBridge)
+            .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     private val algorithm: KeyMapAlgorithm =
         KeyMapAlgorithm(coroutineScope, detectUseCase, performActionsUseCase, detectConstraints)
@@ -103,7 +120,8 @@ class KeyMapDetectionController(
             algorithm.loadKeyMaps(keyMapList)
             // Determine which evdev devices need to be grabbed depending on the state
             // of the algorithm.
-            val grabRequests = getEvdevGrabRequests(algorithm)
+            val grabRequests =
+                getEvdevGrabRequests(algorithm, injectKeyEventsWithSystemBridge.value)
 
             Timber.i(
                 "Grab evdev devices for key map detection: ${grabRequests.joinToString()}",

@@ -94,6 +94,7 @@ abstract class BaseAccessibilityServiceController(
         inputEventHub,
         pauseKeyMapsUseCase,
         recordTriggerController,
+        settingsRepository,
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(

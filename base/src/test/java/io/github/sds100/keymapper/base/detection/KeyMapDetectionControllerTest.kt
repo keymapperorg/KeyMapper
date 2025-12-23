@@ -170,6 +170,58 @@ class KeyMapDetectionControllerTest {
     }
 
     @Test
+    fun `Do not grab evdev devices with extra key codes if key event actions do not use system bridge`() {
+        loadKeyMaps(
+            KeyMap(
+                trigger = singleKeyTrigger(
+                    EvdevTriggerKey(
+                        scanCode = Scancode.BTN_A,
+                        keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                        clickType = ClickType.SHORT_PRESS,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                ),
+                actionList = listOf(
+                    Action(data = ActionData.OpenCamera),
+                    buildKeyEventAction(KeyEvent.KEYCODE_BUTTON_X),
+                ),
+            ),
+            KeyMap(
+                trigger = singleKeyTrigger(
+                    EvdevTriggerKey(
+                        scanCode = Scancode.BTN_B,
+                        keyCode = KeyEvent.KEYCODE_BUTTON_B,
+                        clickType = ClickType.SHORT_PRESS,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
+                    ),
+                ),
+                actionList = listOf(
+                    buildKeyEventAction(KeyEvent.KEYCODE_BUTTON_Y),
+                ),
+            ),
+        )
+
+        val grabRequests = KeyMapDetectionController.getEvdevGrabRequests(
+            algorithm,
+            injectKeyEventActionsWithSystemBridge = false,
+        )
+
+        assertThat(
+            grabRequests,
+            contains(
+                GrabTargetKeyCode(
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    extraKeyCodes = intArrayOf(),
+                ),
+                GrabTargetKeyCode(
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
+                    extraKeyCodes = intArrayOf(),
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun `Grab multiple evdev devices from multiple triggers`() {
         loadKeyMaps(
             KeyMap(
