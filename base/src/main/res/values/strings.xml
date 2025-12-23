@@ -77,8 +77,8 @@
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
     <string name="trigger_error_dpad_ime_not_selected">You must be using the Key Mapper Input Method for DPAD triggers to work!</string>
-    <string name="trigger_error_system_bridge_unsupported">Expert mode is unsupported on this Android version</string>
-    <string name="trigger_error_system_bridge_disconnected">Expert mode not started!</string>
+    <string name="trigger_error_system_bridge_unsupported">Expert Mode is unsupported on this Android version</string>
+    <string name="trigger_error_system_bridge_disconnected">Expert Mode not started!</string>
     <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
     <string name="trigger_error_migrate_screen_off_key_map">Migrate this screen off trigger</string>
 
@@ -437,9 +437,9 @@
     <string name="dialog_message_root_prompt">Please grant Key Mapper root permission in your root management app, such as Magisk.</string>
 
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
-    <string name="dialog_message_write_secure_settings">You will need to use Expert mode to grant this permission.</string>
+    <string name="dialog_message_write_secure_settings">You will need to use Expert Mode to grant this permission.</string>
 
-    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can set up Expert mode or run the ADB command \"adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS\".</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can set up Expert Mode or run the ADB command \"adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS\".</string>
     <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
     <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
     <string name="tip_parallel_trigger_title">How to use this trigger</string>
@@ -488,16 +488,16 @@
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
     <string name="dialog_title_migrate_screen_off_key_map">Migrate this screen off trigger</string>
-    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called Expert mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record this trigger again with Expert mode.</string>
+    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called Expert Mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record this trigger again with Expert Mode.</string>
     <string name="dialog_button_migrate_screen_off_key_map">Proceed</string>
 
     <string name="dialog_title_grant_read_logs_permission_title">Grant READ_LOGS permission</string>
-    <string name="dialog_title_grant_read_logs_permission_message">You will need to be rooted or have enabled Expert mode for this to work. The system will then close the app when it grants this permission. You will need to open it again yourself and try sharing the logcat again.</string>
+    <string name="dialog_title_grant_read_logs_permission_message">You will need to be rooted or have enabled Expert Mode for this to work. The system will then close the app when it grants this permission. You will need to open it again yourself and try sharing the logcat again.</string>
 
 
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
-    <string name="pos_start_service_with_expert_mode">Use Expert mode</string>
+    <string name="pos_start_service_with_expert_mode">Use Expert Mode</string>
     <string name="pos_change_location">Change</string>
     <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
     <string name="pos_ok">Ok</string>
@@ -683,7 +683,7 @@
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
 
-    <string name="title_pref_expert_mode">Use Expert mode</string>
+    <string name="title_pref_expert_mode">Use Expert Mode</string>
     <string name="summary_pref_expert_mode">Advanced detection of key events and more</string>
 
     <string name="theme_light">Light</string>
@@ -894,7 +894,7 @@
 
     <string name="error_ui_element_not_found">UI element not found!</string>
     <string name="error_shell_command_timeout">Command timed out after %1$d seconds</string>
-    <string name="error_system_bridge_disconnected">Expert mode needs starting</string>
+    <string name="error_system_bridge_disconnected">Expert Mode needs starting</string>
     <string name="error_sms_rate_limit">Rate limit reached. You can only send once per second.</string>
     <!-- Error messages -->
 
@@ -1151,8 +1151,8 @@
     <string name="action_shell_command_execution_mode_adb">ADB</string>
     <string name="action_shell_command_execution_mode_label">Execution Mode</string>
     <string name="action_shell_command_adb_streaming_warning">ADB mode does not support streaming output</string>
-    <string name="action_shell_command_setup_expert_mode">Setup Expert mode</string>
-    <string name="action_shell_command_setup_expert_mode_unsupported">Setup Expert mode (Unsupported)</string>
+    <string name="action_shell_command_setup_expert_mode">Setup Expert Mode</string>
+    <string name="action_shell_command_setup_expert_mode_unsupported">Setup Expert Mode (Unsupported)</string>
     <string name="action_shell_command_tab_configuration">Configuration</string>
     <string name="action_shell_command_tab_output">Output</string>
     <string name="action_shell_command_no_output">No output yet. Click Test to run the command.</string>
@@ -1432,18 +1432,18 @@
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
     <string name="tip_caps_lock_expert_mode_title">Better Caps Lock compatibility</string>
-    <string name="tip_caps_lock_expert_mode_text">Expert mode provides better compatibility for Caps Lock remapping. Tap \'Use Expert mode\' and record it again.</string>
-    <string name="tip_caps_lock_expert_mode_button">Use Expert mode</string>
+    <string name="tip_caps_lock_expert_mode_text">Expert Mode provides better compatibility for Caps Lock remapping. Tap \'Use Expert Mode\' and record it again.</string>
+    <string name="tip_caps_lock_expert_mode_button">Use Expert Mode</string>
     <string name="tip_volume_buttons_expert_mode_title">Screen off remapping?</string>
-    <string name="tip_volume_buttons_expert_mode_text">Any trigger can now work when the screen is off for free with Expert mode! You will need to record it again.</string>
-    <string name="tip_volume_buttons_expert_mode_button">Use Expert mode</string>
+    <string name="tip_volume_buttons_expert_mode_text">Any trigger can now work when the screen is off for free with Expert Mode! You will need to record it again.</string>
+    <string name="tip_volume_buttons_expert_mode_button">Use Expert Mode</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
     <string name="tip_ime_detection_text">The ⌨ symbol means you must use the Key Mapper input method for this trigger to work due to an Android restriction.</string>
     <string name="tip_ringer_mode_title">Ringer mode actions</string>
-    <string name="tip_ringer_mode_text">Consider using Expert mode for ringer mode actions to avoid conflicts with Do Not Disturb settings.</string>
-    <string name="tip_ringer_mode_button">Use Expert mode</string>
+    <string name="tip_ringer_mode_text">Consider using Expert Mode for ringer mode actions to avoid conflicts with Do Not Disturb settings.</string>
+    <string name="tip_ringer_mode_button">Use Expert Mode</string>
     <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
     <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
@@ -1585,7 +1585,7 @@
     <string name="trigger_use_key_code_button_enabled">Use key code %d</string>
     <string name="trigger_use_scan_code_button_enabled">Use scan code %d</string>
     <string name="trigger_use_scan_code_button_disabled">No scan code saved</string>
-    <string name="trigger_record_with_expert_mode">Use Expert mode</string>
+    <string name="trigger_record_with_expert_mode">Use Expert Mode</string>
     <string name="trigger_list_add_more_button">Add more</string>
 
     <!--  Action screen  -->
@@ -1652,41 +1652,41 @@
     </plurals>
 
 
-    <!--  Expert mode  -->
-    <string name="expert_mode_app_bar_title">Expert mode</string>
+    <!--  Expert Mode  -->
+    <string name="expert_mode_app_bar_title">Expert Mode</string>
     <string name="expert_mode_setup_title">Setup</string>
     <string name="expert_mode_warning_title">Important!</string>
-    <string name="expert_mode_warning_text">Remapping buttons with Expert mode is dangerous and can cause them to stop working if you remap them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power and volume buttons for 30 seconds — consult your device\'s manual or the internet for how to do this.</string>
+    <string name="expert_mode_warning_text">Remapping buttons with Expert Mode is dangerous and can cause them to stop working if you remap them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power and volume buttons for 30 seconds — consult your device\'s manual or the internet for how to do this.</string>
     <string name="expert_mode_warning_understand_button_countdown">%d…</string>
     <string name="expert_mode_warning_understand_button_not_completed">I understand</string>
     <string name="expert_mode_warning_understand_button_completed">Understood</string>
     <string name="expert_mode_set_up_title">Set up</string>
     <string name="expert_mode_root_detected_title">Root detected</string>
-    <string name="expert_mode_root_detected_text">You can skip the set up process by giving Key Mapper root permission. This will let Key Mapper auto start Expert mode without having to wait for a WiFi connection as well.</string>
-    <string name="expert_mode_root_detected_button_start_service">Start Expert mode</string>
+    <string name="expert_mode_root_detected_text">You can skip the set up process by giving Key Mapper root permission. This will let Key Mapper auto start Expert Mode without having to wait for a WiFi connection as well.</string>
+    <string name="expert_mode_root_detected_button_start_service">Start Expert Mode</string>
     <string name="expert_mode_shizuku_detected_title">Shizuku detected</string>
     <string name="expert_mode_shizuku_detected_text">You can skip the set up process by giving Key Mapper Shizuku permission.</string>
     <string name="expert_mode_shizuku_detected_button_start">Start Shizuku</string>
     <string name="expert_mode_shizuku_detected_button_request_permission">Request permission</string>
-    <string name="expert_mode_shizuku_detected_button_start_service">Start Expert mode</string>
+    <string name="expert_mode_shizuku_detected_button_start_service">Start Expert Mode</string>
     <string name="expert_mode_set_up_with_key_mapper_title">Set up with Key Mapper</string>
     <string name="expert_mode_set_up_with_key_mapper_button">Continue</string>
     <string name="expert_mode_set_up_with_key_mapper_button_incompatible">(Requires Android 11+)</string>
     <string name="expert_mode_options_title">Options</string>
-    <string name="expert_mode_enable_for_all_key_maps_title">Enable Expert mode for all key maps</string>
+    <string name="expert_mode_enable_for_all_key_maps_title">Enable Expert Mode for all key maps</string>
     <string name="expert_mode_enable_for_all_key_maps_text">Key Mapper will use the ADB Shell for remapping</string>
     <string name="expert_mode_settings_unavailable_text">These settings are unavailable until you acknowledge the warning.</string>
-    <string name="expert_mode_service_started">Expert mode service is running</string>
+    <string name="expert_mode_service_started">Expert Mode service is running</string>
     <string name="expert_mode_stop_service_button">Stop</string>
 
     <string name="title_pref_expert_mode_auto_start">Auto start and keep alive</string>
-    <string name="summary_pref_expert_mode_auto_start">Expert mode will start itself whenever you boot your device, open Key Mapper, or it dies unexpectedly.</string>
+    <string name="summary_pref_expert_mode_auto_start">Expert Mode will start itself whenever you boot your device, open Key Mapper, or it dies unexpectedly.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>
 
     <string name="expert_mode_emergency_tip_title">Emergency tip</string>
-    <string name="expert_mode_emergency_tip_text">If your power button stops working, hold down the power button for 10 seconds and release to disable Expert mode.</string>
+    <string name="expert_mode_emergency_tip_text">If your power button stops working, hold down the power button for 10 seconds and release to disable Expert Mode.</string>
 
     <string name="expert_mode_setup_wizard_title">Setup wizard</string>
     <string name="expert_mode_setup_wizard_step_n">Step %d of %d</string>
@@ -1721,11 +1721,11 @@
     <string name="expert_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
-    <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert mode is not killed every time you lock your device.</string>
+    <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>
 
     <string name="expert_mode_setup_assistant_notification_channel">Setup assistant</string>
 
-    <string name="expert_mode_setup_wizard_complete_title">Expert mode is running</string>
+    <string name="expert_mode_setup_wizard_complete_title">Expert Mode is running</string>
     <string name="expert_mode_setup_wizard_complete_text">You can now remap buttons when the screen is off and use more actions.</string>
 
     <string name="expert_mode_setup_wizard_complete_button">Finish</string>
@@ -1739,27 +1739,27 @@
     <string name="expert_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
     <string name="expert_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
 
-    <string name="expert_mode_setup_notification_start_system_bridge_failed_title">Starting Expert mode failed</string>
+    <string name="expert_mode_setup_notification_start_system_bridge_failed_title">Starting Expert Mode failed</string>
     <string name="expert_mode_setup_notification_start_system_bridge_failed_text">Tap to set up again. Try ADB pairing and rebooting your phone if it repeatedly fails.</string>
 
-    <string name="expert_mode_setup_notification_auto_start_system_bridge_title">Auto starting Expert mode</string>
+    <string name="expert_mode_setup_notification_auto_start_system_bridge_title">Auto starting Expert Mode</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_root_text">Using root</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku">Using shizuku</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over WiFi</string>
 
-    <string name="expert_mode_setup_notification_system_bridge_started_title">Expert mode started</string>
+    <string name="expert_mode_setup_notification_system_bridge_started_title">Expert Mode started</string>
     <string name="expert_mode_setup_notification_system_bridge_started_text">Have fun remapping! ❤️</string>
 
     <string name="expert_mode_setup_notification_invalid_pairing_code_title">Pairing failed</string>
     <string name="expert_mode_setup_notification_invalid_pairing_code_text">Keep the pairing code popup on-screen when submitting the pairing code</string>
     <string name="expert_mode_setup_notification_action_input_pairing_code">Input pairing code</string>
 
-    <string name="expert_mode_info_card_title">What can I do with Expert mode?</string>
+    <string name="expert_mode_info_card_title">What can I do with Expert Mode?</string>
     <string name="expert_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any on-screen keyboard with key code actions.\n⭐️ And use many more actions.</string>
-    <string name="expert_mode_info_card_show_content_description">Show Expert mode info</string>
+    <string name="expert_mode_info_card_show_content_description">Show Expert Mode info</string>
     <string name="expert_mode_info_card_dismiss_content_description">Dismiss</string>
 
-    <string name="system_bridge_died_notification_title">Expert mode stopped unexpectedly</string>
+    <string name="system_bridge_died_notification_title">Expert Mode stopped unexpectedly</string>
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
     <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting because last auto started less than 5 minutes ago. If you\'re not killing the service report the issue to the developer.</string>
 
@@ -1822,16 +1822,16 @@
     <string name="trigger_setup_accessibility_service_enable_button">Enable</string>
     <string name="trigger_setup_accessibility_service_running_button">Running</string>
     <string name="trigger_setup_purchased_button">Purchased</string>
-    <string name="trigger_setup_expert_mode_title">Expert mode</string>
+    <string name="trigger_setup_expert_mode_title">Expert Mode</string>
     <string name="trigger_setup_expert_mode_enable_button">Enable for free</string>
     <string name="trigger_setup_expert_mode_running_button">Running</string>
     <string name="trigger_setup_expert_mode_unsupported">Not available on this Android version</string>
-    <string name="trigger_setup_assistant_information">If your device assistant is triggered by a hardware button, it might be possible to remap it for free with Expert mode. Try choosing \'Other\' from the trigger page and follow the instructions.</string>
+    <string name="trigger_setup_assistant_information">If your device assistant is triggered by a hardware button, it might be possible to remap it for free with Expert Mode. Try choosing \'Other\' from the trigger page and follow the instructions.</string>
     <string name="trigger_setup_assistant_requirements_met_info">This trigger requires some set up that varies per device. Please\ </string>
     <string name="trigger_setup_assistant_read_instructions_link">read the instructions</string>
     <string name="trigger_setup_assistant_read_instructions_button">Read instructions</string>
     <string name="trigger_setup_assistant_select_type_button">Select trigger type</string>
-    <string name="trigger_setup_power_information">If your device assistant is triggered by the power button, it might be possible to remap the assistant instead, meaning you don\'t need to use Expert mode. Try choosing \'Assistant\' from the trigger page and follow the instructions.</string>
+    <string name="trigger_setup_power_information">If your device assistant is triggered by the power button, it might be possible to remap the assistant instead, meaning you don\'t need to use Expert Mode. Try choosing \'Assistant\' from the trigger page and follow the instructions.</string>
     <string name="trigger_setup_gamepad_type_dpad">D-Pad button</string>
     <string name="trigger_setup_gamepad_type_simple_buttons">Other simple buttons</string>
     <string name="trigger_setup_gamepad_information_dpad">You will not be able to use your normal on-screen keyboard when remapping DPAD buttons.</string>
