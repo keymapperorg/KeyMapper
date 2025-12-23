@@ -594,7 +594,7 @@
 
     <string name="title_pref_automatic_backup_location_enabled">Change automatic backup location</string>
     <string name="title_pref_automatic_backup_location_disabled">Turn on automatic backup</string>
-    <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
+    <string name="summary_pref_automatic_backup_location_disabled">Back up after modifying key maps</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper Input Method will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
