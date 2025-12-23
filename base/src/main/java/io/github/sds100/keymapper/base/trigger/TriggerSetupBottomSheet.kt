@@ -183,6 +183,9 @@ private fun GamepadTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled =
+                    state is TriggerSetupState.Gamepad.SimpleButtons &&
+                        state.isUseExpertModeChecked,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -298,6 +301,7 @@ private fun MouseTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = true,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -353,6 +357,7 @@ private fun PowerTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = true,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -440,6 +445,7 @@ private fun VolumeTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = state.isUseExpertModeChecked,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -500,6 +506,7 @@ private fun NotDetectedSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = true,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -586,6 +593,7 @@ private fun OtherTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = state.isUseExpertModeChecked,
                     onClick = onRecordTriggerClick,
                 )
             } else {
@@ -670,6 +678,7 @@ private fun KeyboardTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
+                    isExpertModeRecordingEnabled = state.isUseExpertModeChecked,
                     onClick = onRecordTriggerClick,
                 )
             } else {

@@ -407,6 +407,7 @@
     <!-- Button titles -->
     <string name="button_add_action">Add action</string>
     <string name="button_record_trigger">Tap to record trigger</string>
+    <string name="button_record_trigger_expert_mode">Record with Expert Mode</string>
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>

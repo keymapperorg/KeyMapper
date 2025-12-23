@@ -67,6 +67,7 @@ fun RecordTriggerButtonRow(
             RecordTriggerButton(
                 modifier = Modifier.weight(1f),
                 recordTriggerState,
+                isExpertModeRecordingEnabled = expertModeRecordSwitchState.isChecked,
                 onClick = onRecordTriggerClick,
             )
 
@@ -105,7 +106,12 @@ private fun ExpertModeSwitch(
 }
 
 @Composable
-fun RecordTriggerButton(modifier: Modifier, state: RecordTriggerState, onClick: () -> Unit) {
+fun RecordTriggerButton(
+    modifier: Modifier,
+    state: RecordTriggerState,
+    isExpertModeRecordingEnabled: Boolean,
+    onClick: () -> Unit,
+) {
     val colors = ButtonDefaults.filledTonalButtonColors().copy(
         containerColor = LocalCustomColorsPalette.current.red,
         contentColor = LocalCustomColorsPalette.current.onRed,
@@ -115,8 +121,11 @@ fun RecordTriggerButton(modifier: Modifier, state: RecordTriggerState, onClick: 
         is RecordTriggerState.CountingDown ->
             stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
 
-        else ->
+        else -> if (isExpertModeRecordingEnabled) {
+            stringResource(R.string.button_record_trigger_expert_mode)
+        } else {
             stringResource(R.string.button_record_trigger)
+        }
     }
 
     // Create pulsing animation for the recording dot
