@@ -1,6 +1,8 @@
 ## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
 
-#### TO BE RELEASED
+#### 25 December 2025
+
+Merry Christmas from the Key Mapper team! 🎄
 
 Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is free.
 
