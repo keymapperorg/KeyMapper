@@ -44,7 +44,6 @@ introshowcaseview = "2.0.2"
 conscrypt-android = "2.5.3"
 boringssl-ndk = "20250114"
 bouncycastle-bcpkix = "1.70"
-appiconloader = "1.5.0"
 rikkax-core = "1.4.1"
 junit = "4.13.2"
 junit-params = "1.1.1"
@@ -189,7 +188,6 @@ github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", 
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
 vvb2060-ndk-boringssl = { group = "io.github.vvb2060.ndk", name = "boringssl", version.ref = "boringssl-ndk" }
 bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk15on", version.ref = "bouncycastle-bcpkix" }
-zhanghai-appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
 rikka-rikkax-core = { group = "dev.rikka.rikkax.core", name = "core-ktx", version.ref = "rikkax-core" }
 
 

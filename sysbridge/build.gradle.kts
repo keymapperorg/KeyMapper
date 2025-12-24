@@ -105,6 +105,5 @@ dependencies {
     implementation(libs.vvb2060.ndk.boringssl)
     implementation(libs.lsposed.hiddenapibypass.updated)
     implementation(libs.bouncycastle.bcpkix)
-    implementation(libs.zhanghai.appiconloader)
     implementation(libs.rikka.rikkax.core)
 }
