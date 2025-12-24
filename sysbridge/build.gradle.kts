@@ -103,7 +103,6 @@ dependencies {
 
     // From Shizuku :manager module build.gradle file.
     implementation(libs.vvb2060.ndk.boringssl)
-    implementation(libs.lsposed.hiddenapibypass.updated)
     implementation(libs.bouncycastle.bcpkix)
     implementation(libs.rikka.rikkax.core)
 }

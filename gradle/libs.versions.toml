@@ -39,7 +39,6 @@ epoxy = "4.6.2"
 flexbox = "3.0.0"
 google-accompanist-drawablepainter = "0.35.0-alpha"
 hiddenapibypass = "4.3"
-hiddenapibypass-lsposed = "6.1"
 introshowcaseview = "2.0.2"
 conscrypt-android = "2.5.3"
 boringssl-ndk = "20250114"
@@ -182,7 +181,6 @@ github-mflisar-dragselectrecyclerview = { group = "com.github.MFlisar", name = "
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
-lsposed-hiddenapibypass-updated = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass-lsposed" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
 github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu-core" }
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
