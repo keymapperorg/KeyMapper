@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.utils.ui.compose.icons
+package io.github.sds100.keymapper.base.utils.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -16,18 +16,22 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SwitchText(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.Companion,
     text: String,
     isChecked: Boolean,
     isEnabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        color = Color.Companion.Transparent,
+    ) {
         Row(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
                 .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Companion.CenterVertically,
         ) {
             Switch(
                 enabled = isEnabled,
@@ -37,7 +41,7 @@ fun SwitchText(
             )
 
             Text(
-                modifier = Modifier.padding(horizontal = 12.dp),
+                modifier = Modifier.Companion.padding(horizontal = 12.dp),
 
                 text = text,
                 style = if (isEnabled) {
@@ -50,7 +54,7 @@ fun SwitchText(
                     )
                 },
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Companion.Ellipsis,
             )
         }
     }
