@@ -1,9 +1,10 @@
 package io.github.sds100.keymapper.system.inputevents
 
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 
 data class KMEvdevEvent(
-    val device: EvdevDeviceHandle,
+    val deviceId: Int,
+    val deviceInfo: EvdevDeviceInfo,
     val type: Int,
     val code: Int,
     val value: Int,

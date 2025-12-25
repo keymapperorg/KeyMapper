@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.TimeUtils
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.valueIfFailure
@@ -81,6 +82,21 @@ class ConstraintUiHelper(
 
         is ConstraintData.OrientationPortrait ->
             getString(R.string.constraint_choose_orientation_portrait)
+
+        is ConstraintData.PhysicalOrientation -> {
+            val resId = when (constraint.data.physicalOrientation) {
+                PhysicalOrientation.PORTRAIT ->
+                    R.string.constraint_choose_physical_orientation_portrait
+                PhysicalOrientation.LANDSCAPE ->
+                    R.string.constraint_choose_physical_orientation_landscape
+                PhysicalOrientation.PORTRAIT_INVERTED ->
+                    R.string.constraint_choose_physical_orientation_portrait_inverted
+                PhysicalOrientation.LANDSCAPE_INVERTED ->
+                    R.string.constraint_choose_physical_orientation_landscape_inverted
+            }
+
+            getString(resId)
+        }
 
         is ConstraintData.ScreenOff ->
             getString(R.string.constraint_screen_off_description)

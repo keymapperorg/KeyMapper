@@ -30,7 +30,6 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -49,17 +48,12 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
     private val vibrator: VibratorAdapter,
-    @Assisted
-    private val coroutineScope: CoroutineScope,
     private val inputEventHub: InputEventHub,
 ) : DetectKeyMapsUseCase {
 
     @AssistedFactory
     interface Factory {
-        fun create(
-            accessibilityService: IAccessibilityService,
-            coroutineScope: CoroutineScope,
-        ): DetectKeyMapsUseCaseImpl
+        fun create(accessibilityService: IAccessibilityService): DetectKeyMapsUseCaseImpl
     }
 
     companion object {
@@ -228,15 +222,15 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
         }
     }
 
-    override fun imitateEvdevEvent(devicePath: String, type: Int, code: Int, value: Int) {
+    override fun imitateEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int) {
         if (inputEventHub.isSystemBridgeConnected()) {
             Timber.d(
-                "Imitate evdev event, device path: $devicePath, type: $type, code: $code, value: $value",
+                "Imitate evdev event, device id: $deviceId, type: $type, code: $code, value: $value",
             )
-            inputEventHub.injectEvdevEvent(devicePath, type, code, value)
+            inputEventHub.injectEvdevEvent(deviceId, type, code, value)
         } else {
             Timber.w(
-                "Cannot imitate evdev event without system bridge connected. Device path: $devicePath, type: $type, code: $code, value: $value",
+                "Cannot imitate evdev event without system bridge connected.",
             )
         }
     }
@@ -268,5 +262,5 @@ interface DetectKeyMapsUseCase {
         source: Int = InputDevice.SOURCE_UNKNOWN,
     )
 
-    fun imitateEvdevEvent(devicePath: String, type: Int, code: Int, value: Int)
+    fun imitateEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int)
 }

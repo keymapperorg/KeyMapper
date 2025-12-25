@@ -40,10 +40,13 @@ import android.util.Log
 import android.view.InputEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
+import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
-import io.github.sds100.keymapper.sysbridge.IEvdevCallback
+import io.github.sds100.keymapper.evdev.IEvdevCallback
+import io.github.sds100.keymapper.sysbridge.ILogCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
 import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
@@ -63,23 +66,106 @@ import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.adapter.ProcessObserverAdapter
 
 @SuppressLint("LogNotTimber")
-internal class SystemBridge : ISystemBridge.Stub() {
+class SystemBridge : ISystemBridge.Stub() {
 
-    external fun grabEvdevDeviceNative(devicePath: String): Boolean
+    @Suppress("KotlinJniMissingFunction")
+    external fun setGrabTargetsNative(
+        devices: Array<GrabTargetKeyCode>,
+    ): Array<GrabbedDeviceHandle>
 
-    external fun ungrabEvdevDeviceNative(devicePath: String): Boolean
-    external fun ungrabAllEvdevDevicesNative(): Boolean
-    external fun writeEvdevEventNative(
-        devicePath: String,
+    @Suppress("KotlinJniMissingFunction")
+    external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun writeEvdevEventKeyCodeNative(deviceId: Int, keyCode: Int, value: Int): Boolean
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun getEvdevDevicesNative(): Array<EvdevDeviceInfo>
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun initEvdevManager()
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun destroyEvdevManager()
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun setLogLevelNative(level: Int)
+
+    /**
+     * Called from Rust via JNI when an evdev event occurs.
+     * Forwards the call to the registered IEvdevCallback and returns whether the event was consumed.
+     */
+    @Suppress("unused")
+    fun onEvdevEvent(
+        deviceId: Int,
+        timeSec: Long,
+        timeUsec: Long,
         type: Int,
         code: Int,
         value: Int,
-    ): Boolean
+        androidCode: Int,
+    ): Boolean {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return false
+            return try {
+                callback.onEvdevEvent(deviceId, timeSec, timeUsec, type, code, value, androidCode)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+                false
+            }
+        }
+    }
 
-    external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
+    @Suppress("unused")
+    fun onGrabbedDevicesChanged(devices: Array<GrabbedDeviceHandle>) {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return
+            try {
+                callback.onGrabbedDevicesChanged(devices)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+            }
+        }
+    }
 
-    external fun startEvdevEventLoop(callback: IBinder)
-    external fun stopEvdevEventLoop()
+    @Suppress("unused")
+    fun onEvdevDevicesChanged(devices: Array<EvdevDeviceInfo>) {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return
+            try {
+                callback.onEvdevDevicesChanged(devices)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+            }
+        }
+    }
+
+    /**
+     * Called from Rust via JNI when the power button is held for 10+ seconds.
+     * Forwards the call to the registered IEvdevCallback for emergency system bridge kill.
+     */
+    @Suppress("unused")
+    fun onEmergencyKillSystemBridge() {
+        synchronized(evdevCallbackLock) {
+            evdevCallback?.onEmergencyKillSystemBridge()
+        }
+    }
+
+    /**
+     * Called from Rust via JNI when a log message is emitted.
+     * Forwards the call to the registered ILogCallback.
+     */
+    @Suppress("unused")
+    fun onLogMessage(level: Int, message: String) {
+        synchronized(logCallbackLock) {
+            val callback = logCallback ?: return
+            try {
+                callback.onLog(level, message)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling log callback", e)
+            }
+        }
+    }
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
@@ -167,15 +253,22 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val evdevCallbackLock: Any = Any()
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
-        Log.i(TAG, "EvdevCallback binder died")
-        evdevCallback = null
+        Log.i(TAG, "EvdevCallback binder died. Stopping evdev event loop")
 
-        coroutineScope.launch(Dispatchers.Default) {
-            stopEvdevEventLoop()
+        synchronized(evdevCallbackLock) {
+            evdevCallback = null
         }
 
         // Start periodic check for Key Mapper installation
         startKeyMapperPeriodicCheck()
+    }
+
+    private val logCallbackLock: Any = Any()
+    private var logCallback: ILogCallback? = null
+    private val logCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
+        synchronized(logCallbackLock) {
+            logCallback = null
+        }
     }
 
     private val inputManager: IInputManager
@@ -206,7 +299,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
-        System.load("$libraryPath/libevdev.so")
+        System.load("$libraryPath/libevdev_manager.so")
 
         Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
@@ -301,6 +394,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
             sendBinderToApp()
         }
 
+        initEvdevManager()
+
         Log.i(TAG, "SystemBridge started complete. Version code $versionCode")
     }
 
@@ -345,6 +440,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun destroy() {
+        Log.i(TAG, "Destroying system bridge...")
+
+        stopKeyMapperPeriodicCheck()
+        destroyEvdevManager()
+
         Log.i(TAG, "SystemBridge destroyed")
 
         // Must be last line in this method because it halts the JVM.
@@ -369,54 +469,26 @@ internal class SystemBridge : ISystemBridge.Stub() {
             this.evdevCallback = callback
             binder.linkToDeath(evdevCallbackDeathRecipient, 0)
         }
-
-        coroutineScope.launch(Dispatchers.IO) {
-            mainHandler.post {
-                startEvdevEventLoop(binder)
-            }
-        }
     }
 
     override fun unregisterEvdevCallback() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
             evdevCallback = null
-            stopEvdevEventLoop()
         }
     }
 
-    override fun grabEvdevDevice(devicePath: String?): Boolean {
-        devicePath ?: return false
-        return grabEvdevDeviceNative(devicePath)
-    }
-
-    override fun grabEvdevDeviceArray(devicePath: Array<out String>?): Boolean {
-        devicePath ?: return false
-
-        for (path in devicePath) {
-            Log.i(TAG, "Grabbing evdev device $path")
-            grabEvdevDeviceNative(path)
-        }
-
-        return true
-    }
-
-    override fun ungrabEvdevDevice(devicePath: String?): Boolean {
-        devicePath ?: return false
-        ungrabEvdevDeviceNative(devicePath)
-        return true
-    }
-
-    override fun ungrabAllEvdevDevices(): Boolean {
-        ungrabAllEvdevDevicesNative()
-        return true
+    override fun setGrabTargets(
+        devices: Array<out GrabTargetKeyCode?>?,
+    ): Array<out GrabbedDeviceHandle?>? {
+        return setGrabTargetsNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {
         return inputManager.injectInputEvent(event, mode)
     }
 
-    override fun getEvdevInputDevices(): Array<out EvdevDeviceHandle?>? {
+    override fun getEvdevInputDevices(): Array<out EvdevDeviceInfo?> {
         return getEvdevDevicesNative()
     }
 
@@ -428,15 +500,19 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return wifiManager.setWifiEnabled(processPackageName, enable)
     }
 
-    override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
-        devicePath ?: return false
-        return writeEvdevEventNative(devicePath, type, code, value)
+    override fun writeEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): Boolean {
+        return writeEvdevEventNative(deviceId, type, code, value)
+    }
+
+    override fun writeEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): Boolean {
+        return writeEvdevEventKeyCodeNative(deviceId, keyCode, value)
     }
 
     override fun getProcessUid(): Int {
         return Process.myUid()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun grantPermission(permission: String?, deviceId: Int) {
         val userId = UserHandleUtils.getCallingUserId()
 
@@ -733,11 +809,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
             tetheringConnector.registerTetheringEventCallback(callback, processPackageName)
 
             // Wait for callback with timeout using Handler
-            mainHandler.postDelayed({
-                synchronized(lock) {
-                    lock.notify()
-                }
-            }, timeoutMillis)
+            mainHandler.postDelayed(
+                {
+                    synchronized(lock) {
+                        lock.notify()
+                    }
+                },
+                timeoutMillis,
+            )
 
             synchronized(lock) {
                 lock.wait(timeoutMillis)
@@ -781,5 +860,33 @@ internal class SystemBridge : ISystemBridge.Stub() {
         } catch (_: RemoteException) {
             -1
         }
+    }
+
+    override fun registerLogCallback(callback: ILogCallback?) {
+        callback ?: return
+
+        Log.i(TAG, "Register log callback")
+
+        val binder = callback.asBinder()
+
+        if (this.logCallback != null) {
+            unregisterLogCallback()
+        }
+
+        synchronized(logCallbackLock) {
+            this.logCallback = callback
+            binder.linkToDeath(logCallbackDeathRecipient, 0)
+        }
+    }
+
+    override fun unregisterLogCallback() {
+        synchronized(logCallbackLock) {
+            logCallback?.asBinder()?.unlinkToDeath(logCallbackDeathRecipient, 0)
+            logCallback = null
+        }
+    }
+
+    override fun setLogLevel(level: Int) {
+        setLogLevelNative(level)
     }
 }

@@ -2,14 +2,19 @@ package io.github.sds100.keymapper.data
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
 
+    /**
+     * libsu was not used in version 3.2.1 and older. The user had to manually enable a setting
+     * for root features to be enabled.
+     */
     @Deprecated("Now use the libsu library to detect whether the device is rooted.")
-    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
+    val hasRootPermissionLegacy = booleanPreferencesKey("pref_allow_root_features")
 
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
 
@@ -55,9 +60,9 @@ object Keys {
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
     val shownTriggerConstraintsTip =
         booleanPreferencesKey("key_shown_trigger_constraints_tip")
-    val shownCapsLockProModeTip =
+    val shownCapsLockExpertModeTip =
         booleanPreferencesKey("key_shown_caps_lock_pro_mode_compatibility_tip")
-    val shownVolumeButtonsProModeTip =
+    val shownVolumeButtonsExpertModeTip =
         booleanPreferencesKey("key_shown_volume_buttons_pro_mode_tip")
     val shownScreenPinningTip =
         booleanPreferencesKey("key_shown_screen_pinning_tip")
@@ -117,27 +122,34 @@ object Keys {
 //    val skipTapTargetTutorial =
 //        booleanPreferencesKey("key_skip_tap_target_tutorial")
 
-    val isProModeWarningUnderstood =
+    val isExpertModeWarningUnderstood =
         booleanPreferencesKey("key_is_pro_mode_warning_understood")
 
-    val isProModeInteractiveSetupAssistantEnabled =
+    val isExpertModeInteractiveSetupAssistantEnabled =
         booleanPreferencesKey("key_is_pro_mode_setup_assistant_enabled")
 
-    val isProModeInfoDismissed =
+    val isExpertModeInfoDismissed =
         booleanPreferencesKey("key_is_pro_mode_info_dismissed")
 
-    val isProModeAutoStartBootEnabled =
+    val isSystemBridgeKeepAliveEnabled =
         booleanPreferencesKey("key_is_pro_mode_auto_start_boot_enabled")
 
     val isSystemBridgeEmergencyKilled =
         booleanPreferencesKey("key_is_system_bridge_emergency_killed")
+
+    val isSystemBridgeStoppedByUser =
+        booleanPreferencesKey("key_is_system_bridge_stopped_by_user")
 
     /**
      * Whether the user has started the system bridge before.
      */
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 
-    val isCleanShutdown = booleanPreferencesKey("key_is_clean_shutdown")
+    /**
+     * The last time the system bridge was auto started in time since boot.
+     * Uses SystemClock.elapsedRealtime().
+     */
+    val systemBridgeLastAutoStartTime = longPreferencesKey("key_system_bridge_last_auto_start_time")
 
     val keyEventActionsUseSystemBridge =
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")
@@ -145,10 +157,10 @@ object Keys {
     val shellCommandScriptText = stringPreferencesKey("key_shell_command_script_text")
 
     /**
-     * This is stored as true when PRO Mode has been auto started after upgrading
-     * to 4.0 on a rooted device.
+     * This is stored as true when PRO Mode has been auto started after updating
+     * to 4.0 and Key Mapper previously had root or shizuku permission.
      */
-    val handledRootToProModeUpgrade = booleanPreferencesKey("key_handled_root_to_pro_mode_upgrade")
+    val handledUpgradeToExpertMode = booleanPreferencesKey("key_handled_upgrade_to_pro_mode")
 
     val handledMigrateScreenOffKeyMapsNotification =
         booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")

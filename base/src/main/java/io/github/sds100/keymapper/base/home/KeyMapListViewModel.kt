@@ -336,9 +336,7 @@ class KeyMapListViewModel(
                 Triple(listState, appBarState, showCreateKeyMapTapTarget)
             }.collectLatest { (listState, appBarState, showCreateKeyMapTapTarget) ->
                 listState.ifIsData { list ->
-                    if (list.isNotEmpty()) {
-                        showFabText = false
-                    }
+                    showFabText = list.isEmpty()
                 }
 
                 _state.value =

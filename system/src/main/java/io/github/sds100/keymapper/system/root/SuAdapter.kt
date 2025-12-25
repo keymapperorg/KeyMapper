@@ -5,11 +5,12 @@ import io.github.sds100.keymapper.system.shell.BaseShellAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,7 +20,7 @@ import timber.log.Timber
 class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineScope) :
     BaseShellAdapter(),
     SuAdapter {
-    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isRootGranted: MutableStateFlow<Boolean?> = MutableStateFlow(null)
 
     private var invalidateJob: Job? = null
 
@@ -47,14 +48,10 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
             // Close the shell so a new one is started without root permission.
             val isRooted = getIsRooted()
             isRootGranted.update { isRooted }
-
-            if (isRooted) {
-                Timber.i("Root access granted")
-            } else {
-                Timber.i("Root access denied")
-            }
         } catch (e: Exception) {
-            Timber.e("Exception invalidating root detection: $e")
+            if (e !is CancellationException) {
+                Timber.e("Exception invalidating root detection: $e")
+            }
         }
     }
 
@@ -68,7 +65,7 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
 }
 
 interface SuAdapter : ShellAdapter {
-    val isRootGranted: StateFlow<Boolean>
+    val isRootGranted: Flow<Boolean?>
 
     fun requestPermission()
 }

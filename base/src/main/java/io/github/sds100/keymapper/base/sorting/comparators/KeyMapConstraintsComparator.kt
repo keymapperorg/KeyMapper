@@ -140,6 +140,9 @@ class KeyMapConstraintsComparator(
             ConstraintData.HingeOpen -> Success("")
             ConstraintData.KeyboardNotShowing -> Success("")
             ConstraintData.KeyboardShowing -> Success("")
+            is ConstraintData.PhysicalOrientation -> Success(
+                constraint.data.physicalOrientation.toString(),
+            )
         }
     }
 }

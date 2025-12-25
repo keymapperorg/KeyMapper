@@ -96,7 +96,7 @@ internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
                 )
 
                 // You can only resolve one service at a time and they can take some time to resolve.
-                serviceDiscoveredChannel?.trySend(serviceInfo)
+                serviceDiscoveredChannel?.trySendBlocking(serviceInfo)
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) {

@@ -68,24 +68,35 @@ class RequestPermissionDelegate(
     fun requestPermission(permission: Permission) {
         when (permission) {
             Permission.WRITE_SETTINGS -> requestWriteSettings()
+
             Permission.CAMERA -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+
             Permission.DEVICE_ADMIN -> requestDeviceAdmin()
+
             Permission.READ_PHONE_STATE -> requestPermissionLauncher.launch(
                 Manifest.permission.READ_PHONE_STATE,
             )
+
             Permission.ACCESS_NOTIFICATION_POLICY -> requestAccessNotificationPolicy()
+
             Permission.WRITE_SECURE_SETTINGS -> requestWriteSecureSettings()
+
             Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
+
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(
                 Manifest.permission.CALL_PHONE,
             )
+
             Permission.SEND_SMS -> requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(
                 Manifest.permission.ANSWER_PHONE_CALLS,
             )
+
             Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(
                 Manifest.permission.BLUETOOTH_CONNECT,
             )
+
             Permission.ROOT -> requestRootPermission()
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
@@ -176,11 +187,11 @@ class RequestPermissionDelegate(
                 messageResource = R.string.dialog_message_write_secure_settings
 
                 positiveButton(R.string.pos_proceed) {
-                    val destination = NavDestination.ProMode
+                    val destination = NavDestination.ExpertMode
 
                     coroutineScope.launch {
                         navigationProvider.navigate(
-                            "grant_write_secure_settings_pro_mode",
+                            "grant_write_secure_settings_expert_mode",
                             destination,
                         )
                     }

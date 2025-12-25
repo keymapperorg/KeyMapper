@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
-import io.github.sds100.keymapper.base.input.EvdevHandleCache
+import io.github.sds100.keymapper.base.input.EvdevDevicesDelegate
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError.ProductNotPurchased
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
@@ -70,7 +70,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     private val navigationProvider: NavigationProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val evdevHandleCache: EvdevHandleCache,
+    private val grabbedEvdevDeviceCache: EvdevDevicesDelegate,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -113,7 +113,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
     private val evdevDevices: Flow<List<EvdevDeviceInfo>?> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            evdevHandleCache.devices
+            grabbedEvdevDeviceCache.allDevices
         } else {
             flowOf(null)
         }
@@ -163,6 +163,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(
                 KMError.CantDetectKeyEventsInPhoneCall,
             )
+
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
@@ -170,6 +171,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             )
 
             TriggerError.DPAD_IME_NOT_SELECTED -> fixError(KMError.DpadTriggerImeNotSelected)
+
             TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
                 ProductNotPurchased(
                     ProductId.FLOATING_BUTTONS,
@@ -177,7 +179,9 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             )
 
             TriggerError.PURCHASE_VERIFICATION_FAILED -> purchasingManager.refresh()
+
             TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> fixError(SystemBridgeError.Disconnected)
+
             TriggerError.EVDEV_DEVICE_NOT_FOUND,
             TriggerError.FLOATING_BUTTON_DELETED,
             TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
@@ -200,18 +204,24 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     override suspend fun fixError(error: KMError) {
         when (error) {
             is KMError.AppDisabled -> packageManagerAdapter.enableApp(error.packageName)
+
             is KMError.AppNotFound -> packageManagerAdapter.downloadApp(error.packageName)
+
             KMError.NoCompatibleImeChosen ->
                 keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
 
             KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
+
             is ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
+
             is PermissionDenied -> permissionAdapter.request(error.permission)
+
             is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(
                 ShizukuUtils.SHIZUKU_PACKAGE,
             )
+
             is KMError.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                     keyMapperImeHelper.enableCompatibleInputMethods()
@@ -227,7 +237,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             is SystemBridgeError.Disconnected -> navigationProvider.navigate(
                 "fix_system_bridge",
-                NavDestination.ProMode,
+                NavDestination.ExpertMode,
             )
 
             is KMError.DpadTriggerImeNotSelected -> {

@@ -4,8 +4,8 @@ import android.os.Build
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.common.BuildConfigProvider
 
-class TestBuildConfigProvider(override val sdkInt: Int) : BuildConfigProvider {
-    override val minApi: Int = Build.VERSION_CODES.LOLLIPOP
+class TestBuildConfigProvider(override var sdkInt: Int) : BuildConfigProvider {
+    override val minApi: Int = Build.VERSION_CODES.O
     override val maxApi: Int = 1000
     override val packageName: String = BuildConfig.LIBRARY_PACKAGE_NAME
     override val version: String = "1.0.0"

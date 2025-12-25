@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 
 sealed class RecordedKey {
     data class KeyEvent(
@@ -13,6 +13,6 @@ sealed class RecordedKey {
         val detectionSource: InputEventDetectionSource,
     ) : RecordedKey()
 
-    data class EvdevEvent(val keyCode: Int, val scanCode: Int, val device: EvdevDeviceHandle) :
+    data class EvdevEvent(val keyCode: Int, val scanCode: Int, val device: EvdevDeviceInfo) :
         RecordedKey()
 }

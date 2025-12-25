@@ -67,7 +67,7 @@ class SettingsViewModel @Inject constructor(
             forceVibrate = values[3] as Boolean? ?: false,
             hideHomeScreenAlerts = values[4] as Boolean? ?: false,
             showDeviceDescriptors = values[5] as Boolean? ?: false,
-            keyEventActionsUseSystemBridege = values[6] as Boolean? ?: false,
+            keyEventActionsUseSystemBridge = values[6] as Boolean? ?: false,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -171,9 +171,9 @@ class SettingsViewModel @Inject constructor(
         useCase.requestRootPermission()
     }
 
-    fun onProModeClick() {
+    fun onExpertModeClick() {
         viewModelScope.launch {
-            navigate("pro_mode_settings", NavDestination.ProMode)
+            navigate("expert_mode_settings", NavDestination.ExpertMode)
         }
     }
 
@@ -323,9 +323,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onKeyEventActionMethodSelected(isProModeSelected: Boolean) {
+    fun onKeyEventActionMethodSelected(isExpertModeSelected: Boolean) {
         viewModelScope.launch {
-            useCase.setPreference(Keys.keyEventActionsUseSystemBridge, isProModeSelected)
+            useCase.setPreference(Keys.keyEventActionsUseSystemBridge, isExpertModeSelected)
         }
     }
 
@@ -360,7 +360,7 @@ data class MainSettingsState(
     val loggingEnabled: Boolean = false,
     val hideHomeScreenAlerts: Boolean = false,
     val showDeviceDescriptors: Boolean = false,
-    val keyEventActionsUseSystemBridege: Boolean = false,
+    val keyEventActionsUseSystemBridge: Boolean = false,
 )
 
 data class DefaultSettingsState(

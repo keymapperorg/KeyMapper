@@ -1,0 +1,15 @@
+[package]
+name = "evdev_manager_jni"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "evdev_manager_jni"
+crate-type = ["rlib"]
+
+[dependencies]
+jni = "0.21.1"
+log = "0.4.28"
+evdev = { path = "../../evdev" }
+evdev_manager_core = { path = "../core" }
+libc = "0.2.177"

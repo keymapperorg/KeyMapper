@@ -455,6 +455,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                     resourceProvider.getString(
                         R.string.purchasing_error_assistant_not_purchased_home_screen,
                     )
+
                 ProductId.FLOATING_BUTTONS ->
                     resourceProvider.getString(
                         R.string.purchasing_error_floating_buttons_not_purchased_home_screen,
@@ -474,6 +475,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             resourceProvider.getString(
                 R.string.error_sms_rate_limit,
             )
+
+        is SystemBridgeError.WriteEvdevEventFailed ->
+            resourceProvider.getString(R.string.error_write_evdev_event_failed)
 
         else ->
             this.toString()

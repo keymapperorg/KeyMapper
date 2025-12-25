@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.base.actions.keyevent
 
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 
 sealed class FixKeyEventActionState {
     abstract val isAccessibilityServiceEnabled: Boolean
-    abstract val proModeStatus: ProModeStatus
+    abstract val expertModeStatus: ExpertModeStatus
 
     data class InputMethod(
         val isEnabled: Boolean,
@@ -16,11 +16,11 @@ sealed class FixKeyEventActionState {
         val enablingRequiresUserInput: Boolean,
         val isAutoSwitchImeEnabled: Boolean,
         override val isAccessibilityServiceEnabled: Boolean,
-        override val proModeStatus: ProModeStatus,
+        override val expertModeStatus: ExpertModeStatus,
     ) : FixKeyEventActionState()
 
-    data class ProMode(
+    data class ExpertMode(
         override val isAccessibilityServiceEnabled: Boolean,
-        override val proModeStatus: ProModeStatus,
+        override val expertModeStatus: ExpertModeStatus,
     ) : FixKeyEventActionState()
 }

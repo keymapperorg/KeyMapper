@@ -185,13 +185,13 @@ class AndroidPhoneAdapter @Inject constructor(
             )
 
         try {
-            if (SystemClock.uptimeMillis() - lastSmsTime < SMS_MIN_RATE_MILLIS) {
+            if (SystemClock.elapsedRealtime() - lastSmsTime < SMS_MIN_RATE_MILLIS) {
                 Timber.d("SMS rate limit exceeded to protect against significant costs")
                 return KMError.KeyMapperSmsRateLimit
             }
 
             smsManager.sendTextMessage(number, null, message, sentPendingIntent, null)
-            lastSmsTime = SystemClock.uptimeMillis()
+            lastSmsTime = SystemClock.elapsedRealtime()
         } catch (e: IllegalArgumentException) {
             return KMError.Exception(e)
         }

@@ -17,22 +17,26 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.isSuccess
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
-import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -44,9 +48,14 @@ import timber.log.Timber
 class SystemBridgeConnectionManagerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
+    private val preferences: PreferenceRepository,
     private val starter: SystemBridgeStarter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : SystemBridgeConnectionManager {
+
+    companion object {
+        private const val TAG = "SystemBridgeConnectionManagerImpl"
+    }
 
     private val systemBridgeLock: Any = Any()
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
@@ -55,29 +64,33 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         MutableStateFlow<SystemBridgeConnectionState>(
             SystemBridgeConnectionState.Disconnected(
                 time = SystemClock.elapsedRealtime(),
-                isExpected = true,
+                // Get whether the user previously stopped the system bridge.
+                isStoppedByUser =
+                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
         synchronized(systemBridgeLock) {
-            Timber.e("System Bridge has died")
+            if (isExpectedDeath) {
+                Timber.w("System bridge killed by user.")
+            } else {
+                Timber.e("System Bridge has died")
+            }
 
             systemBridgeFlow.update { null }
 
             connectionState.update {
                 SystemBridgeConnectionState.Disconnected(
                     time = SystemClock.elapsedRealtime(),
-                    isExpected = isExpectedDeath,
+                    isStoppedByUser = isExpectedDeath,
                 )
             }
 
             isExpectedDeath = false
         }
     }
-
-    private var startJob: Job? = null
 
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
@@ -144,25 +157,27 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     @SuppressLint("LogNotTimber")
     private suspend fun restartSystemBridge(systemBridge: ISystemBridge) {
-        starter.startSystemBridge(executeCommand = { command ->
-            try {
-                val result = systemBridge.executeCommand(command, 10000L)!!
-                if (result.isSuccess()) {
-                    Success(result.stdout)
-                } else {
-                    KMError.Exception(
-                        Exception(
-                            "Command failed with exit code ${result.exitCode}: ${result.stdout}",
-                        ),
-                    )
+        starter.startSystemBridgeWithLock(
+            commandExecutor = { command ->
+                try {
+                    val result = systemBridge.executeCommand(command, 10000L)!!
+                    if (result.isSuccess()) {
+                        Success(result.stdout)
+                    } else {
+                        KMError.Exception(
+                            Exception(
+                                "Command failed with exit code ${result.exitCode}: ${result.stdout}",
+                            ),
+                        )
+                    }
+                } catch (_: DeadObjectException) {
+                    // This exception is expected since it is killing the system bridge
+                    Success("")
+                } catch (e: Exception) {
+                    KMError.Exception(e)
                 }
-            } catch (_: DeadObjectException) {
-                // This exception is expected since it is killing the system bridge
-                Success("")
-            } catch (e: Exception) {
-                KMError.Exception(e)
-            }
-        }).onFailure { error ->
+            },
+        ).onFailure { error ->
             Log.e(TAG, "Failed to restart System Bridge: $error")
         }
     }
@@ -192,15 +207,8 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun startWithAdb() {
-        if (startJob?.isActive == true) {
-            Timber.i("System Bridge is already starting")
-            return
-        }
-
-        startJob = coroutineScope.launch {
-            starter.startWithAdb()
-        }
+    override suspend fun startWithAdb() {
+        starter.startWithAdb()
     }
 
     private fun preventSystemBridgeKilling(systemBridge: ISystemBridge) {
@@ -239,15 +247,8 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         }
     }
 
-    override fun startWithRoot() {
-        if (startJob?.isActive == true) {
-            Timber.i("System Bridge is already starting")
-            return
-        }
-
-        startJob = coroutineScope.launch {
-            starter.startWithRoot()
-        }
+    override suspend fun startWithRoot() {
+        starter.startWithRoot()
     }
 
     override fun startWithShizuku() {
@@ -256,7 +257,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 }
 
 @SuppressLint("ObsoleteSdkInt")
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeConnectionManager {
     val connectionState: StateFlow<SystemBridgeConnectionState>
 
@@ -264,11 +265,17 @@ interface SystemBridgeConnectionManager {
     fun stopSystemBridge()
     fun restartSystemBridge()
 
-    fun startWithRoot()
+    suspend fun startWithRoot()
     fun startWithShizuku()
-    fun startWithAdb()
+    suspend fun startWithAdb()
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {
     return connectionState.value is SystemBridgeConnectionState.Connected
+}
+
+suspend fun SystemBridgeConnectionManager.awaitConnected() {
+    connectionState
+        .filterIsInstance<SystemBridgeConnectionState.Connected>()
+        .first()
 }

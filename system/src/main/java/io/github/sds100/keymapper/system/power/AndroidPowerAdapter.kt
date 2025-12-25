@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -53,10 +52,5 @@ class AndroidPowerAdapter @Inject constructor(@ApplicationContext private val co
         )
     }
 
-    private fun getIsCharging(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        batteryManager.isCharging
-    } else {
-        // no other way to synchronously get the information
-        false
-    }
+    private fun getIsCharging(): Boolean = batteryManager.isCharging
 }

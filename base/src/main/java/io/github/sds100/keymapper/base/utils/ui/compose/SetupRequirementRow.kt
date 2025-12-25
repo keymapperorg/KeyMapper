@@ -22,13 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 
 @Composable
-fun ProModeRequirementRow(
+fun ExpertModeRequirementRow(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
-    proModeStatus: ProModeStatus,
+    expertModeStatus: ExpertModeStatus,
     buttonColors: ButtonColors = ButtonDefaults.filledTonalButtonColors(),
     onClick: () -> Unit,
 ) {
@@ -39,19 +39,21 @@ fun ProModeRequirementRow(
     ) {
         SetupRequirementRow(
             modifier = modifier,
-            text = stringResource(R.string.trigger_setup_pro_mode_title),
+            text = stringResource(R.string.trigger_setup_expert_mode_title),
         ) {
-            if (proModeStatus == ProModeStatus.UNSUPPORTED) {
+            if (expertModeStatus == ExpertModeStatus.UNSUPPORTED) {
                 Text(
-                    text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
+                    text = stringResource(R.string.trigger_setup_expert_mode_unsupported),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             } else {
                 SetupRequirementButton(
-                    enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
-                    disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
-                    isEnabled = proModeStatus != ProModeStatus.ENABLED,
+                    enabledText = stringResource(R.string.trigger_setup_expert_mode_enable_button),
+                    disabledText = stringResource(
+                        R.string.trigger_setup_expert_mode_running_button,
+                    ),
+                    isEnabled = expertModeStatus != ExpertModeStatus.ENABLED,
                     colors = buttonColors,
                     onClick = onClick,
                 )
@@ -103,7 +105,9 @@ fun InputMethodRequirementRow(
             !isEnabled && enablingRequiresUserInput -> stringResource(
                 R.string.trigger_setup_input_method_enable_button,
             )
+
             !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
+
             else -> ""
         }
 

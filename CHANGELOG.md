@@ -1,19 +1,49 @@
+## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
+
+#### 25 December 2025
+
+Merry Christmas from the Key Mapper team! 🎄
+
+Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is free.
+
+## Added
+
+- #1915 ask user to remove "adb shell" from Shell command.
+- #1904 inform the user how to enable the accessibility service with PRO mode or ADB.
+- #1911 constraint for physical device orientation that ignores auto rotate setting.
+- #1918 improve how key event actions are performed with system bridge.
+- #1905 system bridge log is now visible in Key Mapper log.
+- #1941 show loading indicator when starting system bridge.
+
+## Bug fixes
+
+- #1913 actually save the option to detect with scan code
+- #1931 fix Close and Remove From Recents action on some Android 13 revisions
+- #1926 PRO mode triggers for external devices work when the device reconnects.
+- #1918 PRO mode key maps can input key codes that aren't originally supported by the trigger
+  device.
+- #1934 hold down option for Tap Screen action is added back.
+- Log less verbose.
+
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 
 #### 25 November 2025
 
 ## Added
+
 - #1871 action to modify any system settings.
 - #1221 action to show a custom notification.
 - #1491 action to toggle/enable/disable hotspot.
 - #1414 constraint for when the keyboard is showing.
 - #1900 log to logcat if extra logging is enabled.
 - #1902 add toggle next to record trigger button to use PRO mode.
+- #1909 categorise constraints similar to actions.
 
 ## Bug fixes
 
 - #1901 prompt user to set default USB configuration to 'No data transfer' after starting pro mode.
-- #1898 do not launch directly into the Wireless Debugging activity on Xiaomi devices due to a bug they introduced.
+- #1898 do not launch directly into the Wireless Debugging activity on Xiaomi devices due to a bug
+  they introduced.
 
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
@@ -21,12 +51,15 @@
 
 ## Added
 
-- #1890 add button to save log to file and share it. The clipboard button now cuts off older entries and keeps newest ones.
+- #1890 add button to save log to file and share it. The clipboard button now cuts off older entries
+  and keeps newest ones.
 
 ## Fixed
 
-- Only autostart PRO mode with Shizuku if Shizuku permission is granted. Otherwise fallback to method with Wireless Debugging and WRITE_SECURE_SETTINGS permission.
-- Starting system bridge for the first time would be janky because granting READ_LOGS kills the app process. Only grant for READ_LOGS when sharing logcat from settings.
+- Only autostart PRO mode with Shizuku if Shizuku permission is granted. Otherwise fallback to
+  method with Wireless Debugging and WRITE_SECURE_SETTINGS permission.
+- Starting system bridge for the first time would be janky because granting READ_LOGS kills the app
+  process. Only grant for READ_LOGS when sharing logcat from settings.
 - #1886 mobile data actions work in PRO mode.
 
 ## [4.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.01)

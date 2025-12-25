@@ -116,7 +116,7 @@
 
 # Keep all AIDL interface classes and their methods
 -keep class io.github.sds100.keymapper.sysbridge.ISystemBridge** { *; }
--keep class io.github.sds100.keymapper.sysbridge.IEvdevCallback** { *; }
+-keep class io.github.sds100.keymapper.evdev.IEvdevCallback** { *; }
 -keep class io.github.sds100.keymapper.sysbridge.IShizukuStarterService** { *; }
 
 -keepclassmembers class io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService {
@@ -138,7 +138,10 @@
 -keep class io.github.sds100.keymapper.sysbridge.** extends android.content.ContentProvider { *; }
 
 # Keep parcelable classes used in AIDL
--keep class io.github.sds100.keymapper.common.models.EvdevDeviceHandle { *; }
+-keep class io.github.sds100.keymapper.common.models.GrabbedDeviceHandle { *; }
+-keep class io.github.sds100.keymapper.common.models.EvdevDeviceInfo { *; }
+-keep class io.github.sds100.keymapper.common.models.GrabTargetKeyCode { *; }
+-keep class io.github.sds100.keymapper.common.models.ShellResult { *; }
 
 # Keep all rikka.hidden classes and interfaces as they contain AIDL files
 -keep class rikka.hidden.** { *; }

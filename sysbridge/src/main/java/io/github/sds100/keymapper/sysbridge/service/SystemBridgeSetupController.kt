@@ -12,7 +12,6 @@ import android.os.Build
 import android.provider.Settings
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,6 +24,7 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.awaitConnected
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -60,6 +60,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private val activityManager: ActivityManager by lazy { ctx.getSystemService()!! }
 
+    private val _isStarting: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isStarting: StateFlow<Boolean> = _isStarting
+    private var startJob: Job? = null
+
     override val isDeveloperOptionsEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(getDeveloperOptionsEnabled())
 
@@ -73,8 +77,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private val isAdbPairedResult: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     private var isAdbPairedJob: Job? = null
-
-    private var autoStartJob: Job? = null
 
     init {
         // Automatically go back to the Key Mapper app when turning on wireless debugging
@@ -104,13 +106,65 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     override fun startWithRoot() {
-        coroutineScope.launch {
-            connectionManager.startWithRoot()
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
+
+        startJob = coroutineScope.launch {
+            _isStarting.value = true
+            try {
+                connectionManager.startWithRoot()
+                // Wait for the service to bind and start system bridge
+                withTimeoutOrNull(10000L) {
+                    connectionManager.awaitConnected()
+                }
+            } finally {
+                _isStarting.value = false
+            }
         }
     }
 
     override fun startWithShizuku() {
-        connectionManager.startWithShizuku()
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
+
+        startJob = coroutineScope.launch {
+            _isStarting.value = true
+            try {
+                connectionManager.startWithShizuku()
+
+                // Wait for the service to bind and start system bridge
+                withTimeoutOrNull(10000L) {
+                    connectionManager.awaitConnected()
+                }
+            } finally {
+                _isStarting.value = false
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun startWithAdb() {
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
+
+        startJob = coroutineScope.launch {
+            _isStarting.value = true
+            try {
+                connectionManager.startWithAdb()
+                // Wait for the service to bind and start system bridge
+                withTimeoutOrNull(10000L) {
+                    connectionManager.awaitConnected()
+                }
+            } finally {
+                _isStarting.value = false
+            }
+        }
     }
 
     /**
@@ -119,63 +173,66 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun autoStartWithAdb() {
-        autoStartJob?.cancel()
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
 
-        autoStartJob = coroutineScope.launch {
-            if (!canWriteGlobalSettings()) {
-                Timber.w("Cannot auto start with ADB. WRITE_SECURE_SETTINGS permission not granted")
-                return@launch
-            }
-
-            if (connectionManager.connectionState.value
-                    !is SystemBridgeConnectionState.Disconnected
-            ) {
-                Timber.w("Not auto starting. System Bridge is already connected.")
-                return@launch
-            }
-
-            SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
-
+        startJob = coroutineScope.launch {
+            _isStarting.value = true
             try {
-                withTimeout(5000L) { isDeveloperOptionsEnabled.first { it } }
-            } catch (_: TimeoutCancellationException) {
-                return@launch
-            }
+                if (!canWriteGlobalSettings()) {
+                    Timber.w(
+                        "Cannot auto start with ADB. WRITE_SECURE_SETTINGS permission not granted",
+                    )
+                    return@launch
+                }
 
-            if (isAdbPaired()) {
-                // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
-                // turning on developer options just before can cause the Shell to be killed once
-                // the system bridge is started.
-                SettingsUtils.putGlobalSetting(ctx, Settings.Global.ADB_ENABLED, 1)
-                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
+                if (connectionManager.connectionState.value
+                        !is SystemBridgeConnectionState.Disconnected
+                ) {
+                    Timber.w("Not auto starting. System Bridge is already connected.")
+                    return@launch
+                }
 
-                // Wait for wireless debugging to be enabled before starting with ADB
+                SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
+
                 try {
-                    withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
+                    withTimeout(5000L) { isDeveloperOptionsEnabled.first { it } }
                 } catch (_: TimeoutCancellationException) {
                     return@launch
                 }
 
-                startWithAdb()
+                if (isAdbPaired()) {
+                    // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
+                    // turning on developer options just before can cause the Shell to be killed once
+                    // the system bridge is started.
+                    SettingsUtils.putGlobalSetting(ctx, Settings.Global.ADB_ENABLED, 1)
+                    SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
 
-                // Wait for the service to connect before turning off wireless debugging
-                withTimeoutOrNull(5000L) {
-                    connectionManager.connectionState
-                        .filterIsInstance<SystemBridgeConnectionState.Connected>()
-                        .first()
+                    // Wait for wireless debugging to be enabled before starting with ADB
+                    try {
+                        withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
+                    } catch (_: TimeoutCancellationException) {
+                        return@launch
+                    }
+
+                    connectionManager.startWithAdb()
+
+                    // Wait for the service to connect before turning off wireless debugging
+                    withTimeoutOrNull(10000L) {
+                        connectionManager.awaitConnected()
+                    }
+
+                    // Disable wireless debugging when done
+                    SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+                } else {
+                    Timber.e("Autostart failed. ADB not paired successfully.")
                 }
-
-                // Disable wireless debugging when done
-                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
-            } else {
-                Timber.e("Autostart failed. ADB not paired successfully.")
+            } finally {
+                _isStarting.value = false
             }
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun startWithAdb() {
-        connectionManager.startWithAdb()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -235,9 +292,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             isAdbPairedResult.value = null
 
             isAdbPairedJob = coroutineScope.launch {
-                if (!getWirelessDebuggingEnabled()) {
-                    SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
-                }
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
 
                 // Try running a command to see if the pairing is working correctly.
                 // This will execute the "exit" command in the shell so it immediately closes
@@ -343,6 +398,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeSetupController {
     val setupAssistantStep: Flow<SystemBridgeSetupStep?>
+    val isStarting: StateFlow<Boolean>
 
     val isDeveloperOptionsEnabled: Flow<Boolean>
     fun enableDeveloperOptions()
@@ -361,7 +417,5 @@ interface SystemBridgeSetupController {
     fun startWithRoot()
     fun startWithShizuku()
     fun startWithAdb()
-
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
     fun autoStartWithAdb()
 }

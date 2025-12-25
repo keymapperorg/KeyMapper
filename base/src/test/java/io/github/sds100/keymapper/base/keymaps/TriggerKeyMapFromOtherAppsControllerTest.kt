@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsContr
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
 import io.github.sds100.keymapper.common.utils.KMError
-import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,14 +20,12 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
-@RunWith(JUnitParamsRunner::class)
 class TriggerKeyMapFromOtherAppsControllerTest {
 
     companion object {

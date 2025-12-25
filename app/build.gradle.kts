@@ -152,6 +152,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":sysbridge"))
     implementation(project(":system"))
+    implementation(project(":evdev"))
     compileOnly(project(":systemstubs"))
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)

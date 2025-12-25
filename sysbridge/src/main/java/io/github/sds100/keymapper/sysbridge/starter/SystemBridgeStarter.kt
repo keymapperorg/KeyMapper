@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.R
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
-import io.github.sds100.keymapper.sysbridge.ktx.loge
 import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
 import java.io.BufferedReader
 import java.io.DataInputStream
@@ -75,15 +74,17 @@ class SystemBridgeStarter @Inject constructor(
             Timber.i("Starting System Bridge with Shizuku starter service")
             try {
                 runBlocking {
-                    startSystemBridge(executeCommand = { command ->
-                        val output = service.executeCommand(command)
+                    startSystemBridgeWithLock(
+                        commandExecutor = { command ->
+                            val output = service.executeCommand(command)
 
-                        if (output == null) {
-                            KMError.UnknownIOError
-                        } else {
-                            Success(output)
-                        }
-                    })
+                            if (output == null) {
+                                KMError.UnknownIOError
+                            } else {
+                                Success(output)
+                            }
+                        },
+                    )
                 }
             } catch (e: RemoteException) {
                 Timber.e("Exception starting with Shizuku starter service: $e")
@@ -135,7 +136,7 @@ class SystemBridgeStarter @Inject constructor(
             return KMError.Exception(IllegalStateException("User is locked"))
         }
 
-        return startSystemBridge(executeCommand = adbManager::executeCommand)
+        return startSystemBridgeWithLock(commandExecutor = adbManager::executeCommand)
             .onFailure { error ->
                 Timber.e("Failed to start system bridge with ADB: $error")
             }
@@ -148,66 +149,74 @@ class SystemBridgeStarter @Inject constructor(
         }
 
         Timber.i("Starting System Bridge with root")
-        startSystemBridge(executeCommand = { command ->
-            val output = withContext(Dispatchers.IO) {
-                Shell.cmd(command).exec()
-            }
+        startSystemBridgeWithLock(
+            commandExecutor = { command ->
+                val output = withContext(Dispatchers.IO) {
+                    Shell.cmd(command).exec()
+                }
 
-            if (output.isSuccess) {
-                Success(output.out.plus(output.err).joinToString("\n"))
-            } else {
-                KMError.UnknownIOError
-            }
-        })
+                if (output.isSuccess) {
+                    Success(output.out.plus(output.err).joinToString("\n"))
+                } else {
+                    KMError.UnknownIOError
+                }
+            },
+        )
     }
 
-    suspend fun startSystemBridge(
-        executeCommand: suspend (String) -> KMResult<String>,
+    suspend fun startSystemBridgeWithLock(
+        commandExecutor: suspend (String) -> KMResult<String>,
     ): KMResult<String> {
         startMutex.withLock {
-            val externalFilesParent = try {
-                ctx.getExternalFilesDir(null)?.parentFile
-            } catch (e: IOException) {
-                return KMError.UnknownIOError
-            }
-
-            Timber.i("Copy starter files to ${externalFilesParent?.absolutePath}")
-
-            val outputStarterBinary = File(externalFilesParent, "starter")
-            val outputStarterScript = File(externalFilesParent, "start.sh")
-
-            val copyFilesResult = withContext(Dispatchers.IO) {
-                copyNativeLibrary(outputStarterBinary).then {
-                    // Create the start.sh shell script
-                    writeStarterScript(
-                        outputStarterScript,
-                        outputStarterBinary.absolutePath,
-                    )
-                    Success(Unit)
-                }
-            }
-
-            val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath --package=$packageName --version=${buildConfigProvider.versionCode}"
-
-            return copyFilesResult
-                .then { executeCommand(startCommand) }
-                .then { output ->
-                    // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
-                    if (output.contains(
-                            "/Android/data/${ctx.packageName}/start.sh: Permission denied",
-                        )
-                    ) {
-                        Timber.w(
-                            "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead...",
-                        )
-
-                        startSystemBridgeFromProtectedStorage(executeCommand)
-                    } else {
-                        Success(output)
-                    }
-                }
+            return startSystemBridge(commandExecutor)
         }
+    }
+
+    private suspend fun startSystemBridge(
+        commandExecutor: suspend (String) -> KMResult<String>,
+    ): KMResult<String> {
+        val externalFilesParent = try {
+            ctx.getExternalFilesDir(null)?.parentFile
+        } catch (e: IOException) {
+            return KMError.UnknownIOError
+        }
+
+        Timber.i("Copy starter files to ${externalFilesParent?.absolutePath}")
+
+        val outputStarterBinary = File(externalFilesParent, "starter")
+        val outputStarterScript = File(externalFilesParent, "start.sh")
+
+        val copyFilesResult = withContext(Dispatchers.IO) {
+            copyNativeLibrary(outputStarterBinary).then {
+                // Create the start.sh shell script
+                writeStarterScript(
+                    outputStarterScript,
+                    outputStarterBinary.absolutePath,
+                )
+                Success(Unit)
+            }
+        }
+
+        val startCommand =
+            "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath --package=$packageName --version=${buildConfigProvider.versionCode}"
+
+        return copyFilesResult
+            .then { commandExecutor(startCommand) }
+            .then { output ->
+                // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
+                if (output.contains(
+                        "/Android/data/${ctx.packageName}/start.sh: Permission denied",
+                    )
+                ) {
+                    Timber.w(
+                        "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead...",
+                    )
+
+                    startSystemBridgeFromProtectedStorage(commandExecutor)
+                } else {
+                    Success(output)
+                }
+            }
     }
 
     private suspend fun startSystemBridgeFromProtectedStorage(
@@ -261,7 +270,7 @@ class SystemBridgeStarter @Inject constructor(
 
             return executeCommand(startCommand)
         } catch (e: IOException) {
-            loge("write files", e)
+            Timber.e(e)
             return KMError.UnknownIOError
         }
     }

@@ -16,8 +16,9 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
-import io.github.sds100.keymapper.base.promode.SystemBridgeAutoStarter
+import io.github.sds100.keymapper.base.logging.SystemBridgeLogger
 import io.github.sds100.keymapper.base.settings.Theme
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
@@ -90,6 +91,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     @Inject
     lateinit var systemBridgeConnectionManager: SystemBridgeConnectionManagerImpl
 
+    @Inject
+    lateinit var systemBridgeLogger: SystemBridgeLogger
+
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
     private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
@@ -105,12 +109,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             when (intent.action) {
                 Intent.ACTION_SHUTDOWN -> {
                     Timber.i("Clean shutdown")
-                    settingsRepository.set(Keys.isCleanShutdown, true)
-
-                    // Block until the value is persisted.
-                    runBlocking {
-                        settingsRepository.get(Keys.isCleanShutdown).first { it == true }
-                    }
                 }
             }
         }
@@ -192,20 +190,22 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         notificationController.init()
 
-        processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-            @Suppress("DEPRECATION")
-            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            fun onResume() {
-                // when the user returns to the app let everything know that the permissions could have changed
-                notificationController.onOpenApp()
+        processLifecycleOwner.lifecycle.addObserver(
+            object : LifecycleObserver {
+                @Suppress("DEPRECATION")
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume() {
+                    // when the user returns to the app let everything know that the permissions could have changed
+                    notificationController.onOpenApp()
 
-                if (BuildConfig.DEBUG &&
-                    permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)
-                ) {
-                    accessibilityServiceAdapter.start()
+                    if (BuildConfig.DEBUG &&
+                        permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)
+                    ) {
+                        accessibilityServiceAdapter.start()
+                    }
                 }
-            }
-        })
+            },
+        )
 
         appCoroutineScope.launch {
             notificationController.openApp.collectLatest { intentAction ->
@@ -233,6 +233,11 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeAutoStarter.init()
+
+            // Initialize SystemBridgeLogger to start receiving log messages from SystemBridge.
+            // Using Lazy<> to avoid circular dependency issues and ensure it's only created
+            // when the API level requirement is met.
+            systemBridgeLogger.start()
 
             appCoroutineScope.launch {
                 systemBridgeConnectionManager.connectionState.collect { state ->

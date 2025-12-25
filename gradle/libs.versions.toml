@@ -1,7 +1,7 @@
 [versions]
 compile-sdk = "36"
 min-sdk = "26"
-build-tools = "36.0.0"
+build-tools = "36.1.0"
 target-sdk = "36"
 
 android-gradle-plugin = "8.9.1"
@@ -39,12 +39,10 @@ epoxy = "4.6.2"
 flexbox = "3.0.0"
 google-accompanist-drawablepainter = "0.35.0-alpha"
 hiddenapibypass = "4.3"
-hiddenapibypass-lsposed = "6.1"
 introshowcaseview = "2.0.2"
 conscrypt-android = "2.5.3"
 boringssl-ndk = "20250114"
 bouncycastle-bcpkix = "1.70"
-appiconloader = "1.5.0"
 rikkax-core = "1.4.1"
 junit = "4.13.2"
 junit-params = "1.1.1"
@@ -78,6 +76,8 @@ ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
 libsu-core = "6.0.0"
 rikka-hidden = "4.4.0"
+
+rust-android-gradle = "0.9.6"
 
 [libraries]
 # Kotlin
@@ -181,13 +181,11 @@ github-mflisar-dragselectrecyclerview = { group = "com.github.MFlisar", name = "
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
-lsposed-hiddenapibypass-updated = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass-lsposed" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
 github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu-core" }
 conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
 vvb2060-ndk-boringssl = { group = "io.github.vvb2060.ndk", name = "boringssl", version.ref = "boringssl-ndk" }
 bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk15on", version.ref = "bouncycastle-bcpkix" }
-zhanghai-appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
 rikka-rikkax-core = { group = "dev.rikka.rikkax.core", name = "core-ktx", version.ref = "rikkax-core" }
 
 
@@ -218,6 +216,7 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-android" }
+mozilla-rust-android = { id = "org.mozilla.rust-android-gradle.rust-android", version.ref = "rust-android-gradle" }
 
 [bundles]
 splitties = [

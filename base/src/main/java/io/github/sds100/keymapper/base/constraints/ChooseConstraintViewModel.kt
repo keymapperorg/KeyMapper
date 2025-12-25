@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.StayCurrentPortrait
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,9 +17,12 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
 import javax.inject.Inject
@@ -45,70 +50,46 @@ class ChooseConstraintViewModel @Inject constructor(
     NavigationProvider by navigationProvider {
 
     companion object {
-        private val ALL_CONSTRAINTS_ORDERED: Array<ConstraintId> = arrayOf(
-            ConstraintId.APP_IN_FOREGROUND,
-            ConstraintId.APP_NOT_IN_FOREGROUND,
-            ConstraintId.APP_PLAYING_MEDIA,
-            ConstraintId.APP_NOT_PLAYING_MEDIA,
-            ConstraintId.MEDIA_PLAYING,
-            ConstraintId.MEDIA_NOT_PLAYING,
+        // Synthetic IDs for consolidated orientation list items (not actual ConstraintIds)
+        private const val DISPLAY_ORIENTATION_LIST_ITEM_ID = "display_orientation"
+        private const val PHYSICAL_ORIENTATION_LIST_ITEM_ID = "physical_orientation"
 
-            ConstraintId.BT_DEVICE_CONNECTED,
-            ConstraintId.BT_DEVICE_DISCONNECTED,
-
-            ConstraintId.SCREEN_ON,
-            ConstraintId.SCREEN_OFF,
-
-            ConstraintId.ORIENTATION_PORTRAIT,
-            ConstraintId.ORIENTATION_LANDSCAPE,
-            ConstraintId.ORIENTATION_0,
-            ConstraintId.ORIENTATION_90,
-            ConstraintId.ORIENTATION_180,
-            ConstraintId.ORIENTATION_270,
-
-            ConstraintId.FLASHLIGHT_ON,
-            ConstraintId.FLASHLIGHT_OFF,
-
-            ConstraintId.WIFI_ON,
-            ConstraintId.WIFI_OFF,
-            ConstraintId.WIFI_CONNECTED,
-            ConstraintId.WIFI_DISCONNECTED,
-
-            ConstraintId.IME_CHOSEN,
-            ConstraintId.IME_NOT_CHOSEN,
-
-            ConstraintId.KEYBOARD_SHOWING,
-            ConstraintId.KEYBOARD_NOT_SHOWING,
-
-            ConstraintId.DEVICE_IS_LOCKED,
-            ConstraintId.DEVICE_IS_UNLOCKED,
-            ConstraintId.LOCK_SCREEN_SHOWING,
-            ConstraintId.LOCK_SCREEN_NOT_SHOWING,
-
-            ConstraintId.IN_PHONE_CALL,
-            ConstraintId.NOT_IN_PHONE_CALL,
-            ConstraintId.PHONE_RINGING,
-
-            ConstraintId.CHARGING,
-            ConstraintId.DISCHARGING,
-
-            ConstraintId.HINGE_CLOSED,
-            ConstraintId.HINGE_OPEN,
-
-            ConstraintId.TIME,
+        private val CATEGORY_ORDER = arrayOf(
+            ConstraintCategory.APPS,
+            ConstraintCategory.MEDIA,
+            ConstraintCategory.BLUETOOTH,
+            ConstraintCategory.DISPLAY,
+            ConstraintCategory.FLASHLIGHT,
+            ConstraintCategory.WIFI,
+            ConstraintCategory.KEYBOARD,
+            ConstraintCategory.LOCK,
+            ConstraintCategory.PHONE,
+            ConstraintCategory.POWER,
+            ConstraintCategory.DEVICE,
+            ConstraintCategory.TIME,
         )
     }
 
     private val returnResult = MutableSharedFlow<ConstraintData>()
 
-    private val allListItems: List<SimpleListItemModel> by lazy { buildListItems() }
+    private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    val listItems: StateFlow<State<List<SimpleListItemModel>>> =
+    val groups: StateFlow<State<List<SimpleListItemGroup>>> =
         searchQuery.map { query ->
-            val filteredItems = allListItems.filter { it.title.containsQuery(query) }
-            State.Data(filteredItems)
+            val groups = allGroupedListItems.mapNotNull { group ->
+
+                val filteredItems = group.items.filter { it.title.containsQuery(query) }
+
+                if (filteredItems.isEmpty()) {
+                    return@mapNotNull null
+                } else {
+                    group.copy(items = filteredItems)
+                }
+            }
+
+            State.Data(groups)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
     var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
@@ -138,6 +119,18 @@ class ChooseConstraintViewModel @Inject constructor(
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
+            // Handle synthetic list item IDs for consolidated orientation constraints
+            when (id) {
+                DISPLAY_ORIENTATION_LIST_ITEM_ID -> {
+                    onSelectDisplayOrientationConstraint()
+                    return@launch
+                }
+                PHYSICAL_ORIENTATION_LIST_ITEM_ID -> {
+                    onSelectPhysicalOrientationConstraint()
+                    return@launch
+                }
+            }
+
             when (val constraintType = ConstraintId.valueOf(id)) {
                 ConstraintId.APP_IN_FOREGROUND,
                 ConstraintId.APP_NOT_IN_FOREGROUND,
@@ -158,30 +151,58 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.SCREEN_OFF -> returnResult.emit(ConstraintData.ScreenOff)
 
-                ConstraintId.ORIENTATION_PORTRAIT ->
+                ConstraintId.DISPLAY_ORIENTATION_PORTRAIT ->
                     returnResult.emit(ConstraintData.OrientationPortrait)
 
-                ConstraintId.ORIENTATION_LANDSCAPE ->
+                ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE ->
                     returnResult.emit(ConstraintData.OrientationLandscape)
 
-                ConstraintId.ORIENTATION_0 ->
+                ConstraintId.DISPLAY_ORIENTATION_0 ->
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0),
                     )
 
-                ConstraintId.ORIENTATION_90 ->
+                ConstraintId.DISPLAY_ORIENTATION_90 ->
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90),
                     )
 
-                ConstraintId.ORIENTATION_180 ->
+                ConstraintId.DISPLAY_ORIENTATION_180 ->
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180),
                     )
 
-                ConstraintId.ORIENTATION_270 ->
+                ConstraintId.DISPLAY_ORIENTATION_270 ->
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientation(
+                            physicalOrientation = PhysicalOrientation.PORTRAIT,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientation(
+                            physicalOrientation = PhysicalOrientation.LANDSCAPE,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientation(
+                            physicalOrientation = PhysicalOrientation.PORTRAIT_INVERTED,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientation(
+                            physicalOrientation = PhysicalOrientation.LANDSCAPE_INVERTED,
+                        ),
                     )
 
                 ConstraintId.FLASHLIGHT_ON -> {
@@ -278,24 +299,153 @@ class ChooseConstraintViewModel @Inject constructor(
         return cameraLens
     }
 
-    private fun buildListItems(): List<SimpleListItemModel> = buildList {
-        ALL_CONSTRAINTS_ORDERED.forEach { id ->
-            val title = getString(ConstraintUtils.getTitleStringId(id))
-            val icon = ConstraintUtils.getIcon(id)
-            val error = useCase.isSupported(id)
+    private suspend fun onSelectDisplayOrientationConstraint() {
+        val items = listOf(
+            ConstraintId.DISPLAY_ORIENTATION_PORTRAIT to
+                getString(R.string.constraint_choose_orientation_portrait),
+            ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE to
+                getString(R.string.constraint_choose_orientation_landscape),
+            ConstraintId.DISPLAY_ORIENTATION_0 to
+                getString(R.string.constraint_choose_orientation_0),
+            ConstraintId.DISPLAY_ORIENTATION_90 to
+                getString(R.string.constraint_choose_orientation_90),
+            ConstraintId.DISPLAY_ORIENTATION_180 to
+                getString(R.string.constraint_choose_orientation_180),
+            ConstraintId.DISPLAY_ORIENTATION_270 to
+                getString(R.string.constraint_choose_orientation_270),
+        )
 
-            val listItem = SimpleListItemModel(
-                id = id.toString(),
-                title = title,
-                icon = icon,
-                subtitle = error?.getFullMessage(this@ChooseConstraintViewModel),
-                isSubtitleError = true,
-                isEnabled = error == null,
+        val dialog = DialogModel.SingleChoice(items)
+        val selectedOrientation = showDialog("choose_display_orientation", dialog) ?: return
+
+        val constraintData = when (selectedOrientation) {
+            ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
+            ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
+            ConstraintId.DISPLAY_ORIENTATION_0 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0)
+            ConstraintId.DISPLAY_ORIENTATION_90 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90)
+            ConstraintId.DISPLAY_ORIENTATION_180 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180)
+            ConstraintId.DISPLAY_ORIENTATION_270 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270)
+            else -> return
+        }
+
+        returnResult.emit(constraintData)
+    }
+
+    private suspend fun onSelectPhysicalOrientationConstraint() {
+        val items = listOf(
+            PhysicalOrientation.PORTRAIT to
+                getString(R.string.constraint_choose_physical_orientation_portrait),
+            PhysicalOrientation.LANDSCAPE to
+                getString(R.string.constraint_choose_physical_orientation_landscape),
+            PhysicalOrientation.PORTRAIT_INVERTED to
+                getString(R.string.constraint_choose_physical_orientation_portrait_inverted),
+            PhysicalOrientation.LANDSCAPE_INVERTED to
+                getString(R.string.constraint_choose_physical_orientation_landscape_inverted),
+        )
+
+        val dialog = DialogModel.SingleChoice(items)
+        val selectedOrientation = showDialog("choose_physical_orientation", dialog) ?: return
+
+        returnResult.emit(
+            ConstraintData.PhysicalOrientation(physicalOrientation = selectedOrientation),
+        )
+    }
+
+    private fun buildListGroups(): List<SimpleListItemGroup> = buildList {
+        // Filter out individual orientation constraints - show only the consolidated ones
+        val filteredConstraints = ConstraintId.entries.filter { constraintId ->
+            constraintId !in listOf(
+                ConstraintId.DISPLAY_ORIENTATION_PORTRAIT,
+                ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE,
+                ConstraintId.DISPLAY_ORIENTATION_0,
+                ConstraintId.DISPLAY_ORIENTATION_90,
+                ConstraintId.DISPLAY_ORIENTATION_180,
+                ConstraintId.DISPLAY_ORIENTATION_270,
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
+            )
+        }
+
+        val listItems = buildListItems(filteredConstraints)
+
+        // Add synthetic orientation list items
+        val displayOrientationItem = SimpleListItemModel(
+            id = DISPLAY_ORIENTATION_LIST_ITEM_ID,
+            title = getString(R.string.constraint_choose_screen_orientation),
+            icon = ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait),
+            isEnabled = true,
+        )
+
+        val physicalOrientationItem = SimpleListItemModel(
+            id = PHYSICAL_ORIENTATION_LIST_ITEM_ID,
+            title = getString(R.string.constraint_choose_physical_orientation),
+            icon = ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait),
+            isEnabled = true,
+        )
+
+        for (category in CATEGORY_ORDER) {
+            val header = getString(ConstraintUtils.getCategoryLabel(category))
+
+            val categoryItems = listItems.filter { item ->
+                item.isEnabled &&
+                    try {
+                        ConstraintUtils.getCategory(ConstraintId.valueOf(item.id)) == category
+                    } catch (e: IllegalArgumentException) {
+                        false
+                    }
+            }.toMutableList()
+
+            // Add synthetic orientation items to DISPLAY category
+            if (category == ConstraintCategory.DISPLAY) {
+                categoryItems.add(displayOrientationItem)
+                categoryItems.add(physicalOrientationItem)
+            }
+
+            val group = SimpleListItemGroup(
+                header,
+                items = categoryItems,
             )
 
-            add(listItem)
+            if (group.items.isNotEmpty()) {
+                add(group)
+            }
+        }
+
+        val unsupportedItems = listItems.filter { !it.isEnabled }
+        if (unsupportedItems.isNotEmpty()) {
+            val unsupportedGroup = SimpleListItemGroup(
+                header = getString(R.string.choose_constraint_group_unsupported),
+                items = unsupportedItems,
+            )
+            add(unsupportedGroup)
         }
     }
+
+    private fun buildListItems(constraintIds: List<ConstraintId>): List<SimpleListItemModel> =
+        buildList {
+            for (constraintId in constraintIds) {
+                val title = getString(ConstraintUtils.getTitleStringId(constraintId))
+                val icon = ConstraintUtils.getIcon(constraintId)
+                val error = useCase.isSupported(constraintId)
+
+                val listItem = SimpleListItemModel(
+                    id = constraintId.toString(),
+                    title = title,
+                    icon = icon,
+                    subtitle = error?.getFullMessage(this@ChooseConstraintViewModel),
+                    isSubtitleError = true,
+                    isEnabled = error == null,
+                )
+
+                add(listItem)
+            }
+        }
 
     private suspend fun onSelectWifiConnectedConstraint(type: ConstraintId) {
         val knownSSIDs: List<String> = useCase.getKnownWiFiSSIDs()

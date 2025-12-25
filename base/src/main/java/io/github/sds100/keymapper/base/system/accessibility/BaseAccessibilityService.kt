@@ -227,8 +227,12 @@ abstract class BaseAccessibilityService :
             fingerprintGestureController.registerFingerprintGestureCallback(it, null)
         }
 
-        gestureHandlerThread.start()
-        gestureHandler = Handler(gestureHandlerThread.looper)
+        try {
+            gestureHandlerThread.start()
+            gestureHandler = Handler(gestureHandlerThread.looper)
+        } catch (_: IllegalThreadStateException) {
+            // do nothing if onServiceConnected is called again
+        }
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

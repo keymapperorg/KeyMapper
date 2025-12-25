@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -42,25 +43,22 @@ import androidx.compose.ui.unit.sp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIconDisabled
 
 @Composable
 fun RecordTriggerButtonRow(
     modifier: Modifier = Modifier,
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
-    proModeRecordSwitchState: ProModeRecordSwitchState,
-    onProModeSwitchChange: (Boolean) -> Unit = {},
+    expertModeRecordSwitchState: ExpertModeRecordSwitchState,
+    onExpertModeSwitchChange: (Boolean) -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (proModeRecordSwitchState.isVisible) {
-                ProModeSwitch(
-                    state = proModeRecordSwitchState,
-                    onCheckedChange = onProModeSwitchChange,
+            if (expertModeRecordSwitchState.isVisible) {
+                ExpertModeSwitch(
+                    state = expertModeRecordSwitchState,
+                    onCheckedChange = onExpertModeSwitchChange,
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -69,6 +67,7 @@ fun RecordTriggerButtonRow(
             RecordTriggerButton(
                 modifier = Modifier.weight(1f),
                 recordTriggerState,
+                isExpertModeRecordingEnabled = expertModeRecordSwitchState.isChecked,
                 onClick = onRecordTriggerClick,
             )
 
@@ -80,9 +79,9 @@ fun RecordTriggerButtonRow(
 }
 
 @Composable
-private fun ProModeSwitch(
+private fun ExpertModeSwitch(
     modifier: Modifier = Modifier,
-    state: ProModeRecordSwitchState,
+    state: ExpertModeRecordSwitchState,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Switch(
@@ -99,11 +98,7 @@ private fun ProModeSwitch(
         thumbContent = {
             Icon(
                 modifier = Modifier.padding(2.dp),
-                imageVector = if (state.isChecked) {
-                    KeyMapperIcons.ProModeIcon
-                } else {
-                    KeyMapperIcons.ProModeIconDisabled
-                },
+                imageVector = Icons.Outlined.OfflineBolt,
                 contentDescription = null,
             )
         },
@@ -111,7 +106,12 @@ private fun ProModeSwitch(
 }
 
 @Composable
-fun RecordTriggerButton(modifier: Modifier, state: RecordTriggerState, onClick: () -> Unit) {
+fun RecordTriggerButton(
+    modifier: Modifier,
+    state: RecordTriggerState,
+    isExpertModeRecordingEnabled: Boolean,
+    onClick: () -> Unit,
+) {
     val colors = ButtonDefaults.filledTonalButtonColors().copy(
         containerColor = LocalCustomColorsPalette.current.red,
         contentColor = LocalCustomColorsPalette.current.onRed,
@@ -121,8 +121,11 @@ fun RecordTriggerButton(modifier: Modifier, state: RecordTriggerState, onClick: 
         is RecordTriggerState.CountingDown ->
             stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
 
-        else ->
+        else -> if (isExpertModeRecordingEnabled) {
+            stringResource(R.string.button_record_trigger_expert_mode)
+        } else {
             stringResource(R.string.button_record_trigger)
+        }
     }
 
     // Create pulsing animation for the recording dot
@@ -196,7 +199,7 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = true,
                     isEnabled = true,
@@ -214,7 +217,7 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = false,
                     isEnabled = true,
@@ -232,7 +235,7 @@ private fun PreviewStoppedDark() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = true,
                     isEnabled = true,
@@ -250,7 +253,7 @@ private fun PreviewStoppedCompact() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = false,
                     isEnabled = true,
@@ -262,13 +265,13 @@ private fun PreviewStoppedCompact() {
 
 @Preview(widthDp = 400)
 @Composable
-private fun PreviewProModeSwitchHidden() {
+private fun PreviewExpertModeSwitchHidden() {
     KeyMapperTheme {
         Surface {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = false,
                     isChecked = false,
                     isEnabled = true,
@@ -280,13 +283,13 @@ private fun PreviewProModeSwitchHidden() {
 
 @Preview(widthDp = 400)
 @Composable
-private fun PreviewProModeSwitchDisabled() {
+private fun PreviewExpertModeSwitchDisabled() {
     KeyMapperTheme {
         Surface {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = true,
                     isEnabled = false,
@@ -304,7 +307,7 @@ private fun PreviewCompleted() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Completed(emptyList()),
-                proModeRecordSwitchState = ProModeRecordSwitchState(
+                expertModeRecordSwitchState = ExpertModeRecordSwitchState(
                     isVisible = true,
                     isChecked = false,
                     isEnabled = true,

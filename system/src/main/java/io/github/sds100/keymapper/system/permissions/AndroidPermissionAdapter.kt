@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.IPackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.PowerManager
@@ -20,6 +21,7 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -71,14 +73,22 @@ class AndroidPermissionAdapter @Inject constructor(
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
     }
 
-    private val shizukuPermissionManager: IPermissionManager by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            HiddenApiBypass.addHiddenApiExemptions(
-                "Landroid/permission",
-            )
+    private val shizukuPermissionManager: IPermissionManager? by lazy {
+        // Use IPackageManager instead on older versions
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return@lazy null
         }
+
+        HiddenApiBypass.addHiddenApiExemptions(
+            "Landroid/permission",
+        )
         val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("permissionmgr"))
         IPermissionManager.Stub.asInterface(binder)
+    }
+
+    private val shizukuPackageManager: IPackageManager? by lazy {
+        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
+        IPackageManager.Stub.asInterface(binder)
     }
 
     private val ctx = context.applicationContext
@@ -167,13 +177,22 @@ class AndroidPermissionAdapter @Inject constructor(
         } else if (shizukuAdapter.isStarted.value && isGranted(Permission.SHIZUKU)) {
             val userId = Process.myUserHandle()!!.getIdentifier()
 
-            PermissionManagerApis.grantPermission(
-                shizukuPermissionManager,
-                buildConfigProvider.packageName,
-                permissionName,
-                deviceId,
-                userId,
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                PermissionManagerApis.grantPermission(
+                    shizukuPermissionManager!!,
+                    buildConfigProvider.packageName,
+                    permissionName,
+                    deviceId,
+                    userId,
+                )
+            } else {
+                PermissionManagerApis.grantPermission(
+                    shizukuPackageManager!!,
+                    buildConfigProvider.packageName,
+                    permissionName,
+                    userId,
+                )
+            }
 
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
                 result = success()
@@ -259,7 +278,7 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.SEND_SMS,
             ) == PERMISSION_GRANTED
 
-        Permission.ROOT -> suAdapter.isRootGranted.value
+        Permission.ROOT -> suAdapter.isRootGranted.firstBlocking() ?: false
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName) ?: false

@@ -25,6 +25,10 @@ import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
+import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupDelegateImpl
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupDelegate
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCase
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
@@ -37,8 +41,6 @@ import io.github.sds100.keymapper.base.logging.ShareLogcatUseCase
 import io.github.sds100.keymapper.base.logging.ShareLogcatUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl
-import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCase
-import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
@@ -151,7 +153,7 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindProModeSetupUseCase(
+    abstract fun bindExpertModeSetupUseCase(
         impl: SystemBridgeSetupUseCaseImpl,
     ): SystemBridgeSetupUseCase
 
@@ -192,4 +194,10 @@ abstract class BaseViewModelHiltModule {
     abstract fun bindFixKeyEventActionDelegate(
         impl: FixKeyEventActionDelegateImpl,
     ): FixKeyEventActionDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindExpertModeSetupDelegate(
+        impl: ExpertModeSetupDelegateImpl,
+    ): SystemBridgeSetupDelegate
 }

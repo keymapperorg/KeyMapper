@@ -38,11 +38,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
@@ -71,7 +67,9 @@ import kotlinx.coroutines.launch
 
 data class ShellCommandActionState(
     val description: String = "",
+    val descriptionError: String? = null,
     val command: String = "",
+    val commandError: String? = null,
     val executionMode: ShellExecutionMode = ShellExecutionMode.STANDARD,
     /**
      * UI works with seconds for user-friendliness
@@ -79,7 +77,7 @@ data class ShellCommandActionState(
     val timeoutSeconds: Int = 10,
     val isRunning: Boolean = false,
     val testResult: KMResult<ShellResult>? = null,
-    val proModeStatus: ProModeStatus = ProModeStatus.UNSUPPORTED,
+    val expertModeStatus: ExpertModeStatus = ExpertModeStatus.UNSUPPORTED,
 )
 
 @Composable
@@ -98,7 +96,7 @@ fun ShellCommandActionScreen(
         onKillClick = viewModel::onKillClick,
         onDoneClick = viewModel::onDoneClick,
         onCancelClick = viewModel::onCancelClick,
-        onSetupProModeClick = viewModel::onSetupProModeClick,
+        onSetupExpertModeClick = viewModel::onSetupExpertModeClick,
     )
 }
 
@@ -111,19 +109,20 @@ private fun ShellCommandActionScreen(
     onCommandChanged: (String) -> Unit = {},
     onExecutionModeChanged: (ShellExecutionMode) -> Unit = {},
     onTimeoutChanged: (Int) -> Unit = {},
-    onTestClick: () -> Unit = {},
+    /**
+     * Returns whether validation passed
+     */
+    onTestClick: () -> Boolean = { true },
     onKillClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
+    /**
+     * Returns whether validation passed
+     */
+    onDoneClick: () -> Boolean = { true },
     onCancelClick: () -> Unit = {},
-    onSetupProModeClick: () -> Unit = {},
+    onSetupExpertModeClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-
-    var descriptionError: String? by rememberSaveable { mutableStateOf(null) }
-    var commandError: String? by rememberSaveable { mutableStateOf(null) }
-    val descriptionEmptyErrorString = stringResource(R.string.error_cant_be_empty)
-    val commandEmptyErrorString = stringResource(R.string.action_shell_command_command_empty_error)
 
     Scaffold(
         modifier = modifier,
@@ -137,24 +136,11 @@ private fun ShellCommandActionScreen(
                 floatingActionButton = {
                     ExtendedFloatingActionButton(
                         onClick = {
-                            var hasError = false
-
-                            if (state.description.isBlank()) {
-                                descriptionError = descriptionEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (state.command.isBlank()) {
-                                commandError = commandEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (hasError) {
+                            // Go to the configuration tab if validation failed
+                            if (!onDoneClick()) {
                                 scope.launch {
                                     scrollState.animateScrollTo(0)
                                 }
-                            } else {
-                                onDoneClick()
                             }
                         },
                         text = { Text(stringResource(R.string.pos_done)) },
@@ -226,29 +212,20 @@ private fun ShellCommandActionScreen(
                     0 -> ShellCommandConfigurationContent(
                         modifier = Modifier.fillMaxSize(),
                         state = state,
-                        descriptionError = descriptionError,
-                        commandError = commandError,
-                        onDescriptionChanged = {
-                            descriptionError = null
-                            onDescriptionChanged(it)
-                        },
-                        onCommandChanged = {
-                            commandError = null
-                            onCommandChanged(it)
-                        },
+                        descriptionError = state.descriptionError,
+                        commandError = state.commandError,
+                        onDescriptionChanged = onDescriptionChanged,
+                        onCommandChanged = onCommandChanged,
                         onExecutionModeChanged = onExecutionModeChanged,
                         onTimeoutChanged = onTimeoutChanged,
                         onTestClick = {
-                            if (state.command.isBlank()) {
-                                commandError = commandEmptyErrorString
-                            } else {
-                                onTestClick()
+                            if (onTestClick()) {
                                 scope.launch {
                                     pagerState.animateScrollToPage(1) // Switch to output tab
                                 }
                             }
                         },
-                        onSetupProModeClick = onSetupProModeClick,
+                        onSetupExpertModeClick = onSetupExpertModeClick,
                     )
 
                     1 -> ShellCommandOutputContent(
@@ -273,7 +250,7 @@ private fun ShellCommandConfigurationContent(
     onExecutionModeChanged: (ShellExecutionMode) -> Unit,
     onTimeoutChanged: (Int) -> Unit,
     onTestClick: () -> Unit,
-    onSetupProModeClick: () -> Unit,
+    onSetupExpertModeClick: () -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
@@ -350,18 +327,18 @@ private fun ShellCommandConfigurationContent(
         )
 
         if (state.executionMode == ShellExecutionMode.ADB &&
-            state.proModeStatus != ProModeStatus.ENABLED
+            state.expertModeStatus != ExpertModeStatus.ENABLED
         ) {
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onSetupProModeClick,
-                enabled = state.proModeStatus != ProModeStatus.UNSUPPORTED,
+                onClick = onSetupExpertModeClick,
+                enabled = state.expertModeStatus != ExpertModeStatus.UNSUPPORTED,
             ) {
                 Text(
-                    if (state.proModeStatus == ProModeStatus.UNSUPPORTED) {
-                        stringResource(R.string.action_shell_command_setup_pro_mode_unsupported)
+                    if (state.expertModeStatus == ExpertModeStatus.UNSUPPORTED) {
+                        stringResource(R.string.action_shell_command_setup_expert_mode_unsupported)
                     } else {
-                        stringResource(R.string.action_shell_command_setup_pro_mode)
+                        stringResource(R.string.action_shell_command_setup_expert_mode)
                     },
                 )
             }
@@ -378,7 +355,7 @@ private fun ShellCommandConfigurationContent(
                     state.executionMode != ShellExecutionMode.ADB ||
                         (
                             state.executionMode == ShellExecutionMode.ADB &&
-                                state.proModeStatus == ProModeStatus.ENABLED
+                                state.expertModeStatus == ExpertModeStatus.ENABLED
                             )
                     ),
         ) {
@@ -598,14 +575,14 @@ private fun PreviewShellCommandActionScreenTesting() {
 
 @Preview
 @Composable
-private fun PreviewShellCommandActionScreenProModeUnsupported() {
+private fun PreviewShellCommandActionScreenExpertModeUnsupported() {
     KeyMapperTheme {
         ShellCommandActionScreen(
             state = ShellCommandActionState(
                 description = "ADB command example",
                 command = "echo 'Hello from ADB'",
                 executionMode = ShellExecutionMode.ADB,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
+                expertModeStatus = ExpertModeStatus.UNSUPPORTED,
             ),
         )
     }
