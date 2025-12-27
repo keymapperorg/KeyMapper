@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.expertmode
 
 import android.app.ActivityManager
+import android.graphics.Rect
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -19,6 +20,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.common.utils.Constants
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.data.Keys
@@ -74,6 +76,11 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             Regex(
                 "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
             )
+
+        private val PAIRING_CODE_BUTTON_TEXT_FILTER = arrayOf(
+            "pairing code", // English
+            "kode penyambungan", // Indonesian
+        )
     }
 
     private enum class InteractionStep {
@@ -240,24 +247,21 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
-        rootNode
-            .findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
-            ?.takeIf { recyclerView ->
-                // There are many settings screens with RecyclerViews so make sure
-                // the correct page is showing before clicking. It is not as simple
-                // as checking the words on the screen due to different languages.
-                val ipAddressPortText: CharSequence? =
-                    runCatching {
-                        // RecyclerView -> LinearLayout -> RelativeLayout -> TextView
-                        recyclerView.getChild(1).getChild(0).getChild(1)
-                    }.getOrNull()?.text
+        // This works more maintainable/adaptable then traversing the tree
+        // and trying to find the clickable node. This can change subtly between
+        // Android devices and ROMs.
+        val textNode = rootNode.findNodeRecursively { node ->
+            PAIRING_CODE_BUTTON_TEXT_FILTER.any { text -> node.text?.contains(text) == true }
+        } ?: return
 
-                val ipText = ipAddressPortText?.split(":")?.firstOrNull()
-                ipText != null && IPV4_REGEX.matches(ipText)
-            }
-            ?.runCatching { getChild(3) }
-            ?.getOrNull()
-            ?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        val bounds = Rect()
+        textNode.getBoundsInScreen(bounds)
+
+        accessibilityService.tapScreen(
+            bounds.centerX(),
+            bounds.centerY(),
+            InputEventAction.DOWN_UP,
+        )
     }
 
     private fun showNotification(
