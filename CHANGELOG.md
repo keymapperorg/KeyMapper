@@ -1,3 +1,11 @@
+## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
+
+#### TO BE RELEASED
+
+## Bug fixes
+
+- #1955 media actions support more apps.
+
 ## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
 
 #### 25 December 2025

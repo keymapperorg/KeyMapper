@@ -208,10 +208,12 @@ class CreateActionDelegate(
                     showVolumeUi = state.showVolumeUi,
                     volumeStream = state.volumeStream,
                 )
+
                 ActionId.VOLUME_DOWN -> ActionData.Volume.Down(
                     showVolumeUi = state.showVolumeUi,
                     volumeStream = state.volumeStream,
                 )
+
                 else -> return
             }
 
@@ -405,8 +407,7 @@ class CreateActionDelegate(
                     navigate(
                         "choose_app_for_media_action",
                         NavDestination.ChooseApp(allowHiddenApps = true),
-                    )
-                        ?: return null
+                    ) ?: return null
 
                 val action = when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
@@ -494,7 +495,9 @@ class CreateActionDelegate(
 
                 val action = when (actionId) {
                     ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
+
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
+
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi,
                     )
@@ -574,9 +577,7 @@ class CreateActionDelegate(
 
                 val action = when (actionId) {
                     ActionId.TOGGLE_DND_MODE -> ActionData.DoNotDisturb.Toggle(dndMode)
-
                     ActionId.ENABLE_DND_MODE -> ActionData.DoNotDisturb.Enable(dndMode)
-
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
@@ -584,7 +585,7 @@ class CreateActionDelegate(
             }
 
             ActionId.CYCLE_ROTATIONS -> {
-                val items = Orientation.values().map { orientation ->
+                val items = Orientation.entries.map { orientation ->
                     val isChecked = if (oldData is ActionData.Rotation.CycleRotations) {
                         oldData.orientations.contains(orientation)
                     } else {
@@ -756,11 +757,7 @@ class CreateActionDelegate(
                     NavDestination.PickCoordinate(oldResult),
                 ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description = result.description.ifEmpty { null }
 
                 return ActionData.TapScreen(
                     result.x,
@@ -789,11 +786,7 @@ class CreateActionDelegate(
                     NavDestination.PickSwipeCoordinate(oldResult),
                 ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description = result.description.ifEmpty { null }
 
                 return ActionData.SwipeScreen(
                     result.xStart,
@@ -826,11 +819,7 @@ class CreateActionDelegate(
                     NavDestination.PickPinchCoordinate(oldResult),
                 ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description = result.description.ifEmpty { null }
 
                 return ActionData.PinchScreen(
                     result.x,
@@ -964,93 +953,153 @@ class CreateActionDelegate(
             }
 
             ActionId.TOGGLE_WIFI -> return ActionData.Wifi.Toggle
+
             ActionId.ENABLE_WIFI -> return ActionData.Wifi.Enable
+
             ActionId.DISABLE_WIFI -> return ActionData.Wifi.Disable
 
             ActionId.TOGGLE_BLUETOOTH -> return ActionData.Bluetooth.Toggle
+
             ActionId.ENABLE_BLUETOOTH -> return ActionData.Bluetooth.Enable
+
             ActionId.DISABLE_BLUETOOTH -> return ActionData.Bluetooth.Disable
 
             ActionId.TOGGLE_MOBILE_DATA -> return ActionData.MobileData.Toggle
+
             ActionId.ENABLE_MOBILE_DATA -> return ActionData.MobileData.Enable
+
             ActionId.DISABLE_MOBILE_DATA -> return ActionData.MobileData.Disable
 
             ActionId.TOGGLE_HOTSPOT -> return ActionData.Hotspot.Toggle
+
             ActionId.ENABLE_HOTSPOT -> return ActionData.Hotspot.Enable
+
             ActionId.DISABLE_HOTSPOT -> return ActionData.Hotspot.Disable
 
             ActionId.TOGGLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.ToggleAuto
+
             ActionId.DISABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.DisableAuto
+
             ActionId.ENABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.EnableAuto
+
             ActionId.INCREASE_BRIGHTNESS -> return ActionData.Brightness.Increase
+
             ActionId.DECREASE_BRIGHTNESS -> return ActionData.Brightness.Decrease
 
             ActionId.TOGGLE_AUTO_ROTATE -> return ActionData.Rotation.ToggleAuto
+
             ActionId.ENABLE_AUTO_ROTATE -> return ActionData.Rotation.EnableAuto
+
             ActionId.DISABLE_AUTO_ROTATE -> return ActionData.Rotation.DisableAuto
+
             ActionId.PORTRAIT_MODE -> return ActionData.Rotation.Portrait
+
             ActionId.LANDSCAPE_MODE -> return ActionData.Rotation.Landscape
+
             ActionId.SWITCH_ORIENTATION -> return ActionData.Rotation.SwitchOrientation
 
             ActionId.VOLUME_SHOW_DIALOG -> return ActionData.Volume.ShowDialog
+
             ActionId.CYCLE_RINGER_MODE -> return ActionData.Volume.CycleRingerMode
+
             ActionId.CYCLE_VIBRATE_RING -> return ActionData.Volume.CycleVibrateRing
 
             ActionId.EXPAND_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ExpandNotifications
+
             ActionId.TOGGLE_NOTIFICATION_DRAWER -> return ActionData.StatusBar.ToggleNotifications
+
             ActionId.EXPAND_QUICK_SETTINGS -> return ActionData.StatusBar.ExpandQuickSettings
+
             ActionId.TOGGLE_QUICK_SETTINGS -> return ActionData.StatusBar.ToggleQuickSettings
+
             ActionId.COLLAPSE_STATUS_BAR -> return ActionData.StatusBar.Collapse
 
             ActionId.PAUSE_MEDIA -> return ActionData.ControlMedia.Pause
+
             ActionId.PLAY_MEDIA -> return ActionData.ControlMedia.Play
+
             ActionId.PLAY_PAUSE_MEDIA -> return ActionData.ControlMedia.PlayPause
+
             ActionId.NEXT_TRACK -> return ActionData.ControlMedia.NextTrack
+
             ActionId.PREVIOUS_TRACK -> return ActionData.ControlMedia.PreviousTrack
+
             ActionId.FAST_FORWARD -> return ActionData.ControlMedia.FastForward
+
             ActionId.REWIND -> return ActionData.ControlMedia.Rewind
+
             ActionId.STOP_MEDIA -> return ActionData.ControlMedia.Stop
+
             ActionId.STEP_FORWARD -> return ActionData.ControlMedia.StepForward
+
             ActionId.STEP_BACKWARD -> return ActionData.ControlMedia.StepBackward
 
             ActionId.GO_BACK -> return ActionData.GoBack
+
             ActionId.GO_HOME -> return ActionData.GoHome
+
             ActionId.OPEN_RECENTS -> return ActionData.OpenRecents
+
             ActionId.TOGGLE_SPLIT_SCREEN -> return ActionData.ToggleSplitScreen
+
             ActionId.GO_LAST_APP -> return ActionData.GoLastApp
+
             ActionId.OPEN_MENU -> return ActionData.OpenMenu
 
             ActionId.ENABLE_NFC -> return ActionData.Nfc.Enable
+
             ActionId.DISABLE_NFC -> return ActionData.Nfc.Disable
+
             ActionId.TOGGLE_NFC -> return ActionData.Nfc.Toggle
 
             ActionId.TOGGLE_KEYBOARD -> return ActionData.ToggleKeyboard
+
             ActionId.SHOW_KEYBOARD -> return ActionData.ShowKeyboard
+
             ActionId.HIDE_KEYBOARD -> return ActionData.HideKeyboard
+
             ActionId.SHOW_KEYBOARD_PICKER -> return ActionData.ShowKeyboardPicker
+
             ActionId.TEXT_CUT -> return ActionData.CutText
+
             ActionId.TEXT_COPY -> return ActionData.CopyText
+
             ActionId.TEXT_PASTE -> return ActionData.PasteText
+
             ActionId.SELECT_WORD_AT_CURSOR -> return ActionData.SelectWordAtCursor
 
             ActionId.TOGGLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Toggle
+
             ActionId.ENABLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Enable
+
             ActionId.DISABLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Disable
 
             ActionId.SCREENSHOT -> return ActionData.Screenshot
+
             ActionId.OPEN_VOICE_ASSISTANT -> return ActionData.VoiceAssistant
+
             ActionId.OPEN_DEVICE_ASSISTANT -> return ActionData.DeviceAssistant
 
             ActionId.OPEN_CAMERA -> return ActionData.OpenCamera
+
             ActionId.LOCK_DEVICE -> return ActionData.LockDevice
+
             ActionId.POWER_ON_OFF_DEVICE -> return ActionData.ScreenOnOff
+
             ActionId.SECURE_LOCK_DEVICE -> return ActionData.SecureLock
+
             ActionId.CONSUME_KEY_EVENT -> return ActionData.ConsumeKeyEvent
+
             ActionId.OPEN_SETTINGS -> return ActionData.OpenSettings
+
             ActionId.SHOW_POWER_MENU -> return ActionData.ShowPowerMenu
+
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
+
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
+
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
+
             ActionId.CREATE_NOTIFICATION -> {
                 val oldAction = oldData as? ActionData.CreateNotification
 
@@ -1063,9 +1112,13 @@ class CreateActionDelegate(
 
                 return null
             }
+
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
+
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
+
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
+
             ActionId.HTTP_REQUEST -> {
                 if (oldData == null) {
                     httpRequestBottomSheetState = ActionData.HttpRequest(
@@ -1104,7 +1157,9 @@ class CreateActionDelegate(
             }
 
             ActionId.MOVE_CURSOR -> return createMoverCursorAction()
+
             ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
+
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
 
             ActionId.MODIFY_SETTING -> {
