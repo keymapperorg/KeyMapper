@@ -76,11 +76,7 @@ class AdbManagerImpl @Inject constructor(@ApplicationContext private val ctx: Co
 
     override suspend fun pair(code: String): KMResult<Unit> {
         return pairMutex.withLock {
-            val port = adbPairMdns.discoverPort()
-
-            if (port == null) {
-                return@withLock AdbError.ServerNotFound
-            }
+            val port = adbPairMdns.discoverPort() ?: return@withLock AdbError.ServerNotFound
 
             return@withLock getAdbKey().then { key ->
                 val pairingClient = AdbPairingClient(LOCALHOST, port, code, key)

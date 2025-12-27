@@ -45,7 +45,6 @@ import rikka.core.ktx.unsafeLazy
 
 private const val TAG = "AdbKey"
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class AdbKey(private val adbKeyStore: AdbKeyStore, name: String) {
 
     companion object {
