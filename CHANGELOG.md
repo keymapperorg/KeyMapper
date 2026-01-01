@@ -4,7 +4,7 @@
 
 ## Bug fixes
 
-- #1955 media actions support more apps.
+- #1955 step forward and step backward media actions support more apps.
 - #1940 improve reliability of clicking pairing code button in Wireless Debugging settings.
 
 ## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)

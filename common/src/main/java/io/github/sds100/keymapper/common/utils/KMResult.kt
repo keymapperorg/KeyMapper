@@ -27,6 +27,7 @@ abstract class KMError : KMResult<Nothing>() {
     data object EmptyText : KMError()
     data object NoIncompatibleKeyboardsInstalled : KMError()
     data object NoMediaSessions : KMError()
+    data object MediaActionUnsupported : KMError()
     data object BackupVersionTooNew : KMError()
     data object LauncherShortcutsNotSupported : KMError()
 

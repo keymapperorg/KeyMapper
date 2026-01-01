@@ -896,6 +896,7 @@
     <string name="error_shell_command_timeout">Command timed out after %1$d seconds</string>
     <string name="error_system_bridge_disconnected">Expert Mode needs starting</string>
     <string name="error_sms_rate_limit">Rate limit reached. You can only send once per second.</string>
+    <string name="error_media_action_unsupported">Unsupported by this app</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -982,12 +983,10 @@
     <string name="action_fast_forward">Fast forward</string>
     <string name="action_fast_forward_package">Fast forward for an app</string>
     <string name="action_fast_forward_package_formatted">Fast forward for %s</string>
-    <string name="action_fast_forward_message">Not all media apps support fast forwarding. E.g Google Play Music.</string>
 
     <string name="action_rewind">Rewind</string>
     <string name="action_rewind_package">Rewind for an app</string>
     <string name="action_rewind_package_formatted">Rewind for %s</string>
-    <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
 
     <string name="action_stop_media">Stop media</string>
     <string name="action_stop_media_package">Stop media for an app</string>
