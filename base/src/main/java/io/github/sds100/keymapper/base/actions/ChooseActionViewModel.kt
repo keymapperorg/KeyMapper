@@ -152,7 +152,9 @@ class ChooseActionViewModel @Inject constructor(
                 error == SystemError.PermissionDenied(
                     Permission.ROOT,
                 ) -> getString(R.string.choose_action_warning_requires_root)
+
                 error != null -> error.getFullMessage(this@ChooseActionViewModel)
+
                 else -> null
             }
 
@@ -200,13 +202,6 @@ class ChooseActionViewModel @Inject constructor(
 
         val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
-            ActionId.FAST_FORWARD,
-                -> R.string.action_fast_forward_message
-
-            ActionId.REWIND_PACKAGE,
-            ActionId.REWIND,
-                -> R.string.action_rewind_message
-
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
             ActionId.HIDE_KEYBOARD,

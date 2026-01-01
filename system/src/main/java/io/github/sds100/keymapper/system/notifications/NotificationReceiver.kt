@@ -56,7 +56,9 @@ class NotificationReceiver :
                     NotificationServiceEvent.DismissLastNotification -> cancelNotification(
                         lastNotificationKey,
                     )
+
                     NotificationServiceEvent.DismissAllNotifications -> cancelAllNotifications()
+
                     else -> Unit
                 }
             }.launchIn(lifecycleScope)

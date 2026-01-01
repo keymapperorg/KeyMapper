@@ -1,10 +1,23 @@
+## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
+
+#### TO BE RELEASED
+
+## Added
+- #1947 show tip to use expert mode where the old option for screen off remapping used to be
+
+## Bug fixes
+
+- #1955 step forward and step backward media actions support more apps.
+- #1940 improve reliability of clicking pairing code button in Wireless Debugging settings.
+
 ## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
 
 #### 25 December 2025
 
 Merry Christmas from the Key Mapper team! 🎄
 
-Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is free.
+Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is
+free.
 
 ## Added
 

@@ -98,7 +98,9 @@ abstract class BaseConfigTriggerViewModel(
         config,
         displayKeyMap,
         createKeyMapShortcut,
+        systemBridgeConnectionManager,
         dialogProvider,
+        navigationProvider,
         resourceProvider,
     )
 
@@ -256,11 +258,9 @@ abstract class BaseConfigTriggerViewModel(
 
             val clickTypeButtons = mutableSetOf<ClickType>()
 
-            /**
-             * The click type radio buttons are only visible if there is one key
-             * or there are only key code keys in the trigger. It is not possible to do a long press of
-             * non-key code keys in a parallel trigger.
-             */
+            // The click type radio buttons are only visible if there is one key
+            // or there are only key code keys in the trigger. It is not possible to do a long press of
+            // non-key code keys in a parallel trigger.
             if (trigger.keys.size == 1 && trigger.keys.all { it.allowedDoublePress }) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)

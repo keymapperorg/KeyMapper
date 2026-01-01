@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.onboarding.TipCard
 import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
 import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
@@ -98,8 +99,26 @@ private fun Loaded(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
+
+        if (state.showScreenOffTip) {
+            TipCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                title = stringResource(R.string.tip_screen_off_trigger_title),
+                message = stringResource(R.string.tip_screen_off_trigger_message),
+                isDismissable = false,
+                buttonText = if (state.isExpertModeStarted) {
+                    null
+                } else {
+                    stringResource(R.string.button_enable_expert_mode)
+                },
+                onButtonClick = callback::onOpenExpertModeSettings,
+            )
+        }
 
         TriggerFromOtherAppsSection(
             modifier = Modifier
@@ -112,8 +131,6 @@ private fun Loaded(
             onCreateShortcutClick = callback::onCreateShortcutClick,
         )
 
-        Spacer(Modifier.height(8.dp))
-
         CheckBoxText(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -122,7 +139,6 @@ private fun Loaded(
             isChecked = state.showToast,
             onCheckedChange = callback::onShowToastChanged,
         )
-        Spacer(Modifier.height(8.dp))
 
         if (state.showVibrate) {
             CheckBoxText(
@@ -133,7 +149,6 @@ private fun Loaded(
                 isChecked = state.vibrate,
                 onCheckedChange = callback::onVibrateChanged,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showVibrateDuration) {
@@ -151,7 +166,6 @@ private fun Loaded(
                 valueRange = vibrateDurationMin.toFloat()..vibrateDurationMax.toFloat(),
                 stepSize = SliderStepSizes.VIBRATION_DURATION,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showLongPressDoubleVibration) {
@@ -163,7 +177,6 @@ private fun Loaded(
                 isChecked = state.longPressDoubleVibration,
                 onCheckedChange = callback::onLongPressDoubleVibrationChanged,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showLongPressDelay) {
@@ -181,7 +194,6 @@ private fun Loaded(
                 valueRange = longPressDelayMin.toFloat()..longPressDelayMax.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showDoublePressDelay) {
@@ -199,7 +211,6 @@ private fun Loaded(
                 valueRange = doublePressDelayMin.toFloat()..doublePressDelayMax.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         if (state.showSequenceTriggerTimeout) {
@@ -219,7 +230,6 @@ private fun Loaded(
                 valueRange = sequenceTriggerTimeoutMin..sequenceTriggerTimeoutMax,
                 stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
             )
-            Spacer(Modifier.height(8.dp))
         }
 
         Spacer(Modifier.height(8.dp))
@@ -359,6 +369,7 @@ interface KeyMapOptionsCallback {
     fun onShowToastChanged(checked: Boolean) = run { }
     fun onTriggerFromOtherAppsChanged(checked: Boolean) = run {}
     fun onCreateShortcutClick() = run { }
+    fun onOpenExpertModeSettings() = run {}
 }
 
 @Preview
@@ -396,6 +407,8 @@ private fun Preview() {
                         isLauncherShortcutButtonEnabled = false,
 
                         showToast = true,
+                        showScreenOffTip = true,
+                        isExpertModeStarted = false,
                     ),
                 ),
                 callback = object : KeyMapOptionsCallback {},

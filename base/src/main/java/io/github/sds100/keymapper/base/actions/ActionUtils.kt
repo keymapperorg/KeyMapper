@@ -785,6 +785,14 @@ object ActionUtils {
                     listOf(Permission.ROOT)
                 }
 
+            ActionId.PLAY_PAUSE_MEDIA,
+            ActionId.PLAY_MEDIA,
+            ActionId.PAUSE_MEDIA,
+            ActionId.FAST_FORWARD,
+            ActionId.REWIND,
+            ActionId.STOP_MEDIA,
+            ActionId.NEXT_TRACK,
+            ActionId.PREVIOUS_TRACK,
             ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
             ActionId.PAUSE_MEDIA_PACKAGE,
             ActionId.PLAY_MEDIA_PACKAGE,
@@ -792,6 +800,7 @@ object ActionUtils {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
+            ActionId.STOP_MEDIA_PACKAGE,
                 -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.VOLUME_UP,

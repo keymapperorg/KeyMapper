@@ -46,10 +46,10 @@ It will NOT collect any user data or connect to the internet to send any data an
 Our accessibility service is only triggered by the user when pressing a physical key on their device. It can be turned off any time by the user in the system accessibility settings.
 
 Come say hi in our Discord community!
-www.keymapper.club
+discord.keymapper.app
 
 See the code for yourself! (Open source)
-code.keymapper.club
+github.com/keymapperorg/KeyMapper
 
 Read the documentation:
-docs.keymapper.club
+keymapper.app
