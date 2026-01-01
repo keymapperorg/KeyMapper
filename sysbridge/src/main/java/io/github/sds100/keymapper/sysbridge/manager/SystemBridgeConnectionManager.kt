@@ -257,16 +257,26 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 }
 
 @SuppressLint("ObsoleteSdkInt")
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeConnectionManager {
+    // Do not require min API to check the state.
     val connectionState: StateFlow<SystemBridgeConnectionState>
 
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun stopSystemBridge()
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun restartSystemBridge()
 
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     suspend fun startWithRoot()
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun startWithShizuku()
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     suspend fun startWithAdb()
 }
 

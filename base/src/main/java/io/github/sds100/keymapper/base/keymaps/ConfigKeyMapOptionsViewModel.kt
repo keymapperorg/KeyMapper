@@ -6,7 +6,11 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -16,12 +20,14 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -30,16 +36,22 @@ class ConfigKeyMapOptionsViewModel(
     private val config: ConfigTriggerUseCase,
     private val displayUseCase: DisplayKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val dialogProvider: DialogProvider,
+    navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
+    NavigationProvider by navigationProvider,
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
 
-    val state: StateFlow<State<KeyMapOptionsState>> = config.keyMap.map { keyMapState ->
-        keyMapState.mapData { keyMap -> buildState(keyMap) }
+    val state: StateFlow<State<KeyMapOptionsState>> = combine(
+        config.keyMap,
+        systemBridgeConnectionManager.connectionState,
+    ) { keyMapState, systemBridgeConnectionState ->
+        keyMapState.mapData { keyMap -> buildState(keyMap, systemBridgeConnectionState) }
     }.stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     override fun onLongPressDelayChanged(delay: Int) {
@@ -74,6 +86,12 @@ class ConfigKeyMapOptionsViewModel(
         config.setTriggerFromOtherAppsEnabled(checked)
     }
 
+    override fun onOpenExpertModeSettings() {
+        coroutineScope.launch {
+            navigate("screen_off_trigger_tip", NavDestination.ExpertMode)
+        }
+    }
+
     override fun onCreateShortcutClick() {
         coroutineScope.launch {
             val mapping = config.keyMap.firstOrNull()?.dataOrNull() ?: return@launch
@@ -100,7 +118,9 @@ class ConfigKeyMapOptionsViewModel(
                         // background is white. Also, getting the colorOnSurface attribute
                         // from the application context doesn't seem to work correctly.
                         TintType.OnSurface -> iconInfo.drawable.setTint(Color.BLACK)
+
                         is TintType.Color -> iconInfo.drawable.setTint(iconInfo.tintType.color)
+
                         else -> {}
                     }
 
@@ -132,7 +152,10 @@ class ConfigKeyMapOptionsViewModel(
         }
     }
 
-    private suspend fun buildState(keyMap: KeyMap): KeyMapOptionsState {
+    private suspend fun buildState(
+        keyMap: KeyMap,
+        systemBridgeConnectionState: SystemBridgeConnectionState,
+    ): KeyMapOptionsState {
         val defaultLongPressDelay = config.defaultLongPressDelay.first()
         val defaultDoublePressDelay = config.defaultDoublePressDelay.first()
         val defaultSequenceTriggerTimeout = config.defaultSequenceTriggerTimeout.first()
@@ -167,6 +190,9 @@ class ConfigKeyMapOptionsViewModel(
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
 
             showToast = keyMap.trigger.showToast,
+            showScreenOffTip = keyMap.trigger.keys.none { it is EvdevTriggerKey },
+            isExpertModeStarted =
+            systemBridgeConnectionState is SystemBridgeConnectionState.Connected,
         )
     }
 }
@@ -199,4 +225,7 @@ data class KeyMapOptionsState(
     val isLauncherShortcutButtonEnabled: Boolean,
 
     val showToast: Boolean,
+
+    val showScreenOffTip: Boolean,
+    val isExpertModeStarted: Boolean,
 )

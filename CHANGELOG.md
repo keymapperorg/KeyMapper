@@ -2,6 +2,9 @@
 
 #### TO BE RELEASED
 
+## Added
+- #1947 show tip to use expert mode where the old option for screen off remapping used to be
+
 ## Bug fixes
 
 - #1955 step forward and step backward media actions support more apps.

@@ -408,6 +408,7 @@
     <string name="button_add_action">Add action</string>
     <string name="button_record_trigger">Tap to record trigger</string>
     <string name="button_record_trigger_expert_mode">Record with Expert Mode</string>
+    <string name="button_enable_expert_mode">Enable Expert Mode</string>
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
@@ -444,6 +445,8 @@
     <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
     <string name="tip_parallel_trigger_title">How to use this trigger</string>
     <string name="tip_sequence_trigger_title">Sequence triggers</string>
+    <string name="tip_screen_off_trigger_title">Trigger when screen is off</string>
+    <string name="tip_screen_off_trigger_message">This key map cannot be detected when the screen is off because the trigger was not recorded with Expert Mode. Re-record the trigger with Expert Mode to enable screen-off remapping.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
