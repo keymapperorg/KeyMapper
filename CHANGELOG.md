@@ -1,6 +1,8 @@
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 
-#### TO BE RELEASED
+#### 1 January 2026
+
+Happy new year!
 
 ## Added
 - #1947 show tip to use expert mode where the old option for screen off remapping used to be
