@@ -78,8 +78,13 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             )
 
         private val PAIRING_CODE_BUTTON_TEXT_FILTER = arrayOf(
-            "pairing code", // English
-            "kode penyambungan", // Indonesian
+            "six-digit code", // English
+            "six digit code", // English
+            "kode enam digit", // Indonesian
+            "código de seis dígitos", // Spanish (US) and Portuguese (Brazil)
+            "छह अंकों वाला कोड इस्तेमाल", // Hindi (India)
+            "шестизначный код", // Russian (Russia)
+            "من 6 أعداد", // Arabic (Egypt)
         )
     }
 
@@ -251,6 +256,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         // and trying to find the clickable node. This can change subtly between
         // Android devices and ROMs.
         val textNode = rootNode.findNodeRecursively { node ->
+            Timber.e(node.text?.toString())
             PAIRING_CODE_BUTTON_TEXT_FILTER.any { text -> node.text?.contains(text) == true }
         } ?: return
 
