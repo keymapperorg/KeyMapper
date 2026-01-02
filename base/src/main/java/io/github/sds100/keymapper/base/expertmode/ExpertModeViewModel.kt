@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -90,7 +93,7 @@ class ExpertModeViewModel @Inject constructor(
         useCase.isAutoStartBootEnabled
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    var showInfoCard: Boolean = !useCase.isInfoDismissed()
+    var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
         private set
 
     fun hideInfoCard() {
@@ -191,7 +194,7 @@ class ExpertModeViewModel @Inject constructor(
                     shizukuSetupState = shizukuSetupState,
                     isNotificationPermissionGranted = isNotificationPermissionGranted,
                     startingMethod = startingMethod,
-                    isStarting = isSystemBridgeStarting,
+                    isStarting = startingMethod != null || isSystemBridgeStarting,
                 ),
             )
         }
