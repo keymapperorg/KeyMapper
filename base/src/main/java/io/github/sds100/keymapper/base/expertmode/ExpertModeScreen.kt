@@ -345,7 +345,9 @@ private fun LoadedContent(
                         ),
                         onButtonClick = onRootButtonClick,
                         enabled = state.isNotificationPermissionGranted,
-                        isLoading = state.isStarting,
+                        isLoading =
+                        state.isStarting &&
+                        state.startingMethod == SystemBridgeStartMethod.ROOT,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -389,7 +391,9 @@ private fun LoadedContent(
                         buttonText = shizukuButtonText,
                         onButtonClick = onShizukuButtonClick,
                         enabled = state.isNotificationPermissionGranted,
-                        isLoading = state.isStarting,
+                        isLoading =
+                        state.isStarting &&
+                        state.startingMethod == SystemBridgeStartMethod.SHIZUKU,
                     )
                 }
 
@@ -422,7 +426,9 @@ private fun LoadedContent(
                     enabled =
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                         state.isNotificationPermissionGranted,
-                    isLoading = state.isStarting,
+                    isLoading =
+                    state.isStarting &&
+                    state.startingMethod == SystemBridgeStartMethod.ADB,
                 )
             }
         }
@@ -744,6 +750,7 @@ private fun Preview() {
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = true,
+                        startingMethod = null,
                         isStarting = false,
                     ),
                 ),
@@ -823,6 +830,7 @@ private fun PreviewNotificationPermissionNotGranted() {
                         isRootGranted = true,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = false,
+                        startingMethod = null,
                         isStarting = false,
                     ),
                 ),

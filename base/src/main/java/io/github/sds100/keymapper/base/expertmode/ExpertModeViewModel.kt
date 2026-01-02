@@ -17,6 +17,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -42,6 +43,19 @@ class ExpertModeViewModel @Inject constructor(
         private const val WARNING_COUNT_DOWN_SECONDS = 5
     }
 
+    private val startingMethod =
+        MutableStateFlow<SystemBridgeStartMethod?>(null)
+
+    init {
+        viewModelScope.launch {
+            useCase.isSystemBridgeConnected.collect { connected ->
+                if (connected) {
+                    startingMethod.value = null
+                }
+            }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val warningState: StateFlow<ExpertModeWarningState> =
         useCase.isWarningUnderstood
@@ -49,9 +63,7 @@ class ExpertModeViewModel @Inject constructor(
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                ExpertModeWarningState.CountingDown(
-                    WARNING_COUNT_DOWN_SECONDS,
-                ),
+                ExpertModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS),
             )
 
     val setupState: StateFlow<State<ExpertModeState>> =
@@ -60,9 +72,22 @@ class ExpertModeViewModel @Inject constructor(
             useCase.isRootGranted,
             useCase.shizukuSetupState,
             useCase.isNotificationPermissionGranted,
+            startingMethod,
             useCase.isSystemBridgeStarting,
-            ::buildSetupState,
-        ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+        ) { connected, rootGranted, shizukuState, notifGranted, method, isStarting ->
+            buildSetupState(
+                connected,
+                rootGranted,
+                shizukuState,
+                notifGranted,
+                method,
+                isStarting,
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            State.Loading,
+        )
 
     val autoStartBootEnabled: StateFlow<Boolean> =
         useCase.isAutoStartBootEnabled
@@ -73,8 +98,6 @@ class ExpertModeViewModel @Inject constructor(
 
     fun hideInfoCard() {
         showInfoCard = false
-        // Save that they've dismissed the card so it is not shown by default the next
-        // time they visit the PRO mode page.
         useCase.dismissInfo()
     }
 
@@ -88,10 +111,13 @@ class ExpertModeViewModel @Inject constructor(
         } else {
             flow {
                 repeat(WARNING_COUNT_DOWN_SECONDS) {
-                    emit(ExpertModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
+                    emit(
+                        ExpertModeWarningState.CountingDown(
+                            WARNING_COUNT_DOWN_SECONDS - it,
+                        ),
+                    )
                     delay(1000L)
                 }
-
                 emit(ExpertModeWarningState.Idle)
             }
         }
@@ -105,26 +131,18 @@ class ExpertModeViewModel @Inject constructor(
     }
 
     fun onRootButtonClick() {
+        startingMethod.value = SystemBridgeStartMethod.ROOT
         useCase.startSystemBridgeWithRoot()
     }
 
     fun onShizukuButtonClick() {
         viewModelScope.launch {
-            val shizukuState = useCase.shizukuSetupState.first()
-            when (shizukuState) {
-                ShizukuSetupState.NOT_FOUND -> {
-                    // Do nothing
-                }
-
-                ShizukuSetupState.INSTALLED -> {
-                    useCase.openShizukuApp()
-                }
-
-                ShizukuSetupState.STARTED -> {
-                    useCase.requestShizukuPermission()
-                }
-
+            when (useCase.shizukuSetupState.first()) {
+                ShizukuSetupState.NOT_FOUND -> Unit
+                ShizukuSetupState.INSTALLED -> useCase.openShizukuApp()
+                ShizukuSetupState.STARTED -> useCase.requestShizukuPermission()
                 ShizukuSetupState.PERMISSION_GRANTED -> {
+                    startingMethod.value = SystemBridgeStartMethod.SHIZUKU
                     useCase.startSystemBridgeWithShizuku()
                 }
             }
@@ -139,7 +157,10 @@ class ExpertModeViewModel @Inject constructor(
 
     fun onSetupWithKeyMapperClick() {
         viewModelScope.launch {
-            navigate("setup_expert_mode_with_key_mapper", NavDestination.ExpertModeSetup)
+            navigate(
+                "setup_expert_mode_with_key_mapper",
+                NavDestination.ExpertModeSetup,
+            )
         }
     }
 
@@ -156,22 +177,24 @@ class ExpertModeViewModel @Inject constructor(
         isRootGranted: Boolean,
         shizukuSetupState: ShizukuSetupState,
         isNotificationPermissionGranted: Boolean,
+        startingMethod: SystemBridgeStartMethod?,
         isSystemBridgeStarting: Boolean,
     ): State<ExpertModeState> {
-        if (isSystemBridgeConnected) {
-            return State.Data(
+        return if (isSystemBridgeConnected) {
+            State.Data(
                 ExpertModeState.Started(
                     isDefaultUsbModeCompatible =
-                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
+                        useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
                 ),
             )
         } else {
-            return State.Data(
+            State.Data(
                 ExpertModeState.Stopped(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
                     isNotificationPermissionGranted = isNotificationPermissionGranted,
-                    isStarting = isSystemBridgeStarting,
+                    startingMethod = startingMethod,
+                    isStarting = startingMethod != null || isSystemBridgeStarting,
                 ),
             )
         }
@@ -189,8 +212,11 @@ sealed class ExpertModeState {
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
         val isNotificationPermissionGranted: Boolean,
+        val startingMethod: SystemBridgeStartMethod?,
         val isStarting: Boolean,
     ) : ExpertModeState()
 
-    data class Started(val isDefaultUsbModeCompatible: Boolean) : ExpertModeState()
+    data class Started(
+        val isDefaultUsbModeCompatible: Boolean,
+    ) : ExpertModeState()
 }
