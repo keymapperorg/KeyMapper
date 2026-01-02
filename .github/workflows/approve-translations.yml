@@ -11,59 +11,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install Crowdin CLI
+      - name: Install dependencies
         run: |
-          npm install -g @crowdin/cli@3
+          sudo apt-get install -y jq
+          npm i -g @crowdin/cli
 
-      - name: Approve top-voted translations for all languages
+      - name: Approve top-voted translations
         env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
         run: |
           set -e
+          [ -z "$CROWDIN_TOKEN" ] && echo "Missing token" && exit 1
+          [ -z "$CROWDIN_PROJECT_ID" ] && echo "Missing project id" && exit 1
 
-          if [ -z "$CROWDIN_TOKEN" ] || [ -z "$CROWDIN_PROJECT_ID" ]; then
-            echo "Crowdin token or project id is missing!"
-            exit 1
-          fi
+          echo "Start automatic approval crowdin translations..."
 
-          echo "Start automatic approval Crowdin Translation..."
+          # Get all string IDs
+          STRING_IDS=$(curl -s -H "Authorization: Bearer $CROWDIN_TOKEN" \
+            "https://api.crowdin.com/api/v2/projects/$CROWDIN_PROJECT_ID/strings?limit=500" | jq -r '.data[].data.id')
 
-          language_ids=$(crowdin api list-languages --project-id=$CROWDIN_PROJECT_ID --plain | jq -r '.data[].data.id' || true)
-          if [ -z "$language_ids" ]; then
-            echo "No language ids found, check Crowdin project or CLI output."
-            exit 1
-          fi
+          # For each string, approve the translation with the most votes if not already approved
+          for STRING_ID in $STRING_IDS; do
+            TRANSLATIONS=$(curl -s -H "Authorization: Bearer $CROWDIN_TOKEN" \
+              "https://api.crowdin.com/api/v2/projects/$CROWDIN_PROJECT_ID/strings/$STRING_ID/translations?limit=100")
 
-          string_ids=$(crowdin api list-strings --project-id=$CROWDIN_PROJECT_ID --plain | jq -r '.data[].data.id' || true)
-          if [ -z "$string_ids" ]; then
-            echo "No string ids found, check Crowdin project or CLI output."
-            exit 1
-          fi
+            TOP=$(echo "$TRANSLATIONS" | jq -r '
+              .data
+              | map(select(.data.isApproved == false))
+              | max_by(.data.upvotesCount)
+              | select(.data.upvotesCount >= 0)
+              | .data.id')
 
-          for lang in $language_ids; do
-            echo "Processing language $lang"
-
-            translations=$(crowdin api list-string-translations --project-id=$CROWDIN_PROJECT_ID --language-id=$lang --plain)
-
-            for sid in $string_ids; do
-              best=$(echo "$translations" | jq -r "
-                .data[]
-                | .data
-                | select(.stringId == \"$sid\" and .votes > 0)
-                | {\"id\": .id, \"votes\": .votes}
-                " | jq -s 'sort_by(-.votes) | .[0] | .id')
-
-              if [ -n "$best" ] && [ "$best" != "null" ]; then
-                echo "  → Approved translation $best for string $sid"
-                crowdin api edit-translation \
-                  --project-id=$CROWDIN_PROJECT_ID \
-                  --translation-id=$best \
-                  --approved=true
-              fi
-            done
+            if [ -n "$TOP" ]; then
+              curl -s -X POST -H "Authorization: Bearer $CROWDIN_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://api.crowdin.com/api/v2/projects/$CROWDIN_PROJECT_ID/translations/$STRING_ID/approvals" \
+                -d "{\"translationId\":$TOP}"
+              echo "Approved translation $TOP for string $STRING_ID"
+            fi
           done
+
+          echo "Approval process finished."
