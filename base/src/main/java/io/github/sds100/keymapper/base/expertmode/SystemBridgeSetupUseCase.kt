@@ -291,6 +291,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             else -> SystemBridgeSetupStep.START_SERVICE
         }
     }
+
+    override suspend fun getShellStartCommand(): KMResult<String> {
+        return systemBridgeSetupController.getShellStartCommand()
+    }
 }
 
 interface SystemBridgeSetupUseCase {
@@ -335,4 +339,6 @@ interface SystemBridgeSetupUseCase {
     val isAdbInputSecurityEnabled: Flow<Boolean?>
 
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
+
+    suspend fun getShellStartCommand(): KMResult<String>
 }

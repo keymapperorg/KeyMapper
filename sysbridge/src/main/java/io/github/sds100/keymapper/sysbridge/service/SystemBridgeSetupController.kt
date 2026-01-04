@@ -470,6 +470,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             Manifest.permission.WRITE_SECURE_SETTINGS,
         ) == PackageManager.PERMISSION_GRANTED
     }
+
+    override suspend fun getShellStartCommand(): KMResult<String> {
+        return connectionManager.getShellStartCommand()
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -504,4 +508,6 @@ interface SystemBridgeSetupController {
     val isAdbInputSecurityEnabled: StateFlow<Boolean?>
 
     fun launchDeveloperOptions()
+
+    suspend fun getShellStartCommand(): KMResult<String>
 }

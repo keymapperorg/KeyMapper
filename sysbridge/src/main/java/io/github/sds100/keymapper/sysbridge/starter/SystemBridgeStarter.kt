@@ -28,10 +28,8 @@ import java.io.BufferedReader
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStreamReader
-import java.io.PrintWriter
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import javax.inject.Inject
@@ -172,106 +170,78 @@ class SystemBridgeStarter @Inject constructor(
         }
     }
 
-    private suspend fun startSystemBridge(
-        commandExecutor: suspend (String) -> KMResult<String>,
-    ): KMResult<String> {
-        val externalFilesParent = try {
-            ctx.getExternalFilesDir(null)?.parentFile
-        } catch (e: IOException) {
-            return KMError.UnknownIOError
+    /**
+     * Get the shell command that can be used to start the system bridge manually.
+     * This command should be executed with 'adb shell'.
+     */
+    suspend fun getStartCommand(): KMResult<String> {
+        val directory = if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
+            try {
+                ctx.getExternalFilesDir(null)?.parentFile
+            } catch (e: IOException) {
+                return KMError.UnknownIOError
+            }
+        } else {
+            // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
+            val protectedStorageDir =
+                ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
+
+            try {
+                // 0711
+                Os.chmod(protectedStorageDir.absolutePath, 457)
+            } catch (e: ErrnoException) {
+                e.printStackTrace()
+            }
+
+            protectedStorageDir
         }
 
-        Timber.i("Copy starter files to ${externalFilesParent?.absolutePath}")
+        return copyStarterFiles(directory!!).then { starterPath -> Success("sh $starterPath") }
+    }
 
-        val outputStarterBinary = File(externalFilesParent, "starter")
-        val outputStarterScript = File(externalFilesParent, "start.sh")
+    /**
+     * @return The path to the starter script.
+     */
+    private suspend fun copyStarterFiles(directory: File): KMResult<String> {
+        Timber.i("Copy starter files to ${directory.absolutePath}")
 
-        val copyFilesResult = withContext(Dispatchers.IO) {
+        val outputStarterBinary = File(directory, "starter")
+        val outputStarterScript = File(directory, "start.sh")
+
+        return withContext(Dispatchers.IO) {
             copyNativeLibrary(outputStarterBinary).then {
                 // Create the start.sh shell script
                 writeStarterScript(
                     outputStarterScript,
                     outputStarterBinary.absolutePath,
                 )
-                Success(Unit)
+
+                // Make starter binary executable
+                try {
+                    // 0644
+                    Os.chmod(outputStarterBinary.absolutePath, 420)
+                } catch (e: ErrnoException) {
+                    e.printStackTrace()
+                }
+
+                // Make starter script executable
+                try {
+                    // 0644
+                    Os.chmod(outputStarterScript.absolutePath, 420)
+                } catch (e: ErrnoException) {
+                    e.printStackTrace()
+                }
+
+                Success(outputStarterScript.absolutePath)
             }
         }
-
-        val startCommand =
-            "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath --package=$packageName --version=${buildConfigProvider.versionCode}"
-
-        return copyFilesResult
-            .then { commandExecutor(startCommand) }
-            .then { output ->
-                // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
-                if (output.contains(
-                        "/Android/data/${ctx.packageName}/start.sh: Permission denied",
-                    )
-                ) {
-                    Timber.w(
-                        "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead...",
-                    )
-
-                    startSystemBridgeFromProtectedStorage(commandExecutor)
-                } else {
-                    Success(output)
-                }
-            }
     }
 
-    private suspend fun startSystemBridgeFromProtectedStorage(
-        executeCommand: suspend (String) -> KMResult<String>,
+    private suspend fun startSystemBridge(
+        commandExecutor: suspend (String) -> KMResult<String>,
     ): KMResult<String> {
-        val protectedStorageDir =
-            ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
-
-        Timber.i("Protected storage dir: ${protectedStorageDir.absolutePath}")
-
-        try {
-            // 0711
-            Os.chmod(protectedStorageDir.absolutePath, 457)
-        } catch (e: ErrnoException) {
-            e.printStackTrace()
-        }
-
-        Timber.i("Copy starter files to ${protectedStorageDir.absolutePath}")
-
-        try {
-            val outputStarterBinary = File(protectedStorageDir, "starter")
-            val outputStarterScript = File(protectedStorageDir, "start.sh")
-
-            withContext(Dispatchers.IO) {
-                copyNativeLibrary(outputStarterBinary)
-
-                writeStarterScript(
-                    outputStarterScript,
-                    outputStarterBinary.absolutePath,
-                )
-            }
-
-            val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath  --package=$packageName --version=${buildConfigProvider.versionCode}"
-
-            // Make starter binary executable
-            try {
-                // 0644
-                Os.chmod(outputStarterBinary.absolutePath, 420)
-            } catch (e: ErrnoException) {
-                e.printStackTrace()
-            }
-
-            // Make starter script executable
-            try {
-                // 0644
-                Os.chmod(outputStarterScript.absolutePath, 420)
-            } catch (e: ErrnoException) {
-                e.printStackTrace()
-            }
-
-            return executeCommand(startCommand)
-        } catch (e: IOException) {
-            Timber.e(e)
-            return KMError.UnknownIOError
+        return getStartCommand().then { scriptPath ->
+            commandExecutor(scriptPath)
         }
     }
 
@@ -323,28 +293,28 @@ class SystemBridgeStarter @Inject constructor(
     }
 
     /**
-     * Write the start.sh shell script to the specified [out] file. The path to the starter
-     * binary will be substituted in the script with the [starterPath].
+     * Write the start.sh shell script to the specified [out] file. The placeholders in the script
+     * will be substituted with the provided values.
      */
     private fun writeStarterScript(out: File, starterPath: String) {
-        if (!out.exists()) {
-            out.createNewFile()
-        }
+        out.createNewFile()
 
         val scriptInputStream = ctx.resources.openRawResource(R.raw.start)
 
-        with(scriptInputStream) {
-            val reader = BufferedReader(InputStreamReader(this))
+        with(BufferedReader(InputStreamReader(scriptInputStream))) {
+            val text = readText()
+                .replace("%%%STARTER_PATH%%%", starterPath)
+                .replace("%%%APK_PATH%%%", baseApkPath)
+                .replace("%%%LIB_PATH%%%", libPath ?: "")
+                .replace("%%%PACKAGE_NAME%%%", packageName)
+                .replace(
+                    "%%%VERSION_CODE%%%",
+                    buildConfigProvider.versionCode.toString(),
+                )
 
-            val outputWriter = PrintWriter(FileWriter(out))
-            var line: String?
-
-            while (reader.readLine().also { line = it } != null) {
-                outputWriter.println(line!!.replace("%%%STARTER_PATH%%%", starterPath))
+            with(out) {
+                writeText(text)
             }
-
-            outputWriter.flush()
-            outputWriter.close()
         }
     }
 }

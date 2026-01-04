@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import android.content.ClipData
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
@@ -9,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +32,7 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -53,12 +56,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,6 +80,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.State
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewModel) {
@@ -98,6 +106,7 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
             onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
             onLaunchDeveloperOptionsClick = viewModel::onLaunchDeveloperOptionsClick,
+            onGetShellStartCommandClick = viewModel::onGetShellStartCommandClick,
         )
     }
 }
@@ -179,6 +188,7 @@ private fun Content(
     onRequestNotificationPermissionClick: () -> Unit = {},
     onAutoStartAtBootToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
+    onGetShellStartCommandClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -227,6 +237,7 @@ private fun Content(
                         onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
                         onAutoStartAtBootToggled = onAutoStartAtBootToggled,
                         onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
+                        onGetShellStartCommandClick = onGetShellStartCommandClick,
                     )
                 }
             }
@@ -251,6 +262,7 @@ private fun LoadedContent(
     onRequestNotificationPermissionClick: () -> Unit = {},
     onAutoStartAtBootToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
+    onGetShellStartCommandClick: () -> Unit = {},
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -345,7 +357,9 @@ private fun LoadedContent(
                     isChecked = state.autoStartBootChecked,
                     onCheckedChange = { onAutoStartAtBootToggled() },
                     isEnabled = state.autoStartBootEnabled,
+
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             is ExpertModeState.Stopped -> {
@@ -449,9 +463,19 @@ private fun LoadedContent(
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
                     enabled =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                        state.isNotificationPermissionGranted,
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                            state.isNotificationPermissionGranted,
                     isLoading = state.isStarting,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ShellStartCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    shellStartCommandState = state.shellStartCommandState,
+                    onGetShellStartCommandClick = onGetShellStartCommandClick,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -719,6 +743,141 @@ private fun SetupCard(
 }
 
 @Composable
+private fun ShellStartCard(
+    modifier: Modifier = Modifier,
+    shellStartCommandState: ShellStartCommandState,
+    onGetShellStartCommandClick: () -> Unit,
+) {
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
+    OutlinedCard(modifier = modifier) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.Usb,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = stringResource(R.string.expert_mode_shell_start_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.expert_mode_shell_start_description),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        when (shellStartCommandState) {
+            is ShellStartCommandState.Idle -> {
+                FilledTonalButton(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 16.dp),
+                    onClick = onGetShellStartCommandClick,
+                ) {
+                    Text(stringResource(R.string.expert_mode_shell_start_get_command))
+                }
+            }
+
+            is ShellStartCommandState.Loading -> {
+                FilledTonalButton(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 16.dp),
+                    onClick = {},
+                    enabled = false,
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = LocalContentColor.current,
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.expert_mode_shell_start_get_command))
+                }
+            }
+
+            is ShellStartCommandState.Loaded -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = shellStartCommandState.command,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontFamily = FontFamily.Monospace,
+                        ),
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val clipEntry = ClipEntry(
+                        ClipData.newPlainText(
+                            stringResource(
+                                R.string.expert_mode_shell_start_clipboard_label,
+                            ),
+                            shellStartCommandState.command,
+                        ),
+                    )
+
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                clipboard.setClipEntry(clipEntry)
+                            }
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentCopy,
+                            contentDescription = stringResource(
+                                R.string.expert_mode_shell_start_copy_content_description,
+                            ),
+                        )
+                    }
+                }
+            }
+
+            is ShellStartCommandState.Error -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.expert_mode_shell_start_error),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    FilledTonalButton(
+                        modifier = Modifier.align(Alignment.End),
+                        onClick = onGetShellStartCommandClick,
+                    ) {
+                        Text(stringResource(R.string.expert_mode_shell_start_retry))
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
 private fun ExpertModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}) {
     OutlinedCard(
         modifier = modifier,
@@ -787,6 +946,7 @@ private fun Preview() {
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = true,
                         isStarting = false,
+                        shellStartCommandState = ShellStartCommandState.Idle,
                     ),
                 ),
                 showInfoCard = true,
@@ -878,6 +1038,7 @@ private fun PreviewNotificationPermissionNotGranted() {
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = false,
                         isStarting = false,
+                        shellStartCommandState = ShellStartCommandState.Idle,
                     ),
                 ),
                 showInfoCard = false,
@@ -902,6 +1063,33 @@ private fun PreviewUsbDebuggingSecuritySettingsCard() {
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
                         isAdbInputSecurityEnabled = false,
+                    ),
+                ),
+                showInfoCard = false,
+                onInfoCardDismiss = {},
+                onAutoStartAtBootToggled = {},
+                onLaunchDeveloperOptionsClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellStartCard() {
+    KeyMapperTheme {
+        ExpertModeScreen {
+            Content(
+                warningState = ExpertModeWarningState.Understood,
+                setupState = State.Data(
+                    ExpertModeState.Stopped(
+                        isRootGranted = false,
+                        shizukuSetupState = ShizukuSetupState.NOT_FOUND,
+                        isNotificationPermissionGranted = true,
+                        isStarting = false,
+                        shellStartCommandState = ShellStartCommandState.Loaded(
+                            "sh /storage/emulated/0/Android/data/io.github.sds100.keymapper/files/start.sh",
+                        ),
                     ),
                 ),
                 showInfoCard = false,

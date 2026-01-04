@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #1964 show the command to start Expert Mode with a shell command.
+
 ## Bug fixes
 
 - #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.

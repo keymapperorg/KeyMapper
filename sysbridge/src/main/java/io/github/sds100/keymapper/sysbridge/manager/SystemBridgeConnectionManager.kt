@@ -24,6 +24,8 @@ import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
@@ -39,6 +41,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 /**
@@ -274,6 +277,10 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     override fun startWithShizuku() {
         starter.startWithShizuku()
     }
+
+    override suspend fun getShellStartCommand(): KMResult<String> {
+        return starter.getStartCommand()
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -298,6 +305,9 @@ interface SystemBridgeConnectionManager {
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     suspend fun startWithAdb()
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
+    suspend fun getShellStartCommand(): KMResult<String>
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {
