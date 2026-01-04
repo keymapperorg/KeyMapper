@@ -24,8 +24,6 @@ import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
@@ -41,7 +39,6 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 /**
@@ -70,7 +67,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 time = SystemClock.elapsedRealtime(),
                 // Get whether the user previously stopped the system bridge.
                 isStoppedByUser =
-                    preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
+                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false

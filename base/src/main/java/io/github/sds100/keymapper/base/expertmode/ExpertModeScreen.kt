@@ -463,8 +463,8 @@ private fun LoadedContent(
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
                     enabled =
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                            state.isNotificationPermissionGranted,
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                        state.isNotificationPermissionGranted,
                     isLoading = state.isStarting,
                 )
 

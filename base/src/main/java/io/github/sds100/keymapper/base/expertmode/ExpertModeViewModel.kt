@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ExpertModeViewModel @Inject constructor(
@@ -202,8 +202,8 @@ class ExpertModeViewModel @Inject constructor(
     ) { autoStartBootChecked, autoStartBootEnabled, isAdbInputSecurityEnabled ->
         ExpertModeState.Started(
             isDefaultUsbModeCompatible =
-                useCase.isCompatibleUsbModeSelected().valueOrNull()
-                    ?: false,
+            useCase.isCompatibleUsbModeSelected().valueOrNull()
+                ?: false,
             autoStartBootChecked = autoStartBootChecked,
             autoStartBootEnabled = autoStartBootEnabled,
             isAdbInputSecurityEnabled = isAdbInputSecurityEnabled,
