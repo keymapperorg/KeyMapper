@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -238,12 +237,18 @@ private fun StepContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Icon(
-                modifier = Modifier.size(64.dp),
-                imageVector = stepContent.icon,
-                contentDescription = null,
-                tint = iconTint,
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(64.dp),
+                )
+            } else {
+                Icon(
+                    modifier = Modifier.size(64.dp),
+                    imageVector = stepContent.icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -276,14 +281,6 @@ private fun StepContent(
                 onClick = onButtonClick,
                 enabled = !isLoading,
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                        color = LocalContentColor.current,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
                 Text(text = stepContent.buttonText)
             }
         }
