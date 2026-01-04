@@ -9,5 +9,5 @@ data class ExpertModeSetupState(
     val stepContent: StepContent,
     val isSetupAssistantChecked: Boolean,
     val isSetupAssistantButtonEnabled: Boolean,
-    val isStarting: Boolean,
+    val startingMethod: SystemBridgeStartMethod?,
 )
