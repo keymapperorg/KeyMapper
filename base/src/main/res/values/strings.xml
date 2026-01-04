@@ -1679,8 +1679,8 @@
     <string name="expert_mode_settings_unavailable_text">These settings are unavailable until you acknowledge the warning.</string>
     <string name="expert_mode_service_started">Expert Mode service is running</string>
     <string name="expert_mode_stop_service_button">Stop</string>
-    <string name="expert_mode_shell_start_title">Start with shell</string>
-    <string name="expert_mode_shell_start_description">The other methods above are recommended. If you are using ADB then make sure you do \'adb shell\' first.</string>
+    <string name="expert_mode_shell_start_title">Start manually with ADB</string>
+    <string name="expert_mode_shell_start_description">The other methods above are recommended. You must do \'adb shell\' before executing this command.</string>
     <string name="expert_mode_shell_start_get_command">Get command</string>
     <string name="expert_mode_shell_start_retry">Retry</string>
     <string name="expert_mode_shell_start_error">Failed to get command. Please try again.</string>
