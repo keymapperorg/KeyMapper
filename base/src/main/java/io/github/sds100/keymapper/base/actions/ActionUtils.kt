@@ -694,6 +694,8 @@ object ActionUtils {
         // is not marked as deprecated even though it doesn't work.
         ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
 
+        ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.VANILLA_ICE_CREAM
+
         else -> Constants.MAX_API
     }
 

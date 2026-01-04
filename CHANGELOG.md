@@ -1,3 +1,11 @@
+## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
+
+#### TO BE RELEASED
+
+## Bug fixes
+
+- #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.
+
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 
 #### 1 January 2026
