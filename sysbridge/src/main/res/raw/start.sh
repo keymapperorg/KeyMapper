@@ -43,7 +43,7 @@ chgrp 2000 $STARTER_PATH
 if [ -f $STARTER_PATH ]; then
   echo "info: exec $STARTER_PATH"
     # Pass apk path, library path, package name, version code
-    $STARTER_PATH "$1" "$2" "$3" "$4"
+    $STARTER_PATH --apk="%%%APK_PATH%%%" --lib="%%%LIB_PATH%%%" --package="%%%PACKAGE_NAME%%%" --version="%%%VERSION_CODE%%%"
     result=$?
     if [ ${result} -ne 0 ]; then
         echo "info: keymapper_sysbridge_starter exit with non-zero value $result"

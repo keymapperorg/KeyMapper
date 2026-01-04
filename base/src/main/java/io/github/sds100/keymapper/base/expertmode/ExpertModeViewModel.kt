@@ -12,11 +12,13 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -54,19 +57,18 @@ class ExpertModeViewModel @Inject constructor(
                 ),
             )
 
-    val setupState: StateFlow<State<ExpertModeState>> =
-        combine(
-            useCase.isSystemBridgeConnected,
-            useCase.isRootGranted,
-            useCase.shizukuSetupState,
-            useCase.isNotificationPermissionGranted,
-            useCase.isSystemBridgeStarting,
-            ::buildSetupState,
-        ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+    private val shellStartCommandState: MutableStateFlow<ShellStartCommandState> =
+        MutableStateFlow(ShellStartCommandState.Idle)
 
-    val autoStartBootEnabled: StateFlow<Boolean> =
-        useCase.isAutoStartBootEnabled
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val state: StateFlow<State<ExpertModeState>> =
+        useCase.isSystemBridgeConnected.flatMapLatest { isSystemBridgeConnected ->
+            if (isSystemBridgeConnected) {
+                startedStateFlow().map { State.Data(it) }
+            } else {
+                stoppedStateFlow().map { State.Data(it) }
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
     var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
         private set
@@ -151,30 +153,61 @@ class ExpertModeViewModel @Inject constructor(
         useCase.toggleAutoStartBoot()
     }
 
-    private fun buildSetupState(
-        isSystemBridgeConnected: Boolean,
-        isRootGranted: Boolean,
-        shizukuSetupState: ShizukuSetupState,
-        isNotificationPermissionGranted: Boolean,
-        isSystemBridgeStarting: Boolean,
-    ): State<ExpertModeState> {
-        if (isSystemBridgeConnected) {
-            return State.Data(
-                ExpertModeState.Started(
-                    isDefaultUsbModeCompatible =
-                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
-                ),
-            )
-        } else {
-            return State.Data(
-                ExpertModeState.Stopped(
-                    isRootGranted = isRootGranted,
-                    shizukuSetupState = shizukuSetupState,
-                    isNotificationPermissionGranted = isNotificationPermissionGranted,
-                    isStarting = isSystemBridgeStarting,
-                ),
-            )
+    fun onLaunchDeveloperOptionsClick() {
+        useCase.launchDeveloperOptions()
+    }
+
+    fun onGetShellStartCommandClick() {
+        viewModelScope.launch {
+            if (shellStartCommandState.value != ShellStartCommandState.Idle) {
+                // Do not get the command if not idle.
+                return@launch
+            }
+
+            shellStartCommandState.value = ShellStartCommandState.Loading
+            val result = useCase.getShellStartCommand()
+            shellStartCommandState.value = when (result) {
+                is Success -> ShellStartCommandState.Loaded(result.value)
+                else -> ShellStartCommandState.Error
+            }
         }
+    }
+
+    private fun stoppedStateFlow(): Flow<ExpertModeState.Stopped> = combine(
+        useCase.isRootGranted,
+        useCase.shizukuSetupState,
+        useCase.isNotificationPermissionGranted,
+        useCase.isSystemBridgeStarting,
+        shellStartCommandState,
+    ) {
+            isRootGranted,
+            shizukuSetupState,
+            isNotificationPermissionGranted,
+            isSystemBridgeStarting,
+            shellStartCommandState,
+        ->
+        ExpertModeState.Stopped(
+            isRootGranted = isRootGranted,
+            shizukuSetupState = shizukuSetupState,
+            isNotificationPermissionGranted = isNotificationPermissionGranted,
+            isStarting = isSystemBridgeStarting,
+            shellStartCommandState = shellStartCommandState,
+        )
+    }
+
+    private fun startedStateFlow(): Flow<ExpertModeState.Started> = combine(
+        useCase.isAutoStartBootEnabled,
+        useCase.isAutoStartBootAllowed,
+        useCase.isAdbInputSecurityEnabled,
+    ) { autoStartBootChecked, autoStartBootEnabled, isAdbInputSecurityEnabled ->
+        ExpertModeState.Started(
+            isDefaultUsbModeCompatible =
+            useCase.isCompatibleUsbModeSelected().valueOrNull()
+                ?: false,
+            autoStartBootChecked = autoStartBootChecked,
+            autoStartBootEnabled = autoStartBootEnabled,
+            isAdbInputSecurityEnabled = isAdbInputSecurityEnabled,
+        )
     }
 }
 
@@ -190,7 +223,20 @@ sealed class ExpertModeState {
         val shizukuSetupState: ShizukuSetupState,
         val isNotificationPermissionGranted: Boolean,
         val isStarting: Boolean,
+        val shellStartCommandState: ShellStartCommandState,
     ) : ExpertModeState()
 
-    data class Started(val isDefaultUsbModeCompatible: Boolean) : ExpertModeState()
+    data class Started(
+        val isDefaultUsbModeCompatible: Boolean,
+        val autoStartBootChecked: Boolean,
+        val autoStartBootEnabled: Boolean,
+        val isAdbInputSecurityEnabled: Boolean?,
+    ) : ExpertModeState()
+}
+
+sealed class ShellStartCommandState {
+    data object Idle : ShellStartCommandState()
+    data object Loading : ShellStartCommandState()
+    data class Loaded(val command: String) : ShellStartCommandState()
+    data object Error : ShellStartCommandState()
 }

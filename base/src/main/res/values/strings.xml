@@ -1674,15 +1674,22 @@
     <string name="expert_mode_set_up_with_key_mapper_title">Set up with Key Mapper</string>
     <string name="expert_mode_set_up_with_key_mapper_button">Continue</string>
     <string name="expert_mode_set_up_with_key_mapper_button_incompatible">(Requires Android 11+)</string>
-    <string name="expert_mode_options_title">Options</string>
     <string name="expert_mode_enable_for_all_key_maps_title">Enable Expert Mode for all key maps</string>
     <string name="expert_mode_enable_for_all_key_maps_text">Key Mapper will use the ADB Shell for remapping</string>
     <string name="expert_mode_settings_unavailable_text">These settings are unavailable until you acknowledge the warning.</string>
     <string name="expert_mode_service_started">Expert Mode service is running</string>
     <string name="expert_mode_stop_service_button">Stop</string>
+    <string name="expert_mode_shell_start_title">Start manually with ADB</string>
+    <string name="expert_mode_shell_start_description">The other methods above are recommended. You must do \'adb shell\' before executing this command.</string>
+    <string name="expert_mode_shell_start_get_command">Get command</string>
+    <string name="expert_mode_shell_start_retry">Retry</string>
+    <string name="expert_mode_shell_start_error">Failed to get command. Please try again.</string>
+    <string name="expert_mode_shell_start_clipboard_label">System Bridge Start Command</string>
+    <string name="expert_mode_shell_start_copy_content_description">Copy command to clipboard</string>
 
     <string name="title_pref_expert_mode_auto_start">Auto start and keep alive</string>
     <string name="summary_pref_expert_mode_auto_start">Expert Mode will start itself whenever you boot your device or it dies unexpectedly.</string>
+    <string name="summary_pref_expert_mode_auto_start_disabled">Expert Mode will start itself whenever you boot your device or it dies unexpectedly. This requires WRITE_SECURE_SETTINGS permission.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>
@@ -1724,6 +1731,10 @@
 
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>
+
+    <string name="expert_mode_usb_debugging_security_settings_title">USB debugging security settings disabled</string>
+    <string name="expert_mode_usb_debugging_security_settings_description">You need to enable \"USB debugging security settings\" in Developer options for Expert Mode to work properly. This is mainly required on Xiaomi devices.</string>
+    <string name="expert_mode_usb_debugging_security_settings_button">Open Developer options</string>
 
     <string name="expert_mode_setup_assistant_notification_channel">Setup assistant</string>
 

@@ -39,6 +39,7 @@ import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -137,6 +138,15 @@ class AndroidPermissionAdapter @Inject constructor(
             .drop(1)
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
+
+        coroutineScope.launch {
+            systemBridgeConnectionManager.connectionState.collect {
+                // Invalidate the permissions in case WRITE_SECURE_SETTINGS or other
+                // permissions were granted when the user started the system bridge.
+                delay(1000)
+                onPermissionsChanged()
+            }
+        }
     }
 
     override fun request(permission: Permission) {

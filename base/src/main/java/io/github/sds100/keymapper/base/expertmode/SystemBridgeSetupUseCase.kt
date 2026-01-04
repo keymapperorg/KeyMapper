@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @ViewModelScoped
 class SystemBridgeSetupUseCaseImpl @Inject constructor(
@@ -165,6 +166,18 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.enableDeveloperOptions()
     }
 
+    override fun launchDeveloperOptions() {
+        systemBridgeSetupController.launchDeveloperOptions()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override val isAdbInputSecurityEnabled: Flow<Boolean?> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            systemBridgeSetupController.isAdbInputSecurityEnabled
+        } else {
+            flowOf(null)
+        }
+
     override fun connectWifiNetwork() {
         networkAdapter.connectWifiNetwork()
     }
@@ -210,9 +223,24 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         preferences.set(Keys.isExpertModeInfoDismissed, true)
     }
 
+    override val isAutoStartBootAllowed: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.ROOT).flatMapLatest { isRooted ->
+            if (isRooted) {
+                flowOf(true)
+            } else {
+                permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
+            }
+        }
+
     override val isAutoStartBootEnabled: Flow<Boolean> =
-        preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
-            .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
+        isAutoStartBootAllowed.flatMapLatest { isAllowed ->
+            if (isAllowed) {
+                preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
+                    .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
+            } else {
+                flowOf(false)
+            }
+        }
 
     override fun toggleAutoStartBoot() {
         preferences.update(Keys.isSystemBridgeKeepAliveEnabled) {
@@ -263,6 +291,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             else -> SystemBridgeSetupStep.START_SERVICE
         }
     }
+
+    override suspend fun getShellStartCommand(): KMResult<String> {
+        return systemBridgeSetupController.getShellStartCommand()
+    }
 }
 
 interface SystemBridgeSetupUseCase {
@@ -273,6 +305,7 @@ interface SystemBridgeSetupUseCase {
     fun dismissInfo()
 
     val isAutoStartBootEnabled: Flow<Boolean>
+    val isAutoStartBootAllowed: Flow<Boolean>
     fun toggleAutoStartBoot()
 
     val isSetupAssistantEnabled: Flow<Boolean>
@@ -294,6 +327,7 @@ interface SystemBridgeSetupUseCase {
     fun stopSystemBridge()
     fun enableAccessibilityService()
     fun enableDeveloperOptions()
+    fun launchDeveloperOptions()
     fun connectWifiNetwork()
     fun enableWirelessDebugging()
     fun pairWirelessAdb()
@@ -302,5 +336,9 @@ interface SystemBridgeSetupUseCase {
     fun startSystemBridgeWithAdb()
     fun autoStartSystemBridgeWithAdb()
 
+    val isAdbInputSecurityEnabled: Flow<Boolean?>
+
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
+
+    suspend fun getShellStartCommand(): KMResult<String>
 }

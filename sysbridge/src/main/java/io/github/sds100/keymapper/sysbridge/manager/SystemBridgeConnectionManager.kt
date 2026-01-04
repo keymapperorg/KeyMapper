@@ -55,6 +55,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     companion object {
         private const val TAG = "SystemBridgeConnectionManagerImpl"
+        private const val MIUI_OPTIMIZATION_SETTING = "miui_optimization"
     }
 
     private val systemBridgeLock: Any = Any()
@@ -118,11 +119,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
                 this.systemBridgeFlow.update { systemBridge }
 
-                // Only turn on the ADB options to prevent killing if it is running under
-                // the ADB shell user
-                if (systemBridge.processUid == Process.SHELL_UID) {
-                    preventSystemBridgeKilling(systemBridge)
-                }
+                preventSystemBridgeKilling(systemBridge)
 
                 connectionState.update {
                     SystemBridgeConnectionState.Connected(
@@ -212,24 +209,24 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     }
 
     private fun preventSystemBridgeKilling(systemBridge: ISystemBridge) {
-        val deviceId: Int =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ctx.deviceId
-            } else {
-                -1
-            }
-
         // WARNING! Granting some permissions (e.g READ_LOGS) will cause the system to kill
         // the app process and restart it. This is normal, expected behavior and can not be
         // worked around. Do not grant any other permissions automatically here.
-        systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
-        Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
 
-        if (ContextCompat.checkSelfPermission(
-                ctx,
-                Manifest.permission.WRITE_SECURE_SETTINGS,
-            ) == PERMISSION_GRANTED
-        ) {
+        val isWriteSecureSettingsGranted = ContextCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.WRITE_SECURE_SETTINGS,
+        ) == PERMISSION_GRANTED
+
+        if (!isWriteSecureSettingsGranted) {
+            grantWriteSecureSettings(systemBridge)
+        }
+
+        val isShellProcess = systemBridge.processUid == Process.SHELL_UID
+
+        // Only turn on the ADB options to prevent killing if it is running under
+        // the ADB shell user
+        if (isWriteSecureSettingsGranted && isShellProcess) {
             // Disable automatic revoking of ADB pairings
             SettingsUtils.putGlobalSetting(
                 ctx,
@@ -245,6 +242,29 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 1,
             )
         }
+
+        val isMiuiOptimisationEnabled =
+            SettingsUtils.getGlobalSetting<Int>(ctx, MIUI_OPTIMIZATION_SETTING) == 1
+
+        if (isWriteSecureSettingsGranted && isMiuiOptimisationEnabled) {
+            SettingsUtils.putGlobalSetting(ctx, MIUI_OPTIMIZATION_SETTING, 0)
+        }
+    }
+
+    private fun grantWriteSecureSettings(systemBridge: ISystemBridge) {
+        val deviceId: Int =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ctx.deviceId
+            } else {
+                -1
+            }
+
+        try {
+            systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
+            Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
+        } catch (e: Exception) {
+            Timber.w("Failed to grant WRITE_SECURE_SETTINGS: $e")
+        }
     }
 
     override suspend fun startWithRoot() {
@@ -253,6 +273,10 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     override fun startWithShizuku() {
         starter.startWithShizuku()
+    }
+
+    override suspend fun getShellStartCommand(): KMResult<String> {
+        return starter.getStartCommand()
     }
 }
 
@@ -278,6 +302,9 @@ interface SystemBridgeConnectionManager {
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     suspend fun startWithAdb()
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
+    suspend fun getShellStartCommand(): KMResult<String>
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {

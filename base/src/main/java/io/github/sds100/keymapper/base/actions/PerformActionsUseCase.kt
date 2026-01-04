@@ -689,6 +689,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     val actionType = when (action.direction) {
                         ActionData.MoveCursor.Direction.START ->
                             AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+
                         ActionData.MoveCursor.Direction.END ->
                             AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY
                     }
@@ -696,12 +697,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     val granularity = when (action.moveType) {
                         ActionData.MoveCursor.Type.CHAR ->
                             AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
+
                         ActionData.MoveCursor.Type.WORD ->
                             AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
+
                         ActionData.MoveCursor.Type.LINE ->
                             AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
+
                         ActionData.MoveCursor.Type.PARAGRAPH ->
                             AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
+
                         ActionData.MoveCursor.Type.PAGE ->
                             AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
                     }
@@ -1040,10 +1045,13 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is Success -> Timber.d(
                 "Performed action $action, input event type: $inputEventAction, key meta state: $keyMetaState",
             )
+
             is KMError -> Timber.d(
-                "Failed to perform action $action, reason: ${result.getFullMessage(
-                    resourceProvider,
-                )}, action: $action, input event type: $inputEventAction, key meta state: $keyMetaState",
+                "Failed to perform action $action, reason: ${
+                    result.getFullMessage(
+                        resourceProvider,
+                    )
+                }, action: $action, input event type: $inputEventAction, key meta state: $keyMetaState",
             )
         }
 

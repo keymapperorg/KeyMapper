@@ -1,6 +1,22 @@
+## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
+
+#### 4 January 2026
+
+## Added
+
+- #1964 show the command to start Expert Mode with a shell command.
+
+## Bug fixes
+
+- #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.
+- #1967 Still start system bridge if granting WRITE_SECURE_SETTINGS fails.
+- #1965 Better system bridge support on Xiaomi devices and ask to enable "USB debugging security settings" in developer options.
+
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 
-#### TO BE RELEASED
+#### 1 January 2026
+
+Happy new year!
 
 ## Added
 - #1947 show tip to use expert mode where the old option for screen off remapping used to be

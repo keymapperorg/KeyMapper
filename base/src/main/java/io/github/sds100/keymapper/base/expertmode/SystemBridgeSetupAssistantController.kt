@@ -256,7 +256,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         // and trying to find the clickable node. This can change subtly between
         // Android devices and ROMs.
         val textNode = rootNode.findNodeRecursively { node ->
-            Timber.e(node.text?.toString())
             PAIRING_CODE_BUTTON_TEXT_FILTER.any { text -> node.text?.contains(text) == true }
         } ?: return
 
