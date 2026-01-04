@@ -5,6 +5,8 @@
 ## Bug fixes
 
 - #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.
+- #1967 Still start system bridge if granting WRITE_SECURE_SETTINGS fails.
+- #1965 Better system bridge support on Xiaomi devices and ask to enable "USB debugging security settings" in developer options.
 
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 

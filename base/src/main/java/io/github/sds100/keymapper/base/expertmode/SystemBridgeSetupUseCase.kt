@@ -166,6 +166,18 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.enableDeveloperOptions()
     }
 
+    override fun launchDeveloperOptions() {
+        systemBridgeSetupController.launchDeveloperOptions()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override val isAdbInputSecurityEnabled: Flow<Boolean?> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            systemBridgeSetupController.isAdbInputSecurityEnabled
+        } else {
+            flowOf(null)
+        }
+
     override fun connectWifiNetwork() {
         networkAdapter.connectWifiNetwork()
     }
@@ -311,6 +323,7 @@ interface SystemBridgeSetupUseCase {
     fun stopSystemBridge()
     fun enableAccessibilityService()
     fun enableDeveloperOptions()
+    fun launchDeveloperOptions()
     fun connectWifiNetwork()
     fun enableWirelessDebugging()
     fun pairWirelessAdb()
@@ -318,6 +331,8 @@ interface SystemBridgeSetupUseCase {
     fun startSystemBridgeWithShizuku()
     fun startSystemBridgeWithAdb()
     fun autoStartSystemBridgeWithAdb()
+
+    val isAdbInputSecurityEnabled: Flow<Boolean?>
 
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
 }

@@ -33,7 +33,6 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.RestartAlt
-import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
@@ -78,9 +77,7 @@ import io.github.sds100.keymapper.common.utils.State
 @Composable
 fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewModel) {
     val expertModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
-    val expertModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
-    val autoStartBootChecked by viewModel.autoStartBootChecked.collectAsStateWithLifecycle()
-    val autoStartBootEnabled by viewModel.autoStartBootEnabled.collectAsStateWithLifecycle()
+    val expertModeState by viewModel.state.collectAsStateWithLifecycle()
 
     ExpertModeScreen(
         modifier = modifier,
@@ -90,7 +87,7 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
     ) {
         Content(
             warningState = expertModeWarningState,
-            setupState = expertModeSetupState,
+            setupState = expertModeState,
             showInfoCard = viewModel.showInfoCard,
             onInfoCardDismiss = { viewModel.hideInfoCard() },
             onWarningButtonClick = viewModel::onWarningButtonClick,
@@ -99,9 +96,8 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onRootButtonClick = viewModel::onRootButtonClick,
             onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
             onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
-            autoStartAtBoot = autoStartBootChecked,
             onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
-            autoStartAtBootEnabled = autoStartBootEnabled,
+            onLaunchDeveloperOptionsClick = viewModel::onLaunchDeveloperOptionsClick,
         )
     }
 }
@@ -181,9 +177,8 @@ private fun Content(
     onRootButtonClick: () -> Unit = {},
     onSetupWithKeyMapperClick: () -> Unit = {},
     onRequestNotificationPermissionClick: () -> Unit = {},
-    autoStartAtBoot: Boolean,
-    onAutoStartAtBootToggled: (Boolean) -> Unit = {},
-    autoStartAtBootEnabled: Boolean,
+    onAutoStartAtBootToggled: () -> Unit = {},
+    onLaunchDeveloperOptionsClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -230,9 +225,8 @@ private fun Content(
                         onRootButtonClick = onRootButtonClick,
                         onSetupWithKeyMapperClick = onSetupWithKeyMapperClick,
                         onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
-                        autoStartAtBoot = autoStartAtBoot,
                         onAutoStartAtBootToggled = onAutoStartAtBootToggled,
-                        autoStartAtBootEnabled = autoStartAtBootEnabled,
+                        onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
                     )
                 }
             }
@@ -255,9 +249,8 @@ private fun LoadedContent(
     onStopServiceClick: () -> Unit,
     onSetupWithKeyMapperClick: () -> Unit,
     onRequestNotificationPermissionClick: () -> Unit = {},
-    autoStartAtBoot: Boolean,
-    onAutoStartAtBootToggled: (Boolean) -> Unit = {},
-    autoStartAtBootEnabled: Boolean,
+    onAutoStartAtBootToggled: () -> Unit = {},
+    onLaunchDeveloperOptionsClick: () -> Unit = {},
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -306,6 +299,15 @@ private fun LoadedContent(
 
         when (state) {
             is ExpertModeState.Started -> {
+                ExpertModeStartedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    onStopClick = onStopServiceClick,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 if (!state.isDefaultUsbModeCompatible) {
                     IncompatibleUsbModeCard(
                         modifier = Modifier
@@ -316,11 +318,33 @@ private fun LoadedContent(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                ExpertModeStartedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    onStopClick = onStopServiceClick,
+                // Only show auto-start options and warnings when Expert Mode is started
+                // Show USB debugging security settings warning if disabled
+                if (state.isAdbInputSecurityEnabled == false) {
+                    UsbDebuggingSecuritySettingsCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                SwitchPreferenceCompose(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    title = stringResource(R.string.title_pref_expert_mode_auto_start),
+                    text = if (state.autoStartBootEnabled) {
+                        stringResource(R.string.summary_pref_expert_mode_auto_start)
+                    } else {
+                        stringResource(
+                            R.string.summary_pref_expert_mode_auto_start_disabled,
+                        )
+                    },
+                    icon = Icons.Rounded.RestartAlt,
+                    isChecked = state.autoStartBootChecked,
+                    onCheckedChange = { onAutoStartAtBootToggled() },
+                    isEnabled = state.autoStartBootEnabled,
                 )
             }
 
@@ -425,41 +449,14 @@ private fun LoadedContent(
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
                     enabled =
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                            state.isNotificationPermissionGranted,
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                        state.isNotificationPermissionGranted,
                     isLoading = state.isStarting,
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
-
-        // Options section
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OptionsHeaderRow(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            icon = Icons.Rounded.Tune,
-            text = stringResource(R.string.expert_mode_options_title),
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SwitchPreferenceCompose(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            title = stringResource(R.string.title_pref_expert_mode_auto_start),
-            text = if (autoStartAtBootEnabled) {
-                stringResource(R.string.summary_pref_expert_mode_auto_start)
-            } else {
-                stringResource(
-                    R.string.summary_pref_expert_mode_auto_start_disabled,
-                )
-            },
-            icon = Icons.Rounded.RestartAlt,
-            isChecked = autoStartAtBoot,
-            onCheckedChange = onAutoStartAtBootToggled,
-            isEnabled = autoStartAtBootEnabled,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
@@ -498,6 +495,39 @@ private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
                 "default_usb_configuration",
             )
         },
+    )
+}
+
+@Composable
+private fun UsbDebuggingSecuritySettingsCard(
+    modifier: Modifier = Modifier,
+    onLaunchDeveloperOptionsClick: () -> Unit = {},
+) {
+    SetupCard(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.errorContainer,
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.WarningAmber,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        },
+        title = stringResource(
+            R.string.expert_mode_usb_debugging_security_settings_title,
+        ),
+        content = {
+            Text(
+                text = stringResource(
+                    R.string.expert_mode_usb_debugging_security_settings_description,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        buttonText = stringResource(
+            R.string.expert_mode_usb_debugging_security_settings_button,
+        ),
+        onButtonClick = onLaunchDeveloperOptionsClick,
     )
 }
 
@@ -761,9 +791,8 @@ private fun Preview() {
                 ),
                 showInfoCard = true,
                 onInfoCardDismiss = {},
-                autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
-                autoStartAtBootEnabled = true,
+                onLaunchDeveloperOptionsClick = {},
             )
         }
     }
@@ -776,12 +805,18 @@ private fun PreviewDark() {
         ExpertModeScreen {
             Content(
                 warningState = ExpertModeWarningState.Understood,
-                setupState = State.Data(ExpertModeState.Started(isDefaultUsbModeCompatible = true)),
+                setupState = State.Data(
+                    ExpertModeState.Started(
+                        isDefaultUsbModeCompatible = true,
+                        autoStartBootChecked = true,
+                        autoStartBootEnabled = true,
+                        isAdbInputSecurityEnabled = null,
+                    ),
+                ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
-                autoStartAtBoot = true,
                 onAutoStartAtBootToggled = {},
-                autoStartAtBootEnabled = true,
+                onLaunchDeveloperOptionsClick = {},
             )
         }
     }
@@ -799,9 +834,8 @@ private fun PreviewCountingDown() {
                 setupState = State.Loading,
                 showInfoCard = true,
                 onInfoCardDismiss = {},
-                autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
-                autoStartAtBootEnabled = true,
+                onLaunchDeveloperOptionsClick = {},
             )
         }
     }
@@ -815,13 +849,17 @@ private fun PreviewStarted() {
             Content(
                 warningState = ExpertModeWarningState.Understood,
                 setupState = State.Data(
-                    ExpertModeState.Started(isDefaultUsbModeCompatible = false),
+                    ExpertModeState.Started(
+                        isDefaultUsbModeCompatible = false,
+                        autoStartBootChecked = false,
+                        autoStartBootEnabled = true,
+                        isAdbInputSecurityEnabled = null,
+                    ),
                 ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
-                autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
-                autoStartAtBootEnabled = true,
+                onLaunchDeveloperOptionsClick = {},
             )
         }
     }
@@ -844,9 +882,32 @@ private fun PreviewNotificationPermissionNotGranted() {
                 ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
-                autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
-                autoStartAtBootEnabled = true,
+                onLaunchDeveloperOptionsClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewUsbDebuggingSecuritySettingsCard() {
+    KeyMapperTheme {
+        ExpertModeScreen {
+            Content(
+                warningState = ExpertModeWarningState.Understood,
+                setupState = State.Data(
+                    ExpertModeState.Started(
+                        isDefaultUsbModeCompatible = true,
+                        autoStartBootChecked = false,
+                        autoStartBootEnabled = true,
+                        isAdbInputSecurityEnabled = false,
+                    ),
+                ),
+                showInfoCard = false,
+                onInfoCardDismiss = {},
+                onAutoStartAtBootToggled = {},
+                onLaunchDeveloperOptionsClick = {},
             )
         }
     }

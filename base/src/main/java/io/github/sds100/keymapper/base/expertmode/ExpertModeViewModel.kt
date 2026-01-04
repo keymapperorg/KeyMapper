@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ExpertModeViewModel @Inject constructor(
@@ -54,23 +54,15 @@ class ExpertModeViewModel @Inject constructor(
                 ),
             )
 
-    val setupState: StateFlow<State<ExpertModeState>> =
-        combine(
-            useCase.isSystemBridgeConnected,
-            useCase.isRootGranted,
-            useCase.shizukuSetupState,
-            useCase.isNotificationPermissionGranted,
-            useCase.isSystemBridgeStarting,
-            ::buildSetupState,
-        ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
-
-    val autoStartBootChecked: StateFlow<Boolean> =
-        useCase.isAutoStartBootEnabled
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    val autoStartBootEnabled: StateFlow<Boolean> =
-        useCase.isAutoStartBootAllowed
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val state: StateFlow<State<ExpertModeState>> =
+        useCase.isSystemBridgeConnected.flatMapLatest { isSystemBridgeConnected ->
+            if (isSystemBridgeConnected) {
+                startedStateFlow()
+            } else {
+                stoppedStateFlow()
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
     var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
         private set
@@ -155,30 +147,47 @@ class ExpertModeViewModel @Inject constructor(
         useCase.toggleAutoStartBoot()
     }
 
-    private fun buildSetupState(
-        isSystemBridgeConnected: Boolean,
-        isRootGranted: Boolean,
-        shizukuSetupState: ShizukuSetupState,
-        isNotificationPermissionGranted: Boolean,
-        isSystemBridgeStarting: Boolean,
-    ): State<ExpertModeState> {
-        if (isSystemBridgeConnected) {
-            return State.Data(
-                ExpertModeState.Started(
-                    isDefaultUsbModeCompatible =
-                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
-                ),
-            )
-        } else {
-            return State.Data(
-                ExpertModeState.Stopped(
-                    isRootGranted = isRootGranted,
-                    shizukuSetupState = shizukuSetupState,
-                    isNotificationPermissionGranted = isNotificationPermissionGranted,
-                    isStarting = isSystemBridgeStarting,
-                ),
-            )
-        }
+    fun onLaunchDeveloperOptionsClick() {
+        useCase.launchDeveloperOptions()
+    }
+
+    private fun stoppedStateFlow(): Flow<State.Data<ExpertModeState.Stopped>> = combine(
+        useCase.isRootGranted,
+        useCase.shizukuSetupState,
+        useCase.isNotificationPermissionGranted,
+        useCase.isSystemBridgeStarting,
+    ) {
+            isRootGranted,
+            shizukuSetupState,
+            isNotificationPermissionGranted,
+            isSystemBridgeStarting,
+        ->
+
+        State.Data(
+            ExpertModeState.Stopped(
+                isRootGranted = isRootGranted,
+                shizukuSetupState = shizukuSetupState,
+                isNotificationPermissionGranted = isNotificationPermissionGranted,
+                isStarting = isSystemBridgeStarting,
+            ),
+        )
+    }
+
+    private fun startedStateFlow(): Flow<State.Data<ExpertModeState.Started>> = combine(
+        useCase.isAutoStartBootEnabled,
+        useCase.isAutoStartBootAllowed,
+        useCase.isAdbInputSecurityEnabled,
+    ) { autoStartBootChecked, autoStartBootEnabled, isAdbInputSecurityEnabled ->
+        State.Data(
+            ExpertModeState.Started(
+                isDefaultUsbModeCompatible =
+                useCase.isCompatibleUsbModeSelected().valueOrNull()
+                    ?: false,
+                autoStartBootChecked = autoStartBootChecked,
+                autoStartBootEnabled = autoStartBootEnabled,
+                isAdbInputSecurityEnabled = isAdbInputSecurityEnabled,
+            ),
+        )
     }
 }
 
@@ -196,5 +205,10 @@ sealed class ExpertModeState {
         val isStarting: Boolean,
     ) : ExpertModeState()
 
-    data class Started(val isDefaultUsbModeCompatible: Boolean) : ExpertModeState()
+    data class Started(
+        val isDefaultUsbModeCompatible: Boolean,
+        val autoStartBootChecked: Boolean,
+        val autoStartBootEnabled: Boolean,
+        val isAdbInputSecurityEnabled: Boolean?,
+    ) : ExpertModeState()
 }

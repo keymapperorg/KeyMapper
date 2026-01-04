@@ -66,7 +66,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 time = SystemClock.elapsedRealtime(),
                 // Get whether the user previously stopped the system bridge.
                 isStoppedByUser =
-                    preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
+                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false

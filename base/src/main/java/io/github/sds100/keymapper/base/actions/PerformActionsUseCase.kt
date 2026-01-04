@@ -954,6 +954,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.DeviceControls -> {
+                @Suppress("ktlint:standard:max-line-length")
                 result = intentAdapter.send(
                     IntentTarget.ACTIVITY,
                     uri = "#Intent;action=android.intent.action.MAIN;package=com.android.systemui;component=com.android.systemui/.controls.ui.ControlsActivity;end",
