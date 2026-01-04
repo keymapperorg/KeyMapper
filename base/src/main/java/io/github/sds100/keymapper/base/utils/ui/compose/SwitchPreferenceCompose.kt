@@ -24,6 +24,7 @@ fun SwitchPreferenceCompose(
     icon: ImageVector,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    isEnabled: Boolean = true,
 ) {
     Surface(
         modifier = modifier,
@@ -31,9 +32,10 @@ fun SwitchPreferenceCompose(
         onClick = {
             onCheckedChange(!isChecked)
         },
+        enabled = isEnabled,
     ) {
         Row(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -45,7 +47,7 @@ fun SwitchPreferenceCompose(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
 
-            Column(modifier = Modifier.Companion.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(text = title, style = MaterialTheme.typography.bodyLarge)
                 if (text != null) {
                     Text(
@@ -59,6 +61,7 @@ fun SwitchPreferenceCompose(
             Switch(
                 checked = isChecked,
                 onCheckedChange = onCheckedChange,
+                enabled = isEnabled,
             )
         }
     }

@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @ViewModelScoped
 class SystemBridgeSetupUseCaseImpl @Inject constructor(
@@ -210,9 +211,24 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         preferences.set(Keys.isExpertModeInfoDismissed, true)
     }
 
+    override val isAutoStartBootAllowed: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.ROOT).flatMapLatest { isRooted ->
+            if (isRooted) {
+                flowOf(true)
+            } else {
+                permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
+            }
+        }
+
     override val isAutoStartBootEnabled: Flow<Boolean> =
-        preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
-            .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
+        isAutoStartBootAllowed.flatMapLatest { isAllowed ->
+            if (isAllowed) {
+                preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
+                    .map { it ?: PreferenceDefaults.EXPERT_MODE_KEEP_ALIVE }
+            } else {
+                flowOf(false)
+            }
+        }
 
     override fun toggleAutoStartBoot() {
         preferences.update(Keys.isSystemBridgeKeepAliveEnabled) {
@@ -273,6 +289,7 @@ interface SystemBridgeSetupUseCase {
     fun dismissInfo()
 
     val isAutoStartBootEnabled: Flow<Boolean>
+    val isAutoStartBootAllowed: Flow<Boolean>
     fun toggleAutoStartBoot()
 
     val isSetupAssistantEnabled: Flow<Boolean>

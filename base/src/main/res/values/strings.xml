@@ -1683,6 +1683,7 @@
 
     <string name="title_pref_expert_mode_auto_start">Auto start and keep alive</string>
     <string name="summary_pref_expert_mode_auto_start">Expert Mode will start itself whenever you boot your device or it dies unexpectedly.</string>
+    <string name="summary_pref_expert_mode_auto_start_disabled">Expert Mode will start itself whenever you boot your device or it dies unexpectedly. This requires WRITE_SECURE_SETTINGS permission.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>

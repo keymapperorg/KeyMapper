@@ -66,7 +66,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 time = SystemClock.elapsedRealtime(),
                 // Get whether the user previously stopped the system bridge.
                 isStoppedByUser =
-                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
+                    preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false
@@ -118,11 +118,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
                 this.systemBridgeFlow.update { systemBridge }
 
-                // Only turn on the ADB options to prevent killing if it is running under
-                // the ADB shell user
-                if (systemBridge.processUid == Process.SHELL_UID) {
-                    preventSystemBridgeKilling(systemBridge)
-                }
+                preventSystemBridgeKilling(systemBridge)
 
                 connectionState.update {
                     SystemBridgeConnectionState.Connected(
@@ -212,24 +208,24 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     }
 
     private fun preventSystemBridgeKilling(systemBridge: ISystemBridge) {
-        val deviceId: Int =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ctx.deviceId
-            } else {
-                -1
-            }
-
         // WARNING! Granting some permissions (e.g READ_LOGS) will cause the system to kill
         // the app process and restart it. This is normal, expected behavior and can not be
         // worked around. Do not grant any other permissions automatically here.
-        systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
-        Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
 
-        if (ContextCompat.checkSelfPermission(
-                ctx,
-                Manifest.permission.WRITE_SECURE_SETTINGS,
-            ) == PERMISSION_GRANTED
-        ) {
+        val isWriteSecureSettingsGranted = ContextCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.WRITE_SECURE_SETTINGS,
+        ) == PERMISSION_GRANTED
+
+        if (!isWriteSecureSettingsGranted) {
+            grantWriteSecureSettings(systemBridge)
+        }
+
+        val isShellProcess = systemBridge.processUid == Process.SHELL_UID
+
+        // Only turn on the ADB options to prevent killing if it is running under
+        // the ADB shell user
+        if (isWriteSecureSettingsGranted && isShellProcess) {
             // Disable automatic revoking of ADB pairings
             SettingsUtils.putGlobalSetting(
                 ctx,
@@ -244,6 +240,22 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 "adb_enabled",
                 1,
             )
+        }
+    }
+
+    private fun grantWriteSecureSettings(systemBridge: ISystemBridge) {
+        val deviceId: Int =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ctx.deviceId
+            } else {
+                -1
+            }
+
+        try {
+            systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
+            Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
+        } catch (e: Exception) {
+            Timber.w("Failed to grant WRITE_SECURE_SETTINGS: $e")
         }
     }
 

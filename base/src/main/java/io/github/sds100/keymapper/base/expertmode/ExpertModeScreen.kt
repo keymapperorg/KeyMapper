@@ -79,6 +79,7 @@ import io.github.sds100.keymapper.common.utils.State
 fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewModel) {
     val expertModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val expertModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
+    val autoStartBootChecked by viewModel.autoStartBootChecked.collectAsStateWithLifecycle()
     val autoStartBootEnabled by viewModel.autoStartBootEnabled.collectAsStateWithLifecycle()
 
     ExpertModeScreen(
@@ -98,8 +99,9 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onRootButtonClick = viewModel::onRootButtonClick,
             onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
             onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
-            autoStartAtBoot = autoStartBootEnabled,
+            autoStartAtBoot = autoStartBootChecked,
             onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
+            autoStartAtBootEnabled = autoStartBootEnabled,
         )
     }
 }
@@ -181,6 +183,7 @@ private fun Content(
     onRequestNotificationPermissionClick: () -> Unit = {},
     autoStartAtBoot: Boolean,
     onAutoStartAtBootToggled: (Boolean) -> Unit = {},
+    autoStartAtBootEnabled: Boolean,
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -229,6 +232,7 @@ private fun Content(
                         onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
                         autoStartAtBoot = autoStartAtBoot,
                         onAutoStartAtBootToggled = onAutoStartAtBootToggled,
+                        autoStartAtBootEnabled = autoStartAtBootEnabled,
                     )
                 }
             }
@@ -253,6 +257,7 @@ private fun LoadedContent(
     onRequestNotificationPermissionClick: () -> Unit = {},
     autoStartAtBoot: Boolean,
     onAutoStartAtBootToggled: (Boolean) -> Unit = {},
+    autoStartAtBootEnabled: Boolean,
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -420,8 +425,8 @@ private fun LoadedContent(
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
                     enabled =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                        state.isNotificationPermissionGranted,
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                            state.isNotificationPermissionGranted,
                     isLoading = state.isStarting,
                 )
             }
@@ -441,10 +446,17 @@ private fun LoadedContent(
         SwitchPreferenceCompose(
             modifier = Modifier.padding(horizontal = 8.dp),
             title = stringResource(R.string.title_pref_expert_mode_auto_start),
-            text = stringResource(R.string.summary_pref_expert_mode_auto_start),
+            text = if (autoStartAtBootEnabled) {
+                stringResource(R.string.summary_pref_expert_mode_auto_start)
+            } else {
+                stringResource(
+                    R.string.summary_pref_expert_mode_auto_start_disabled,
+                )
+            },
             icon = Icons.Rounded.RestartAlt,
             isChecked = autoStartAtBoot,
             onCheckedChange = onAutoStartAtBootToggled,
+            isEnabled = autoStartAtBootEnabled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -751,6 +763,7 @@ private fun Preview() {
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
+                autoStartAtBootEnabled = true,
             )
         }
     }
@@ -768,6 +781,7 @@ private fun PreviewDark() {
                 onInfoCardDismiss = {},
                 autoStartAtBoot = true,
                 onAutoStartAtBootToggled = {},
+                autoStartAtBootEnabled = true,
             )
         }
     }
@@ -787,6 +801,7 @@ private fun PreviewCountingDown() {
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
+                autoStartAtBootEnabled = true,
             )
         }
     }
@@ -806,6 +821,7 @@ private fun PreviewStarted() {
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
+                autoStartAtBootEnabled = true,
             )
         }
     }
@@ -830,6 +846,7 @@ private fun PreviewNotificationPermissionNotGranted() {
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
                 onAutoStartAtBootToggled = {},
+                autoStartAtBootEnabled = true,
             )
         }
     }
