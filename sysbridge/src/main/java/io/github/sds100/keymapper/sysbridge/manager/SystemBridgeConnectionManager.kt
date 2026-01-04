@@ -55,6 +55,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     companion object {
         private const val TAG = "SystemBridgeConnectionManagerImpl"
+        private const val MIUI_OPTIMIZATION_SETTING = "miui_optimization"
     }
 
     private val systemBridgeLock: Any = Any()
@@ -66,7 +67,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 time = SystemClock.elapsedRealtime(),
                 // Get whether the user previously stopped the system bridge.
                 isStoppedByUser =
-                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
+                    preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false
@@ -240,6 +241,13 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 "adb_enabled",
                 1,
             )
+        }
+
+        val isMiuiOptimisationEnabled =
+            SettingsUtils.getGlobalSetting<Int>(ctx, MIUI_OPTIMIZATION_SETTING) == 1
+
+        if (isWriteSecureSettingsGranted && isMiuiOptimisationEnabled) {
+            SettingsUtils.putGlobalSetting(ctx, MIUI_OPTIMIZATION_SETTING, 0)
         }
     }
 
