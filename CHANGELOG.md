@@ -1,3 +1,11 @@
+## [4.0.0 Beta 7](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.07)
+
+#### TO BE RELEASED
+
+## Added
+
+- #1970 dynamically build the key code list so key codes in new Android releases are automatically included.
+
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
 
 #### 4 January 2026
