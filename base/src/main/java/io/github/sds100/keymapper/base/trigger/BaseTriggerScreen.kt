@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -183,7 +184,8 @@ fun BaseTriggerScreen(
 private fun isHorizontalLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT &&
+        windowSizeClass.isWidthAtLeastBreakpoint(600)
 }
 
 @Composable
@@ -654,6 +656,30 @@ private fun VerticalPreviewTiny() {
                 TriggerDiscoverScreen()
             },
         )
+    }
+}
+
+// This preview is slightly rectangular
+@Preview(heightDp = 500, widthDp = 530)
+@Composable
+private fun PreviewSquareRectangle() {
+    KeyMapperTheme {
+        if (isHorizontalLayout()) {
+            Text("MUST BE VERTICAL LAYOUT!")
+        } else {
+            TriggerScreenVertical(
+                configState = previewState,
+                recordTriggerState = RecordTriggerState.Idle,
+                expertModeSwitchState = ExpertModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = true,
+                    isEnabled = true,
+                ),
+                discoverScreenContent = {
+                    TriggerDiscoverScreen()
+                },
+            )
+        }
     }
 }
 
