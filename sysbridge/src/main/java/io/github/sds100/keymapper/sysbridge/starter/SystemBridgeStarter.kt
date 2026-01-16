@@ -170,11 +170,19 @@ class SystemBridgeStarter @Inject constructor(
         }
     }
 
+    suspend fun refreshStarterScript() {
+        writeStarterScript()
+    }
+
     /**
      * Get the shell command that can be used to start the system bridge manually.
      * This command should be executed with 'adb shell'.
      */
     suspend fun getStartCommand(): KMResult<String> {
+        return writeStarterScript().then { starterPath -> Success("sh $starterPath") }
+    }
+
+    private suspend fun writeStarterScript(): KMResult<String> {
         val directory = if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
             try {
                 ctx.getExternalFilesDir(null)?.parentFile
@@ -196,7 +204,7 @@ class SystemBridgeStarter @Inject constructor(
             protectedStorageDir
         }
 
-        return copyStarterFiles(directory!!).then { starterPath -> Success("sh $starterPath") }
+        return copyStarterFiles(directory!!)
     }
 
     /**
