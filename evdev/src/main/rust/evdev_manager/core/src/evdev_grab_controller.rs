@@ -274,7 +274,7 @@ impl EvdevGrabController {
     ) -> Result<Vec<PathBuf>, EvdevError> {
         let uinput_paths: Vec<PathBuf> = grabbed_devices
             .iter()
-            .map(|(_, device)| device.uinput.devnode().unwrap().into())
+            .filter_map(|(_, device)| device.uinput.devnode().map(|node| PathBuf::from(node)))
             .collect();
 
         let mut paths: Vec<PathBuf> = Vec::new();
@@ -340,9 +340,13 @@ impl EvdevGrabController {
 impl InotifyCallback for EvdevGrabController {
     fn on_inotify_dev_input(&self, paths: &[PathBuf]) {
         let mut grabbed_devices = self.grabbed_devices.write().unwrap();
-        let is_uinput_device = grabbed_devices
-            .iter()
-            .any(|(_, device)| paths.contains(&device.uinput.devnode().unwrap().into()));
+        let is_uinput_device =
+            grabbed_devices
+                .iter()
+                .any(|(_, device)| match &device.uinput.devnode() {
+                    None => false,
+                    Some(dev_node) => paths.contains(&dev_node.into()),
+                });
 
         if is_uinput_device {
             return;
