@@ -17,8 +17,6 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
@@ -40,8 +38,6 @@ internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
     private var serviceResolvedChannel: Channel<NsdServiceInfo?>? = null
 
     private val isDiscovering: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val discoveredPort: MutableStateFlow<Int?> = MutableStateFlow(null)
-    private val discoverMutex: Mutex = Mutex()
 
     private val resolveListener: NsdManager.ResolveListener = object : NsdManager.ResolveListener {
         override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {
@@ -106,19 +102,10 @@ internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun discoverPort(): Int? {
-        discoverMutex.withLock {
-            val currentPort = discoveredPort.value
-
-            if (currentPort == null || !isPortAvailable(currentPort)) {
-                val port = withContext(Dispatchers.IO) {
-                    discoverPortInternal()
-                }
-                discoveredPort.value = port
-                return port
-            } else {
-                return currentPort
-            }
+        val port = withContext(Dispatchers.IO) {
+            discoverPortInternal()
         }
+        return port
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
