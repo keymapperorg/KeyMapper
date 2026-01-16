@@ -10,7 +10,8 @@
 
 ## Fixed
 
-- #1986 fix: trigger screen is usable on slightly rectangular screens with a low DPI
+- #1986 trigger screen is usable on slightly rectangular screens with a low DPI
+- #1972 Expert Mode works on Android 10
 - Bugs with expert mode auto starting time.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
