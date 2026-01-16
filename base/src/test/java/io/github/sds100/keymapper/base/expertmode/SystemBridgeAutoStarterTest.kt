@@ -522,10 +522,17 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto restart within 5 minutes of the last auto start`() = runTest(testDispatcher) {
+    fun `do not auto start within 5 minutes of the last auto start`() = runTest(testDispatcher) {
         fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
         fakePreferences.set(Keys.isSystemBridgeUsed, true)
+        fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
         isRootGrantedFlow.value = true
+        fakePreferences.set(
+            Keys.systemBridgeLastManualStartTime,
+            // 10 minutes before
+            testScopeClock.unixTimestamp() - 600,
+        )
 
         inOrder(mockConnectionManager) {
             systemBridgeAutoStarter.init()
@@ -546,6 +553,32 @@ class SystemBridgeAutoStarterTest {
             verify(mockConnectionManager, never()).startWithRoot()
         }
     }
+
+    @Test
+    fun `auto start within 5 minutes of the last auto start if the user started it manually in between`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
+            fakePreferences.set(
+                Keys.systemBridgeLastManualStartTime,
+                // 2 minutes before
+                testScopeClock.unixTimestamp() - 120,
+            )
+            fakePreferences.set(
+                Keys.systemBridgeLastAutoStartTime,
+                // 3 minutes before
+                testScopeClock.unixTimestamp() - 180,
+            )
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+                verify(mockConnectionManager).startWithRoot()
+            }
+        }
 
     @Test
     fun `show killed and not restarting notification if want to autostart again within the cooldown`() =

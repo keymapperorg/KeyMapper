@@ -298,11 +298,21 @@ class SystemBridgeAutoStarter @Inject constructor(
      */
     private suspend fun isWithinAutoStartCooldown(): Boolean {
         val lastAutoStartTime = preferences.get(Keys.systemBridgeLastAutoStartTime).first()
+        val lastManualStartTime = preferences.get(Keys.systemBridgeLastManualStartTime).first()
         val currentTime = clock.unixTimestamp()
 
-        return lastAutoStartTime != null &&
-            // Check that the time is consistent.
-            currentTime >= lastAutoStartTime &&
+        if (lastAutoStartTime == null) {
+            return false
+        }
+
+        // If the user started it manually after the last auto start then ignore the cooldown.
+        if (lastManualStartTime != null &&
+            lastManualStartTime >= lastAutoStartTime
+        ) {
+            return false
+        }
+
+        return currentTime >= lastAutoStartTime &&
             currentTime - lastAutoStartTime < (5 * 60)
     }
 

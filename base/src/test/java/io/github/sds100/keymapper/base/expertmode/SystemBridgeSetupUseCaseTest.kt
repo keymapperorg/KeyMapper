@@ -55,6 +55,7 @@ class SystemBridgeSetupUseCaseTest {
             permissionAdapter = mockPermissionAdapter,
             accessibilityServiceAdapter = mockAccessibilityServiceAdapter,
             networkAdapter = mockNetworkAdapter,
+            clock = mock(),
         )
     }
 

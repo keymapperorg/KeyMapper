@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Process
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.github.sds100.keymapper.common.utils.Clock
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -43,6 +44,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val networkAdapter: NetworkAdapter,
+    private val clock: Clock,
 ) : SystemBridgeSetupUseCase {
 
     companion object {
@@ -192,27 +194,30 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun startSystemBridgeWithRoot() {
-        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
-        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
-        systemBridgeSetupController.startWithRoot()
+        startSystemBridge {
+            systemBridgeSetupController.startWithRoot()
+        }
     }
 
     override fun startSystemBridgeWithShizuku() {
-        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
-        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
-        systemBridgeSetupController.startWithShizuku()
+        startSystemBridge { systemBridgeSetupController.startWithShizuku() }
     }
 
     override fun startSystemBridgeWithAdb() {
-        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
-        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
-        systemBridgeSetupController.startWithAdb()
+        startSystemBridge {
+            systemBridgeSetupController.startWithAdb()
+        }
     }
 
     override fun autoStartSystemBridgeWithAdb() {
+        systemBridgeSetupController.autoStartWithAdb()
+    }
+
+    private fun startSystemBridge(block: () -> Unit) {
+        preferences.set(Keys.systemBridgeLastManualStartTime, clock.unixTimestamp())
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
         preferences.set(Keys.isSystemBridgeStoppedByUser, false)
-        systemBridgeSetupController.autoStartWithAdb()
+        block.invoke()
     }
 
     override fun isInfoDismissed(): Boolean {
