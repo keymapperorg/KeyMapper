@@ -4,7 +4,10 @@
 
 ## Added
 
-- #1970 dynamically build the key code list so key codes in new Android releases are automatically included.
+- #1970 dynamically build the key code list so key codes in new Android releases are automatically
+  included.
+- #1939 show notification when Expert Mode fails to start due to be being disconnected from WiFi.
+
 ## Fixed
 
 - Bugs with expert mode auto starting time.
@@ -19,9 +22,11 @@
 
 ## Bug fixes
 
-- #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.
+- #1968 Device controls action no longer works on Android 16+ so it has been disabled on new Android
+  versions.
 - #1967 Still start system bridge if granting WRITE_SECURE_SETTINGS fails.
-- #1965 Better system bridge support on Xiaomi devices and ask to enable "USB debugging security settings" in developer options.
+- #1965 Better system bridge support on Xiaomi devices and ask to enable "USB debugging security
+  settings" in developer options.
 
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 
@@ -30,6 +35,7 @@
 Happy new year!
 
 ## Added
+
 - #1947 show tip to use expert mode where the old option for screen off remapping used to be
 
 ## Bug fixes

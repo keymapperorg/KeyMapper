@@ -1776,6 +1776,9 @@
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
     <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting because last auto started less than 5 minutes ago. If you\'re not killing the service report the issue to the developer.</string>
 
+    <string name="system_bridge_wifi_disconnected_notification_title">Starting Expert mode failed</string>
+    <string name="system_bridge_wifi_disconnected_notification_text">Your phone must be connected to a WiFi network</string>
+
     <!-- Trigger Discover Screen -->
     <string name="trigger_discover_screen_title">Discover</string>
     <string name="trigger_discover_screen_subtitle">What do you want to remap?</string>

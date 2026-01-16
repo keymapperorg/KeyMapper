@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import androidx.core.app.NotificationCompat
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
 import io.github.sds100.keymapper.base.utils.TestScopeClock
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -461,6 +465,34 @@ class SystemBridgeAutoStarterTest {
             advanceUntilIdle()
             // Do not show another notification after the timeout
             verify(mockNotificationAdapter, never()).showNotification(any())
+        }
+    }
+
+    @Test
+    fun `show wifi disconnected notification when auto starting`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+        isWifiConnectedFlow.value = false
+        writeSecureSettingsGrantedFlow.value = true
+
+        inOrder(mockNotificationAdapter) {
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(10000)
+
+            val expectedModel = NotificationModel(
+                id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
+                channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
+                title = "test_string",
+                text = "test_string",
+                icon = R.drawable.offline_bolt_24px,
+                onClickAction = KMNotificationAction.Activity.MainActivity(
+                    action = BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
+                ),
+                priority = NotificationCompat.PRIORITY_MAX,
+                showOnLockscreen = true,
+                onGoing = false,
+            )
+            verify(mockNotificationAdapter).showNotification(expectedModel)
         }
     }
 
