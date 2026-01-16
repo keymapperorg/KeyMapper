@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.closeTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -136,6 +137,22 @@ class SystemBridgeAutoStarterTest {
             resourceProvider = mockResourceProvider,
             buildConfig = testBuildConfig,
         )
+    }
+
+    @Test
+    fun `auto start time is saved as unix timestamp`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+        whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+        isWifiConnectedFlow.value = true
+        writeSecureSettingsGrantedFlow.value = true
+
+        systemBridgeAutoStarter.init()
+        advanceUntilIdle()
+
+        val actual = fakePreferences.get(Keys.systemBridgeLastAutoStartTime).first()
+        assertThat(actual!!.toDouble(), closeTo(testScopeClock.unixTimestamp().toDouble(), 5.0))
     }
 
     @Test
@@ -521,7 +538,7 @@ class SystemBridgeAutoStarterTest {
             // It is killed unexpectedly straight after auto starting
             connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
                 time = 7000,
-                isStoppedByUser = true,
+                isStoppedByUser = false,
             )
 
             advanceUntilIdle()

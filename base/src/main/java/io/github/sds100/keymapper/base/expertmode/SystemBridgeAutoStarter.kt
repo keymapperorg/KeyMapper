@@ -230,7 +230,10 @@ class SystemBridgeAutoStarter @Inject constructor(
             return
         }
 
-        preferences.set(Keys.systemBridgeLastAutoStartTime, clock.elapsedRealtime())
+        // This must use the unix timestamp and not a time relative to the uptime of the device.
+        // Otherwise, it may not autostart on reboot if it started earlier than when it last auto
+        // started relative to the last boot.
+        preferences.set(Keys.systemBridgeLastAutoStartTime, clock.unixTimestamp())
 
         when (type) {
             AutoStartType.ADB -> {
@@ -295,8 +298,12 @@ class SystemBridgeAutoStarter @Inject constructor(
      */
     private suspend fun isWithinAutoStartCooldown(): Boolean {
         val lastAutoStartTime = preferences.get(Keys.systemBridgeLastAutoStartTime).first()
+        val currentTime = clock.unixTimestamp()
+
         return lastAutoStartTime != null &&
-            clock.elapsedRealtime() - lastAutoStartTime < (5 * 60_000)
+            // Check that the time is consistent.
+            currentTime >= lastAutoStartTime &&
+            currentTime - lastAutoStartTime < (5 * 60)
     }
 
     private suspend fun isAutoStartEnabled(): Boolean {

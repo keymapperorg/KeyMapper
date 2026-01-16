@@ -145,10 +145,6 @@ object Keys {
      */
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 
-    /**
-     * The last time the system bridge was auto started in time since boot.
-     * Uses SystemClock.elapsedRealtime().
-     */
     val systemBridgeLastAutoStartTime = longPreferencesKey("key_system_bridge_last_auto_start_time")
 
     val keyEventActionsUseSystemBridge =
