@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCaseImpl
