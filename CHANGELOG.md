@@ -15,6 +15,7 @@
 - [#1972](https://github.com/keymapperorg/KeyMapper/issues/1972) Expert Mode works on Android 10.
 - [#1976](https://github.com/keymapperorg/KeyMapper/issues/1976) Panic in Rust system bridge code on some devices.
 - [#1971](https://github.com/keymapperorg/KeyMapper/issues/1971) Media actions work again in some apps, like YouTube.
+- [#1961](https://github.com/keymapperorg/KeyMapper/issues/1961) Disabling setup assistant shows a notification asking for pairing code immediately.
 - Bugs with expert mode auto starting time.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)

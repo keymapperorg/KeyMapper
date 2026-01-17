@@ -315,18 +315,37 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             }
 
             SystemBridgeSetupStep.ADB_PAIRING -> {
-                showNotification(
-                    getString(R.string.expert_mode_setup_notification_pairing_title),
-                    getString(R.string.expert_mode_setup_notification_pairing_text),
-                )
+                if (isInteractive.value) {
+                    showNotification(
+                        getString(R.string.expert_mode_setup_notification_pairing_title),
+                        getString(R.string.expert_mode_setup_notification_pairing_text),
+                    )
+                    interactionStep = InteractionStep.PAIR_DEVICE
+                    startInteractionTimeoutJob()
+                } else {
+                    // Show a notification asking for pairing code straight away if interaction
+                    // is disabled.
+                    showNotification(
+                        title = getString(
+                            R.string.expert_mode_setup_notification_pairing_code_not_interactive_title,
+                        ),
+                        text = getString(
+                            R.string.expert_mode_setup_notification_pairing_code_not_interactive_text,
+                        ),
+                        actions = listOf(
+                            KMNotificationAction.RemoteInput.PairingCode to
+                                getString(
+                                    R.string.expert_mode_setup_notification_action_input_pairing_code,
+                                ),
+                        ),
+                    )
 
-                interactionStep = InteractionStep.PAIR_DEVICE
+                    interactionStep = null
+                }
             }
 
-            else -> return // Do not start interaction timeout job
+            else -> return
         }
-
-        startInteractionTimeoutJob()
     }
 
     private fun startInteractionTimeoutJob() {

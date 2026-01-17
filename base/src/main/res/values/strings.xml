@@ -1757,6 +1757,9 @@
     <string name="expert_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
     <string name="expert_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
 
+    <string name="expert_mode_setup_notification_pairing_code_not_interactive_title">Type in the pairing code</string>
+    <string name="expert_mode_setup_notification_pairing_code_not_interactive_text">Tap \"Pair device with pairing code\"</string>
+
     <string name="expert_mode_setup_notification_start_system_bridge_failed_title">Starting Expert Mode failed</string>
     <string name="expert_mode_setup_notification_start_system_bridge_failed_text">Tap to set up again. Try ADB pairing and rebooting your phone if it repeatedly fails.</string>
 
