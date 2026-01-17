@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
@@ -18,6 +19,7 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Constants
@@ -56,6 +58,7 @@ class AndroidNetworkAdapter @Inject constructor(
     private val httpClient: OkHttpClient by lazy { OkHttpClient() }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
+        @Suppress("DEPRECATION")
         override fun onReceive(context: Context?, intent: Intent?) {
             intent?.action ?: return
 
@@ -64,10 +67,22 @@ class AndroidNetworkAdapter @Inject constructor(
                     val state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)
 
                     isWifiEnabled.update { state == WifiManager.WIFI_STATE_ENABLED }
+
+                    if (state != WifiManager.WIFI_STATE_ENABLED) {
+                        isWifiConnected.value = false
+                        connectedWifiSSIDFlow.value = null
+                    }
                 }
 
                 WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
+                    val networkInfo = IntentCompat.getParcelableExtra(
+                        intent,
+                        WifiManager.EXTRA_NETWORK_INFO,
+                        NetworkInfo::class.java,
+                    ) ?: return
+
                     connectedWifiSSIDFlow.update { getWifiSSID() }
+                    isWifiConnected.update { networkInfo.isConnected }
                 }
             }
         }
