@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.base.utils.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -25,24 +27,16 @@ fun SwitchText(
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        color = Color.Companion.Transparent,
+        color = Color.Transparent,
     ) {
         Row(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
                 .padding(8.dp),
-            verticalAlignment = Alignment.Companion.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Switch(
-                enabled = isEnabled,
-                checked = isChecked,
-                // This is null so tapping on the checkbox highlights the whole row.
-                onCheckedChange = null,
-            )
-
             Text(
-                modifier = Modifier.Companion.padding(horizontal = 12.dp),
-
+                modifier = Modifier.weight(1f),
                 text = text,
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyLarge
@@ -54,7 +48,16 @@ fun SwitchText(
                     )
                 },
                 maxLines = 2,
-                overflow = TextOverflow.Companion.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(Modifier.width(16.dp))
+
+            Switch(
+                enabled = isEnabled,
+                checked = isChecked,
+                // This is null so tapping on the checkbox highlights the whole row.
+                onCheckedChange = null,
             )
         }
     }
