@@ -27,8 +27,11 @@ object SettingsUtils {
         return try {
             when (T::class) {
                 Int::class -> Settings.System.getInt(contentResolver, name) as T?
+
                 String::class -> Settings.System.getString(contentResolver, name) as T?
+
                 Float::class -> Settings.System.getFloat(contentResolver, name) as T?
+
                 Long::class -> Settings.System.getLong(contentResolver, name) as T?
 
                 else -> {
@@ -49,8 +52,11 @@ object SettingsUtils {
         return try {
             when (T::class) {
                 Int::class -> Settings.Secure.getInt(contentResolver, name) as T?
+
                 String::class -> Settings.Secure.getString(contentResolver, name) as T?
+
                 Float::class -> Settings.Secure.getFloat(contentResolver, name) as T?
+
                 Long::class -> Settings.Secure.getLong(contentResolver, name) as T?
 
                 else -> {
@@ -71,8 +77,11 @@ object SettingsUtils {
         return try {
             when (T::class) {
                 Int::class -> Settings.Global.getInt(contentResolver, name) as T?
+
                 String::class -> Settings.Global.getString(contentResolver, name) as T?
+
                 Float::class -> Settings.Global.getFloat(contentResolver, name) as T?
+
                 Long::class -> Settings.Global.getLong(contentResolver, name) as T?
 
                 else -> {
@@ -93,8 +102,11 @@ object SettingsUtils {
 
         return when (T::class) {
             Int::class -> Settings.System.putInt(contentResolver, name, value as Int)
+
             String::class -> Settings.System.putString(contentResolver, name, value as String)
+
             Float::class -> Settings.System.putFloat(contentResolver, name, value as Float)
+
             Long::class -> Settings.System.putLong(contentResolver, name, value as Long)
 
             else -> {
@@ -112,8 +124,11 @@ object SettingsUtils {
 
         return when (T::class) {
             Int::class -> Settings.Secure.putInt(contentResolver, name, value as Int)
+
             String::class -> Settings.Secure.putString(contentResolver, name, value as String)
+
             Float::class -> Settings.Secure.putFloat(contentResolver, name, value as Float)
+
             Long::class -> Settings.Secure.putLong(contentResolver, name, value as Long)
 
             else -> {
@@ -131,8 +146,11 @@ object SettingsUtils {
 
         return when (T::class) {
             Int::class -> Settings.Global.putInt(contentResolver, name, value as Int)
+
             String::class -> Settings.Global.putString(contentResolver, name, value as String)
+
             Float::class -> Settings.Global.putFloat(contentResolver, name, value as Float)
+
             Long::class -> Settings.Global.putLong(contentResolver, name, value as Long)
 
             else -> {
@@ -141,8 +159,13 @@ object SettingsUtils {
         }
     }
 
-    fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String? = null) {
-        val intent = Intent(action).apply {
+    fun launchSettingsScreen(
+        ctx: Context,
+        action: String,
+        uri: Uri? = null,
+        fragmentArg: String? = null,
+    ): Boolean {
+        val intent = Intent(action, uri).apply {
             if (fragmentArg != null) {
                 val fragmentArgKey = ":settings:fragment_args_key"
                 val showFragmentArgsKey = ":settings:show_fragment_args"
@@ -161,8 +184,10 @@ object SettingsUtils {
 
         try {
             ctx.startActivity(intent)
+            return true
         } catch (e: ActivityNotFoundException) {
             Timber.e("Failed to start Settings activity: $e")
+            return false
         }
     }
 

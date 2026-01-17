@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
@@ -78,10 +79,12 @@ import kotlinx.coroutines.launch
 
 private val isExpertModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+private val isLanguageSettingsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val state by viewModel.mainScreenState.collectAsStateWithLifecycle()
+    val currentLocaleDisplayName by viewModel.currentLocaleDisplayName.collectAsStateWithLifecycle()
     val snackbarHostState = SnackbarHostState()
     var showAutomaticBackupDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -146,6 +149,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
     ) {
         Content(
             state = state,
+            currentLocaleDisplayName = currentLocaleDisplayName ?: "",
+            onLanguageClick = viewModel::onLanguageClick,
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
@@ -241,6 +246,8 @@ private fun SettingsScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     state: MainSettingsState,
+    currentLocaleDisplayName: String = "",
+    onLanguageClick: () -> Unit = { },
     onThemeSelected: (Theme) -> Unit = { },
     onPauseResumeNotificationClick: () -> Unit = { },
     onDefaultOptionsClick: () -> Unit = { },
@@ -285,6 +292,21 @@ private fun Content(
             buttonStates,
             state.theme,
             onStateSelected = onThemeSelected,
+        )
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_language),
+            text = if (isLanguageSettingsSupported) {
+                currentLocaleDisplayName
+            } else {
+                stringResource(
+                    R.string.error_sdk_version_too_low,
+                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.TIRAMISU),
+                )
+            },
+            icon = Icons.Outlined.Language,
+            onClick = onLanguageClick,
+            enabled = isLanguageSettingsSupported,
         )
 
         OptionPageButton(
@@ -472,6 +494,7 @@ private fun Preview() {
         SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
                 state = MainSettingsState(),
+                currentLocaleDisplayName = "System default",
             )
         }
     }

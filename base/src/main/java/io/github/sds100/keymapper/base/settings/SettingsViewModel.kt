@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -110,6 +110,17 @@ class SettingsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, AutomaticChangeImeSettingsState())
 
+    /**
+     * The display name of the currently selected locale, or null if not supported (Android < 13).
+     */
+    val currentLocaleDisplayName: StateFlow<String?> = useCase.currentLocaleDisplayName
+
+    fun onLanguageClick() {
+        viewModelScope.launch {
+            useCase.launchAppLocaleSettingsScreen()
+        }
+    }
+
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
 
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
@@ -165,10 +176,6 @@ class SettingsViewModel @Inject constructor(
                 useCase.resetAllSettings()
             }
         }
-    }
-
-    fun onRequestRootClick() {
-        useCase.requestRootPermission()
     }
 
     fun onExpertModeClick() {

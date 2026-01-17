@@ -8,6 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.base.settings.AppLocaleAdapter
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import javax.inject.Inject

@@ -692,6 +692,11 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
+
+    <string name="title_pref_language">Language</string>
+    <string name="summary_pref_language">Choose the app language</string>
+    <string name="language_system_default">System default</string>
+
     <!--Preference categories-->
 
     <!--flags-->

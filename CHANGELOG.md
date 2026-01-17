@@ -7,6 +7,7 @@
 - #1970 dynamically build the key code list so key codes in new Android releases are automatically
   included.
 - #1939 show notification when Expert Mode fails to start due to be being disconnected from WiFi.
+- #1973 add setting to change app language on Android 13+.
 
 ## Fixed
 

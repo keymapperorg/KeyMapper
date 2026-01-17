@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.components.SingletonComponent
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCaseImpl
@@ -30,6 +31,8 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
+import io.github.sds100.keymapper.base.settings.AppLocaleAdapter
+import io.github.sds100.keymapper.base.settings.AppLocaleAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -208,4 +211,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindClock(impl: ClockImpl): Clock
+
+    @Binds
+    @Singleton
+    abstract fun bindAppLocaleAdapter(impl: AppLocaleAdapterImpl): AppLocaleAdapter
 }
