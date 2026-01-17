@@ -42,7 +42,7 @@ impl EvdevGrabController {
     }
 
     pub fn set_grab_targets(&self, targets: Vec<GrabTarget>) -> Vec<GrabbedDeviceHandle> {
-        info!("Setting grab targets: {:?}", targets);
+        debug!("Setting grab targets: {:?}", targets);
 
         let mut grab_targets = self.grab_targets.lock().unwrap();
 
@@ -96,7 +96,7 @@ impl EvdevGrabController {
             .map(|(key, device)| GrabbedDeviceHandle::new(key, device.device_info.clone()))
             .collect();
 
-        info!("Grabbed devices: {:?}", grabbed_device_handles);
+        debug!("Grabbed devices: {:?}", grabbed_device_handles);
 
         self.callback
             .on_grabbed_devices_changed(grabbed_device_handles.clone());
