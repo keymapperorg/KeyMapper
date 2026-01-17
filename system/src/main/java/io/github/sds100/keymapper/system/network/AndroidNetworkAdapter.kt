@@ -82,11 +82,19 @@ class AndroidNetworkAdapter @Inject constructor(
                     ) ?: return
 
                     connectedWifiSSIDFlow.update { getWifiSSID() }
+
                     isWifiConnected.update { networkInfo.isConnected }
                 }
             }
         }
     }
+
+    /**
+     * Store the network handles for connected wifi transports because you must not query
+     * the list of all network capabilities from the callback.
+     */
+    @RequiresApi(Build.VERSION_CODES.S)
+    private val wifiTransportHandles: MutableSet<Long> = mutableSetOf()
 
     override val connectedWifiSSIDFlow = MutableStateFlow(getWifiSSID())
     override val isWifiConnected: MutableStateFlow<Boolean> = MutableStateFlow(getIsWifiConnected())
@@ -98,20 +106,11 @@ class AndroidNetworkAdapter @Inject constructor(
     private val networkCallback: ConnectivityManager.NetworkCallback by lazy {
         @RequiresApi(Build.VERSION_CODES.S)
         object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
-            override fun onAvailable(network: Network) {
-                super.onAvailable(network)
-
-                isWifiConnected.update { getIsWifiConnected() }
-            }
-
             override fun onLost(network: Network) {
                 super.onLost(network)
-                // A network was lost. Check if we are still connected to *any* Wi-Fi.
-                // This is important because onLost is called for a specific network.
-                // If multiple Wi-Fi networks were available and one is lost,
-                // another might still be active.
+
+                wifiTransportHandles.remove(network.networkHandle)
                 isWifiConnected.update { getIsWifiConnected() }
-                connectedWifiSSIDFlow.update { getWifiSSID() }
             }
 
             override fun onCapabilitiesChanged(
@@ -119,6 +118,14 @@ class AndroidNetworkAdapter @Inject constructor(
                 networkCapabilities: NetworkCapabilities,
             ) {
                 super.onCapabilitiesChanged(network, networkCapabilities)
+
+                val hasWifiTransport = networkCapabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_WIFI,
+                )
+
+                if (hasWifiTransport) {
+                    wifiTransportHandles.add(network.networkHandle)
+                }
 
                 isWifiConnected.update { getIsWifiConnected() }
 
@@ -318,6 +325,10 @@ class AndroidNetworkAdapter @Inject constructor(
     }
 
     private fun getIsWifiConnected(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return wifiTransportHandles.isNotEmpty()
+        }
+
         @Suppress("DEPRECATION")
         // The deprecation notice is advice to use the callback instead. getAllNetworks() still
         // functions
