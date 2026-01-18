@@ -287,7 +287,6 @@ class KeyMapAlgorithm(
 
             val triggerActions = mutableListOf<IntArray>()
             val triggerConstraints = mutableListOf<Array<ConstraintState>>()
-            val triggerPerformActionDevices = mutableListOf<PerformActionTriggerDevice>()
 
             val sequenceTriggerActionPerformers =
                 mutableMapOf<Int, SequenceTriggerActionPerformer>()
@@ -1995,8 +1994,11 @@ class KeyMapAlgorithm(
 
     private fun AlgoEvent.performActionDevice(): PerformActionTriggerDevice {
         return when (this) {
-            is EvdevEventAlgo -> PerformActionTriggerDevice.Evdev(deviceId)
-            else -> PerformActionTriggerDevice.Default
+            is EvdevEventAlgo -> PerformActionTriggerDevice.Evdev(this.deviceId)
+            is KeyEventAlgo -> PerformActionTriggerDevice.AndroidDevice(this.deviceId)
+            is AssistantEvent -> PerformActionTriggerDevice.Default
+            is FingerprintGestureEvent -> PerformActionTriggerDevice.Default
+            is FloatingButtonEvent -> PerformActionTriggerDevice.Default
         }
     }
 }

@@ -9,5 +9,10 @@ sealed class PerformActionTriggerDevice {
      */
     data class Evdev(val deviceId: Int) : PerformActionTriggerDevice()
 
+    /**
+     * The action was triggered by an Android InputDevice.
+     */
+    data class AndroidDevice(val deviceId: Int) : PerformActionTriggerDevice()
+
     data object Default : PerformActionTriggerDevice()
 }

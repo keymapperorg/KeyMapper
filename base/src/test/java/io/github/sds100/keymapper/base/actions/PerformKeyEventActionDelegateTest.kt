@@ -69,6 +69,36 @@ class PerformKeyEventActionDelegateTest {
     }
 
     @Test
+    fun `use trigger device id if no device specified for action`() = runTest(testDispatcher) {
+        val action = ActionData.InputKeyEvent(
+            keyCode = KeyEvent.KEYCODE_A,
+            device = null,
+        )
+
+        delegate.perform(
+            action,
+            inputEventAction = InputEventAction.DOWN,
+            keyMetaState = 0,
+            triggerDevice = PerformActionTriggerDevice.AndroidDevice(deviceId = 3),
+        )
+
+        val expectedDownEvent = InjectKeyEventModel(
+            keyCode = KeyEvent.KEYCODE_A,
+            action = KeyEvent.ACTION_DOWN,
+            metaState = 0,
+            deviceId = 3,
+            scanCode = 0,
+            repeatCount = 0,
+            source = InputDevice.SOURCE_KEYBOARD,
+        )
+
+        verify(mockInputEventHub).injectKeyEvent(
+            expectedDownEvent,
+            useSystemBridgeIfAvailable = false,
+        )
+    }
+
+    @Test
     fun `inject evdev event if action device set as a non-evdev device but it is disconnected`() =
         runTest(testDispatcher) {
             fakePreferenceRepository.set(Keys.keyEventActionsUseSystemBridge, true)
