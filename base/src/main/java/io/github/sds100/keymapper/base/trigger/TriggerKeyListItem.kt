@@ -142,10 +142,14 @@ fun TriggerKeyListItem(
                         )
                     }
 
-                    is TriggerKeyListItemModel.FloatingButton -> stringResource(
-                        R.string.trigger_key_floating_button_description,
-                        model.buttonName,
-                    )
+                    is TriggerKeyListItemModel.FloatingButton -> if (model.buttonName.isBlank()) {
+                        stringResource(R.string.trigger_key_floating_button_description_empty)
+                    } else {
+                        stringResource(
+                            R.string.trigger_key_floating_button_description,
+                            model.buttonName,
+                        )
+                    }
 
                     is TriggerKeyListItemModel.KeyEvent -> model.keyName
 

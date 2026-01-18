@@ -21,7 +21,8 @@
 - [#1982](https://github.com/keymapperorg/KeyMapper/issues/1982) Text action does not need Key Mapper input method on Android 13+.
 - [#1989](https://github.com/keymapperorg/KeyMapper/issues/1989) center the "Trigger and actions" and "Constraint and more" tabs.
 - [#1392](https://github.com/keymapperorg/KeyMapper/issues/1392) Add action to enable/disable/toggle night shift.
-- [#1675](https://github.com/keymapperorg/KeyMapper/issues/1675) Option to make floating buttons movable
+- [#1675](https://github.com/keymapperorg/KeyMapper/issues/1675) Option to make floating buttons movable.
+- [#1949](https://github.com/keymapperorg/KeyMapper/issues/1949) Floating buttons are completely invisible when pressed if background and border opacity is set to 0.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
 

@@ -60,13 +60,16 @@ class KeyMapListItemCreator(
         val triggerKeys = keyMap.trigger.keys.map { key ->
             when (key) {
                 is AssistantTriggerKey -> assistantTriggerKeyName(key)
+
                 is KeyEventTriggerKey -> keyEventTriggerKeyName(
                     key,
                     showDeviceDescriptors,
                 )
 
                 is FloatingButtonKey -> floatingButtonKeyName(key)
+
                 is FingerprintTriggerKey -> fingerprintKeyName(key)
+
                 is EvdevTriggerKey -> evdevTriggerKeyName(key)
             }
         }
@@ -238,6 +241,13 @@ class KeyMapListItemCreator(
 
         if (key.button == null) {
             append(getString(R.string.deleted_floating_button_text_key_map_list_item))
+        } else if (key.button.appearance.text.isBlank()) {
+            append(
+                getString(
+                    R.string.floating_button_text_key_map_list_item_empty,
+                    key.button.layoutName,
+                ),
+            )
         } else {
             append(
                 getString(
@@ -265,7 +275,9 @@ class KeyMapListItemCreator(
 
         val deviceName = when (key.device) {
             is KeyEventTriggerDevice.Internal -> null
+
             is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+
             is KeyEventTriggerDevice.External -> {
                 if (showDeviceDescriptors) {
                     InputDeviceUtils.appendDeviceDescriptorToName(
@@ -349,12 +361,15 @@ class KeyMapListItemCreator(
             FingerprintGestureType.SWIPE_DOWN -> append(
                 getString(R.string.trigger_key_fingerprint_gesture_down),
             )
+
             FingerprintGestureType.SWIPE_UP -> append(
                 getString(R.string.trigger_key_fingerprint_gesture_up),
             )
+
             FingerprintGestureType.SWIPE_LEFT -> append(
                 getString(R.string.trigger_key_fingerprint_gesture_left),
             )
+
             FingerprintGestureType.SWIPE_RIGHT -> append(
                 getString(R.string.trigger_key_fingerprint_gesture_right),
             )
