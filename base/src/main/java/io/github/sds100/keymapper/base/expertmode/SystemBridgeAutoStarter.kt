@@ -81,7 +81,14 @@ class SystemBridgeAutoStarter @Inject constructor(
         sealed class NotEligible : AutoStartEligibility() {
             data object WiFiDisconnected : NotEligible()
             data object AutoStartCooldown : NotEligible()
-            data object Other : NotEligible()
+            data object WriteSecureSettingsRevoked : NotEligible()
+            data object AdbUnpaired : NotEligible()
+            data object ShizukuRootRequired : NotEligible()
+            data object SystemBridgeStoppedByUser : NotEligible()
+            data object NotUsedBefore : NotEligible()
+            data object EmergencyKilled : NotEligible()
+            data object AutoStartDisabled : NotEligible()
+            data object SystemBridgeConnected : NotEligible()
         }
     }
 
@@ -112,18 +119,26 @@ class SystemBridgeAutoStarter @Inject constructor(
                             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                             networkAdapter.isWifiConnected,
                         ) { isWriteSecureSettingsGranted, isWifiConnected ->
-                            if (!isWifiConnected) {
-                                AutoStartEligibility.NotEligible.WiFiDisconnected
-                            } else if (!isWriteSecureSettingsGranted) {
-                                AutoStartEligibility.NotEligible.Other
-                            } else if (!setupController.isAdbPaired()) {
-                                AutoStartEligibility.NotEligible.Other
-                            } else {
-                                AutoStartEligibility.Eligible(AutoStartType.ADB)
+                            when {
+                                !isWifiConnected -> {
+                                    AutoStartEligibility.NotEligible.WiFiDisconnected
+                                }
+
+                                !isWriteSecureSettingsGranted -> {
+                                    AutoStartEligibility.NotEligible.WriteSecureSettingsRevoked
+                                }
+
+                                !setupController.isAdbPaired() -> {
+                                    AutoStartEligibility.NotEligible.AdbUnpaired
+                                }
+
+                                else -> {
+                                    AutoStartEligibility.Eligible(AutoStartType.ADB)
+                                }
                             }
                         }
                     } else {
-                        flowOf(AutoStartEligibility.NotEligible.Other)
+                        flowOf(AutoStartEligibility.NotEligible.ShizukuRootRequired)
                     }
                 }
             }
@@ -134,20 +149,7 @@ class SystemBridgeAutoStarter @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartFlow: Flow<AutoStartEligibility> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
-            // Do not autostart if it is connected or it was killed from the user
-            if (connectionState !is SystemBridgeConnectionState.Disconnected ||
-                connectionState.isStoppedByUser ||
-                !getIsUsedBefore() ||
-                getIsStoppedByUser() ||
-                isSystemBridgeEmergencyKilled() ||
-                !isAutoStartEnabled()
-            ) {
-                flowOf(AutoStartEligibility.NotEligible.Other)
-            } else if (isWithinAutoStartCooldown()) {
-                flowOf(AutoStartEligibility.NotEligible.AutoStartCooldown)
-            } else {
-                autoStartTypeFlow
-            }
+            getAutoStartEligibility(connectionState)
         }
 
     /**
@@ -181,6 +183,33 @@ class SystemBridgeAutoStarter @Inject constructor(
         }
     }
 
+    private suspend fun getAutoStartEligibility(
+        connectionState: SystemBridgeConnectionState,
+    ): Flow<AutoStartEligibility> {
+        return when {
+            connectionState !is SystemBridgeConnectionState.Disconnected ->
+                flowOf(AutoStartEligibility.NotEligible.SystemBridgeConnected)
+
+            connectionState.isStoppedByUser ->
+                flowOf(AutoStartEligibility.NotEligible.SystemBridgeStoppedByUser)
+
+            !getIsUsedBefore() -> flowOf(AutoStartEligibility.NotEligible.NotUsedBefore)
+
+            getIsStoppedByUser() ->
+                flowOf(AutoStartEligibility.NotEligible.SystemBridgeStoppedByUser)
+
+            isSystemBridgeEmergencyKilled() ->
+                flowOf(AutoStartEligibility.NotEligible.EmergencyKilled)
+
+            !isAutoStartEnabled() -> flowOf(AutoStartEligibility.NotEligible.AutoStartDisabled)
+
+            isWithinAutoStartCooldown() ->
+                flowOf(AutoStartEligibility.NotEligible.AutoStartCooldown)
+
+            else -> autoStartTypeFlow
+        }
+    }
+
     private suspend fun processAutoStartEligibility(eligibility: AutoStartEligibility) {
         when (eligibility) {
             is AutoStartEligibility.Eligible -> autoStart(eligibility.type)
@@ -198,7 +227,9 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             AutoStartEligibility.NotEligible.WiFiDisconnected -> showWiFiDisconnectedNotification()
 
-            AutoStartEligibility.NotEligible.Other -> {}
+            else -> {
+                Timber.w("Not auto starting the system bridge: $eligibility")
+            }
         }
     }
 
