@@ -325,20 +325,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 } else {
                     // Show a notification asking for pairing code straight away if interaction
                     // is disabled.
-                    showNotification(
-                        title = getString(
-                            R.string.expert_mode_setup_notification_pairing_code_not_interactive_title,
-                        ),
-                        text = getString(
-                            R.string.expert_mode_setup_notification_pairing_code_not_interactive_text,
-                        ),
-                        actions = listOf(
-                            KMNotificationAction.RemoteInput.PairingCode to
-                                getString(
-                                    R.string.expert_mode_setup_notification_action_input_pairing_code,
-                                ),
-                        ),
-                    )
+                    nonInteractivePairingCodeNotification()
 
                     interactionStep = null
                 }
@@ -346,6 +333,23 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
             else -> return
         }
+    }
+
+    private fun nonInteractivePairingCodeNotification() {
+        showNotification(
+            title = getString(
+                R.string.expert_mode_setup_notification_pairing_code_not_interactive_title,
+            ),
+            text = getString(
+                R.string.expert_mode_setup_notification_pairing_code_not_interactive_text,
+            ),
+            actions = listOf(
+                KMNotificationAction.RemoteInput.PairingCode to
+                    getString(
+                        R.string.expert_mode_setup_notification_action_input_pairing_code,
+                    ),
+            ),
+        )
     }
 
     private fun startInteractionTimeoutJob() {
