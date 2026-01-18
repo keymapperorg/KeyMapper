@@ -30,16 +30,22 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     @Assisted
     private val accessibilityService: IAccessibilityService,
+    @Assisted
+    private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,
@@ -53,7 +59,10 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(accessibilityService: IAccessibilityService): DetectKeyMapsUseCaseImpl
+        fun create(
+            accessibilityService: IAccessibilityService,
+            coroutineScope: CoroutineScope,
+        ): DetectKeyMapsUseCaseImpl
     }
 
     companion object {
@@ -161,6 +170,11 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
             .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
             .map { it.toLong() }
 
+    override val injectKeyEventsWithSystemBridge: StateFlow<Boolean> =
+        preferenceRepository.get(Keys.keyEventActionsUseSystemBridge)
+            .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+
     override fun showTriggeredToast() {
         toastAdapter.show(resourceProvider.getString(R.string.toast_triggered_keymap))
     }
@@ -188,16 +202,20 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
         if (inputEventHub.isSystemBridgeConnected()) {
             Timber.d(
-                "Imitate button press ${KeyEvent.keyCodeToString(
-                    keyCode,
-                )} with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
+                "Imitate button press ${
+                    KeyEvent.keyCodeToString(
+                        keyCode,
+                    )
+                } with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
             )
             inputEventHub.injectKeyEventAsync(model)
         } else {
             Timber.d(
-                "Imitate button press ${KeyEvent.keyCodeToString(
-                    keyCode,
-                )}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
+                "Imitate button press ${
+                    KeyEvent.keyCodeToString(
+                        keyCode,
+                    )
+                }, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
             )
 
             when (keyCode) {
@@ -208,9 +226,11 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                 KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(
                     AccessibilityService.GLOBAL_ACTION_BACK,
                 )
+
                 KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(
                     AccessibilityService.GLOBAL_ACTION_HOME,
                 )
+
                 KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(
                     AccessibilityService.GLOBAL_ACTION_POWER_DIALOG,
                 )
@@ -263,4 +283,6 @@ interface DetectKeyMapsUseCase {
     )
 
     fun imitateEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int)
+
+    val injectKeyEventsWithSystemBridge: StateFlow<Boolean>
 }

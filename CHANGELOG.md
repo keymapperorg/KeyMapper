@@ -16,6 +16,7 @@
 - [#1976](https://github.com/keymapperorg/KeyMapper/issues/1976) Panic in Rust system bridge code on some devices.
 - [#1971](https://github.com/keymapperorg/KeyMapper/issues/1971) Media actions work again in some apps, like YouTube.
 - [#1961](https://github.com/keymapperorg/KeyMapper/issues/1961) Disabling setup assistant shows a notification asking for pairing code immediately.
+- [#1983](https://github.com/keymapperorg/KeyMapper/issues/1983) Inputting a modifier key and another key as actions through Expert mode applies the correct key character map. 
 - Bugs with expert mode auto starting time.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)

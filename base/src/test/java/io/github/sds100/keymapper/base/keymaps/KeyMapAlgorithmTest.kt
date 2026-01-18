@@ -193,6 +193,9 @@ class KeyMapAlgorithmTest {
         }
 
         whenever(detectKeyMapsUseCase.currentTime).thenAnswer { testScope.currentTime }
+        whenever(
+            detectKeyMapsUseCase.injectKeyEventsWithSystemBridge,
+        ).thenReturn(MutableStateFlow(false))
 
         performActionsUseCase = mock {
             MutableStateFlow(REPEAT_DELAY).apply {
@@ -234,6 +237,80 @@ class KeyMapAlgorithmTest {
     fun tearDown() {
         mockedKeyEvent.close()
     }
+
+    /**
+     * Issue #1983
+     */
+    @Test
+    fun `do not imitate keys with meta state when injecting key event actions with system bridge`() =
+        runTest(testDispatcher) {
+            whenever(
+                detectKeyMapsUseCase.injectKeyEventsWithSystemBridge,
+            ).thenReturn(MutableStateFlow(true))
+
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_S,
+                    scanCode = Scancode.KEY_S,
+                    device = FAKE_VOLUME_EVDEV_DEVICE,
+                ),
+            )
+
+            val actions = listOf(
+                Action(
+                    data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT),
+                    holdDown = true,
+                ),
+                Action(
+                    data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_3),
+                    holdDown = true,
+                ),
+            )
+
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = actions))
+
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_S,
+                Scancode.KEY_S,
+                device = FAKE_VOLUME_EVDEV_DEVICE,
+            )
+
+            // Simulate the SHIFT and 3 being reinputted from the grabbed evdev device
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
+                action = KeyEvent.ACTION_DOWN,
+                metaState =
+                KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
+            )
+            inputKeyEvent(
+                keyCode = KeyEvent.KEYCODE_3,
+                action = KeyEvent.ACTION_DOWN,
+                metaState =
+                KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
+            )
+
+            inputUpEvdevEvent(
+                KeyEvent.KEYCODE_S,
+                Scancode.KEY_S,
+                device = FAKE_VOLUME_EVDEV_DEVICE,
+            )
+
+            // Simulate the SHIFT and 3 being reinputted from the grabbed evdev device
+            inputKeyEvent(keyCode = KeyEvent.KEYCODE_SHIFT_LEFT, action = KeyEvent.ACTION_UP)
+            inputKeyEvent(keyCode = KeyEvent.KEYCODE_3, action = KeyEvent.ACTION_UP)
+
+            verify(
+                detectKeyMapsUseCase,
+                never(),
+            ).imitateKeyEvent(
+                keyCode = any(),
+                metaState = any(),
+                deviceId = any(),
+                action = any(),
+                scanCode = any(),
+                source = any(),
+            )
+        }
 
     @Test
     fun `Detect mouse button which only has scan code`() = runTest(testDispatcher) {
@@ -1832,16 +1909,18 @@ class KeyMapAlgorithmTest {
             loadKeyMaps(KeyMap(trigger = trigger, actionList = actionList))
 
             // WHEN
-            whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object :
-                ActionErrorSnapshot {
-                override fun getError(action: ActionData): KMError {
-                    return KMError.NoCompatibleImeChosen
-                }
+            whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(
+                object :
+                    ActionErrorSnapshot {
+                    override fun getError(action: ActionData): KMError {
+                        return KMError.NoCompatibleImeChosen
+                    }
 
-                override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
-                    return mapOf(actionList[0].data to KMError.NoCompatibleImeChosen)
-                }
-            })
+                    override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
+                        return mapOf(actionList[0].data to KMError.NoCompatibleImeChosen)
+                    }
+                },
+            )
 
             assertThat(
                 inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN),
