@@ -157,7 +157,7 @@ class SystemBridgeAutoStarter @Inject constructor(
     fun init() {
         coroutineScope.launch {
             Timber.i(
-                "SystemBridgeAutoStarter init: time since boot=${clock.elapsedRealtime() / 1000} seconds",
+                "SystemBridgeAutoStarter init: time since boot=${clock.elapsedRealtime() / 1000} seconds. unix timestamp=${clock.unixTimestamp()}",
             )
 
             if (BuildConfig.DEBUG && connectionManager.isConnected()) {
