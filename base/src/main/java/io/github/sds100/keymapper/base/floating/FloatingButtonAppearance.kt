@@ -16,4 +16,8 @@ data class FloatingButtonAppearance(
         const val DEFAULT_BACKGROUND_OPACITY = 0.5f
         const val DEFAULT_BORDER_OPACITY = 1f
     }
+
+    fun isInvisible(): Boolean {
+        return text.isBlank() && borderOpacity == 0f && backgroundOpacity == 0f
+    }
 }
