@@ -375,7 +375,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Text -> {
-                keyMapperImeMessenger.inputText(action.text)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    service.injectText(action.text)
+                } else {
+                    keyMapperImeMessenger.inputText(action.text)
+                }
                 result = Success(Unit)
             }
 

@@ -1060,7 +1060,7 @@ fun ActionData.canBeHeldDown(): Boolean = when (this) {
 
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
-    is ActionData.Text -> true
+    is ActionData.Text -> Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
     else -> false
 }
 

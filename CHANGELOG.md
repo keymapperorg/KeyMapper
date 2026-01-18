@@ -18,6 +18,7 @@
 - [#1961](https://github.com/keymapperorg/KeyMapper/issues/1961) Disabling setup assistant shows a notification asking for pairing code immediately.
 - [#1983](https://github.com/keymapperorg/KeyMapper/issues/1983) Inputting a modifier key and another key as actions through Expert mode applies the correct key character map. 
 - [#1990](https://github.com/keymapperorg/KeyMapper/issues/1990) Passthrough the device id of the trigger to the key event action if one is not manually specified
+- [#1982](https://github.com/keymapperorg/KeyMapper/issues/1982) Text action does not need Key Mapper input method on Android 13+.
 - Bugs with expert mode auto starting time.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
