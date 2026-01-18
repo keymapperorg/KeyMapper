@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.base.system.accessibility
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -61,4 +63,7 @@ interface IAccessibilityService : SwitchImeInterface {
     val isInputMethodVisible: Flow<Boolean>
 
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun injectText(text: String)
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -32,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -200,19 +200,24 @@ fun BaseConfigKeyMapScreen(
                         }
                     }
 
-                    if (this@BoxWithConstraints.maxWidth < 500.dp) {
+                    if (tabs.size == 2) {
+                        // If only two tabs are showing then center them
                         PrimaryScrollableTabRow(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .width(IntrinsicSize.Max),
+                            edgePadding = 0.dp,
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
-                            edgePadding = 16.dp,
                             contentColor = MaterialTheme.colorScheme.onSurface,
                         ) {
                             Tabs()
                         }
                     } else {
-                        PrimaryTabRow(
+                        PrimaryScrollableTabRow(
                             selectedTabIndex = pagerState.targetPage,
                             divider = {},
+                            edgePadding = 16.dp,
                             contentColor = MaterialTheme.colorScheme.onSurface,
                         ) {
                             Tabs()
@@ -226,9 +231,13 @@ fun BaseConfigKeyMapScreen(
                 ) { pageIndex ->
                     when (tabs[pageIndex]) {
                         ConfigKeyMapTab.TRIGGER -> triggerScreen()
+
                         ConfigKeyMapTab.ACTIONS -> actionsScreen()
+
                         ConfigKeyMapTab.CONSTRAINTS -> constraintsScreen()
+
                         ConfigKeyMapTab.OPTIONS -> optionsScreen()
+
                         ConfigKeyMapTab.TRIGGER_AND_ACTIONS -> {
                             if (isVerticalTwoScreen) {
                                 VerticalTwoScreens(

@@ -93,6 +93,18 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         }
     }
 
+    init {
+        // Refresh the starter script because the paths to the apk and libs may
+        // have changed.
+        coroutineScope.launch {
+            try {
+                starter.refreshStarterScript()
+            } catch (e: Exception) {
+                Timber.e("Failed to refresh system bridge starter script", e)
+            }
+        }
+    }
+
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
             return systemBridgeFlow.value?.asBinder()?.pingBinder() == true

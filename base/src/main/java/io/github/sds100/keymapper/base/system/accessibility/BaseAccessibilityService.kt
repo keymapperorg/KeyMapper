@@ -560,4 +560,13 @@ abstract class BaseAccessibilityService :
 
         return imeWindow != null && imeWindow.root?.isVisibleToUser == true
     }
+
+    override fun injectText(text: String) {
+        inputMethod?.currentInputConnection?.commitText(
+            text,
+            // 1 puts the cursor after the inserted text.
+            1,
+            null,
+        )
+    }
 }

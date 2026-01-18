@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import androidx.core.app.NotificationCompat
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
 import io.github.sds100.keymapper.base.utils.TestScopeClock
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -27,6 +31,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.closeTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -136,6 +141,22 @@ class SystemBridgeAutoStarterTest {
             resourceProvider = mockResourceProvider,
             buildConfig = testBuildConfig,
         )
+    }
+
+    @Test
+    fun `auto start time is saved as unix timestamp`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+        whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+        isWifiConnectedFlow.value = true
+        writeSecureSettingsGrantedFlow.value = true
+
+        systemBridgeAutoStarter.init()
+        advanceUntilIdle()
+
+        val actual = fakePreferences.get(Keys.systemBridgeLastAutoStartTime).first()
+        assertThat(actual!!.toDouble(), closeTo(testScopeClock.unixTimestamp().toDouble(), 5.0))
     }
 
     @Test
@@ -448,6 +469,34 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
+    fun `show wifi disconnected notification when auto starting`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+        isWifiConnectedFlow.value = false
+        writeSecureSettingsGrantedFlow.value = true
+
+        inOrder(mockNotificationAdapter) {
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(10000)
+
+            val expectedModel = NotificationModel(
+                id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
+                channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
+                title = "test_string",
+                text = "test_string",
+                icon = R.drawable.offline_bolt_24px,
+                onClickAction = KMNotificationAction.Activity.MainActivity(
+                    action = BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
+                ),
+                priority = NotificationCompat.PRIORITY_MAX,
+                showOnLockscreen = true,
+                onGoing = false,
+            )
+            verify(mockNotificationAdapter).showNotification(expectedModel)
+        }
+    }
+
+    @Test
     fun `show failed notification when connection times out`() = runTest(testDispatcher) {
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
@@ -505,10 +554,17 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto restart within 5 minutes of the last auto start`() = runTest(testDispatcher) {
+    fun `do not auto start within 5 minutes of the last auto start`() = runTest(testDispatcher) {
         fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
         fakePreferences.set(Keys.isSystemBridgeUsed, true)
+        fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
         isRootGrantedFlow.value = true
+        fakePreferences.set(
+            Keys.systemBridgeLastManualStartTime,
+            // 10 minutes before
+            testScopeClock.unixTimestamp() - 600,
+        )
 
         inOrder(mockConnectionManager) {
             systemBridgeAutoStarter.init()
@@ -521,7 +577,7 @@ class SystemBridgeAutoStarterTest {
             // It is killed unexpectedly straight after auto starting
             connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
                 time = 7000,
-                isStoppedByUser = true,
+                isStoppedByUser = false,
             )
 
             advanceUntilIdle()
@@ -529,6 +585,32 @@ class SystemBridgeAutoStarterTest {
             verify(mockConnectionManager, never()).startWithRoot()
         }
     }
+
+    @Test
+    fun `auto start within 5 minutes of the last auto start if the user started it manually in between`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
+            fakePreferences.set(
+                Keys.systemBridgeLastManualStartTime,
+                // 2 minutes before
+                testScopeClock.unixTimestamp() - 120,
+            )
+            fakePreferences.set(
+                Keys.systemBridgeLastAutoStartTime,
+                // 3 minutes before
+                testScopeClock.unixTimestamp() - 180,
+            )
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+                verify(mockConnectionManager).startWithRoot()
+            }
+        }
 
     @Test
     fun `show killed and not restarting notification if want to autostart again within the cooldown`() =

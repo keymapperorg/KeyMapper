@@ -29,7 +29,7 @@ class SetupInputMethodUseCaseImpl @Inject constructor(
     override val isEnabled: Flow<Boolean> = keyMapperImeHelper.isCompatibleImeEnabledFlow
 
     override suspend fun enableInputMethod(): KMResult<Unit> {
-        return keyMapperImeHelper.enableCompatibleInputMethods()
+        return keyMapperImeHelper.enableCompatibleInputMethod()
     }
 
     override val isChosen: Flow<Boolean> = keyMapperImeHelper.isCompatibleImeChosenFlow
@@ -38,7 +38,7 @@ class SetupInputMethodUseCaseImpl @Inject constructor(
         // On Android 13+, the accessibility service can enable the input method without
         // any user input
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return keyMapperImeHelper.enableCompatibleInputMethods()
+            return keyMapperImeHelper.enableCompatibleInputMethod()
                 .onFailure {
                     Timber.e("Failed to enable compatible input method: $it")
                 }

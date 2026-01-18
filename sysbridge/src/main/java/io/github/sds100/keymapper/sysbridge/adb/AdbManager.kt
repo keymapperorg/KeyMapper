@@ -69,7 +69,7 @@ class AdbManagerImpl @Inject constructor(@ApplicationContext private val ctx: Co
             }
         }
 
-        Timber.i("Execute command result: $result")
+        Timber.d("Execute command result: $result")
 
         return result
     }

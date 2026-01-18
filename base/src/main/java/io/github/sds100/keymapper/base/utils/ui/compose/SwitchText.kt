@@ -2,7 +2,10 @@ package io.github.sds100.keymapper.base.utils.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -13,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SwitchText(
@@ -25,24 +29,20 @@ fun SwitchText(
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        color = Color.Companion.Transparent,
+        color = Color.Transparent,
     ) {
         Row(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
-                .padding(8.dp),
-            verticalAlignment = Alignment.Companion.CenterVertically,
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Switch(
-                enabled = isEnabled,
-                checked = isChecked,
-                // This is null so tapping on the checkbox highlights the whole row.
-                onCheckedChange = null,
-            )
-
             Text(
-                modifier = Modifier.Companion.padding(horizontal = 12.dp),
-
+                modifier = Modifier.weight(1f),
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 10.sp,
+                    maxFontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                ),
                 text = text,
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyLarge
@@ -54,7 +54,16 @@ fun SwitchText(
                     )
                 },
                 maxLines = 2,
-                overflow = TextOverflow.Companion.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(Modifier.width(16.dp))
+
+            Switch(
+                enabled = isEnabled,
+                checked = isChecked,
+                // This is null so tapping on the checkbox highlights the whole row.
+                onCheckedChange = null,
             )
         }
     }

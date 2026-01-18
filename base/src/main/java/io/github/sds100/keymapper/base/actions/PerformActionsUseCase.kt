@@ -65,6 +65,8 @@ import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.settings.SettingType
+import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -118,8 +120,12 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val settingsAdapter: io.github.sds100.keymapper.system.settings.SettingsAdapter,
+    private val settingsAdapter: SettingsAdapter,
 ) : PerformActionsUseCase {
+
+    companion object {
+        private const val SETTING_NIGHT_DISPLAY_ACTIVATED = "night_display_activated"
+    }
 
     @AssistedFactory
     interface Factory {
@@ -375,7 +381,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Text -> {
-                keyMapperImeMessenger.inputText(action.text)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    service.injectText(action.text)
+                } else {
+                    keyMapperImeMessenger.inputText(action.text)
+                }
                 result = Success(Unit)
             }
 
@@ -459,11 +469,19 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Hotspot.Enable -> {
-                result = networkAdapter.enableHotspot()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    result = networkAdapter.enableHotspot()
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.R)
+                }
             }
 
             is ActionData.Hotspot.Disable -> {
-                result = networkAdapter.disableHotspot()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    result = networkAdapter.disableHotspot()
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.R)
+                }
             }
 
             is ActionData.Brightness.ToggleAuto -> {
@@ -1037,6 +1055,35 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     action.settingType,
                     action.settingKey,
                     action.value,
+                )
+            }
+
+            is ActionData.NightShift.Enable -> {
+                result = settingsAdapter.setValue(
+                    SettingType.SECURE,
+                    SETTING_NIGHT_DISPLAY_ACTIVATED,
+                    "1",
+                )
+            }
+
+            is ActionData.NightShift.Disable -> {
+                result = settingsAdapter.setValue(
+                    SettingType.SECURE,
+                    SETTING_NIGHT_DISPLAY_ACTIVATED,
+                    "0",
+                )
+            }
+
+            is ActionData.NightShift.Toggle -> {
+                val currentValue = settingsAdapter.getValue(
+                    SettingType.SECURE,
+                    SETTING_NIGHT_DISPLAY_ACTIVATED,
+                )
+                val newValue = if (currentValue == "1") "0" else "1"
+                result = settingsAdapter.setValue(
+                    SettingType.SECURE,
+                    SETTING_NIGHT_DISPLAY_ACTIVATED,
+                    newValue,
                 )
             }
         }

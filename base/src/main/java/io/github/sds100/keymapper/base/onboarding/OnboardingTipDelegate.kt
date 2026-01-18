@@ -21,6 +21,8 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import javax.inject.Inject
 import javax.inject.Named
@@ -37,6 +39,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val configTriggerUseCase: ConfigTriggerUseCase,
     private val configActionsUseCase: ConfigActionsUseCase,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
 ) : OnboardingTipDelegate,
@@ -225,7 +228,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     title = getString(R.string.tip_volume_buttons_expert_mode_title),
                     message = getString(R.string.tip_volume_buttons_expert_mode_text),
                     isDismissable = true,
-                    buttonText = getString(R.string.tip_volume_buttons_expert_mode_button),
+                    buttonText = if (systemBridgeConnectionManager.isConnected()) {
+                        null
+                    } else {
+                        getString(
+                            R.string.tip_volume_buttons_expert_mode_button,
+                        )
+                    },
                 )
                 triggerTip.value = tip
             }
@@ -236,7 +245,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     title = getString(R.string.tip_caps_lock_expert_mode_title),
                     message = getString(R.string.tip_caps_lock_expert_mode_text),
                     isDismissable = true,
-                    buttonText = getString(R.string.tip_caps_lock_expert_mode_button),
+                    buttonText = if (systemBridgeConnectionManager.isConnected()) {
+                        null
+                    } else {
+                        getString(
+                            R.string.tip_caps_lock_expert_mode_button,
+                        )
+                    },
                 )
                 triggerTip.value = tip
             }
@@ -334,7 +349,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 title = getString(R.string.tip_ringer_mode_title),
                 message = getString(R.string.tip_ringer_mode_text),
                 isDismissable = true,
-                buttonText = getString(R.string.tip_ringer_mode_button),
+                buttonText = if (systemBridgeConnectionManager.isConnected()) {
+                    null
+                } else {
+                    getString(
+                        R.string.tip_ringer_mode_button,
+                    )
+                },
             )
             actionsTip.value = tip
         }

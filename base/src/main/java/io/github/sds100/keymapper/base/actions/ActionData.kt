@@ -715,6 +715,24 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    sealed class NightShift : ActionData() {
+        @Serializable
+        data object Enable : NightShift() {
+            override val id = ActionId.ENABLE_NIGHT_SHIFT
+        }
+
+        @Serializable
+        data object Disable : NightShift() {
+            override val id = ActionId.DISABLE_NIGHT_SHIFT
+        }
+
+        @Serializable
+        data object Toggle : NightShift() {
+            override val id = ActionId.TOGGLE_NIGHT_SHIFT
+        }
+    }
+
+    @Serializable
     sealed class StatusBar : ActionData() {
         @Serializable
         data object ExpandNotifications : StatusBar() {

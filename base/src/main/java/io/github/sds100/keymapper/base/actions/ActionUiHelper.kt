@@ -475,6 +475,10 @@ class ActionUiHelper(
         ActionData.Brightness.Increase -> getString(R.string.action_increase_brightness)
         ActionData.Brightness.ToggleAuto -> getString(R.string.action_toggle_auto_brightness)
 
+        ActionData.NightShift.Disable -> getString(R.string.action_disable_night_shift)
+        ActionData.NightShift.Enable -> getString(R.string.action_enable_night_shift)
+        ActionData.NightShift.Toggle -> getString(R.string.action_toggle_night_shift)
+
         ActionData.ConsumeKeyEvent -> getString(R.string.action_consume_keyevent)
 
         ActionData.ControlMedia.FastForward -> getString(R.string.action_fast_forward)

@@ -289,7 +289,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_DEVICE_INFO_SETTINGS,
-                "build_number",
+                fragmentArg = "build_number",
             )
 
             coroutineScope.launch {
@@ -380,7 +380,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         SettingsUtils.launchSettingsScreen(
             ctx,
             Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-            "toggle_adb_wireless",
+            fragmentArg = "toggle_adb_wireless",
         )
     }
 

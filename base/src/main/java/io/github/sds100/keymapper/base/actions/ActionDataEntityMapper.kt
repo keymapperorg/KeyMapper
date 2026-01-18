@@ -498,6 +498,10 @@ object ActionDataEntityMapper {
             ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase
             ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease
 
+            ActionId.TOGGLE_NIGHT_SHIFT -> ActionData.NightShift.Toggle
+            ActionId.ENABLE_NIGHT_SHIFT -> ActionData.NightShift.Enable
+            ActionId.DISABLE_NIGHT_SHIFT -> ActionData.NightShift.Disable
+
             ActionId.TOGGLE_AUTO_ROTATE -> ActionData.Rotation.ToggleAuto
             ActionId.ENABLE_AUTO_ROTATE -> ActionData.Rotation.EnableAuto
             ActionId.DISABLE_AUTO_ROTATE -> ActionData.Rotation.DisableAuto
@@ -1237,6 +1241,10 @@ object ActionDataEntityMapper {
         ActionId.ENABLE_AUTO_BRIGHTNESS to "enable_auto_brightness",
         ActionId.INCREASE_BRIGHTNESS to "increase_brightness",
         ActionId.DECREASE_BRIGHTNESS to "decrease_brightness",
+
+        ActionId.TOGGLE_NIGHT_SHIFT to "toggle_night_shift",
+        ActionId.ENABLE_NIGHT_SHIFT to "enable_night_shift",
+        ActionId.DISABLE_NIGHT_SHIFT to "disable_night_shift",
 
         ActionId.TOGGLE_AUTO_ROTATE to "toggle_auto_rotate",
         ActionId.ENABLE_AUTO_ROTATE to "enable_auto_rotate",

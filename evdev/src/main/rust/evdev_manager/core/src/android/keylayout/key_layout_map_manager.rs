@@ -127,7 +127,7 @@ impl KeyLayoutMapManager {
         }
 
         let key_layout_map_paths = self.find_key_layout_files(device_info);
-        info!(
+        debug!(
             "Found key layout map files for device {}: {:?}",
             device_info.name, key_layout_map_paths
         );
@@ -148,7 +148,7 @@ impl KeyLayoutMapManager {
 
         // No key layout map files were found or parsed successfully.
         // Fall back to the hardcoded generic key layout map.
-        info!(
+        debug!(
             "No key layout files found for device {}, using hardcoded Generic fallback",
             device_info.name
         );

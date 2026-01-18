@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.settings.AppLocaleAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -103,6 +104,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var configKeyMapState: ConfigKeyMapStateImpl
+
+    @Inject
+    lateinit var appLocaleAdapter: AppLocaleAdapterImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -201,6 +205,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
         onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
+        appLocaleAdapter.invalidate()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -50,7 +50,7 @@
     <string name="clip_key_mapper_log">Key Mapper log</string>
 
     <string name="whats_new">What\'s New</string>
-    <string name="caption_action_type_sound">You can either use a system ringtone or select a custom sound file.\n\nThe custom sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    <string name="caption_action_type_sound">You can either use a system ringtone or select a custom sound file.\n\nThe custom sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be included in backups with your key maps in the zip file.
     You can delete saved sound files in the settings.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
@@ -82,7 +82,7 @@
     <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
     <string name="trigger_error_migrate_screen_off_key_map">Migrate this screen off trigger</string>
 
-    <string name="home_error_is_battery_optimised">Disable battery optimisation.</string>
+    <string name="home_error_is_battery_optimised">Disable battery optimization.</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your key maps to work!</string>
@@ -277,7 +277,7 @@
     <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
     <string name="constraint_wifi_disconnected_description">Disconnected from %s WiFi</string>
     <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
-    <string name="constraint_wifi_disconnected_any_description">Disconnected to no WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Disconnected from any WiFi</string>
 
     <string name="constraint_ime_chosen">Input method is chosen</string>
     <string name="constraint_ime_chosen_description">%s is chosen</string>
@@ -291,8 +291,8 @@
 
     <string name="constraint_device_is_locked">Device is locked</string>
     <string name="constraint_device_is_unlocked">Device is unlocked</string>
-    <string name="constraint_lock_screen_showing">Lockscreen is showing</string>
-    <string name="constraint_lock_screen_not_showing">Lockscreen is not showing</string>
+    <string name="constraint_lock_screen_showing">Lock screen is showing</string>
+    <string name="constraint_lock_screen_not_showing">Lock screen is not showing</string>
 
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
@@ -450,18 +450,18 @@
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
-    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
+    <string name="dialog_message_password_screen_lock_warning">If you use a PIN or Pattern to unlock your device, then you don\'t have to worry. But if you have a Password screen lock, you will *NOT* be able to unlock your phone if you use the Key Mapper Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
 
-    <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
+    <string name="dialog_title_disable_battery_optimisation">Disable battery optimization</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
 
     <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
-    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimisation turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
@@ -503,7 +503,7 @@
     <string name="pos_start_service_with_expert_mode">Use Expert Mode</string>
     <string name="pos_change_location">Change</string>
     <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
-    <string name="pos_ok">Ok</string>
+    <string name="pos_ok">OK</string>
     <string name="pos_restart">Restart</string>
     <string name="pos_never_show_again">Never show again</string>
     <string name="pos_apply">Apply</string>
@@ -692,6 +692,11 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
+
+    <string name="title_pref_language">Language</string>
+    <string name="summary_pref_language">Choose the app language</string>
+    <string name="language_system_default">System default</string>
+
     <!--Preference categories-->
 
     <!--flags-->
@@ -824,7 +829,7 @@
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
     <string name="error_fix_key_event_action">This action needs setting up</string>
 
-    <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
+    <string name="error_battery_optimisation_activity_not_found">Battery optimization settings not found! If it exists, open it manually.</string>
 
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
@@ -833,11 +838,11 @@
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_file_access_denied">File access denied! %s</string>
     <string name="error_io_error">Unknown IO error!</string>
-    <string name="error_file_operation_cancelled">Cancelled!</string>
+    <string name="error_file_operation_cancelled">Canceled!</string>
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
-    <string name="error_battery_optimisation_enabled">Battery optimisation is turned on! Turn this off because this can randomly stop Key Mapper from working.</string>
+    <string name="error_battery_optimisation_enabled">Battery optimization is turned on! Turn this off because this can randomly stop Key Mapper from working.</string>
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
@@ -956,6 +961,9 @@
     <string name="action_enable_auto_brightness">Enable auto brightness</string>
     <string name="action_increase_brightness">Increase display brightness</string>
     <string name="action_decrease_brightness">Decrease display brightness</string>
+    <string name="action_toggle_night_shift">Toggle night shift</string>
+    <string name="action_enable_night_shift">Enable night shift</string>
+    <string name="action_disable_night_shift">Disable night shift</string>
 
     <string name="action_expand_notification_drawer">Expand notification drawer</string>
     <string name="action_toggle_notification_drawer">Toggle notification drawer</string>
@@ -1379,7 +1387,7 @@
     <string name="loading_product_button">Loading…</string>
     <string name="purchased_product_label">Purchased!</string>
     <string name="retry_loading_price_button">Retry fetching price</string>
-    <string name="purchasing_error_cancelled">Purchase cancelled.</string>
+    <string name="purchasing_error_cancelled">Purchase canceled.</string>
     <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>
     <string name="purchasing_error_network">Network error encountered. Do you have an internet connection?</string>
     <string name="purchasing_error_product_not_found">This product was not found.</string>
@@ -1394,7 +1402,7 @@
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
-    <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
+    <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a backup in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
@@ -1420,18 +1428,19 @@
     <string name="floating_button_menu_configure">Configure</string>
     <string name="floating_button_menu_use_trigger">Use trigger</string>
     <string name="floating_button_config_delete_button">Delete</string>
-    <string name="floating_button_config_button_text_label">Button text (Tip: use an emoji)</string>
+    <string name="floating_button_config_button_text_label">Button text (optional) (Tip: use an emoji)</string>
     <string name="floating_button_config_button_size_label">Button size:</string>
     <string name="floating_button_config_border_opacity_label">Border opacity:</string>
     <string name="floating_button_config_background_opacity_label">Background opacity:</string>
     <string name="floating_button_config_cancel_button">Cancel</string>
     <string name="floating_button_config_done_button">Done</string>
-    <string name="floating_button_config_empty_text_error">The button must have text!</string>
     <string name="floating_button_config_show_over_status_bar">Show over notification panel</string>
     <string name="floating_button_config_show_over_input_method">Show over keyboard</string>
+    <string name="floating_button_config_lock_position">Lock in position</string>
     <string name="floating_buttons_product_title">Floating buttons</string>
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
+    <string name="floating_button_text_key_map_list_item_empty">Floating button (no text) (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
     <string name="tip_caps_lock_expert_mode_title">Better Caps Lock compatibility</string>
     <string name="tip_caps_lock_expert_mode_text">Expert Mode provides better compatibility for Caps Lock remapping. Tap \'Use Expert Mode\' and record it again.</string>
@@ -1575,6 +1584,7 @@
     <string name="trigger_key_shortcut_add_assistant">Side key trigger</string>
     <string name="trigger_key_shortcut_add_fingerprint_gesture">Fingerprint gesture</string>
     <string name="trigger_key_floating_button_description">Floating button: %s</string>
+    <string name="trigger_key_floating_button_description_empty">Floating button (no text)</string>
     <string name="trigger_key_fingerprint_gesture_up">Swipe up fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_down">Swipe down fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
@@ -1752,6 +1762,9 @@
     <string name="expert_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
     <string name="expert_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
 
+    <string name="expert_mode_setup_notification_pairing_code_not_interactive_title">Type in the pairing code</string>
+    <string name="expert_mode_setup_notification_pairing_code_not_interactive_text">Tap \"Pair device with pairing code\"</string>
+
     <string name="expert_mode_setup_notification_start_system_bridge_failed_title">Starting Expert Mode failed</string>
     <string name="expert_mode_setup_notification_start_system_bridge_failed_text">Tap to set up again. Try ADB pairing and rebooting your phone if it repeatedly fails.</string>
 
@@ -1775,6 +1788,9 @@
     <string name="system_bridge_died_notification_title">Expert Mode stopped unexpectedly</string>
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
     <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting because last auto started less than 5 minutes ago. If you\'re not killing the service report the issue to the developer.</string>
+
+    <string name="system_bridge_wifi_disconnected_notification_title">Starting Expert mode failed</string>
+    <string name="system_bridge_wifi_disconnected_notification_text">Your phone must be connected to a WiFi network</string>
 
     <!-- Trigger Discover Screen -->
     <string name="trigger_discover_screen_title">Discover</string>

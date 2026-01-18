@@ -287,7 +287,6 @@ class KeyMapAlgorithm(
 
             val triggerActions = mutableListOf<IntArray>()
             val triggerConstraints = mutableListOf<Array<ConstraintState>>()
-            val triggerPerformActionDevices = mutableListOf<PerformActionTriggerDevice>()
 
             val sequenceTriggerActionPerformers =
                 mutableMapOf<Int, SequenceTriggerActionPerformer>()
@@ -910,10 +909,15 @@ class KeyMapAlgorithm(
                     if (overlappingSequenceTrigger == null) {
                         val actionKeys = triggerActions[triggerIndex]
 
-                        actionKeys.forEach { actionKey ->
-                            val action = actionMap[actionKey] ?: return@forEach
+                        for (actionKey in actionKeys) {
+                            val action = actionMap[actionKey] ?: continue
 
-                            if (action.data is ActionData.InputKeyEvent) {
+                            // If the key event is being injected with the system bridge
+                            // then it will be passed back around through the accessibility
+                            // service and processed again.
+                            if (action.data is ActionData.InputKeyEvent &&
+                                !useCase.injectKeyEventsWithSystemBridge.value
+                            ) {
                                 val actionKeyCode = action.data.keyCode
 
                                 if (isModifierKey(actionKeyCode)) {
@@ -1073,7 +1077,6 @@ class KeyMapAlgorithm(
                     key.matchesEvent(event.withShortPress) -> true
                     key.matchesEvent(event.withLongPress) -> true
                     key.matchesEvent(event.withDoublePress) -> true
-
                     else -> false
                 }
 
@@ -1794,6 +1797,7 @@ class KeyMapAlgorithm(
 
             return when (this.device) {
                 KeyEventTriggerDevice.Any -> codeMatches && this.clickType == event.clickType
+
                 is KeyEventTriggerDevice.External ->
                     event.isExternal &&
                         codeMatches &&
@@ -1990,8 +1994,11 @@ class KeyMapAlgorithm(
 
     private fun AlgoEvent.performActionDevice(): PerformActionTriggerDevice {
         return when (this) {
-            is EvdevEventAlgo -> PerformActionTriggerDevice.Evdev(deviceId)
-            else -> PerformActionTriggerDevice.Default
+            is EvdevEventAlgo -> PerformActionTriggerDevice.Evdev(this.deviceId)
+            is KeyEventAlgo -> PerformActionTriggerDevice.AndroidDevice(this.deviceId)
+            is AssistantEvent -> PerformActionTriggerDevice.Default
+            is FingerprintGestureEvent -> PerformActionTriggerDevice.Default
+            is FloatingButtonEvent -> PerformActionTriggerDevice.Default
         }
     }
 }

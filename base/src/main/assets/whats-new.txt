@@ -17,6 +17,8 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Select notification and alarm sounds for Sound action
 • Constraints for keyboard is showing
 • Switch next to record trigger button to use PRO mode
+• Make floating buttons movable and completely invisible
+• Action to toggle night shift
 
 ⚙️ Enhanced Controls
 • Enable or disable all key maps in a group at once
@@ -26,6 +28,6 @@ You can now remap ALL buttons when the screen is off (including the power button
 🔧 Improvements
 • Auto-switching keyboard more reliable and quicker on Android 13+
 • Wi-Fi connected constraints more reliable
-• Various bug fixes and performance optimizations
+• A lot of bug fixes
 
-📖 View the complete changelog at: http://changelog.keymapper.club
+📖 View the complete changelog at: http://keymapper.app/changelog

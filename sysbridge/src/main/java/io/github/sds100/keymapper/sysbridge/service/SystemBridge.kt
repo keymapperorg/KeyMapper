@@ -271,19 +271,90 @@ class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    private val inputManager: IInputManager
-    private val wifiManager: IWifiManager?
-    private val permissionManager: IPermissionManager
-    private val telephonyManager: ITelephony?
-    private val packageManager: IPackageManager
-    private val bluetoothManager: IBluetoothManager?
-    private val nfcAdapter: INfcAdapter?
-    private val connectivityManager: IConnectivityManager?
-    private val tetheringConnector: ITetheringConnector?
+    private val inputManager: IInputManager by lazy {
+        waitSystemService(Context.INPUT_SERVICE)
+        IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
+    }
+
+    private val wifiManager: IWifiManager? by lazy {
+        if (hasSystemFeature(PackageManager.FEATURE_WIFI)) {
+            waitSystemService(Context.WIFI_SERVICE)
+            IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
+        } else {
+            null
+        }
+    }
+
+    private val permissionManager: IPermissionManager? by lazy {
+        waitSystemService("permissionmgr")
+        IPermissionManager.Stub.asInterface(ServiceManager.getService("permissionmgr"))
+    }
+
+    private val telephonyManager: ITelephony? by lazy {
+        if (hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+            waitSystemService(Context.TELEPHONY_SERVICE)
+            ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))
+        } else {
+            null
+        }
+    }
+
+    private val packageManager: IPackageManager by lazy {
+        waitSystemService("package")
+        IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
+    }
+
+    private val bluetoothManager: IBluetoothManager? by lazy {
+        if (hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+            waitSystemService("bluetooth_manager")
+            IBluetoothManager.Stub.asInterface(ServiceManager.getService("bluetooth_manager"))
+        } else {
+            null
+        }
+    }
+
+    private val nfcAdapter: INfcAdapter? by lazy {
+        if (hasSystemFeature(PackageManager.FEATURE_NFC)) {
+            waitSystemService(Context.NFC_SERVICE)
+            INfcAdapter.Stub.asInterface(ServiceManager.getService(Context.NFC_SERVICE))
+        } else {
+            null
+        }
+    }
+
+    private val connectivityManager: IConnectivityManager? by lazy {
+
+        waitSystemService(Context.CONNECTIVITY_SERVICE)
+        IConnectivityManager.Stub.asInterface(
+            ServiceManager.getService(Context.CONNECTIVITY_SERVICE),
+        )
+    }
+    private val tetheringConnector: ITetheringConnector? by lazy {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            waitSystemService("tethering")
+            ITetheringConnector.Stub.asInterface(ServiceManager.getService("tethering"))
+        } else {
+            null
+        }
+    }
     private val activityManager: IActivityManager
-    private val activityTaskManager: IActivityTaskManager
-    private val audioService: IAudioService?
-    private val usbManager: IUsbManager?
+    private val activityTaskManager: IActivityTaskManager by lazy {
+        waitSystemService("activity_task")
+        IActivityTaskManager.Stub.asInterface(
+            ServiceManager.getService("activity_task"),
+        )
+    }
+
+    private val audioService: IAudioService? by lazy {
+        waitSystemService(Context.AUDIO_SERVICE)
+        IAudioService.Stub.asInterface(ServiceManager.getService(Context.AUDIO_SERVICE))
+    }
+
+    private val usbManager: IUsbManager? by lazy {
+        waitSystemService(Context.USB_SERVICE)
+        IUsbManager.Stub.asInterface(ServiceManager.getService(Context.USB_SERVICE))
+    }
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -308,79 +379,6 @@ class SystemBridge : ISystemBridge.Stub() {
             ServiceManager.getService(Context.ACTIVITY_SERVICE),
         )
 
-        waitSystemService("activity_task")
-        activityTaskManager = IActivityTaskManager.Stub.asInterface(
-            ServiceManager.getService("activity_task"),
-        )
-
-        waitSystemService(Context.USER_SERVICE)
-        waitSystemService(Context.APP_OPS_SERVICE)
-
-        waitSystemService("package")
-        packageManager = IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
-
-        waitSystemService("permissionmgr")
-        permissionManager =
-            IPermissionManager.Stub.asInterface(ServiceManager.getService("permissionmgr"))
-
-        waitSystemService(Context.INPUT_SERVICE)
-        inputManager =
-            IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
-
-        if (hasSystemFeature(PackageManager.FEATURE_WIFI)) {
-            waitSystemService(Context.WIFI_SERVICE)
-            wifiManager =
-                IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
-        } else {
-            wifiManager = null
-        }
-
-        if (hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
-            waitSystemService(Context.TELEPHONY_SERVICE)
-            telephonyManager =
-                ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))
-        } else {
-            telephonyManager = null
-        }
-
-        if (hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
-            waitSystemService("bluetooth_manager")
-            bluetoothManager =
-                IBluetoothManager.Stub.asInterface(ServiceManager.getService("bluetooth_manager"))
-        } else {
-            bluetoothManager = null
-        }
-
-        if (hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            waitSystemService(Context.NFC_SERVICE)
-            nfcAdapter =
-                INfcAdapter.Stub.asInterface(ServiceManager.getService(Context.NFC_SERVICE))
-        } else {
-            nfcAdapter = null
-        }
-
-        waitSystemService(Context.CONNECTIVITY_SERVICE)
-        connectivityManager =
-            IConnectivityManager.Stub.asInterface(
-                ServiceManager.getService(Context.CONNECTIVITY_SERVICE),
-            )
-
-        waitSystemService(Context.AUDIO_SERVICE)
-        audioService =
-            IAudioService.Stub.asInterface(ServiceManager.getService(Context.AUDIO_SERVICE))
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            waitSystemService("tethering")
-            tetheringConnector =
-                ITetheringConnector.Stub.asInterface(ServiceManager.getService("tethering"))
-        } else {
-            tetheringConnector = null
-        }
-
-        waitSystemService(Context.USB_SERVICE)
-        usbManager =
-            IUsbManager.Stub.asInterface(ServiceManager.getService(Context.USB_SERVICE))
-
         val applicationInfo = getKeyMapperPackageInfo()
 
         if (applicationInfo == null) {
@@ -395,6 +393,9 @@ class SystemBridge : ISystemBridge.Stub() {
         }
 
         initEvdevManager()
+
+        waitSystemService(Context.USER_SERVICE)
+        waitSystemService(Context.APP_OPS_SERVICE)
 
         Log.i(TAG, "SystemBridge started complete. Version code $versionCode")
     }
@@ -497,7 +498,7 @@ class SystemBridge : ISystemBridge.Stub() {
             throw UnsupportedOperationException("WiFi not supported")
         }
 
-        return wifiManager.setWifiEnabled(processPackageName, enable)
+        return wifiManager!!.setWifiEnabled(processPackageName, enable)
     }
 
     override fun writeEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): Boolean {
@@ -512,17 +513,25 @@ class SystemBridge : ISystemBridge.Stub() {
         return Process.myUid()
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun grantPermission(permission: String?, deviceId: Int) {
         val userId = UserHandleUtils.getCallingUserId()
 
-        PermissionManagerApis.grantPermission(
-            permissionManager,
-            systemBridgePackageName ?: return,
-            permission ?: return,
-            deviceId,
-            userId,
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            PermissionManagerApis.grantPermission(
+                permissionManager!!,
+                systemBridgePackageName ?: return,
+                permission ?: return,
+                deviceId,
+                userId,
+            )
+        } else {
+            PermissionManagerApis.grantPermission(
+                packageManager,
+                systemBridgePackageName ?: return,
+                permission ?: return,
+                userId,
+            )
+        }
     }
 
     private fun sendBinderToApp(): Boolean {
@@ -676,14 +685,14 @@ class SystemBridge : ISystemBridge.Stub() {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            telephonyManager.setDataEnabledForReason(
+            telephonyManager!!.setDataEnabledForReason(
                 subId,
                 DATA_ENABLED_REASON_USER,
                 enable,
                 processPackageName,
             )
         } else {
-            telephonyManager.setUserDataEnabled(subId, enable)
+            telephonyManager!!.setUserDataEnabled(subId, enable)
         }
     }
 
@@ -709,9 +718,9 @@ class SystemBridge : ISystemBridge.Stub() {
         val attributionSource = attributionSourceBuilder.build()
 
         if (enable) {
-            bluetoothManager.enable(attributionSource)
+            bluetoothManager!!.enable(attributionSource)
         } else {
-            bluetoothManager.disable(attributionSource, true)
+            bluetoothManager!!.disable(attributionSource, true)
         }
     }
 
@@ -721,10 +730,10 @@ class SystemBridge : ISystemBridge.Stub() {
         }
 
         if (enable) {
-            NfcAdapterApis.enable(nfcAdapter, processPackageName)
+            NfcAdapterApis.enable(nfcAdapter!!, processPackageName)
         } else {
             NfcAdapterApis.disable(
-                adapter = nfcAdapter,
+                adapter = nfcAdapter!!,
                 saveState = true,
                 packageName = processPackageName,
             )
@@ -736,7 +745,7 @@ class SystemBridge : ISystemBridge.Stub() {
             throw UnsupportedOperationException("ConnectivityManager not supported")
         }
 
-        connectivityManager.setAirplaneMode(enable)
+        connectivityManager!!.setAirplaneMode(enable)
     }
 
     override fun forceStopPackage(packageName: String?) {
@@ -767,7 +776,7 @@ class SystemBridge : ISystemBridge.Stub() {
             throw UnsupportedOperationException("AudioService not supported")
         }
 
-        audioService.setRingerModeInternal(ringerMode, processPackageName)
+        audioService!!.setRingerModeInternal(ringerMode, processPackageName)
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -806,7 +815,7 @@ class SystemBridge : ISystemBridge.Stub() {
             // instead of keeping it registered for the lifetime of SystemBridge. This is
             // a safety measure in case there's a bug in the callback that could crash
             // the entire SystemBridge process.
-            tetheringConnector.registerTetheringEventCallback(callback, processPackageName)
+            tetheringConnector!!.registerTetheringEventCallback(callback, processPackageName)
 
             // Wait for callback with timeout using Handler
             mainHandler.postDelayed(
@@ -824,7 +833,7 @@ class SystemBridge : ISystemBridge.Stub() {
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
         } finally {
-            tetheringConnector.unregisterTetheringEventCallback(callback, processPackageName)
+            tetheringConnector!!.unregisterTetheringEventCallback(callback, processPackageName)
         }
 
         return result
@@ -848,9 +857,9 @@ class SystemBridge : ISystemBridge.Stub() {
                 connectivityScope = 1
             }
 
-            tetheringConnector.startTethering(request, processPackageName, null, null)
+            tetheringConnector!!.startTethering(request, processPackageName, null, null)
         } else {
-            tetheringConnector.stopTethering(TETHERING_WIFI, processPackageName, null, null)
+            tetheringConnector!!.stopTethering(TETHERING_WIFI, processPackageName, null, null)
         }
     }
 

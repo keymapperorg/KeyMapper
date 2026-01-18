@@ -9,6 +9,7 @@ import android.media.MediaPlayer
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.view.KeyEvent
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -87,7 +88,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.fastForward()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
         }
     }
 
@@ -98,7 +99,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.rewind()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
         }
     }
 
@@ -109,7 +110,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.play()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
         }
     }
 
@@ -120,7 +121,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.pause()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
         }
     }
 
@@ -135,7 +136,7 @@ class AndroidMediaAdapter @Inject constructor(
             }
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
         }
     }
 
@@ -146,7 +147,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.skipToPrevious()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
         }
     }
 
@@ -157,7 +158,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.skipToNext()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
         }
     }
 
@@ -168,7 +169,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.stop()
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
         }
     }
 
@@ -180,7 +181,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.seekTo(position + SEEK_AMOUNT)
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_FORWARD, packageName)
         }
     }
 
@@ -192,7 +193,7 @@ class AndroidMediaAdapter @Inject constructor(
             session.transportControls.seekTo(max(0, position - SEEK_AMOUNT))
             return Success(Unit)
         } else {
-            return KMError.MediaActionUnsupported
+            return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD, packageName)
         }
     }
 
@@ -275,6 +276,21 @@ class AndroidMediaAdapter @Inject constructor(
 
     fun onActiveMediaSessionChange(mediaSessions: List<MediaController>) {
         activeMediaSessions.update { mediaSessions }
+    }
+
+    // Important! See issue #1971. Some apps do not expose media controls or say they support
+    // media control actions but they still respond to key events.
+    private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): KMResult<*> {
+        if (packageName == null) {
+            audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+            audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        } else {
+            val session = getPackageMediaSession(packageName) ?: return KMError.NoMediaSessions
+            session.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+            session.dispatchMediaButtonEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        }
+
+        return Success(Unit)
     }
 
     private fun MediaController.isPlaybackActionSupported(action: Long): Boolean =

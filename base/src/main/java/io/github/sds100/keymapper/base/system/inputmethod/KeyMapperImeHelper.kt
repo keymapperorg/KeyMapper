@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -58,7 +59,7 @@ class KeyMapperImeHelper(
                 }
             }
 
-    fun enableCompatibleInputMethods(): KMResult<Unit> {
+    fun enableCompatibleInputMethod(): KMResult<Unit> {
         var result: KMResult<Unit>? = null
 
         for (imePackageName in keyMapperImePackageList) {
@@ -66,6 +67,11 @@ class KeyMapperImeHelper(
                 imeAdapter.getInfoByPackageName(imePackageName).valueOrNull()?.id ?: continue
 
             result = switchImeInterface.enableIme(imeId)
+
+            // Stop trying to enable IMEs if one is enabled.
+            if (result.isSuccess) {
+                break
+            }
         }
 
         return result ?: KMError.InputMethodNotFound(packageName)

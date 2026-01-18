@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.base.settings
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.datastore.preferences.core.Preferences
+import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -30,6 +34,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 
+@ViewModelScoped
 class ConfigSettingsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
@@ -42,6 +47,8 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val devicesAdapter: DevicesAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val notificationAdapter: NotificationAdapter,
+    private val appLocaleAdapter: AppLocaleAdapter,
+    private val resourceProvider: ResourceProvider,
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy {
@@ -95,7 +102,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         get() = devicesAdapter.connectedInputDevices
 
     override suspend fun enableCompatibleIme() {
-        imeHelper.enableCompatibleInputMethods()
+        imeHelper.enableCompatibleInputMethod()
     }
 
     override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> =
@@ -194,6 +201,20 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     override fun openNotificationChannelSettings(channelId: String) {
         notificationAdapter.openChannelSettings(channelId)
     }
+
+    override val currentLocaleDisplayName: StateFlow<String?> =
+        appLocaleAdapter.currentLocaleDisplayName
+
+    override fun launchAppLocaleSettingsScreen(): Boolean =
+        appLocaleAdapter.launchAppLocaleSettingsScreen()
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun getSupportedLocales(): List<AppLocaleOption> =
+        appLocaleAdapter.getSupportedLocales()
+
+    override fun setLocale(localeTag: String?) {
+        appLocaleAdapter.setLocale(localeTag)
+    }
 }
 
 interface ConfigSettingsUseCase {
@@ -239,4 +260,13 @@ interface ConfigSettingsUseCase {
 
     val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
     fun resetAllSettings()
+
+    // Locale settings (Android 13+ only)
+    val currentLocaleDisplayName: StateFlow<String?>
+    fun launchAppLocaleSettingsScreen(): Boolean
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun getSupportedLocales(): List<AppLocaleOption>
+
+    fun setLocale(localeTag: String?)
 }

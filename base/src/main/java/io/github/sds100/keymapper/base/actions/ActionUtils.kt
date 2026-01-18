@@ -45,6 +45,7 @@ import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Nfc
+import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material.icons.outlined.NotStarted
 import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PhonelinkRing
@@ -148,6 +149,9 @@ object ActionUtils {
         ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.INCREASE_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DECREASE_BRIGHTNESS -> ActionCategory.DISPLAY
+        ActionId.TOGGLE_NIGHT_SHIFT -> ActionCategory.DISPLAY
+        ActionId.ENABLE_NIGHT_SHIFT -> ActionCategory.DISPLAY
+        ActionId.DISABLE_NIGHT_SHIFT -> ActionCategory.DISPLAY
         ActionId.SCREENSHOT -> ActionCategory.DISPLAY
         ActionId.TOGGLE_AUTO_ROTATE -> ActionCategory.INTERFACE
         ActionId.ENABLE_AUTO_ROTATE -> ActionCategory.INTERFACE
@@ -274,6 +278,12 @@ object ActionUtils {
         ActionId.INCREASE_BRIGHTNESS -> R.string.action_increase_brightness
 
         ActionId.DECREASE_BRIGHTNESS -> R.string.action_decrease_brightness
+
+        ActionId.TOGGLE_NIGHT_SHIFT -> R.string.action_toggle_night_shift
+
+        ActionId.ENABLE_NIGHT_SHIFT -> R.string.action_enable_night_shift
+
+        ActionId.DISABLE_NIGHT_SHIFT -> R.string.action_disable_night_shift
 
         ActionId.TOGGLE_AUTO_ROTATE -> R.string.action_toggle_auto_rotate
 
@@ -681,6 +691,11 @@ object ActionUtils {
         ActionId.DISABLE_HOTSPOT,
             -> Build.VERSION_CODES.R
 
+        ActionId.TOGGLE_NIGHT_SHIFT,
+        ActionId.ENABLE_NIGHT_SHIFT,
+        ActionId.DISABLE_NIGHT_SHIFT,
+            -> Build.VERSION_CODES.Q
+
         else -> Constants.MIN_API
     }
 
@@ -840,6 +855,11 @@ object ActionUtils {
             ActionId.DECREASE_BRIGHTNESS,
                 -> return listOf(Permission.WRITE_SETTINGS)
 
+            ActionId.TOGGLE_NIGHT_SHIFT,
+            ActionId.ENABLE_NIGHT_SHIFT,
+            ActionId.DISABLE_NIGHT_SHIFT,
+                -> return listOf(Permission.WRITE_SECURE_SETTINGS)
+
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.DISABLE_FLASHLIGHT,
@@ -935,6 +955,9 @@ object ActionUtils {
         ActionId.ENABLE_AUTO_BRIGHTNESS -> Icons.Outlined.BrightnessAuto
         ActionId.INCREASE_BRIGHTNESS -> Icons.Outlined.BrightnessHigh
         ActionId.DECREASE_BRIGHTNESS -> Icons.Outlined.BrightnessLow
+        ActionId.TOGGLE_NIGHT_SHIFT -> Icons.Outlined.Nightlight
+        ActionId.ENABLE_NIGHT_SHIFT -> Icons.Outlined.Nightlight
+        ActionId.DISABLE_NIGHT_SHIFT -> Icons.Outlined.Nightlight
         ActionId.TOGGLE_AUTO_ROTATE -> Icons.Outlined.ScreenRotation
         ActionId.ENABLE_AUTO_ROTATE -> Icons.Outlined.ScreenRotation
         ActionId.DISABLE_AUTO_ROTATE -> Icons.Outlined.ScreenLockRotation
@@ -1060,7 +1083,7 @@ fun ActionData.canBeHeldDown(): Boolean = when (this) {
 
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
-    is ActionData.Text -> true
+    is ActionData.Text -> Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
     else -> false
 }
 

@@ -4,7 +4,7 @@ min-sdk = "26"
 build-tools = "36.1.0"
 target-sdk = "36"
 
-android-gradle-plugin = "8.9.1"
+android-gradle-plugin = "8.13.2"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"

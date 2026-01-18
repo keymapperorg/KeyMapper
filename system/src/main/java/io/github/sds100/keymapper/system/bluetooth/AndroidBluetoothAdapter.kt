@@ -77,7 +77,7 @@ class AndroidBluetoothAdapter @Inject constructor(
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
 
-                    Timber.i("On Bluetooth device connected: $name")
+                    Timber.d("On Bluetooth device connected: $name")
 
                     onDeviceConnect.emit(
                         BluetoothDeviceInfo(
@@ -97,7 +97,7 @@ class AndroidBluetoothAdapter @Inject constructor(
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
 
-                    Timber.i("On Bluetooth device disconnected: $name")
+                    Timber.d("On Bluetooth device disconnected: $name")
 
                     onDeviceDisconnect.emit(
                         BluetoothDeviceInfo(
@@ -118,7 +118,7 @@ class AndroidBluetoothAdapter @Inject constructor(
                     val name = device.name ?: return@launch
                     val bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)
 
-                    Timber.i("On Bluetooth device bond state changed to $bondState: $name")
+                    Timber.d("On Bluetooth device bond state changed to $bondState: $name")
 
                     onDevicePairedChange.emit(
                         BluetoothDeviceInfo(

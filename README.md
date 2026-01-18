@@ -26,13 +26,13 @@ Key Mapper supports a huge variety of buttons and keys:
 - ALL your phone buttons (volume AND side key)
 - Game controllers (D-pad, ABXY, and most others)
 - Keyboards
+- Mouse buttons
 - Headsets and headphones
 - Fingerprint sensor
 
 Most devices are already supported, with new devices being added over time. Let us know if it's not working for you and we can prioritize your device.
 
 Not currently supported:
- - Mouse buttons
  - Joysticks and triggers (LT,RT) on gamepads
 
 Not enough keys? Design your own on-screen button layouts and remap those just like real keys!

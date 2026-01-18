@@ -47,7 +47,7 @@ class PerformKeyEventActionDelegate(
             return injectEvdevEvent(inputEventAction, triggerDevice.deviceId, action)
         }
 
-        val deviceId: Int = getDeviceIdForKeyEventAction(action)
+        val deviceId: Int = getAndroidDeviceIdForKeyEventAction(triggerDevice, action)
 
         // If the device that the user specified in the action can not be found
         // then fallback to evdev injection.
@@ -157,7 +157,10 @@ class PerformKeyEventActionDelegate(
         }
     }
 
-    private fun getDeviceIdForKeyEventAction(action: ActionData.InputKeyEvent): Int {
+    private fun getAndroidDeviceIdForKeyEventAction(
+        triggerDevice: PerformActionTriggerDevice,
+        action: ActionData.InputKeyEvent,
+    ): Int {
         if (action.device?.descriptor == null) {
             // automatically select a game controller as the input device for game controller key events
 
@@ -171,7 +174,10 @@ class PerformKeyEventActionDelegate(
                 }
             }
 
-            return 0
+            return when (triggerDevice) {
+                is PerformActionTriggerDevice.AndroidDevice -> triggerDevice.deviceId
+                else -> 0
+            }
         }
 
         val inputDevices = devicesAdapter.connectedInputDevices.value
