@@ -55,14 +55,16 @@ class SwitchImeAsyncImpl @Inject constructor(
     }
 
     private fun enableImeWithoutUserInput(imeId: String): KMResult<Unit> {
-        return inputMethodAdapter.getInfoByPackageName(buildConfigProvider.packageName)
-            .then { keyMapperImeInfo ->
+        return inputMethodAdapter.getInfoById(imeId)
+            .then { imeInfo ->
+                // The accessibility service can only enable IMEs that have the same
+                // package name as the accessibility service.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                    imeId == keyMapperImeInfo.id
+                    imeInfo.packageName == buildConfigProvider.packageName
                 ) {
                     serviceAdapter.sendAsync(
                         AccessibilityServiceEvent.EnableInputMethod(
-                            keyMapperImeInfo.id,
+                            imeInfo.id,
                         ),
                     )
                 } else {

@@ -212,7 +212,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
 
-            KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
+            KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethod()
 
             is ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
 
@@ -224,7 +224,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             is KMError.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
-                    keyMapperImeHelper.enableCompatibleInputMethods()
+                    keyMapperImeHelper.enableCompatibleInputMethod()
                 }
 
                 // wait for compatible ime to be enabled then choose it.
@@ -244,7 +244,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                 if (keyMapperImeHelper.isCompatibleImeEnabled()) {
                     keyMapperImeHelper.chooseCompatibleInputMethod()
                 } else {
-                    keyMapperImeHelper.enableCompatibleInputMethods()
+                    keyMapperImeHelper.enableCompatibleInputMethod()
                 }
             }
 

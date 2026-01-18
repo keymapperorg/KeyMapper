@@ -102,7 +102,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         get() = devicesAdapter.connectedInputDevices
 
     override suspend fun enableCompatibleIme() {
-        imeHelper.enableCompatibleInputMethods()
+        imeHelper.enableCompatibleInputMethod()
     }
 
     override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> =
