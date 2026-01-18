@@ -986,6 +986,12 @@ class CreateActionDelegate(
 
             ActionId.DECREASE_BRIGHTNESS -> return ActionData.Brightness.Decrease
 
+            ActionId.TOGGLE_NIGHT_SHIFT -> return ActionData.NightShift.Toggle
+
+            ActionId.ENABLE_NIGHT_SHIFT -> return ActionData.NightShift.Enable
+
+            ActionId.DISABLE_NIGHT_SHIFT -> return ActionData.NightShift.Disable
+
             ActionId.TOGGLE_AUTO_ROTATE -> return ActionData.Rotation.ToggleAuto
 
             ActionId.ENABLE_AUTO_ROTATE -> return ActionData.Rotation.EnableAuto

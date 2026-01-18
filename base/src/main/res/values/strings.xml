@@ -961,6 +961,9 @@
     <string name="action_enable_auto_brightness">Enable auto brightness</string>
     <string name="action_increase_brightness">Increase display brightness</string>
     <string name="action_decrease_brightness">Decrease display brightness</string>
+    <string name="action_toggle_night_shift">Toggle night shift</string>
+    <string name="action_enable_night_shift">Enable night shift</string>
+    <string name="action_disable_night_shift">Disable night shift</string>
 
     <string name="action_expand_notification_drawer">Expand notification drawer</string>
     <string name="action_toggle_notification_drawer">Toggle notification drawer</string>
