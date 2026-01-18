@@ -1437,6 +1437,7 @@
     <string name="floating_button_config_empty_text_error">The button must have text!</string>
     <string name="floating_button_config_show_over_status_bar">Show over notification panel</string>
     <string name="floating_button_config_show_over_input_method">Show over keyboard</string>
+    <string name="floating_button_config_lock_position">Lock in position</string>
     <string name="floating_buttons_product_title">Floating buttons</string>
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>

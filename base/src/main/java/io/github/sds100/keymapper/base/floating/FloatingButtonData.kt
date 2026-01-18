@@ -18,6 +18,7 @@ data class FloatingButtonData(
     val location: Location,
     val showOverStatusBar: Boolean,
     val showOverInputMethod: Boolean,
+    val isPositionLocked: Boolean,
 ) {
     /**
      * This stores data about where a draggable overlay is located. It needs extra information
@@ -83,6 +84,8 @@ object FloatingButtonEntityMapper {
             ),
             showOverStatusBar = entity.showOverStatusBar ?: false,
             showOverInputMethod = entity.showOverInputMethod ?: false,
+            // Should be locked by default.
+            isPositionLocked = entity.isPositionLocked ?: true,
         )
     }
 
@@ -101,6 +104,7 @@ object FloatingButtonEntityMapper {
             displayHeight = button.location.displaySize.height,
             showOverStatusBar = button.showOverStatusBar,
             showOverInputMethod = button.showOverInputMethod,
+            isPositionLocked = button.isPositionLocked,
         )
     }
 }

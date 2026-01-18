@@ -34,6 +34,7 @@ import io.github.sds100.keymapper.data.migration.AutoMigration16To17
 import io.github.sds100.keymapper.data.migration.AutoMigration18To19
 import io.github.sds100.keymapper.data.migration.AutoMigration19To20
 import io.github.sds100.keymapper.data.migration.AutoMigration20To21
+import io.github.sds100.keymapper.data.migration.AutoMigration21To22
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -67,6 +68,8 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 19, to = 20, spec = AutoMigration19To20::class),
         // Adds floating button settings to show over status bar, and show over input method
         AutoMigration(from = 20, to = 21, spec = AutoMigration20To21::class),
+        // Adds floating button option to lock in position
+        AutoMigration(from = 21, to = 22, spec = AutoMigration21To22::class),
     ],
 )
 @TypeConverters(
@@ -79,7 +82,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 21
+        const val DATABASE_VERSION = 22
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 

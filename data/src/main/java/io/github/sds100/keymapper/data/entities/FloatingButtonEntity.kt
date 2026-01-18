@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DI
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_DISPLAY_WIDTH
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_LAYOUT_UID
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_ORIENTATION
+import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_POSITION_LOCKED
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_SHOW_OVER_INPUT_METHOD
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_SHOW_OVER_STATUS_BAR
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao.Companion.KEY_TEXT
@@ -93,6 +94,10 @@ data class FloatingButtonEntity(
     @SerializedName(NAME_SHOW_OVER_INPUT_METHOD)
     val showOverInputMethod: Boolean?,
 
+    @ColumnInfo(name = KEY_POSITION_LOCKED)
+    @SerializedName(KEY_POSITION_LOCKED)
+    val isPositionLocked: Boolean?,
+
 ) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -109,6 +114,7 @@ data class FloatingButtonEntity(
         const val NAME_BACKGROUND_OPACITY = "background_opacity"
         const val NAME_SHOW_OVER_STATUS_BAR = "show_over_status_bar"
         const val NAME_SHOW_OVER_INPUT_METHOD = "show_over_input_method"
+        const val NAME_POSITION_LOCKED = "position_locked"
 
         val DESERIALIZER = jsonDeserializer {
             val uid by it.json.byString(NAME_UID)
@@ -124,6 +130,7 @@ data class FloatingButtonEntity(
             val backgroundOpacity by it.json.byNullableFloat(NAME_BACKGROUND_OPACITY)
             val showOverStatusBar by it.json.byNullableBool(NAME_SHOW_OVER_STATUS_BAR)
             val showOverInputMethod by it.json.byNullableBool(NAME_SHOW_OVER_INPUT_METHOD)
+            val isPositionLocked by it.json.byNullableBool(NAME_POSITION_LOCKED)
 
             FloatingButtonEntity(
                 uid = uid,
@@ -139,6 +146,7 @@ data class FloatingButtonEntity(
                 backgroundOpacity = backgroundOpacity,
                 showOverStatusBar = showOverStatusBar,
                 showOverInputMethod = showOverInputMethod,
+                isPositionLocked = isPositionLocked,
             )
         }
     }
