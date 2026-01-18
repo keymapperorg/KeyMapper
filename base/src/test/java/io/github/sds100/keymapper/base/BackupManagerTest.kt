@@ -306,6 +306,7 @@ class BackupManagerTest {
                         backgroundOpacity = null,
                         showOverStatusBar = false,
                         showOverInputMethod = false,
+                        isPositionLocked = true,
                     ),
                 ),
             )

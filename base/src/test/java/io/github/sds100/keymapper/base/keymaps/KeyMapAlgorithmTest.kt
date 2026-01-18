@@ -604,7 +604,10 @@ class KeyMapAlgorithmTest {
                 scanCode = Scancode.KEY_B,
             )
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(1),
+            )
         }
 
     @Test
@@ -634,7 +637,10 @@ class KeyMapAlgorithmTest {
                 scanCode = Scancode.KEY_B,
             )
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(1),
+            )
         }
 
     @Test
@@ -853,7 +859,10 @@ class KeyMapAlgorithmTest {
 
             mockTriggerKeyInput(trigger.keys[0])
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -1221,8 +1230,14 @@ class KeyMapAlgorithmTest {
             advanceTimeBy(SEQUENCE_TRIGGER_TIMEOUT)
 
             // THEN
-            verify(performActionsUseCase, never()).perform(copyAction.data)
-            verify(performActionsUseCase, times(1)).perform(enterAction.data)
+            verify(performActionsUseCase, never()).perform(
+                copyAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, times(1)).perform(
+                enterAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -1273,16 +1288,31 @@ class KeyMapAlgorithmTest {
             inOrder(performActionsUseCase) {
                 // The single key trigger should not be executed straight away. Wait for
                 // the longer sequence trigger delay.
-                verify(performActionsUseCase, never()).perform(copyAction.data)
+                verify(performActionsUseCase, never()).perform(
+                    copyAction.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // It still shouldn't be executed after the first sequence trigger delay.
                 advanceTimeBy(500)
-                verify(performActionsUseCase, never()).perform(copyAction.data)
+                verify(performActionsUseCase, never()).perform(
+                    copyAction.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 advanceTimeBy(1000)
-                verify(performActionsUseCase, times(1)).perform(copyAction.data)
-                verify(performActionsUseCase, never()).perform(sequenceTriggerAction1.data)
-                verify(performActionsUseCase, never()).perform(sequenceTriggerAction2.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    copyAction.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    sequenceTriggerAction1.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    sequenceTriggerAction2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -1314,9 +1344,18 @@ class KeyMapAlgorithmTest {
             advanceTimeBy(SEQUENCE_TRIGGER_TIMEOUT)
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(copyAction.data)
-            verify(performActionsUseCase, never()).perform(pasteAction.data)
-            verify(performActionsUseCase, never()).perform(enterAction.data)
+            verify(performActionsUseCase, times(1)).perform(
+                copyAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                pasteAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                enterAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -1346,9 +1385,18 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(pasteTrigger.keys[0])
 
             // THEN
-            verify(performActionsUseCase, never()).perform(copyAction.data)
-            verify(performActionsUseCase, times(1)).perform(pasteAction.data)
-            verify(performActionsUseCase, never()).perform(enterAction.data)
+            verify(performActionsUseCase, never()).perform(
+                copyAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, times(1)).perform(
+                pasteAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                enterAction.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -1379,9 +1427,18 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(sequenceTrigger.keys[1])
 
             // THEN
-            verify(performActionsUseCase, never()).perform(copyAction.data)
-            verify(performActionsUseCase, never()).perform(pasteAction.data)
-            verify(performActionsUseCase, times(1)).perform(enterAction.data)
+            verify(
+                performActionsUseCase,
+                never(),
+            ).perform(copyAction.data, device = PerformActionTriggerDevice.AndroidDevice(0))
+            verify(
+                performActionsUseCase,
+                never(),
+            ).perform(pasteAction.data, device = PerformActionTriggerDevice.AndroidDevice(0))
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(enterAction.data, device = PerformActionTriggerDevice.AndroidDevice(0))
         }
 
     @Test
@@ -1407,11 +1464,19 @@ class KeyMapAlgorithmTest {
 
             inOrder(performActionsUseCase) {
                 inputMotionEvent(axisHatX = -1.0f)
-                verify(performActionsUseCase, times(1)).perform(action.data, InputEventAction.DOWN)
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.DOWN,
+                    device = PerformActionTriggerDevice.AndroidDevice(1),
+                )
 
                 delay(1000) // Hold down the DPAD button for 1 second.
                 inputMotionEvent(axisHatX = 0.0f)
-                verify(performActionsUseCase, times(1)).perform(action.data, InputEventAction.UP)
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.UP,
+                    device = PerformActionTriggerDevice.AndroidDevice(1),
+                )
             }
         }
 
@@ -1447,7 +1512,10 @@ class KeyMapAlgorithmTest {
             val consumeUp1 = controller.onMotionEvent(motionEvent)
             assertThat(consumeUp1, `is`(false))
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(1),
+            )
         }
 
     @Test
@@ -1477,7 +1545,10 @@ class KeyMapAlgorithmTest {
 
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(1),
+            )
         }
 
     @Test
@@ -1504,7 +1575,10 @@ class KeyMapAlgorithmTest {
 
         assertThat(consumeUp, `is`(true))
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.AndroidDevice(1),
+        )
     }
 
     @Test
@@ -1529,7 +1603,10 @@ class KeyMapAlgorithmTest {
 
         assertThat(consumeUp, `is`(true))
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.AndroidDevice(1),
+        )
     }
 
     /**
@@ -1576,7 +1653,10 @@ class KeyMapAlgorithmTest {
             val consumeUp =
                 inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_UP, repeatCount = 0)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             assertThat(consumeUp, `is`(true))
         }
@@ -1618,7 +1698,10 @@ class KeyMapAlgorithmTest {
 
         assertThat(consumeUp, `is`(true))
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.AndroidDevice(0),
+        )
     }
 
     /**
@@ -1660,8 +1743,14 @@ class KeyMapAlgorithmTest {
 
             mockTriggerKeyInput(shortPressTrigger.keys.first())
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -1703,8 +1792,14 @@ class KeyMapAlgorithmTest {
 
             mockTriggerKeyInput(shortPressTrigger.keys.first())
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -1740,8 +1835,14 @@ class KeyMapAlgorithmTest {
 
                 mockTriggerKeyInput(shorterTrigger.keys[0], 600L)
 
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
-                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     any(),
                     any(),
@@ -1755,8 +1856,14 @@ class KeyMapAlgorithmTest {
 
                 mockTriggerKeyInput(shorterTrigger.keys[0], 1000L)
 
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     any(),
                     any(),
@@ -1769,8 +1876,14 @@ class KeyMapAlgorithmTest {
                 // If no triggers are detected
                 mockTriggerKeyInput(shorterTrigger.keys[0], 100L)
 
-                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
-                verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, never()).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verify(detectKeyMapsUseCase, times(2)).imitateKeyEvent(
                     any(),
                     any(),
@@ -1876,7 +1989,10 @@ class KeyMapAlgorithmTest {
                 advanceUntilIdle()
 
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(keyMap1.actionList[0].data)
+                verify(performActionsUseCase, times(1)).perform(
+                    keyMap1.actionList[0].data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // WHEN
                 assertThat(
@@ -1891,8 +2007,14 @@ class KeyMapAlgorithmTest {
                 advanceUntilIdle()
 
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(keyMap1.actionList[0].data)
-                verify(performActionsUseCase, times(1)).perform(keyMap2.actionList[0].data)
+                verify(performActionsUseCase, times(1)).perform(
+                    keyMap1.actionList[0].data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, times(1)).perform(
+                    keyMap2.actionList[0].data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -1956,8 +2078,14 @@ class KeyMapAlgorithmTest {
         advanceUntilIdle()
 
         // THEN
-        verify(performActionsUseCase, times(1)).perform(actionList[0].data)
-        verify(performActionsUseCase, times(1)).perform(actionList[1].data)
+        verify(
+            performActionsUseCase,
+            times(1),
+        ).perform(actionList[0].data, device = PerformActionTriggerDevice.AndroidDevice(0))
+        verify(
+            performActionsUseCase,
+            times(1),
+        ).perform(actionList[1].data, device = PerformActionTriggerDevice.AndroidDevice(0))
     }
 
     /**
@@ -1990,7 +2118,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
             // 3 times because it performs once and then repeats twice
-            verify(performActionsUseCase, times(3)).perform(action.data)
+            verify(performActionsUseCase, times(3)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -2028,9 +2159,18 @@ class KeyMapAlgorithmTest {
             // THEN
 
             advanceUntilIdle()
-            verify(performActionsUseCase, times(1)).perform(action1.data)
-            verify(performActionsUseCase, times(1)).perform(action2.data)
-            verify(performActionsUseCase, times(1)).perform(action3.data)
+            verify(performActionsUseCase, times(1)).perform(
+                action1.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, times(1)).perform(
+                action2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, times(1)).perform(
+                action3.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -2061,8 +2201,14 @@ class KeyMapAlgorithmTest {
 
         // THEN
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.AndroidDevice(0),
+        )
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION_2.data,
+            device = PerformActionTriggerDevice.AndroidDevice(0),
+        )
     }
 
     /**
@@ -2091,7 +2237,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -2126,7 +2275,10 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(keyMap.trigger.keys[0])
 
             // THEN
-            verify(performActionsUseCase, times(4)).perform(action.data)
+            verify(performActionsUseCase, times(4)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -2160,7 +2312,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
             // performed an extra 2 times each time the trigger is pressed. This is the expected behaviour even for the option to repeat until pressed again.
-            verify(performActionsUseCase, times(action.repeatLimit!! + 2)).perform(action.data)
+            verify(performActionsUseCase, times(action.repeatLimit!! + 2)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -2190,7 +2345,10 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(keyMap.trigger.keys[0], delay = 300)
 
             // THEN
-            verify(performActionsUseCase, times(3)).perform(action.data)
+            verify(
+                performActionsUseCase,
+                times(3),
+            ).perform(action.data, device = PerformActionTriggerDevice.AndroidDevice(0))
         }
 
     /**
@@ -2220,7 +2378,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
 
-            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(action.data)
+            verify(performActionsUseCase, times(action.repeatLimit!! + 1)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -2270,8 +2431,14 @@ class KeyMapAlgorithmTest {
             )
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+            verify(performActionsUseCase, times(1)).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             // WHEN
 
@@ -2286,8 +2453,14 @@ class KeyMapAlgorithmTest {
             )
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+            verify(performActionsUseCase, times(1)).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
     }
 
@@ -2340,15 +2513,27 @@ class KeyMapAlgorithmTest {
             )
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+            verify(performActionsUseCase, times(1)).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             // WHEN
             mockParallelTrigger(keyMaps[0].trigger)
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+            verify(performActionsUseCase, times(1)).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
     }
 
@@ -2421,8 +2606,20 @@ class KeyMapAlgorithmTest {
             )
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(
+                performActionsUseCase,
+                never(),
+            ).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             // WHEN
             inputKeyEvent(
@@ -2449,8 +2646,20 @@ class KeyMapAlgorithmTest {
             )
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(
+                keyMaps[1].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(
+                performActionsUseCase,
+                never(),
+            ).perform(
+                keyMaps[0].actionList[0].data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
     }
 
@@ -2511,7 +2720,10 @@ class KeyMapAlgorithmTest {
                     keyCode = 2,
                     action = KeyEvent.ACTION_UP,
                 )
-                verify(performActionsUseCase, never()).perform(action = TEST_ACTION.data)
+                verify(performActionsUseCase, never()).perform(
+                    action = TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // verify the action is performed and no keys are imitated when triggering the key map
                 // WHEN
@@ -2521,7 +2733,10 @@ class KeyMapAlgorithmTest {
                 assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(true))
 
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // change the order of the keys being released
                 // WHEN
@@ -2531,7 +2746,10 @@ class KeyMapAlgorithmTest {
                 assertThat(inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP), `is`(true))
 
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -2612,7 +2830,10 @@ class KeyMapAlgorithmTest {
             controller.reset()
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(action.data)
+            verify(performActionsUseCase, times(1)).perform(
+                action.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     /**
@@ -2654,14 +2875,20 @@ class KeyMapAlgorithmTest {
                 delay(2000) // let it try to repeat
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action1.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    action1.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verifyNoMoreInteractions()
 
                 // when long press
                 mockParallelTrigger(trigger2, delay = 2000) // let it repeat
 
                 // then
-                verify(performActionsUseCase, atLeast(2)).perform(action2.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -2701,14 +2928,20 @@ class KeyMapAlgorithmTest {
                 delay(2000) // let it repeat
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action1.data)
+                verify(
+                    performActionsUseCase,
+                    times(1),
+                ).perform(action1.data, device = PerformActionTriggerDevice.AndroidDevice(0))
                 verifyNoMoreInteractions()
 
                 // when double press
                 mockTriggerKeyInput(trigger2.keys[0])
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action2.data)
+                verify(
+                    performActionsUseCase,
+                    times(1),
+                ).perform(action2.data, device = PerformActionTriggerDevice.AndroidDevice(0))
             }
         }
 
@@ -2758,20 +2991,29 @@ class KeyMapAlgorithmTest {
                 advanceUntilIdle()
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action1.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    action1.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verifyNoMoreInteractions()
 
                 // when long press
                 mockParallelTrigger(trigger2, delay = 2000) // let it repeat
 
                 // then
-                verify(performActionsUseCase, atLeast(2)).perform(action2.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // when double press
                 mockTriggerKeyInput(trigger3.keys[0])
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action3.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    action3.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -2814,14 +3056,20 @@ class KeyMapAlgorithmTest {
                 // then
                 mockParallelTrigger(trigger1) // press the key again to stop it repeating
 
-                verify(performActionsUseCase, atLeast(2)).perform(action1.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action1.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verifyNoMoreInteractions()
 
                 // when long press
                 mockParallelTrigger(trigger2, delay = 2000) // let it repeat
 
                 // then
-                verify(performActionsUseCase, atLeast(2)).perform(action2.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -2866,7 +3114,10 @@ class KeyMapAlgorithmTest {
                 mockParallelTrigger(trigger1) // press the key again to stop it repeating
                 advanceUntilIdle()
 
-                verify(performActionsUseCase, atLeast(2)).perform(action1.data)
+                verify(
+                    performActionsUseCase,
+                    atLeast(2),
+                ).perform(action1.data, device = PerformActionTriggerDevice.AndroidDevice(0))
                 verifyNoMoreInteractions()
 
                 // when double press
@@ -2874,7 +3125,10 @@ class KeyMapAlgorithmTest {
                 advanceUntilIdle()
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action2.data)
+                verify(
+                    performActionsUseCase,
+                    times(1),
+                ).perform(action2.data, device = PerformActionTriggerDevice.AndroidDevice(0))
             }
         }
 
@@ -2929,14 +3183,20 @@ class KeyMapAlgorithmTest {
                 mockParallelTrigger(trigger1) // press the key again to stop it repeating
                 advanceUntilIdle()
 
-                verify(performActionsUseCase, atLeast(2)).perform(action1.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action1.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verifyNoMoreInteractions()
 
                 // when long press
                 mockParallelTrigger(trigger2, delay = 2000) // let it repeat
 
                 // then
-                verify(performActionsUseCase, atLeast(2)).perform(action2.data)
+                verify(performActionsUseCase, atLeast(2)).perform(
+                    action2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // have a delay after a long press of the key is released so a double press isn't detected
                 delay(1000)
@@ -2945,7 +3205,10 @@ class KeyMapAlgorithmTest {
                 mockTriggerKeyInput(trigger3.keys[0])
 
                 // then
-                verify(performActionsUseCase, times(1)).perform(action3.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    action3.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
                 verifyNoMoreInteractions()
             }
         }
@@ -2972,7 +3235,10 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A))
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS))
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(TEST_ACTION.data, device = PerformActionTriggerDevice.AndroidDevice(0))
         }
 
     /**
@@ -3041,6 +3307,7 @@ class KeyMapAlgorithmTest {
                 action.data,
                 InputEventAction.DOWN,
                 metaState,
+                device = PerformActionTriggerDevice.AndroidDevice(123),
             )
 
             verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
@@ -3055,6 +3322,7 @@ class KeyMapAlgorithmTest {
                 action.data,
                 InputEventAction.UP,
                 0,
+                device = PerformActionTriggerDevice.AndroidDevice(123),
             )
 
             verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
@@ -3110,6 +3378,7 @@ class KeyMapAlgorithmTest {
                 action.data,
                 InputEventAction.DOWN,
                 metaState,
+                device = PerformActionTriggerDevice.AndroidDevice(123),
             )
 
             verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
@@ -3132,6 +3401,7 @@ class KeyMapAlgorithmTest {
                 action.data,
                 InputEventAction.UP,
                 0,
+                device = PerformActionTriggerDevice.AndroidDevice(123),
             )
 
             verifyNoMoreInteractions()
@@ -3165,8 +3435,14 @@ class KeyMapAlgorithmTest {
                 inputKeyEvent(KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.ACTION_UP)
                 inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP)
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-                verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
 
                 // test 2. test triggering 1 key trigger
                 // WHEN
@@ -3176,8 +3452,14 @@ class KeyMapAlgorithmTest {
                 advanceUntilIdle()
 
                 // THEN
-                verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
-                verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+                verify(performActionsUseCase, times(1)).perform(
+                    TEST_ACTION_2.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
+                verify(performActionsUseCase, never()).perform(
+                    TEST_ACTION.data,
+                    device = PerformActionTriggerDevice.AndroidDevice(0),
+                )
             }
         }
 
@@ -3205,7 +3487,10 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_TRIGGER_KEY_DEVICE))
 
             // THEN
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -3255,6 +3540,7 @@ class KeyMapAlgorithmTest {
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
                 InputEventAction.DOWN,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
             )
 
             // WHEN
@@ -3263,6 +3549,7 @@ class KeyMapAlgorithmTest {
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
                 InputEventAction.UP,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
             )
         }
 
@@ -3295,23 +3582,23 @@ class KeyMapAlgorithmTest {
                 KeyEvent.KEYCODE_SHIFT_LEFT,
                 KeyEvent.ACTION_DOWN,
                 metaState =
-                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON +
-                    KeyEvent.META_SHIFT_ON,
+                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON +
+                    KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON,
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_C,
                 KeyEvent.ACTION_DOWN,
                 metaState =
-                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON +
-                    KeyEvent.META_SHIFT_ON,
+                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON +
+                    KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON,
             )
 
             inputKeyEvent(
                 KeyEvent.KEYCODE_CTRL_LEFT,
                 KeyEvent.ACTION_UP,
                 metaState =
-                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON + KeyEvent.META_SHIFT_LEFT_ON +
-                    KeyEvent.META_SHIFT_ON,
+                KeyEvent.META_CTRL_LEFT_ON + KeyEvent.META_CTRL_ON +
+                    KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON,
             )
             inputKeyEvent(
                 KeyEvent.KEYCODE_SHIFT_LEFT,
@@ -3380,7 +3667,10 @@ class KeyMapAlgorithmTest {
             )
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_VOLUME_UP))
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -3463,7 +3753,10 @@ class KeyMapAlgorithmTest {
 
             // then
             // the first action performed shouldn't be the short press action
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             /*
             rerun the test to see if the short press trigger action is performed correctly.
@@ -3474,7 +3767,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // then
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -3501,7 +3797,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
             // the first action performed shouldn't be the short press action
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(TEST_ACTION_2.data, device = PerformActionTriggerDevice.AndroidDevice(0))
 
             // WHEN
             // rerun the test to see if the short press trigger action is performed correctly.
@@ -3509,7 +3808,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
             // the first action performed shouldn't be the short press action
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(TEST_ACTION.data, device = PerformActionTriggerDevice.AndroidDevice(0))
         }
 
     @Test
@@ -3530,7 +3832,10 @@ class KeyMapAlgorithmTest {
                 TriggerMode.Sequence -> {}
             }
 
-            verify(performActionsUseCase, atLeast(10)).perform(action.data)
+            verify(
+                performActionsUseCase,
+                atLeast(10),
+            ).perform(action.data, device = PerformActionTriggerDevice.AndroidDevice(0))
         }
 
     fun params_repeatAction() = listOf(
@@ -3742,8 +4047,14 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
             // then
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-            verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
+            verify(performActionsUseCase, never()).perform(
+                TEST_ACTION_2.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 any(),
                 any(),
@@ -3774,7 +4085,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // then
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
 
             // wait for the double press to try and imitate the key.
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
@@ -3814,7 +4128,10 @@ class KeyMapAlgorithmTest {
                 any(),
                 any(),
             )
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.AndroidDevice(0),
+            )
         }
 
     @Test
@@ -3864,7 +4181,10 @@ class KeyMapAlgorithmTest {
 
             // THEN
             actionList.forEach { action ->
-                verify(performActionsUseCase, times(1)).perform(action.data)
+                verify(
+                    performActionsUseCase,
+                    times(1),
+                ).perform(action.data, device = PerformActionTriggerDevice.AndroidDevice(0))
             }
         }
 
@@ -4748,7 +5068,10 @@ class KeyMapAlgorithmTest {
         }
 
         // THEN
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(
+            performActionsUseCase,
+            times(1),
+        ).perform(TEST_ACTION.data, device = PerformActionTriggerDevice.AndroidDevice(0))
     }
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
