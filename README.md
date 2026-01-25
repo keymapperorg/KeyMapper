@@ -55,9 +55,9 @@ CONSTRAINTS: You choose when key maps should run and when they shouldn't. Only n
 
 ## Links
 
-Come say hi in our [Discord community!](http://keymapper.club)
+Come say hi in our [Discord community!](http://keymapper.app/discord)
 
-Read the [documentation!](https://docs.keymapper.club/?utm_source=github)
+Read the [documentation!](https://keymapper.app/?utm_source=github)
 
 ## Translations
 
@@ -74,4 +74,4 @@ Read the [documentation!](https://docs.keymapper.club/?utm_source=github)
 [![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://www.star-history.com/#keymapperorg/KeyMapper&Date)
 ## Contributing
 There are many ways to help with this project. 😃
-Check out the contributing guide in the [documentation.](https://docs.keymapper.club/contributing/introduction/?utm_source=github)
+Check out the contributing guide in the [documentation.](https://keymapper.app/contributing/introduction/?utm_source=github)
