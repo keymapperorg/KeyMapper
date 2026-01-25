@@ -9,6 +9,7 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Modify any system setting
 • Show a custom notification
 • Toggle hotspot
+• Toggle night shift
 
 🆕 New Features
 • Redesigned Settings screen
@@ -17,13 +18,13 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Select notification and alarm sounds for Sound action
 • Constraints for keyboard is showing
 • Switch next to record trigger button to use PRO mode
-• Make floating buttons movable and completely invisible
-• Action to toggle night shift
+
 
 ⚙️ Enhanced Controls
 • Enable or disable all key maps in a group at once
 • Intent API to enable, disable, or toggle individual key maps
 • Floating buttons can now appear on top of keyboard or in notification panel
+• Make floating buttons movable and completely invisible
 
 🔧 Improvements
 • Auto-switching keyboard more reliable and quicker on Android 13+
