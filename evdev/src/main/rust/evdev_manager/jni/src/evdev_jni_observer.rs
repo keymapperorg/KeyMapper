@@ -59,6 +59,8 @@ impl EvdevJniObserver {
                 // Button up - check if held for 10+ seconds
                 let down_time = *time_guard;
                 if down_time > 0 && time_sec - down_time >= 10 {
+                    // Must send log to Key Mapper for diagnostic purposes.
+                    warn!("Emergency killing system bridge!");
                     // Call BaseSystemBridge.onEmergencyKillSystemBridge() via JNI
                     if let Ok(mut env) = self.jvm.attach_current_thread() {
                         let _ = env.call_method(
