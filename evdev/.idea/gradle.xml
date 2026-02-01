@@ -6,6 +6,20 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/.." />
+            <option value="$PROJECT_DIR$/../api" />
+            <option value="$PROJECT_DIR$/../app" />
+            <option value="$PROJECT_DIR$/../base" />
+            <option value="$PROJECT_DIR$/../common" />
+            <option value="$PROJECT_DIR$/../data" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../sysbridge" />
+            <option value="$PROJECT_DIR$/../system" />
+            <option value="$PROJECT_DIR$/../systemstubs" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
