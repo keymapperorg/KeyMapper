@@ -362,6 +362,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 R.string.error_variable_flashlight_strength_unsupported,
             )
 
+        KMError.NightDisplayNotSupported ->
+            resourceProvider.getString(R.string.error_night_display_not_supported)
+
         is KMError.FailedToModifySystemSetting ->
             resourceProvider.getString(
                 R.string.error_failed_to_modify_system_setting,

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.os.Build
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.SystemError
@@ -53,6 +54,18 @@ class IsActionSupportedUseCaseImpl(
                 cameraAdapter.getFlashInfo(CameraLens.FRONT)?.supportsVariableStrength != true
             ) {
                 return KMError.CameraVariableFlashlightStrengthUnsupported
+            }
+        }
+
+        if (id == ActionId.TOGGLE_NIGHT_SHIFT ||
+            id == ActionId.ENABLE_NIGHT_SHIFT ||
+            id == ActionId.DISABLE_NIGHT_SHIFT
+        ) {
+            // See https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/core/java/android/hardware/display/ColorDisplayManager.java;l=498;drc=787314ed22d859e510163327dd6c58b215c2f7f9
+            val res = Resources.getSystem()
+            val resId = res.getIdentifier("config_nightDisplayAvailable", "bool", "android")
+            if (resId == 0 || !res.getBoolean(resId)) {
+                return KMError.NightDisplayNotSupported
             }
         }
 

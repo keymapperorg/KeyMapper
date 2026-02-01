@@ -6,7 +6,8 @@
 - #2007 Volume up/down action bottom sheet is cut off on some devices.
 - #2004 Do not crash when launching wireless debugging screen on some devices.
 - #2005 NPE in onSaveInstanceState.
-- #2000 tell the user to tap OS version or build number
+- #2000 tell the user to tap OS version or build number.
+- #1996 Check if Night Shift is supported on a device before activating to prevent the screen going black when activated.
 
 ## [4.0.0](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0)
 

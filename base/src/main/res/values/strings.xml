@@ -817,6 +817,7 @@
     <string name="error_front_flash_not_found">No front flash</string>
     <string name="error_back_flash_not_found">No back flash</string>
     <string name="error_variable_flashlight_strength_unsupported">Variable flashlight strength unsupported</string>
+    <string name="error_night_display_not_supported">Your device doesn\'t support night display.</string>
 
     <string name="error_accessibility_service_disabled">Accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_crashed">The accessibility service needs to be restarted!</string>
