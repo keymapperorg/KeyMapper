@@ -1754,7 +1754,7 @@
     <string name="expert_mode_setup_wizard_complete_button">Finish</string>
 
     <string name="expert_mode_setup_notification_tap_build_number_title">Enable developer options</string>
-    <string name="expert_mode_setup_notification_tap_build_number_text">Tap build number repeatedly</string>
+    <string name="expert_mode_setup_notification_tap_build_number_text">Tap build number or OS version repeatedly</string>
 
     <string name="expert_mode_setup_notification_pairing_title">Pairing automatically</string>
     <string name="expert_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>
