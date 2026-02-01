@@ -186,13 +186,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.launchDeveloperOptions()
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    override val isAdbInputSecurityEnabled: Flow<Boolean?> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            systemBridgeSetupController.isAdbInputSecurityEnabled
-        } else {
-            flowOf(null)
-        }
+    override val shellHasGrantRuntimePermissions: Flow<Boolean> =
+        systemBridgeSetupController.shellHasGrantRuntimePermissions
 
     override fun connectWifiNetwork() {
         networkAdapter.connectWifiNetwork()
@@ -355,7 +350,7 @@ interface SystemBridgeSetupUseCase {
     fun startSystemBridgeWithAdb()
     fun autoStartSystemBridgeWithAdb()
 
-    val isAdbInputSecurityEnabled: Flow<Boolean?>
+    val shellHasGrantRuntimePermissions: Flow<Boolean>
 
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
 

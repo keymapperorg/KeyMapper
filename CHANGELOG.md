@@ -8,6 +8,7 @@
 - #2005 NPE in onSaveInstanceState.
 - #2000 tell the user to tap OS version or build number.
 - #1996 Check if Night Shift is supported on a device before activating to prevent the screen going black when activated.
+- #1999 Use a more reliable method to check whether Shell has GRANT_RUNTIME_PERMISSIONS permission.
 
 ## [4.0.0](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0)
 
