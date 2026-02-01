@@ -369,6 +369,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         try {
             ctx.startActivity(quickSettingsIntent)
             return true
+        } catch (_: SecurityException) {
+            highlightDeveloperOptionsWirelessDebuggingOption()
+
+            return false
         } catch (_: ActivityNotFoundException) {
             highlightDeveloperOptionsWirelessDebuggingOption()
 

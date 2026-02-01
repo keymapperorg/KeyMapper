@@ -3,7 +3,8 @@
 #### TO BE RELEASED
 
 ## Fixed
-- #2007 Volume up/down action bottom sheet is cut off on some devices
+- #2007 Volume up/down action bottom sheet is cut off on some devices.
+- #2004 Do not crash when launching wireless debugging screen on some devices.
 
 ## [4.0.0](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0)
 
