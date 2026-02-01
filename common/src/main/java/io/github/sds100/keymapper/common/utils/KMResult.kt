@@ -53,6 +53,7 @@ abstract class KMError : KMResult<Nothing>() {
     data object MaxCamerasInUse : KMError()
     data object CameraError : KMError()
     data object CameraVariableFlashlightStrengthUnsupported : KMError()
+    data object NightDisplayNotSupported : KMError()
 
     data class FailedToModifySystemSetting(val setting: String) : KMError()
     data object SwitchImeFailed : KMError()

@@ -817,6 +817,7 @@
     <string name="error_front_flash_not_found">No front flash</string>
     <string name="error_back_flash_not_found">No back flash</string>
     <string name="error_variable_flashlight_strength_unsupported">Variable flashlight strength unsupported</string>
+    <string name="error_night_display_not_supported">Your device doesn\'t support night display.</string>
 
     <string name="error_accessibility_service_disabled">Accessibility service needs to be enabled!</string>
     <string name="error_accessibility_service_crashed">The accessibility service needs to be restarted!</string>
@@ -1754,7 +1755,7 @@
     <string name="expert_mode_setup_wizard_complete_button">Finish</string>
 
     <string name="expert_mode_setup_notification_tap_build_number_title">Enable developer options</string>
-    <string name="expert_mode_setup_notification_tap_build_number_text">Tap build number repeatedly</string>
+    <string name="expert_mode_setup_notification_tap_build_number_text">Tap build number or OS version repeatedly</string>
 
     <string name="expert_mode_setup_notification_pairing_title">Pairing automatically</string>
     <string name="expert_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>

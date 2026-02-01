@@ -162,45 +162,45 @@ private fun VolumeActionBottomSheet(
                 isChecked = state.showVolumeUi,
                 onCheckedChange = onToggleShowVolumeUi,
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
-                    }
-                },
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.neg_cancel))
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.neg_cancel))
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onDoneClick,
+                ) {
+                    Text(stringResource(R.string.pos_done))
+                }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick = onDoneClick,
-            ) {
-                Text(stringResource(R.string.pos_done))
-            }
+            Spacer(Modifier.height(16.dp))
         }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(heightDp = 400)
 @Composable
 private fun PreviewVolumeActionBottomSheet() {
     KeyMapperTheme {

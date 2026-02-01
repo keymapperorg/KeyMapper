@@ -60,7 +60,7 @@ class MainFragment : Fragment() {
 
     private lateinit var composeView: ComposeView
 
-    private lateinit var navController: NavHostController
+    private var navController: NavHostController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +98,7 @@ class MainFragment : Fragment() {
             // is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                SetupNavigation(navigationProvider, navController)
+                SetupNavigation(navigationProvider, navController!!)
 
                 KeyMapperTheme {
                     BaseMainNavHost(
@@ -111,10 +111,10 @@ class MainFragment : Fragment() {
                                         ),
                                     ),
                             ),
-                        navController = navController,
+                        navController = navController!!,
                         setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
                         composableDestinations = {
-                            composableDestinations(navController)
+                            composableDestinations(navController!!)
                         },
                     )
                 }
@@ -123,7 +123,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        navController.saveState()?.let(outState::putAll)
+        navController?.saveState()?.let(outState::putAll)
 
         super.onSaveInstanceState(outState)
     }
@@ -131,7 +131,7 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         // onSaveInstanceState is only called when the activity's onSaveInstanceState method
         // is called so use our own place to save the navigation state
-        navigationProvider.savedState = navController.saveState()
+        navigationProvider.savedState = navController?.saveState()
 
         super.onDestroyView()
     }

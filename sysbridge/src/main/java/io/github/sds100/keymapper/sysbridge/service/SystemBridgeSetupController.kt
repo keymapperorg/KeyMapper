@@ -19,15 +19,12 @@ import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
-import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState.Connected
 import io.github.sds100.keymapper.sysbridge.manager.awaitConnected
-import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -81,8 +78,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private val isAdbPairedResult: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     private var isAdbPairedJob: Job? = null
 
-    override val isAdbInputSecurityEnabled: MutableStateFlow<Boolean?> = MutableStateFlow(null)
-    private var checkAdbInputSecurityJob: Job? = null
+    override val shellHasGrantRuntimePermissions: MutableStateFlow<Boolean> =
+        MutableStateFlow(getShellHasGrantRuntimePermissions())
 
     init {
         // Automatically go back to the Key Mapper app when turning on wireless debugging
@@ -94,7 +91,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 // Do not automatically go back to Key Mapper after this step because
                 // some devices show a dialog that will be auto dismissed resulting in wireless
                 // ADB being immediately disabled. E.g OnePlus 6T Oxygen OS 11
-                // Note: ADB input security check is handled by monitoring isWirelessDebuggingEnabled flow
             }
         }
 
@@ -107,27 +103,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                     setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS
                 ) {
                     getKeyMapperAppTask()?.moveToFront()
-                }
-            }
-        }
-
-        // Automatically check ADB input security when SystemBridge is connected
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            coroutineScope.launch {
-                // Check when SystemBridge becomes connected
-                connectionManager.connectionState.collect { connectionState ->
-                    when (connectionState) {
-                        is Connected -> {
-                            // Delay a bit to ensure SystemBridge is ready
-                            kotlinx.coroutines.delay(1000L)
-                            checkAdbInputSecurityEnabled()
-                        }
-
-                        is SystemBridgeConnectionState.Disconnected -> {
-                            // Reset to null when SystemBridge is disconnected
-                            isAdbInputSecurityEnabled.value = null
-                        }
-                    }
                 }
             }
         }
@@ -369,6 +344,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         try {
             ctx.startActivity(quickSettingsIntent)
             return true
+        } catch (_: SecurityException) {
+            highlightDeveloperOptionsWirelessDebuggingOption()
+
+            return false
         } catch (_: ActivityNotFoundException) {
             highlightDeveloperOptionsWirelessDebuggingOption()
 
@@ -392,51 +371,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         )
     }
 
-    private fun checkAdbInputSecurityEnabled() {
-        if (!connectionManager.isConnected()) {
-            isAdbInputSecurityEnabled.value = null
-            return
-        }
-
-        // Only run one check at a time
-        if (checkAdbInputSecurityJob == null || checkAdbInputSecurityJob?.isCompleted == true) {
-            checkAdbInputSecurityJob?.cancel()
-
-            checkAdbInputSecurityJob = coroutineScope.launch {
-                try {
-                    val result = connectionManager.run { systemBridge ->
-                        systemBridge.executeCommand("getprop persist.security.adbinput", 5000L)
-                    }
-
-                    val isEnabled = when (result) {
-                        is Success -> {
-                            val stdout = result.value.stdout.trim()
-
-                            when (stdout) {
-                                "1" -> true
-
-                                "0" -> false
-
-                                // If it is empty or anything else then set the value to null
-                                // because what we are expecting does not exist.
-                                else -> null
-                            }
-                        }
-
-                        else -> null
-                    }
-                    isAdbInputSecurityEnabled.value = isEnabled
-                } catch (_: Exception) {
-                    // If check fails, set to null
-                    isAdbInputSecurityEnabled.value = null
-                }
-            }
-        }
-    }
-
     fun invalidateSettings() {
         isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
         isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
+        shellHasGrantRuntimePermissions.update { getShellHasGrantRuntimePermissions() }
     }
 
     private fun getDeveloperOptionsEnabled(): Boolean {
@@ -453,6 +391,13 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         } catch (_: Settings.SettingNotFoundException) {
             return false
         }
+    }
+
+    private fun getShellHasGrantRuntimePermissions(): Boolean {
+        return ctx.packageManager.checkPermission(
+            "android.permission.GRANT_RUNTIME_PERMISSIONS",
+            "com.android.shell",
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
@@ -502,10 +447,14 @@ interface SystemBridgeSetupController {
     fun autoStartWithAdb()
 
     /**
-     * If this value is null then the option does not exist or can not be checked
-     * because the system bridge is disconnected.
+     * See issue #1965.
+     *
+     * Whether the Shell package has GRANT_RUNTIME_PERMISSIONS permission. On Xiaomi devices, the
+     * user needs to enable "USB debugging security settings" in Developer Options for
+     * the Shell to have permission to grant runtime permissions, such as WRITE_SECURE_SETTINGS
+     * to Key Mapper.
      */
-    val isAdbInputSecurityEnabled: StateFlow<Boolean?>
+    val shellHasGrantRuntimePermissions: StateFlow<Boolean>
 
     fun launchDeveloperOptions()
 

@@ -332,7 +332,7 @@ private fun LoadedContent(
 
                 // Only show auto-start options and warnings when Expert Mode is started
                 // Show USB debugging security settings warning if disabled
-                if (state.isAdbInputSecurityEnabled == false) {
+                if (state.showXiaomiAdbInputSecurityWarning) {
                     UsbDebuggingSecuritySettingsCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -970,7 +970,7 @@ private fun PreviewDark() {
                         isDefaultUsbModeCompatible = true,
                         autoStartBootChecked = true,
                         autoStartBootEnabled = true,
-                        isAdbInputSecurityEnabled = null,
+                        showXiaomiAdbInputSecurityWarning = false,
                     ),
                 ),
                 showInfoCard = false,
@@ -1013,7 +1013,7 @@ private fun PreviewStarted() {
                         isDefaultUsbModeCompatible = false,
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
-                        isAdbInputSecurityEnabled = null,
+                        showXiaomiAdbInputSecurityWarning = false,
                     ),
                 ),
                 showInfoCard = false,
@@ -1062,7 +1062,7 @@ private fun PreviewUsbDebuggingSecuritySettingsCard() {
                         isDefaultUsbModeCompatible = true,
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
-                        isAdbInputSecurityEnabled = false,
+                        showXiaomiAdbInputSecurityWarning = false,
                     ),
                 ),
                 showInfoCard = false,
