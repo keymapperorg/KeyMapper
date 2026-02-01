@@ -105,9 +105,7 @@ private fun VolumeActionBottomSheet(
         dragHandle = null,
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .weight(1f),
+            modifier = Modifier.verticalScroll(scrollState),
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
