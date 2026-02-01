@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.1)
+
+#### TO BE RELEASED
+
+## Fixed
+- #2007 Volume up/down action bottom sheet is cut off on some devices
+
 ## [4.0.0](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0)
 
 #### 25 January 2026
