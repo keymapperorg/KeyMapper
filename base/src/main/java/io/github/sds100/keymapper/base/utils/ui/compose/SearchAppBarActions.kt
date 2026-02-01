@@ -46,10 +46,9 @@ fun RowScope.SearchAppBarActions(
     }
 
     DockedSearchBar(
-        modifier = Modifier.Companion.align(Alignment.Companion.CenterVertically),
+        modifier = Modifier.align(Alignment.CenterVertically),
         inputField = {
             SearchBarDefaults.InputField(
-                modifier = Modifier.Companion.align(Alignment.Companion.CenterVertically),
                 onSearch = {
                     onQueryChange(it)
                     isExpanded = false
