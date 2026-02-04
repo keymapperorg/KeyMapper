@@ -1,3 +1,11 @@
+## [4.0.2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.2)
+
+#### TO BE RELEASED
+
+## Added
+
+- Added Chinese Simplified translations.
+
 ## [4.0.1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.1)
 
 #### 01 February 2026
