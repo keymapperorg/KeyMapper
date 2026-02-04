@@ -6,6 +6,10 @@
 
 - Added Chinese Simplified translations.
 
+## Removed
+
+- [#1973](https://github.com/keymapperorg/KeyMapper/issues/1973) [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006) Removed language switching feature due to crash with no solution.
+
 ## [4.0.1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.1)
 
 #### 01 February 2026
