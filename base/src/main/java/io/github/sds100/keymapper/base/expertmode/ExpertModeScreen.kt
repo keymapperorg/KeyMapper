@@ -516,7 +516,7 @@ private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-                fragmentArg = "default_usb_configuration",
+                "default_usb_configuration",
             )
         },
     )

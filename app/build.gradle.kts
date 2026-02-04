@@ -91,10 +91,6 @@ android {
         }
     }
 
-    androidResources {
-        generateLocaleConfig = true
-    }
-
     buildFeatures {
         dataBinding = true
         aidl = true
