@@ -110,17 +110,6 @@ class SettingsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, AutomaticChangeImeSettingsState())
 
-    /**
-     * The display name of the currently selected locale, or null if not supported (Android < 13).
-     */
-    val currentLocaleDisplayName: StateFlow<String?> = useCase.currentLocaleDisplayName
-
-    fun onLanguageClick() {
-        viewModelScope.launch {
-            useCase.launchAppLocaleSettingsScreen()
-        }
-    }
-
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
 
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
@@ -176,6 +165,10 @@ class SettingsViewModel @Inject constructor(
                 useCase.resetAllSettings()
             }
         }
+    }
+
+    fun onRequestRootClick() {
+        useCase.requestRootPermission()
     }
 
     fun onExpertModeClick() {
