@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,6 +65,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuest
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.SportsEsports
+import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -553,12 +555,13 @@ private fun NotDetectedSetupBottomSheet(
         )
 
         val uriHandler = LocalUriHandler.current
+        val ctx = LocalContext.current
         val helpUrl = stringResource(R.string.url_discord_server_invite)
 
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-                uriHandler.openUri(helpUrl)
+                uriHandler.openUriSafe(ctx, helpUrl)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = LocalCustomColorsPalette.current.discord,
