@@ -7,13 +7,14 @@ use crate::grab_target_key_code::GrabTargetKeyCode;
 use crate::grabbed_device::GrabbedDevice;
 use crate::grabbed_device_handle::GrabbedDeviceHandle;
 use crate::runtime::get_runtime;
-use evdev::enums::{EventType, EV_SYN};
+use evdev::enums::{EventCode, EventType, EV_SYN};
 use evdev::util::event_code_to_int;
 use evdev::{InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
 use log::Level;
 use mio::event::Event;
 use mio::{Events, Poll, Token, Waker};
+use std::any::Any;
 use std::error::Error;
 use std::io;
 use std::io::ErrorKind;
@@ -390,9 +391,15 @@ impl EventLoopThread {
     }
 
     fn process_event(&self, device_id: usize, event: &InputEvent, grabbed_device: &GrabbedDevice) {
-        let consumed = self
-            .callback
-            .on_evdev_event(device_id, &grabbed_device.device_info, event);
+        // Key Mapper only cares about key events. Do not send other events so latency
+        // isn't introduced with the IPC.
+        let consumed = match event.event_code {
+            EventCode::EV_KEY(_) => {
+                self.callback
+                    .on_evdev_event(device_id, &grabbed_device.device_info, event)
+            }
+            _ => false,
+        };
 
         if !consumed {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
