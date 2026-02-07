@@ -1,3 +1,12 @@
+## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
+
+#### 07 February 2026
+
+## Fixed
+
+- [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006) Actually fixed the bug with crash with Locale switching
+- [#2014](https://github.com/keymapperorg/KeyMapper/issues/2014) Reduce mouse latency when remapped with Expert mode.
+
 ## [4.0.2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.2)
 
 #### 04 February 2026
