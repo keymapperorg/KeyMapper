@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.actions
 
-import android.os.Build
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
@@ -58,19 +57,15 @@ class ExecuteShellCommandUseCase @Inject constructor(
         command: String,
         timeoutMillis: Long,
     ): KMResult<ShellResult> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            runInterruptible(Dispatchers.IO) {
-                try {
-                    systemBridgeConnectionManager.run { systemBridge ->
-                        systemBridge.executeCommand(command, timeoutMillis)
-                    }
-                    // Only some standard exceptions can be thrown across Binder.
-                } catch (e: IllegalStateException) {
-                    KMError.ShellCommandTimeout(timeoutMillis, null)
+        return runInterruptible(Dispatchers.IO) {
+            try {
+                systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.executeCommand(command, timeoutMillis)
                 }
+                // Only some standard exceptions can be thrown across Binder.
+            } catch (e: IllegalStateException) {
+                KMError.ShellCommandTimeout(timeoutMillis, null)
             }
-        } else {
-            KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
         }
     }
 }

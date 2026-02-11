@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -171,7 +170,7 @@ class AndroidNetworkAdapter @Inject constructor(
     override fun isWifiEnabledFlow(): Flow<Boolean> = isWifiEnabled
 
     override fun enableWifi(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return systemBridgeConnManager.run { bridge -> bridge.setWifiEnabled(true) }
         } else {
             wifiManager.isWifiEnabled = true
@@ -180,7 +179,7 @@ class AndroidNetworkAdapter @Inject constructor(
     }
 
     override fun disableWifi(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return systemBridgeConnManager.run { bridge -> bridge.setWifiEnabled(false) }
         } else {
             wifiManager.isWifiEnabled = false
@@ -200,7 +199,7 @@ class AndroidNetworkAdapter @Inject constructor(
             throw IllegalStateException("No valid subscription ID")
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, true) }
         } else {
             return runBlocking { suAdapter.execute("svc data enable") }
@@ -214,7 +213,7 @@ class AndroidNetworkAdapter @Inject constructor(
             throw IllegalStateException("No valid subscription ID")
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, false) }
         } else {
             return runBlocking { suAdapter.execute("svc data disable") }

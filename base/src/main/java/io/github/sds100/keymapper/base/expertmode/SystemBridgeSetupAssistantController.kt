@@ -19,7 +19,6 @@ import io.github.sds100.keymapper.base.system.notifications.NotificationControll
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -44,7 +43,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 @Suppress("KotlinConstantConditions")
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 class SystemBridgeSetupAssistantController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,

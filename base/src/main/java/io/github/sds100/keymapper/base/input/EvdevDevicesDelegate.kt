@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.base.input
 
-import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -27,7 +25,6 @@ import timber.log.Timber
  * device name introduces extra overhead across Binder and JNI.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
 class EvdevDevicesDelegate @Inject constructor(
     private val coroutineScope: CoroutineScope,

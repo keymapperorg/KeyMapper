@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.base.actions
 
-import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -20,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -46,14 +43,10 @@ class GetActionErrorUseCaseImpl @Inject constructor(
         permissionAdapter.onPermissionsUpdate,
         soundsManager.soundFiles.drop(1).map { },
         packageManagerAdapter.onPackagesChanged,
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            merge(
-                systemBridgeConnectionManager.connectionState.drop(1).map { },
-                preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),
-            )
-        } else {
-            emptyFlow()
-        },
+        merge(
+            systemBridgeConnectionManager.connectionState.drop(1).map { },
+            preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),
+        ),
     )
 
     override val actionErrorSnapshot: Flow<ActionErrorSnapshot> = channelFlow {

@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.actions
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -95,8 +94,6 @@ import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.system.permissions.Permission
 
 object ActionUtils {
-
-    val isSystemBridgeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 
     @StringRes
     fun getCategoryLabel(category: ActionCategory): Int = when (category) {
@@ -750,42 +747,44 @@ object ActionUtils {
         else -> emptyList()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun isSystemBridgeRequired(id: ActionId): Boolean {
+        // Actions are only tested on Android 10 and higher.
         return when (id) {
             ActionId.ENABLE_WIFI,
             ActionId.DISABLE_WIFI,
             ActionId.TOGGLE_WIFI,
-                -> true
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-                -> true
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
             ActionId.TOGGLE_HOTSPOT,
             ActionId.ENABLE_HOTSPOT,
             ActionId.DISABLE_HOTSPOT,
-                -> true
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-                -> true
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-                -> true
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
             ActionId.TOGGLE_BLUETOOTH,
             ActionId.ENABLE_BLUETOOTH,
             ActionId.DISABLE_BLUETOOTH,
                 -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
 
-            ActionId.POWER_ON_OFF_DEVICE -> true
+            ActionId.POWER_ON_OFF_DEVICE -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
-            ActionId.FORCE_STOP_APP, ActionId.CLEAR_RECENT_APP -> true
+            ActionId.FORCE_STOP_APP, ActionId.CLEAR_RECENT_APP ->
+                Build.VERSION.SDK_INT >=
+                    Build.VERSION_CODES.Q
 
             else -> false
         }
@@ -796,7 +795,7 @@ object ActionUtils {
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-                -> return if (isSystemBridgeSupported) {
+                -> return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     emptyList()
                 } else {
                     listOf(Permission.ROOT)
@@ -869,7 +868,7 @@ object ActionUtils {
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-                -> return if (isSystemBridgeSupported) {
+                -> return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     emptyList()
                 } else {
                     listOf(Permission.ROOT)
@@ -887,7 +886,7 @@ object ActionUtils {
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-                -> return if (isSystemBridgeSupported) {
+                -> return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     emptyList()
                 } else {
                     listOf(Permission.ROOT)
@@ -903,11 +902,12 @@ object ActionUtils {
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
 
-            ActionId.POWER_ON_OFF_DEVICE -> return if (isSystemBridgeSupported) {
-                emptyList()
-            } else {
-                listOf(Permission.ROOT)
-            }
+            ActionId.POWER_ON_OFF_DEVICE ->
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    emptyList()
+                } else {
+                    listOf(Permission.ROOT)
+                }
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,

@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -53,15 +52,11 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
     NavigationProvider by navigationProvider {
 
     private val expertModeStatus: Flow<ExpertModeStatus> =
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            systemBridgeConnectionManager.connectionState.map { state ->
-                when (state) {
-                    is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
-                    is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
-                }
+        systemBridgeConnectionManager.connectionState.map { state ->
+            when (state) {
+                is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
             }
-        } else {
-            flowOf(ExpertModeStatus.UNSUPPORTED)
         }
 
     private val isExpertModeSelected: Flow<Boolean> =

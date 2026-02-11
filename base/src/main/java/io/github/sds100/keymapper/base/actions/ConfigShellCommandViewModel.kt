@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.actions
 
-import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +14,6 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.isExecuting
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -45,16 +43,14 @@ class ConfigShellCommandViewModel @Inject constructor(
 
     init {
         // Update ExpertModeStatus in state
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            viewModelScope.launch {
-                systemBridgeConnectionManager.connectionState.map { connectionState ->
-                    when (connectionState) {
-                        is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
-                        is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
-                    }
-                }.collect { expertModeStatus ->
-                    state = state.copy(expertModeStatus = expertModeStatus)
+        viewModelScope.launch {
+            systemBridgeConnectionManager.connectionState.map { connectionState ->
+                when (connectionState) {
+                    is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                    is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
                 }
+            }.collect { expertModeStatus ->
+                state = state.copy(expertModeStatus = expertModeStatus)
             }
         }
 

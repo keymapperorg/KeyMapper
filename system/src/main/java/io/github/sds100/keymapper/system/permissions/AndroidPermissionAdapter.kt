@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -170,11 +169,7 @@ class AndroidPermissionAdapter @Inject constructor(
             -1
         }
 
-        val isSystemBridgeConnected =
-            Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
-                systemBridgeConnectionManager.isConnected()
-
-        if (isSystemBridgeConnected) {
+        if (systemBridgeConnectionManager.isConnected()) {
             result = systemBridgeConnectionManager.run { bridge ->
                 bridge.grantPermission(permissionName, deviceId)
             }.then {

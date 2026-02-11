@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -68,15 +67,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
         MutableStateFlow(TriggerSetupState.Gamepad.Type.DPAD)
 
     private val expertModeStatus: Flow<ExpertModeStatus> =
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            systemBridgeConnectionManager.connectionState.map { state ->
-                when (state) {
-                    is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
-                    is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
-                }
+        systemBridgeConnectionManager.connectionState.map { state ->
+            when (state) {
+                is SystemBridgeConnectionState.Connected -> ExpertModeStatus.ENABLED
+                is SystemBridgeConnectionState.Disconnected -> ExpertModeStatus.DISABLED
             }
-        } else {
-            flowOf(ExpertModeStatus.UNSUPPORTED)
         }
 
     override val triggerSetupState: StateFlow<TriggerSetupState?> =
@@ -312,14 +307,10 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 serviceState == AccessibilityServiceState.ENABLED &&
                     expertModeStatus == ExpertModeStatus.ENABLED
 
-            val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-                if (areRequirementsMet) {
-                    RemapStatus.SUPPORTED
-                } else {
-                    RemapStatus.UNCERTAIN
-                }
+            val remapStatus = if (areRequirementsMet) {
+                RemapStatus.SUPPORTED
             } else {
-                RemapStatus.UNSUPPORTED
+                RemapStatus.UNCERTAIN
             }
 
             TriggerSetupState.Power(
@@ -342,14 +333,10 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 serviceState == AccessibilityServiceState.ENABLED &&
                     expertModeStatus == ExpertModeStatus.ENABLED
 
-            val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-                if (areRequirementsMet) {
-                    RemapStatus.SUPPORTED
-                } else {
-                    RemapStatus.UNCERTAIN
-                }
+            val remapStatus = if (areRequirementsMet) {
+                RemapStatus.SUPPORTED
             } else {
-                RemapStatus.UNSUPPORTED
+                RemapStatus.UNCERTAIN
             }
 
             TriggerSetupState.Mouse(

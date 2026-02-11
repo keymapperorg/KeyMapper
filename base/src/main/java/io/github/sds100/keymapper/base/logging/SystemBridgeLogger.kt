@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.base.logging
 
 import android.util.Log
-import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ILogCallback
@@ -25,7 +23,6 @@ import timber.log.Timber
  * preference to control the log level.
  */
 @Singleton
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 class SystemBridgeLogger @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val systemBridgeConnManager: SystemBridgeConnectionManager,

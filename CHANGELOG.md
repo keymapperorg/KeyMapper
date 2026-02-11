@@ -1,3 +1,11 @@
+## [4.0.4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.4)
+
+#### 11 February 2026
+
+## Added
+
+- #2024 support Expert mode on all Android versions supported by Key Mapper (8.0+).
+
 ## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
 
 #### 07 February 2026

@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.drawable.Drawable
-import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
@@ -49,7 +48,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
@@ -105,18 +103,10 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     }
 
     private val systemBridgeConnectionState: Flow<SystemBridgeConnectionState?> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            systemBridgeConnectionManager.connectionState
-        } else {
-            flowOf(null)
-        }
+        systemBridgeConnectionManager.connectionState
 
     private val evdevDevices: Flow<List<EvdevDeviceInfo>?> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            grabbedEvdevDeviceCache.allDevices
-        } else {
-            flowOf(null)
-        }
+        grabbedEvdevDeviceCache.allDevices
 
     /**
      * Cache the data required for checking errors to reduce the latency of repeatedly checking
@@ -186,7 +176,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             TriggerError.FLOATING_BUTTON_DELETED,
             TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
             TriggerError.MIGRATE_SCREEN_OFF_TRIGGER,
-                -> {}
+                -> {
+            }
         }
     }
 

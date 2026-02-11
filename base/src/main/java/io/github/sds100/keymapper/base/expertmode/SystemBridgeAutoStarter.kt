@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.expertmode
 
 import android.annotation.SuppressLint
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.BuildConfig
@@ -13,7 +12,6 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.common.utils.Clock
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -53,7 +51,6 @@ import timber.log.Timber
  * This class handles auto starting the system bridge when Key Mapper is launched and when
  * the System Bridge is killed not due to the user.
  */
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
 class SystemBridgeAutoStarter @Inject constructor(
     private val coroutineScope: CoroutineScope,

@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
@@ -879,9 +878,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ScreenOnOff -> {
-                if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
-                    systemBridgeConnectionManager.isConnected()
-                ) {
+                if (systemBridgeConnectionManager.isConnected()) {
                     val model = InjectKeyEventModel(
                         keyCode = KeyEvent.KEYCODE_POWER,
                         action = KeyEvent.ACTION_DOWN,
@@ -1023,12 +1020,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
                 if (packageName == null) {
                     result = KMError.Exception(Exception("No foreground app found to kill"))
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                } else {
                     result = systemBridgeConnectionManager.run { systemBridge ->
                         systemBridge.forceStopPackage(packageName)
                     }
-                } else {
-                    result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
                 }
             }
 
@@ -1046,7 +1041,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         systemBridge.removeTasks(packageName)
                     }
                 } else {
-                    result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.Q)
                 }
             }
 

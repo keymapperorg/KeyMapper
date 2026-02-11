@@ -72,11 +72,9 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.common.utils.BuildUtils
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
-private val isExpertModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Composable
@@ -149,20 +147,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
-            onExpertModeClick = {
-                if (isExpertModeSupported) {
-                    viewModel.onExpertModeClick()
-                } else {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            context.getString(
-                                R.string.error_sdk_version_too_low,
-                                BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
-                            ),
-                        )
-                    }
-                }
-            },
+            onExpertModeClick = viewModel::onExpertModeClick,
             onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onLoggingToggled = viewModel::onLoggingToggled,
@@ -365,17 +350,9 @@ private fun Content(
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_expert_mode),
-            text = if (isExpertModeSupported) {
-                stringResource(R.string.summary_pref_expert_mode)
-            } else {
-                stringResource(
-                    R.string.error_sdk_version_too_low,
-                    BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
-                )
-            },
+            text = stringResource(R.string.summary_pref_expert_mode),
             icon = Icons.Outlined.OfflineBolt,
             onClick = onExpertModeClick,
-            enabled = isExpertModeSupported,
         )
 
         OptionPageButton(

@@ -5,7 +5,6 @@ import android.os.Process
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.common.utils.Clock
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @ViewModelScoped
 class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,

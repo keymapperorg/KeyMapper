@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.system.notifications
 
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
@@ -13,7 +12,6 @@ import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUse
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -191,15 +189,13 @@ class NotificationController @Inject constructor(
             }
         }.launchIn(coroutineScope)
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            coroutineScope.launch {
-                systemBridgeConnectionManager.connectionState
-                    .collect { connectionState ->
-                        if (connectionState is SystemBridgeConnectionState.Connected) {
-                            showSystemBridgeStartedNotification()
-                        }
+        coroutineScope.launch {
+            systemBridgeConnectionManager.connectionState
+                .collect { connectionState ->
+                    if (connectionState is SystemBridgeConnectionState.Connected) {
+                        showSystemBridgeStartedNotification()
                     }
-            }
+                }
         }
 
         coroutineScope.launch {

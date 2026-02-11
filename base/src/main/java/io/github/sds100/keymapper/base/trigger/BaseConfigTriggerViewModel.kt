@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -115,31 +114,21 @@ abstract class BaseConfigTriggerViewModel(
     )
 
     val expertModeSwitchState: StateFlow<ExpertModeRecordSwitchState> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            combine(
-                recordTrigger.state,
-                recordTrigger.isEvdevRecordingEnabled,
-                systemBridgeConnectionManager.connectionState,
-                Companion::buildExpertModeSwitchState,
-            )
-                .stateIn(
-                    viewModelScope,
-                    SharingStarted.Eagerly,
-                    ExpertModeRecordSwitchState(
-                        isVisible = false,
-                        isChecked = false,
-                        isEnabled = false,
-                    ),
-                )
-        } else {
-            MutableStateFlow(
+        combine(
+            recordTrigger.state,
+            recordTrigger.isEvdevRecordingEnabled,
+            systemBridgeConnectionManager.connectionState,
+            Companion::buildExpertModeSwitchState,
+        )
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
                 ExpertModeRecordSwitchState(
                     isVisible = false,
                     isChecked = false,
                     isEnabled = false,
                 ),
             )
-        }
 
     val showFingerprintGesturesShortcut: StateFlow<Boolean> =
         fingerprintGesturesSupported.isSupported.map { it ?: false }

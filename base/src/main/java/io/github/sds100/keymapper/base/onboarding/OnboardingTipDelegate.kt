@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.onboarding
 
-import android.os.Build
 import android.view.KeyEvent
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.R
@@ -16,7 +15,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -341,8 +339,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
         }
 
         if (hasRingerModeAction &&
-            !shownRingerModeTip &&
-            Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
+            !shownRingerModeTip
         ) {
             val tip = OnboardingTipModel(
                 id = RINGER_MODE_TIP_ID,

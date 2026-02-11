@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
@@ -107,12 +106,8 @@ abstract class BaseAccessibilityServiceController(
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
-    private val setupAssistantController: SystemBridgeSetupAssistantController? =
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            setupAssistantControllerFactory.create(service.lifecycleScope, service)
-        } else {
-            null
-        }
+    private val setupAssistantController: SystemBridgeSetupAssistantController =
+        setupAssistantControllerFactory.create(service.lifecycleScope, service)
 
     private val autoSwitchImeController: AutoSwitchImeController? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -362,9 +357,7 @@ abstract class BaseAccessibilityServiceController(
             relayServiceCallback,
         )
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            setupAssistantController?.onServiceConnected()
-        }
+        setupAssistantController.onServiceConnected()
     }
 
     open fun onDestroy() {
@@ -372,9 +365,7 @@ abstract class BaseAccessibilityServiceController(
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            setupAssistantController?.teardown()
-        }
+        setupAssistantController.teardown()
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
@@ -425,9 +416,7 @@ abstract class BaseAccessibilityServiceController(
             autoSwitchImeController?.onAccessibilityEvent(event)
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            setupAssistantController?.onAccessibilityEvent(event)
-        }
+        setupAssistantController.onAccessibilityEvent(event)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

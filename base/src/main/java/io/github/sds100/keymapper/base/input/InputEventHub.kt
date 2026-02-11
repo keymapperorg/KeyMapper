@@ -1,14 +1,11 @@
 package io.github.sds100.keymapper.base.input
 
-import android.os.Build
 import android.view.KeyEvent
-import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -73,19 +70,17 @@ class InputEventHubImpl @Inject constructor(
     init {
         startKeyEventProcessingLoop()
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            coroutineScope.launch {
-                systemBridgeConnManager.connectionState
-                    .filterIsInstance<SystemBridgeConnectionState.Connected>()
-                    .collect {
-                        // Whenever the system bridge is connected
-                        systemBridgeConnManager.run { bridge ->
-                            bridge.registerEvdevCallback(this@InputEventHubImpl)
-                        }.onSuccess {
-                            invalidateGrabbedDevices()
-                        }
+        coroutineScope.launch {
+            systemBridgeConnManager.connectionState
+                .filterIsInstance<SystemBridgeConnectionState.Connected>()
+                .collect {
+                    // Whenever the system bridge is connected
+                    systemBridgeConnManager.run { bridge ->
+                        bridge.registerEvdevCallback(this@InputEventHubImpl)
+                    }.onSuccess {
+                        invalidateGrabbedDevices()
                     }
-            }
+                }
         }
     }
 
@@ -104,12 +99,10 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun isSystemBridgeConnected(): Boolean {
         return systemBridgeConnManager.isConnected()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun onEvdevEvent(
         deviceId: Int,
         timeSec: Long,
@@ -221,20 +214,15 @@ class InputEventHubImpl @Inject constructor(
         }
 
         clients[clientId] = ClientContext(callback, emptySet(), evdevEventTypes.toSet())
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            invalidateGrabbedDevices()
-        }
+        invalidateGrabbedDevices()
     }
 
     override fun unregisterClient(clientId: String) {
         Timber.d("InputEventHub: Unregistering client $clientId")
         clients.remove(clientId)
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            invalidateGrabbedDevices()
-        }
+        invalidateGrabbedDevices()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun setGrabTargets(clientId: String, devices: List<GrabTargetKeyCode>) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException(
@@ -246,12 +234,10 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedDevices()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun getGrabbedDevices(): List<EvdevDeviceInfo> {
         return evdevDevicesDelegate.getGrabbedDevices()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun grabAllEvdevDevices(clientId: String) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException(
@@ -274,7 +260,6 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedDevices()
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun injectEvdevEvent(
         deviceId: Int,
         type: Int,
@@ -300,7 +285,6 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun injectEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): KMResult<Unit> {
         return systemBridgeConnManager.run { bridge ->
             bridge.writeEvdevEventKeyCode(
@@ -324,10 +308,7 @@ class InputEventHubImpl @Inject constructor(
         event: InjectKeyEventModel,
         useSystemBridgeIfAvailable: Boolean,
     ): KMResult<Unit> {
-        val isSysBridgeConnected = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
-            systemBridgeConnManager.connectionState.value is SystemBridgeConnectionState.Connected
-
-        if (isSysBridgeConnected && useSystemBridgeIfAvailable) {
+        if (systemBridgeConnManager.isConnected() && useSystemBridgeIfAvailable) {
             val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
 
             if (logInputEventsEnabled.value) {
@@ -371,19 +352,16 @@ class InputEventHubImpl @Inject constructor(
             .firstBlocking()
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onGrabbedDevicesChanged(devices: Array<out GrabbedDeviceHandle?>?) {
         val devicesList = devices?.filterNotNull()?.toList() ?: emptyList()
         evdevDevicesDelegate.onGrabbedDevicesChanged(devicesList)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onEvdevDevicesChanged(devices: Array<out EvdevDeviceInfo?>?) {
         val devicesList = devices?.filterNotNull()?.toList() ?: emptyList()
         evdevDevicesDelegate.onEvdevDevicesChanged(devicesList)
     }
 
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private fun invalidateGrabbedDevices() {
         val devicesToGrab = clients.values.flatMap { it.grabRequests }.toSet()
         evdevDevicesDelegate.setGrabTargets(devicesToGrab.toList())

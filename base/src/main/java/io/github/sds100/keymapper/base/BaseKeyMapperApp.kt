@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.UserManager
 import android.util.Log
 import android.widget.Toast
@@ -23,7 +22,6 @@ import io.github.sds100.keymapper.base.settings.Theme
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.system.permissions.AutoGrantPermissionController
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
@@ -231,27 +229,25 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             Timber.i("KeyMapperApp: System bridge is disconnected")
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            systemBridgeAutoStarter.init()
+        systemBridgeAutoStarter.init()
 
-            // Initialize SystemBridgeLogger to start receiving log messages from SystemBridge.
-            // Using Lazy<> to avoid circular dependency issues and ensure it's only created
-            // when the API level requirement is met.
-            systemBridgeLogger.start()
+        // Initialize SystemBridgeLogger to start receiving log messages from SystemBridge.
+        // Using Lazy<> to avoid circular dependency issues and ensure it's only created
+        // when the API level requirement is met.
+        systemBridgeLogger.start()
 
-            appCoroutineScope.launch {
-                systemBridgeConnectionManager.connectionState.collect { state ->
-                    if (state is SystemBridgeConnectionState.Connected) {
-                        val isUsed =
-                            settingsRepository.get(Keys.isSystemBridgeUsed).first() ?: false
+        appCoroutineScope.launch {
+            systemBridgeConnectionManager.connectionState.collect { state ->
+                if (state is SystemBridgeConnectionState.Connected) {
+                    val isUsed =
+                        settingsRepository.get(Keys.isSystemBridgeUsed).first() ?: false
 
-                        // Enable the setting to use PRO mode for key event actions the first time they use PRO mode.
-                        if (!isUsed) {
-                            settingsRepository.set(Keys.keyEventActionsUseSystemBridge, true)
-                        }
-
-                        settingsRepository.set(Keys.isSystemBridgeUsed, true)
+                    // Enable the setting to use PRO mode for key event actions the first time they use PRO mode.
+                    if (!isUsed) {
+                        settingsRepository.set(Keys.keyEventActionsUseSystemBridge, true)
                     }
+
+                    settingsRepository.set(Keys.isSystemBridgeUsed, true)
                 }
             }
         }

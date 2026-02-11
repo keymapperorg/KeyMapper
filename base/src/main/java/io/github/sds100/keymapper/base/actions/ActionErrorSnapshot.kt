@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -67,19 +66,11 @@ class LazyActionErrorSnapshot(
     }
 
     private val isSystemBridgeConnected: Boolean by lazy {
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            systemBridgeConnectionManager.isConnected()
-        } else {
-            false
-        }
+        systemBridgeConnectionManager.isConnected()
     }
 
     private val keyEventActionsUseSystemBridge: Boolean by lazy {
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            preferenceRepository.get(Keys.keyEventActionsUseSystemBridge).firstBlocking() ?: false
-        } else {
-            false
-        }
+        preferenceRepository.get(Keys.keyEventActionsUseSystemBridge).firstBlocking() ?: false
     }
 
     override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
@@ -129,8 +120,7 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
-            action is ActionData.InputKeyEvent &&
+        if (action is ActionData.InputKeyEvent &&
             keyEventActionsUseSystemBridge
         ) {
             if (!isSystemBridgeConnected) {
@@ -155,8 +145,7 @@ class LazyActionErrorSnapshot(
         }
 
         @SuppressLint("NewApi")
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
-            ActionUtils.isSystemBridgeRequired(action.id) &&
+        if (ActionUtils.isSystemBridgeRequired(action.id) &&
             !isSystemBridgeConnected
         ) {
             return SystemBridgeError.Disconnected
@@ -241,6 +230,7 @@ class LazyActionErrorSnapshot(
                             null
                         }
                     }
+
                     SettingType.SECURE,
                     SettingType.GLOBAL,
                         -> {

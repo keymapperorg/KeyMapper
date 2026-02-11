@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -16,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
@@ -421,8 +419,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 }
 
-@SuppressLint("ObsoleteSdkInt")
-@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeSetupController {
     val setupAssistantStep: Flow<SystemBridgeSetupStep?>
     val isStarting: StateFlow<Boolean>

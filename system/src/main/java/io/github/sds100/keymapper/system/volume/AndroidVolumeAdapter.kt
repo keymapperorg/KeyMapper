@@ -7,7 +7,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
@@ -47,8 +46,11 @@ class AndroidVolumeAdapter @Inject constructor(
 
             return when (ringerModeSdk) {
                 AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
+
                 AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
+
                 AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
+
                 else -> throw Exception(
                     "Don't know how to convert this ringer moder ${audioManager.ringerMode}",
                 )
@@ -97,7 +99,7 @@ class AndroidVolumeAdapter @Inject constructor(
                 RingerMode.SILENT -> AudioManager.RINGER_MODE_SILENT
             }
 
-            return if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 systemBridgeConnectionManager.run { systemBridge ->
                     systemBridge.setRingerMode(sdkMode)
                 }.otherwise {
@@ -155,7 +157,6 @@ class AndroidVolumeAdapter @Inject constructor(
         VolumeStream.SYSTEM -> Success(AudioManager.STREAM_SYSTEM)
         VolumeStream.VOICE_CALL -> Success(AudioManager.STREAM_VOICE_CALL)
         VolumeStream.ACCESSIBILITY -> Success(AudioManager.STREAM_ACCESSIBILITY)
-
         null -> Success(null)
     }
 
