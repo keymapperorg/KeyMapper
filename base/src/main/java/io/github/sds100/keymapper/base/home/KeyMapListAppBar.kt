@@ -37,6 +37,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Edit
@@ -138,6 +139,7 @@ fun KeyMapListAppBar(
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
     onKeyMapsEnabledChange: (Boolean) -> Unit = {},
+    onReportBugClick: () -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -170,10 +172,6 @@ fun KeyMapListAppBar(
                         dropdownMenuContent = {
                             RootGroupDropdownMenu(
                                 expanded = expandedDropdown,
-                                onSortClick = {
-                                    expandedDropdown = false
-                                    onSortClick()
-                                },
                                 onSettingsClick = {
                                     expandedDropdown = false
                                     onSettingsClick()
@@ -193,6 +191,10 @@ fun KeyMapListAppBar(
                                 onInputMethodPickerClick = {
                                     expandedDropdown = false
                                     onInputMethodPickerClick()
+                                },
+                                onReportBugClick = {
+                                    expandedDropdown = false
+                                    onReportBugClick()
                                 },
                                 onDismissRequest = { expandedDropdown = false },
                             )
@@ -531,9 +533,11 @@ private fun ChildGroupAppBar(
                         SelectedKeyMapsEnabled.ALL -> stringResource(
                             R.string.home_enabled_key_maps_enabled,
                         )
+
                         SelectedKeyMapsEnabled.MIXED -> stringResource(
                             R.string.home_enabled_key_maps_mixed,
                         )
+
                         SelectedKeyMapsEnabled.NONE, null -> stringResource(
                             R.string.home_enabled_key_maps_disabled,
                         )
@@ -871,12 +875,12 @@ private fun selectedTextTransition(targetState: Int, initialState: Int): Content
 @Composable
 private fun RootGroupDropdownMenu(
     expanded: Boolean,
-    onSortClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
     onInputMethodPickerClick: () -> Unit = {},
+    onReportBugClick: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
 ) {
     DropdownMenu(
@@ -907,6 +911,11 @@ private fun RootGroupDropdownMenu(
             leadingIcon = { Icon(Icons.Rounded.Info, contentDescription = null) },
             text = { Text(stringResource(R.string.home_menu_about)) },
             onClick = onAboutClick,
+        )
+        DropdownMenuItem(
+            leadingIcon = { Icon(Icons.Rounded.BugReport, contentDescription = null) },
+            text = { Text(stringResource(R.string.home_menu_report_bug)) },
+            onClick = onReportBugClick,
         )
     }
 }
@@ -1037,7 +1046,7 @@ private fun KeyMapsChildGroupDarkPreview() {
 @Preview
 @Composable
 private fun KeyMapsChildGroupEditingPreview() {
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect("") {
         focusRequester.requestFocus()
@@ -1075,7 +1084,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         keyMapsEnabled = SelectedKeyMapsEnabled.ALL,
     )
 
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect("") {
         focusRequester.requestFocus()
@@ -1091,7 +1100,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
 @Preview
 @Composable
 private fun KeyMapsChildGroupErrorPreview() {
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect("") {
         focusRequester.requestFocus()

@@ -12,6 +12,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
@@ -24,12 +25,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -145,6 +149,12 @@ fun HomeKeyMapListScreen(
         )
     }
 
+    var showBugReportDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showBugReportDialog) {
+        BugReportDialog(onDismissRequest = { showBugReportDialog = false })
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uriHandler = LocalUriHandler.current
     val ctx = LocalContext.current
@@ -216,6 +226,9 @@ fun HomeKeyMapListScreen(
                 onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
                 onFixConstraintClick = viewModel::onFixClick,
                 onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
+                onReportBugClick = {
+                    showBugReportDialog = true
+                },
             )
         },
         selectionBottomSheet = {
@@ -347,6 +360,43 @@ fun HandleImportExportState(
             )
         }
     }
+}
+
+@Composable
+private fun BugReportDialog(onDismissRequest: () -> Unit) {
+    val ctx = LocalContext.current
+    val subject = stringResource(R.string.customer_email_subject_bug_report)
+
+    val discordLink = stringResource(R.string.url_discord_server_invite)
+    val uriHandler = LocalUriHandler.current
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(stringResource(R.string.dialog_title_bug_report)) },
+        text = { Text(stringResource(R.string.dialog_message_bug_report)) },
+        confirmButton = {
+            Row {
+                TextButton(
+                    onClick = {
+                        ShareUtils.sendBugReportEmail(ctx, subject)
+                    },
+                ) {
+                    Text(stringResource(R.string.dialog_bug_report_email_button))
+                }
+                TextButton(
+                    onClick = {
+                        uriHandler.openUriSafe(ctx, discordLink)
+                    },
+                ) {
+                    Text(stringResource(R.string.dialog_bug_report_discord_button))
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.neg_cancel))
+            }
+        },
+    )
 }
 
 @Composable

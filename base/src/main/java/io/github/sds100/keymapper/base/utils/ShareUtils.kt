@@ -14,10 +14,35 @@ import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 
 object ShareUtils {
+    fun sendBugReportEmail(ctx: Context, subject: String) {
+        val body = ctx.getString(
+            R.string.customer_email_body,
+            Build.DEVICE,
+            if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.R
+            ) {
+                Build.VERSION.RELEASE_OR_CODENAME
+            } else {
+                Build.VERSION.RELEASE
+            },
+            ctx.applicationContext.packageManager.getPackageInfo(ctx.packageName, 0).versionName,
+        )
+
+        sendMail(
+            ctx,
+            email = ctx.getString(R.string.purchasing_contact_email),
+            subject = subject,
+            body = body,
+        )
+    }
+
     fun sendMail(ctx: Context, email: String, subject: String, body: String) {
         try {
+            // Specify the extra parameters so it works with the gmail app.
+            val uri = "mailto:$email?subject=$subject&body=$body".toUri()
+
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = "mailto:$email".toUri()
+                data = uri
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 putExtra(Intent.EXTRA_TEXT, body)
             }
