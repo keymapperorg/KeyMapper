@@ -1396,7 +1396,7 @@
     <string name="purchasing_contact_developer_button">Contact developer</string>
     <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the side key trigger feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
-    <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
+    <string name="purchasing_contact_email" translatable="false">contact@keymapper.app</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a backup in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
