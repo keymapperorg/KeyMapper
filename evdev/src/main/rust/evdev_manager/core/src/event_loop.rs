@@ -394,10 +394,15 @@ impl EventLoopThread {
         // Key Mapper only cares about key events. Do not send other events so latency
         // isn't introduced with the IPC.
         let consumed = match event.event_code {
-            EventCode::EV_KEY(_) => {
-                self.callback
-                    .on_evdev_event(device_id, &grabbed_device.device_info, event)
-            }
+            // See #2030. Some devices send unknown scan codes so still send them
+            // to Key Mapper.
+            EventCode::EV_KEY(_)
+            | EventCode::EV_UNK {
+                event_type: 1,
+                event_code: _,
+            } => self
+                .callback
+                .on_evdev_event(device_id, &grabbed_device.device_info, event),
             _ => false,
         };
 

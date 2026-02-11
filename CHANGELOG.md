@@ -7,6 +7,9 @@
 - #2024 support Expert mode on all Android versions supported by Key Mapper (8.0+).
 - #2025 add report bug button to home screen menu.
 
+## Fixed
+- #2030 do not filter out unknown evdev key events.
+
 ## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
 
 #### 07 February 2026
