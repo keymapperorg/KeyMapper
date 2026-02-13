@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material.icons.rounded.HorizontalRule
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -62,7 +63,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import kotlinx.coroutines.CoroutineScope
@@ -368,7 +369,11 @@ private fun SortFieldListItem(
             Text(
                 text = sortFieldText(sortField),
                 style = if (sortOrder == SortOrder.NONE) {
-                    MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                    MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.5f,
+                        ),
+                    )
                 } else {
                     MaterialTheme.typography.titleMedium
                 },
@@ -389,20 +394,23 @@ private fun SortFieldListItem(
                 },
                 label = "$sortField Sort Order",
             ) { sortOrder ->
-                if (sortOrder == SortOrder.NONE) {
-                    Spacer(Modifier.size(24.dp))
-                    return@AnimatedContent
-                }
-
                 val imageVector = when (sortOrder) {
-                    SortOrder.NONE -> return@AnimatedContent
+                    SortOrder.NONE -> Icons.Rounded.HorizontalRule
                     SortOrder.ASCENDING -> Icons.Rounded.ArrowUpward
                     SortOrder.DESCENDING -> Icons.Rounded.ArrowDownward
+                }
+                val tint = when (sortOrder) {
+                    SortOrder.NONE -> LocalCustomColorsPalette.current.red
+
+                    SortOrder.ASCENDING,
+                    SortOrder.DESCENDING,
+                        -> LocalCustomColorsPalette.current.green
                 }
 
                 Icon(
                     imageVector = imageVector,
                     contentDescription = null,
+                    tint = tint,
                 )
             }
         }

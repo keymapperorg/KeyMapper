@@ -482,8 +482,8 @@
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
     <string name="dialog_message_sort_sort_by">Sort by</string>
-    <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You can also tap any item to reverse its sort order.</string>
-    <string name="sorting_drag_and_drop_list_help_example">Example: To sort key maps primarily by their Actions in ascending order and secondarily by their Triggers in descending order, move Actions to the first position and Triggers to the second.</string>
+    <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You must tap the item to enable sorting and toggle ascending/descending.</string>
+    <string name="sorting_drag_and_drop_list_help_example">Example: To sort by Actions (ascending) first and Triggers (descending) second: tap and drag Actions to the first position and set it to ascending, then tap and drag Triggers to the second position and set it to descending.</string>
     <string name="drag_handle_for">Drag handle for %1$s</string>
     <string name="show_example">Show example</string>
 
