@@ -12,6 +12,7 @@
 ## Fixed
 
 - #2030 do not filter out unknown evdev key events.
+- #2028 work around Shizuku bug on Mediatek devices that prevents Expert mode from starting
 
 ## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
 

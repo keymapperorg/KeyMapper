@@ -34,11 +34,13 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 
@@ -63,69 +65,160 @@ class SystemBridgeStarter @Inject constructor(
 
     private val startMutex: Mutex = Mutex()
 
-    private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-            Timber.i("Shizuku starter service connected")
-
-            val service = IShizukuStarterService.Stub.asInterface(binder)
-
-            Timber.i("Starting System Bridge with Shizuku starter service")
-            try {
-                runBlocking {
-                    startSystemBridgeWithLock(
-                        commandExecutor = { command ->
-                            val output = service.executeCommand(command)
-
-                            if (output == null) {
-                                KMError.UnknownIOError
-                            } else {
-                                Success(output)
-                            }
-                        },
-                    )
-                }
-            } catch (e: RemoteException) {
-                Timber.e("Exception starting with Shizuku starter service: $e")
-            } finally {
-                try {
-                    service.destroy()
-                } catch (_: DeadObjectException) {
-                    // Do nothing. Service is already dead.
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            // Do nothing. The service is supposed to immediately kill itself
-            // after starting the command.
-        }
+    private companion object {
+        /**
+         * How long to wait for the Shizuku user service to connect before
+         * assuming it failed (e.g. due to the OEM bug on Xiaomi/MediaTek devices).
+         */
+        private const val SHIZUKU_USER_SERVICE_TIMEOUT_MS = 5000L
     }
 
-    fun startWithShizuku() {
+    private fun buildShizukuUserServiceArgs(): Shizuku.UserServiceArgs {
+        val serviceComponentName = ComponentName(ctx, ShizukuStarterService::class.java)
+        return Shizuku.UserServiceArgs(serviceComponentName)
+            .daemon(false)
+            .processNameSuffix("service")
+            .debuggable(BuildConfig.DEBUG)
+            .version(buildConfigProvider.versionCode)
+    }
+
+    suspend fun startWithShizuku() {
         if (!Shizuku.pingBinder()) {
             Timber.w("Shizuku is not running. Cannot start System Bridge with Shizuku.")
             return
         }
 
+        val serviceConnected = CompletableDeferred<Unit>()
+
         // Shizuku will start a service which will then start the System Bridge. Shizuku won't be
         // used to start the System Bridge directly because native libraries need to be used
         // and we want to limit the dependency on Shizuku as much as possible. Also, the System
         // Bridge should still be running even if Shizuku dies.
-        val serviceComponentName = ComponentName(ctx, ShizukuStarterService::class.java)
-        val args = Shizuku.UserServiceArgs(serviceComponentName)
-            .daemon(false)
-            .processNameSuffix("service")
-            .debuggable(BuildConfig.DEBUG)
-            .version(buildConfigProvider.versionCode)
+        val connection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+                Timber.i("Shizuku starter service connected")
+
+                // Signal that the user service started successfully before doing the work.
+                serviceConnected.complete(Unit)
+
+                val service = IShizukuStarterService.Stub.asInterface(binder)
+
+                Timber.i("Starting System Bridge with Shizuku starter service")
+                try {
+                    runBlocking {
+                        startSystemBridgeWithLock(
+                            commandExecutor = { command ->
+                                val output = service.executeCommand(command)
+
+                                if (output == null) {
+                                    KMError.UnknownIOError
+                                } else {
+                                    Success(output)
+                                }
+                            },
+                        )
+                    }
+                } catch (e: RemoteException) {
+                    Timber.e("Exception starting with Shizuku starter service: $e")
+                } finally {
+                    try {
+                        service.destroy()
+                    } catch (_: DeadObjectException) {
+                        // Do nothing. Service is already dead.
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                // Do nothing. The service is supposed to immediately kill itself
+                // after starting the command.
+            }
+        }
+
+        val args = buildShizukuUserServiceArgs()
 
         try {
-            Shizuku.bindUserService(
-                args,
-                shizukuStarterConnection,
-            )
+            Shizuku.bindUserService(args, connection)
         } catch (e: Exception) {
             Timber.e("Exception when starting System Bridge with Shizuku. $e")
+            return
         }
+
+        // Wait for the user service to connect. On most devices this is near-instant.
+        // On Xiaomi/MediaTek devices with OEM-modified LoadedApk.makeApplicationInner(),
+        // the user service process crashes with a NPE before it can connect
+        // (see https://github.com/RikkaApps/Shizuku/issues/1198).
+        val connected = withTimeoutOrNull(SHIZUKU_USER_SERVICE_TIMEOUT_MS) {
+            serviceConnected.await()
+        }
+
+        if (connected != null) {
+            // User service connected successfully; the existing flow handles the rest.
+            return
+        }
+
+        // Timeout expired. Use peekUserService to confirm the service isn't running.
+        val serviceVersion = Shizuku.peekUserService(args, connection)
+
+        if (serviceVersion >= 0) {
+            // The service is running but just slow to connect. Let it proceed.
+            Timber.w(
+                "Shizuku user service is running (version=$serviceVersion) but took " +
+                    "longer than ${SHIZUKU_USER_SERVICE_TIMEOUT_MS}ms to connect.",
+            )
+            return
+        }
+
+        // The service failed to start. Fall back to Shizuku.newProcess() via reflection.
+        Timber.w("Falling back to Shizuku.newProcess() workaround.")
+        startWithShizukuNewProcess()
+    }
+
+    /**
+     * Fallback for starting the System Bridge via Shizuku when the user service fails to start.
+     * This can happen on Xiaomi/MediaTek devices where an OEM modification to
+     * LoadedApk.makeApplicationInner() causes a NPE during user service process creation.
+     *
+     * This method uses reflection to call the private Shizuku.newProcess() method, which
+     * spawns a process directly on the Shizuku server side without going through
+     * LoadedApk.makeApplication(), bypassing the OEM bug entirely.
+     *
+     * Note: Shizuku.newProcess() is deprecated and planned for removal in Shizuku API 14.
+     * This workaround should be removed once the upstream Shizuku bug is fixed.
+     */
+    @Suppress("DiscouragedPrivateApi")
+    private suspend fun startWithShizukuNewProcess() {
+        Timber.i("Starting System Bridge with Shizuku newProcess fallback")
+
+        startSystemBridgeWithLock(
+            commandExecutor = { command ->
+                try {
+                    val method = Shizuku::class.java.getDeclaredMethod(
+                        "newProcess",
+                        Array<String>::class.java,
+                        Array<String>::class.java,
+                        String::class.java,
+                    )
+                    method.isAccessible = true
+
+                    val process = method.invoke(
+                        null,
+                        arrayOf("sh", "-c", command),
+                        null,
+                        null,
+                    ) as Process
+
+                    val stdout = process.inputStream.bufferedReader().readText()
+                    val stderr = process.errorStream.bufferedReader().readText()
+                    process.waitFor()
+
+                    Success("$stdout\n$stderr")
+                } catch (e: Exception) {
+                    Timber.e("Shizuku newProcess fallback failed: $e")
+                    KMError.Exception(e)
+                }
+            },
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
