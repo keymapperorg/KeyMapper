@@ -99,7 +99,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             try {
                 starter.refreshStarterScript()
             } catch (e: Exception) {
-                Timber.e("Failed to refresh system bridge starter script", e)
+                Timber.e("Failed to refresh system bridge starter script. $e")
             }
         }
     }
@@ -282,7 +282,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         starter.startWithRoot()
     }
 
-    override fun startWithShizuku() {
+    override suspend fun startWithShizuku() {
         starter.startWithShizuku()
     }
 
@@ -304,7 +304,7 @@ interface SystemBridgeConnectionManager {
 
     suspend fun startWithRoot()
 
-    fun startWithShizuku()
+    suspend fun startWithShizuku()
 
     suspend fun startWithAdb()
 

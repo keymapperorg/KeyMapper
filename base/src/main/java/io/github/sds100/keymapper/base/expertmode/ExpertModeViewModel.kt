@@ -70,6 +70,21 @@ class ExpertModeViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
+    var showStartErrorDialog by mutableStateOf(false)
+        private set
+
+    init {
+        viewModelScope.launch {
+            useCase.showStartError.collect {
+                showStartErrorDialog = true
+            }
+        }
+    }
+
+    fun dismissStartErrorDialog() {
+        showStartErrorDialog = false
+    }
+
     var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
         private set
 

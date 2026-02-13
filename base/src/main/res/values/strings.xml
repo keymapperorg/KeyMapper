@@ -1693,6 +1693,8 @@
     <string name="expert_mode_shell_start_get_command">Get command</string>
     <string name="expert_mode_shell_start_retry">Retry</string>
     <string name="expert_mode_shell_start_error">Failed to get command. Please try again.</string>
+    <string name="expert_mode_start_error_dialog_title">Failed to start Expert Mode</string>
+    <string name="expert_mode_start_error_dialog_message">The system bridge could not be started. Please try again or contact the developer at contact@keymapper.app if the problem persists.</string>
     <string name="expert_mode_shell_start_clipboard_label">System Bridge Start Command</string>
     <string name="expert_mode_shell_start_copy_content_description">Copy command to clipboard</string>
 

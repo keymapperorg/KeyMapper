@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -86,6 +87,12 @@ import kotlinx.coroutines.launch
 fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewModel) {
     val expertModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val expertModeState by viewModel.state.collectAsStateWithLifecycle()
+
+    if (viewModel.showStartErrorDialog) {
+        SystemBridgeStartErrorDialog(
+            onDismissRequest = viewModel::dismissStartErrorDialog,
+        )
+    }
 
     ExpertModeScreen(
         modifier = modifier,
@@ -1071,6 +1078,39 @@ private fun PreviewUsbDebuggingSecuritySettingsCard() {
                 onLaunchDeveloperOptionsClick = {},
             )
         }
+    }
+}
+
+@Composable
+private fun SystemBridgeStartErrorDialog(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(stringResource(R.string.expert_mode_start_error_dialog_title))
+        },
+        text = {
+            Text(
+                stringResource(R.string.expert_mode_start_error_dialog_message),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.pos_ok))
+            }
+        },
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewSystemBridgeStartErrorDialog() {
+    KeyMapperTheme {
+        SystemBridgeStartErrorDialog(onDismissRequest = {})
     }
 }
 

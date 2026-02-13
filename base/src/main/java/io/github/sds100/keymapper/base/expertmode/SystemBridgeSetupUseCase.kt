@@ -107,6 +107,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     override val isSystemBridgeStarting: Flow<Boolean> =
         systemBridgeSetupController.isStarting
 
+    override val showStartError: Flow<Unit> =
+        systemBridgeSetupController.showStartError
+
     override val isNotificationPermissionGranted: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS)
 
@@ -325,6 +328,7 @@ interface SystemBridgeSetupUseCase {
 
     val isSystemBridgeConnected: Flow<Boolean>
     val isSystemBridgeStarting: Flow<Boolean>
+    val showStartError: Flow<Unit>
     val nextSetupStep: Flow<SystemBridgeSetupStep>
 
     val isRootGranted: Flow<Boolean>

@@ -8,6 +8,7 @@
 - #2025 add report bug button to home screen menu.
 - #2027 Make the key map sorting feature easier to understand.
 - #2016 Show a warning when repeating a key code action less than 20 ms with expert mode triggers.
+- Show dialog if Expert mode fails to start after 60 seconds instead of waiting indefinitely.
 
 ## Fixed
 
