@@ -1615,6 +1615,7 @@
     <string name="action_list_delete_yes">Yes, delete</string>
     <string name="action_list_delete_cancel">Cancel</string>
     <string name="action_list_explanation_header">Run these actions when you trigger the key map:</string>
+    <string name="action_repeat_rate_warning">Repeating under 20 ms can lag! Adjust for your device and game.</string>
 
     <string name="action_config_flashlight_choose_side">Choose side</string>
     <string name="action_config_flashlight_brightness">Brightness</string>

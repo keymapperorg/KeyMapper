@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -29,7 +30,6 @@ import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ConfigActionsViewModel @Inject constructor(
@@ -261,6 +262,7 @@ class ConfigActionsViewModel @Inject constructor(
                 )
 
                 RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
+
                 RepeatMode.TRIGGER_PRESSED_AGAIN ->
                     config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
             }
@@ -395,10 +397,17 @@ class ConfigActionsViewModel @Inject constructor(
             Int.MAX_VALUE
         }
 
+        val showRepeatRateWarning =
+            keyMap.isRepeatingActionsAllowed() &&
+                action.data is ActionData.InputKeyEvent &&
+                (action.repeatRate ?: defaultRepeatRate) < 20 &&
+                keyMap.trigger.keys.any { it is EvdevTriggerKey }
+
         return ActionOptionsState(
             showEditButton = action.data.isEditable(),
 
             showRepeat = keyMap.isRepeatingActionsAllowed(),
+            showRepeatRateWarning = showRepeatRateWarning,
             isRepeatChecked = action.repeat,
 
             showRepeatRate = keyMap.isChangingActionRepeatRateAllowed(action),
@@ -470,6 +479,7 @@ data class ActionOptionsState(
     val isRepeatChecked: Boolean,
 
     val showRepeatRate: Boolean,
+    val showRepeatRateWarning: Boolean,
     val repeatRate: Int,
     val defaultRepeatRate: Int,
 

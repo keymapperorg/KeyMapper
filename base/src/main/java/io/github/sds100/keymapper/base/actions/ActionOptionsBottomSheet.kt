@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -124,6 +125,29 @@ fun ActionOptionsBottomSheet(
                     isChecked = state.isRepeatChecked,
                     onCheckedChange = callback::onRepeatCheckedChange,
                 )
+            }
+
+            if (state.showRepeatRateWarning) {
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(Modifier.width(16.dp))
+                    Icon(
+                        Icons.Rounded.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.action_repeat_rate_warning),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    Spacer(Modifier.width(16.dp))
+                }
             }
 
             if (state.showRepeatRate) {
@@ -421,6 +445,7 @@ private fun Preview() {
                 showEditButton = true,
                 showRepeat = true,
                 isRepeatChecked = true,
+                showRepeatRateWarning = true,
 
                 showRepeatRate = true,
                 repeatRate = 400,
@@ -480,6 +505,7 @@ private fun PreviewNoEditButton() {
                 showEditButton = false,
                 showRepeat = true,
                 isRepeatChecked = true,
+                showRepeatRateWarning = true,
 
                 showRepeatRate = true,
                 repeatRate = 400,

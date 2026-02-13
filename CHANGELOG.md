@@ -7,6 +7,7 @@
 - #2024 support Expert mode on all Android versions supported by Key Mapper (8.0+).
 - #2025 add report bug button to home screen menu.
 - #2027 Make the key map sorting feature easier to understand.
+- #2016 Show a warning when repeating a key code action less than 20 ms with expert mode triggers.
 
 ## Fixed
 
