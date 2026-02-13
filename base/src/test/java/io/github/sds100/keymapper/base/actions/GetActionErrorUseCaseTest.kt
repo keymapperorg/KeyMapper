@@ -4,7 +4,6 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -77,7 +76,7 @@ class GetActionErrorUseCaseTest {
             cameraAdapter = mock(),
             soundsManager = mock(),
             ringtoneAdapter = mock(),
-            buildConfigProvider = TestBuildConfigProvider(sdkInt = Constants.SYSTEM_BRIDGE_MIN_API),
+            buildConfigProvider = TestBuildConfigProvider(sdkInt = 36),
             systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
             preferenceRepository = fakePreferenceRepository,
         )
