@@ -187,8 +187,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.launchDeveloperOptions()
     }
 
-    override val shellHasGrantRuntimePermissions: Flow<Boolean> =
-        systemBridgeSetupController.shellHasGrantRuntimePermissions
+    override val xiaomiAdbSecuritySettingsEnabled: Flow<Boolean> =
+        systemBridgeSetupController.xiaomiAdbSecuritySettingsEnabled
 
     override fun connectWifiNetwork() {
         networkAdapter.connectWifiNetwork()
@@ -352,7 +352,7 @@ interface SystemBridgeSetupUseCase {
     fun startSystemBridgeWithAdb()
     fun autoStartSystemBridgeWithAdb()
 
-    val shellHasGrantRuntimePermissions: Flow<Boolean>
+    val xiaomiAdbSecuritySettingsEnabled: Flow<Boolean>
 
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
 

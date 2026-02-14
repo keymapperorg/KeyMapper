@@ -13,7 +13,8 @@
 ## Fixed
 
 - #2030 do not filter out unknown evdev key events.
-- #2028 work around Shizuku bug on Mediatek devices that prevents Expert mode from starting
+- #2028 work around Shizuku bug on Mediatek devices that prevents Expert mode from starting.
+- #2034 catch errors when injecting events with Expert mode on Xiaomi devices and show warning to fix on home screen.
 
 ## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
 

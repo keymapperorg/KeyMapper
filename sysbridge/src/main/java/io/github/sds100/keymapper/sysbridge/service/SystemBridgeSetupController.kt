@@ -81,8 +81,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private val isAdbPairedResult: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     private var isAdbPairedJob: Job? = null
 
-    override val shellHasGrantRuntimePermissions: MutableStateFlow<Boolean> =
-        MutableStateFlow(getShellHasGrantRuntimePermissions())
+    override val xiaomiAdbSecuritySettingsEnabled: MutableStateFlow<Boolean> =
+        MutableStateFlow(getXiaomiAdbSecuritySettingsEnabled())
 
     init {
         // Automatically go back to the Key Mapper app when turning on wireless debugging
@@ -365,7 +365,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     fun invalidateSettings() {
         isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
         isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
-        shellHasGrantRuntimePermissions.update { getShellHasGrantRuntimePermissions() }
+        xiaomiAdbSecuritySettingsEnabled.update { getXiaomiAdbSecuritySettingsEnabled() }
     }
 
     private fun getDeveloperOptionsEnabled(): Boolean {
@@ -384,7 +384,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
     }
 
-    private fun getShellHasGrantRuntimePermissions(): Boolean {
+    private fun getXiaomiAdbSecuritySettingsEnabled(): Boolean {
         return ctx.packageManager.checkPermission(
             "android.permission.GRANT_RUNTIME_PERMISSIONS",
             "com.android.shell",
@@ -444,7 +444,7 @@ interface SystemBridgeSetupController {
      * the Shell to have permission to grant runtime permissions, such as WRITE_SECURE_SETTINGS
      * to Key Mapper.
      */
-    val shellHasGrantRuntimePermissions: StateFlow<Boolean>
+    val xiaomiAdbSecuritySettingsEnabled: StateFlow<Boolean>
 
     fun launchDeveloperOptions()
 

@@ -3,7 +3,9 @@ package io.github.sds100.keymapper.base.home
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import javax.inject.Inject
@@ -14,8 +16,9 @@ import kotlinx.coroutines.flow.map
 class ShowHomeScreenAlertsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val permissions: PermissionAdapter,
-    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val systemBridgeSetupController: SystemBridgeSetupController,
 ) : ShowHomeScreenAlertsUseCase {
     override val hideAlerts: Flow<Boolean> =
         preferences.get(Keys.hideHomeScreenAlerts).map { it == true }
@@ -48,6 +51,19 @@ class ShowHomeScreenAlertsUseCaseImpl @Inject constructor(
             !isGranted && !neverShow
         }
 
+    override val showXiaomiAdbSecuritySettingsWarning: Flow<Boolean> =
+        combine(
+            systemBridgeConnectionManager.connectionState,
+            systemBridgeSetupController.xiaomiAdbSecuritySettingsEnabled,
+        ) { connectionState, xiaomiSettingEnabled ->
+            connectionState is SystemBridgeConnectionState.Connected &&
+                !xiaomiSettingEnabled
+        }
+
+    override fun launchDeveloperOptions() {
+        systemBridgeSetupController.launchDeveloperOptions()
+    }
+
     override fun requestNotificationPermission() {
         permissions.request(Permission.POST_NOTIFICATIONS)
     }
@@ -70,4 +86,8 @@ interface ShowHomeScreenAlertsUseCase {
     val showNotificationPermissionAlert: Flow<Boolean>
     fun requestNotificationPermission()
     fun neverShowNotificationPermissionAlert()
+
+    val showXiaomiAdbSecuritySettingsWarning: Flow<Boolean>
+
+    fun launchDeveloperOptions()
 }

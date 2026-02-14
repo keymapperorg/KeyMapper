@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -99,6 +100,7 @@ class KeyMapListViewModel(
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
         const val ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM = "notification_permission_denied"
+        const val ID_XIAOMI_ADB_SECURITY_SETTINGS_LIST_ITEM = "xiaomi_adb_security_settings"
     }
 
     val sortViewModel = SortViewModel(coroutineScope, sortKeyMaps)
@@ -144,70 +146,83 @@ class KeyMapListViewModel(
 
     private val isEditingGroupName = MutableStateFlow(false)
 
-    private val warnings: Flow<List<HomeWarningListItem>> = combine(
-        showAlertsUseCase.isBatteryOptimised,
-        accessibilityServiceState,
-        showAlertsUseCase.hideAlerts,
-        showAlertsUseCase.isLoggingEnabled,
-        showAlertsUseCase.showNotificationPermissionAlert,
-    ) {
-            isBatteryOptimised,
-            serviceState,
-            isHidden,
-            isLoggingEnabled,
-            showNotificationPermissionAlert,
-        ->
-        if (isHidden) {
-            return@combine emptyList()
+    private val warnings: Flow<List<HomeWarningListItem>> =
+        showAlertsUseCase.hideAlerts.flatMapLatest { hideAlerts ->
+            if (hideAlerts) {
+                flowOf(emptyList())
+            } else {
+                combine(
+                    showAlertsUseCase.isBatteryOptimised,
+                    accessibilityServiceState,
+                    showAlertsUseCase.isLoggingEnabled,
+                    showAlertsUseCase.showNotificationPermissionAlert,
+                    showAlertsUseCase.showXiaomiAdbSecuritySettingsWarning,
+                    this::buildWarningListItems,
+                )
+            }
         }
 
-        buildList {
-            when (serviceState) {
-                AccessibilityServiceState.CRASHED ->
-                    add(
-                        HomeWarningListItem(
-                            ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
-                            getString(R.string.home_error_accessibility_service_is_crashed),
-                        ),
-                    )
-
-                AccessibilityServiceState.DISABLED ->
-                    add(
-                        HomeWarningListItem(
-                            ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
-                            getString(R.string.home_error_accessibility_service_is_disabled),
-                        ),
-                    )
-
-                AccessibilityServiceState.ENABLED -> {}
-            }
-
-            if (isBatteryOptimised) {
+    private fun buildWarningListItems(
+        isBatteryOptimised: Boolean,
+        serviceState: AccessibilityServiceState,
+        isLoggingEnabled: Boolean,
+        showNotificationPermissionAlert: Boolean,
+        showXiaomiAdbSecuritySettingsWarning: Boolean,
+    ): List<HomeWarningListItem> = buildList {
+        when (serviceState) {
+            AccessibilityServiceState.CRASHED ->
                 add(
                     HomeWarningListItem(
-                        ID_BATTERY_OPTIMISATION_LIST_ITEM,
-                        getString(R.string.home_error_is_battery_optimised),
+                        ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
+                        getString(R.string.home_error_accessibility_service_is_crashed),
                     ),
                 )
-            } // don't show a success message for this
 
-            if (showNotificationPermissionAlert) {
+            AccessibilityServiceState.DISABLED ->
                 add(
                     HomeWarningListItem(
-                        ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM,
-                        getString(R.string.home_error_notification_permission),
+                        ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
+                        getString(R.string.home_error_accessibility_service_is_disabled),
                     ),
                 )
-            }
 
-            if (isLoggingEnabled) {
-                add(
-                    HomeWarningListItem(
-                        ID_LOGGING_ENABLED_LIST_ITEM,
-                        getString(R.string.home_error_logging_enabled),
-                    ),
-                )
-            }
+            AccessibilityServiceState.ENABLED -> {}
+        }
+
+        if (isBatteryOptimised) {
+            add(
+                HomeWarningListItem(
+                    ID_BATTERY_OPTIMISATION_LIST_ITEM,
+                    getString(R.string.home_error_is_battery_optimised),
+                ),
+            )
+        } // don't show a success message for this
+
+        if (showNotificationPermissionAlert) {
+            add(
+                HomeWarningListItem(
+                    ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM,
+                    getString(R.string.home_error_notification_permission),
+                ),
+            )
+        }
+
+        if (showXiaomiAdbSecuritySettingsWarning) {
+            add(
+                HomeWarningListItem(
+                    ID_XIAOMI_ADB_SECURITY_SETTINGS_LIST_ITEM,
+                    getString(R.string.expert_mode_usb_debugging_security_settings_description),
+                ),
+            )
+        }
+
+        if (isLoggingEnabled) {
+            add(
+                HomeWarningListItem(
+                    ID_LOGGING_ENABLED_LIST_ITEM,
+                    getString(R.string.home_error_logging_enabled),
+                ),
+            )
         }
     }
 
@@ -687,6 +702,9 @@ class KeyMapListViewModel(
 
                 ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM ->
                     showNotificationPermissionAlertDialog()
+
+                ID_XIAOMI_ADB_SECURITY_SETTINGS_LIST_ITEM ->
+                    showAlertsUseCase.launchDeveloperOptions()
             }
         }
     }

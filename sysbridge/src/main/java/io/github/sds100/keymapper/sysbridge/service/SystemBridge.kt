@@ -486,7 +486,12 @@ class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {
-        return inputManager.injectInputEvent(event, mode)
+        try {
+            return inputManager.injectInputEvent(event, mode)
+        } catch (e: SecurityException) {
+            logCallback?.onLog(Log.WARN, "Failed to inject event due to security exception: $e")
+            return false
+        }
     }
 
     override fun getEvdevInputDevices(): Array<out EvdevDeviceInfo?> {

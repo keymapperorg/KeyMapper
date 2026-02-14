@@ -318,15 +318,6 @@ private fun LoadedContent(
 
         when (state) {
             is ExpertModeState.Started -> {
-                ExpertModeStartedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    onStopClick = onStopServiceClick,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 if (!state.isDefaultUsbModeCompatible) {
                     IncompatibleUsbModeCard(
                         modifier = Modifier
@@ -344,11 +335,19 @@ private fun LoadedContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
-                        onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+
+                ExpertModeStartedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    onStopClick = onStopServiceClick,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 SwitchPreferenceCompose(
                     modifier = Modifier.padding(horizontal = 8.dp),
@@ -530,10 +529,8 @@ private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun UsbDebuggingSecuritySettingsCard(
-    modifier: Modifier = Modifier,
-    onLaunchDeveloperOptionsClick: () -> Unit = {},
-) {
+private fun UsbDebuggingSecuritySettingsCard(modifier: Modifier = Modifier) {
+    val ctx = LocalContext.current
     SetupCard(
         modifier = modifier,
         color = MaterialTheme.colorScheme.errorContainer,
@@ -558,7 +555,13 @@ private fun UsbDebuggingSecuritySettingsCard(
         buttonText = stringResource(
             R.string.expert_mode_usb_debugging_security_settings_button,
         ),
-        onButtonClick = onLaunchDeveloperOptionsClick,
+        onButtonClick = {
+            SettingsUtils.launchSettingsScreen(
+                ctx,
+                Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
+                null,
+            )
+        },
     )
 }
 

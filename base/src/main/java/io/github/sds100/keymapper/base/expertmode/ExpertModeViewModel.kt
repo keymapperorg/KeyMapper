@@ -213,15 +213,15 @@ class ExpertModeViewModel @Inject constructor(
     private fun startedStateFlow(): Flow<ExpertModeState.Started> = combine(
         useCase.isAutoStartBootEnabled,
         useCase.isAutoStartBootAllowed,
-        useCase.shellHasGrantRuntimePermissions,
-    ) { autoStartBootChecked, autoStartBootEnabled, shellHasGrantRuntimePermissions ->
+        useCase.xiaomiAdbSecuritySettingsEnabled,
+    ) { autoStartBootChecked, autoStartBootEnabled, xiaomiAdbSecuritySettingsEnabled ->
         ExpertModeState.Started(
             isDefaultUsbModeCompatible =
             useCase.isCompatibleUsbModeSelected().valueOrNull()
                 ?: false,
             autoStartBootChecked = autoStartBootChecked,
             autoStartBootEnabled = autoStartBootEnabled,
-            showXiaomiAdbInputSecurityWarning = !shellHasGrantRuntimePermissions,
+            showXiaomiAdbInputSecurityWarning = !xiaomiAdbSecuritySettingsEnabled,
         )
     }
 }
