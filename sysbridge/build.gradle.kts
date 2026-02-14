@@ -11,7 +11,7 @@ android {
     namespace = "io.github.sds100.keymapper.sysbridge"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
-    ndkVersion = "27.2.12479018"
+    ndkVersion = "27.3.13750724"
 
     defaultConfig {
         // System bridge originally only supported Android 10+ because that was the min sdk
