@@ -10,8 +10,10 @@ import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -68,7 +70,15 @@ class ConfigShellCommandViewModelTest {
 
         mockExecuteShellCommandUseCase = mock()
         mockNavigationProvider = mock()
-        mockSystemBridgeConnectionManager = mock()
+        mockSystemBridgeConnectionManager = mock {
+            on { connectionState }.thenReturn(
+                MutableStateFlow(
+                    SystemBridgeConnectionState.Connected(
+                        0L,
+                    ),
+                ),
+            )
+        }
 
         fakePreferenceRepository = FakePreferenceRepository()
 
