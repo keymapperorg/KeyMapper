@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.automirrored.outlined.ShortText
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.automirrored.outlined.VolumeDown
@@ -1036,7 +1035,7 @@ object ActionUtils {
         ActionId.TEXT_COPY -> Icons.Rounded.ContentCopy
         ActionId.TEXT_PASTE -> Icons.Rounded.ContentPaste
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
-        ActionId.PERFORM_IME_ACTION -> Icons.AutoMirrored.Outlined.Send
+        ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
