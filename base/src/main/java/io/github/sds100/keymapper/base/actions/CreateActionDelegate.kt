@@ -1066,6 +1066,8 @@ class CreateActionDelegate(
 
             ActionId.SHOW_KEYBOARD_PICKER -> return ActionData.ShowKeyboardPicker
 
+            ActionId.PERFORM_IME_ACTION -> return ActionData.PerformImeAction
+
             ActionId.TEXT_CUT -> return ActionData.CutText
 
             ActionId.TEXT_COPY -> return ActionData.CopyText
