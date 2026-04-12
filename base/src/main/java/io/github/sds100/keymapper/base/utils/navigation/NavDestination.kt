@@ -45,6 +45,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_EXPERT_MODE = "expert_mode"
         const val ID_LOG = "log"
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
+        const val ID_GET_EVENT = "get_event"
     }
 
     @Serializable
@@ -210,5 +211,10 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object AdvancedTriggers : NavDestination<TriggerSetupShortcut?>(isCompose = true) {
         override val id: String = ID_ADVANCED_TRIGGERS
+    }
+
+    @Serializable
+    data object GetEvent : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_GET_EVENT
     }
 }

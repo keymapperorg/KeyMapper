@@ -635,6 +635,17 @@
     <string name="summary_pref_share_logcat">Share the entire system log</string>
     <string name="dialog_title_share_logcat_error">Sharing logcat failed</string>
 
+    <string name="title_pref_get_event_debug">Expert Mode debug</string>
+    <string name="summary_pref_get_event_debug">View raw input device info and events</string>
+    <string name="title_debug_getevent">Expert Mode Debug</string>
+    <string name="debug_getevent_expert_mode_required">Expert Mode is required to use getevent. Start Expert Mode and then return to this screen.</string>
+    <string name="debug_getevent_start_recording">Record</string>
+    <string name="debug_getevent_stop_recording">Stop Recording</string>
+    <string name="debug_getevent_clear">Clear output</string>
+    <string name="debug_getevent_loading">Loading device info\u2026</string>
+    <string name="debug_getevent_copy">Copy to clipboard</string>
+    <string name="debug_getevent_save">Save to file</string>
+
     <string name="title_pref_report_issue">Report issue</string>
 
     <string name="title_pref_delete_sound_files">Delete sound files</string>

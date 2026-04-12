@@ -291,6 +291,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onGetEventClick() {
+        viewModelScope.launch {
+            navigate("get_event_debug", NavDestination.GetEvent)
+        }
+    }
+
     fun onShareLogcatClick() {
         viewModelScope.launch {
             if (shareLogcatUseCase.isPermissionGranted()) {
