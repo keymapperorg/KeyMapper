@@ -545,6 +545,7 @@ object ActionDataEntityMapper {
             ActionId.SHOW_KEYBOARD -> ActionData.ShowKeyboard
             ActionId.HIDE_KEYBOARD -> ActionData.HideKeyboard
             ActionId.SHOW_KEYBOARD_PICKER -> ActionData.ShowKeyboardPicker
+            ActionId.PERFORM_IME_ACTION -> ActionData.PerformImeAction
             ActionId.TEXT_CUT -> ActionData.CutText
             ActionId.TEXT_COPY -> ActionData.CopyText
             ActionId.TEXT_PASTE -> ActionData.PasteText
@@ -1322,6 +1323,7 @@ object ActionDataEntityMapper {
         ActionId.SHOW_KEYBOARD to "show_keyboard",
         ActionId.HIDE_KEYBOARD to "hide_keyboard",
         ActionId.SHOW_KEYBOARD_PICKER to "show_keyboard_picker",
+        ActionId.PERFORM_IME_ACTION to "perform_ime_action",
         ActionId.TEXT_CUT to "text_cut",
         ActionId.TEXT_COPY to "text_copy",
         ActionId.TEXT_PASTE to "text_paste",

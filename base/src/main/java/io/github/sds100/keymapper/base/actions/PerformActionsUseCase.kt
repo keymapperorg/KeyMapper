@@ -764,6 +764,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = inputMethodAdapter.showImePicker(fromForeground = false)
             }
 
+            is ActionData.PerformImeAction -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    result = service.performActionOnNode({ it.isFocused }) {
+                        AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_IME_ENTER)
+                    }
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
+                }
+            }
+
             is ActionData.CutText -> {
                 result = service.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
