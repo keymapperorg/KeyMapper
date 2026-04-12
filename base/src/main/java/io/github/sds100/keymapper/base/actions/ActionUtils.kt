@@ -931,6 +931,16 @@ object ActionUtils {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
+            ActionId.TOGGLE_HOTSPOT,
+            ActionId.ENABLE_HOTSPOT,
+            ActionId.DISABLE_HOTSPOT,
+                ->
+                // On Android 11, WRITE_SETTINGS is used as an alternative to the system bridge
+                // which requires Shizuku/root. On Android 12+, the system bridge is preferred.
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+                    return listOf(Permission.WRITE_SETTINGS)
+                }
+
             // Permissions handled based on setting type at runtime
             ActionId.MODIFY_SETTING -> return emptyList()
 

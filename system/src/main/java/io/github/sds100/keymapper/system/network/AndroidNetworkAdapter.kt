@@ -222,6 +222,13 @@ class AndroidNetworkAdapter @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun isHotspotEnabled(): KMResult<Boolean> {
+        // On Android 11 try the public (deprecated) WifiManager API first since
+        // the SystemBridge TetheringConnector may not be available without root/Shizuku.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+            @Suppress("DEPRECATION")
+            return Success(wifiManager.isWifiApEnabled)
+        }
+
         // isTetheringEnabled is a blocking call that registers a callback
         return withContext(Dispatchers.IO) {
             systemBridgeConnManager.run { systemBridge -> systemBridge.isTetheringEnabled }
@@ -230,12 +237,66 @@ class AndroidNetworkAdapter @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun enableHotspot(): KMResult<*> {
+        // On Android 11, use the hidden ConnectivityManager API via reflection when
+        // WRITE_SETTINGS is granted. This avoids needing Shizuku/root on Android 11.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R &&
+            Settings.System.canWrite(ctx)
+        ) {
+            return enableHotspotViaReflection()
+        }
+
         return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(true) }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun disableHotspot(): KMResult<*> {
+        // On Android 11, use the hidden ConnectivityManager API via reflection when
+        // WRITE_SETTINGS is granted. This avoids needing Shizuku/root on Android 11.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R &&
+            Settings.System.canWrite(ctx)
+        ) {
+            return disableHotspotViaReflection()
+        }
+
         return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(false) }
+    }
+
+    /**
+     * Enables the WiFi hotspot using the hidden ConnectivityManager.startTethering() API
+     * via reflection. This works on Android 11 with only WRITE_SETTINGS permission.
+     */
+    private fun enableHotspotViaReflection(): KMResult<*> {
+        return try {
+            // TETHERING_WIFI = 0
+            val startTetheringMethod = connectivityManager.javaClass.methods
+                .firstOrNull { it.name == "startTethering" }
+                ?: return KMError.Exception(Exception("startTethering not found on this device"))
+
+            startTetheringMethod.invoke(connectivityManager, 0, false, null, null)
+            Success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to enable hotspot via reflection")
+            KMError.Exception(e)
+        }
+    }
+
+    /**
+     * Disables the WiFi hotspot using the hidden ConnectivityManager.stopTethering() API
+     * via reflection. This works on Android 11 with only WRITE_SETTINGS permission.
+     */
+    private fun disableHotspotViaReflection(): KMResult<*> {
+        return try {
+            // TETHERING_WIFI = 0
+            val stopTetheringMethod = connectivityManager.javaClass.methods
+                .firstOrNull { it.name == "stopTethering" }
+                ?: return KMError.Exception(Exception("stopTethering not found on this device"))
+
+            stopTetheringMethod.invoke(connectivityManager, 0)
+            Success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to disable hotspot via reflection")
+            KMError.Exception(e)
+        }
     }
 
     /**

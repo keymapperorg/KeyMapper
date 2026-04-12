@@ -198,6 +198,9 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         } catch (e: RemoteException) {
             Timber.e(e, "RemoteException when running block with System Bridge")
             return KMError.Exception(e)
+        } catch (e: RuntimeException) {
+            Timber.e(e, "RuntimeException when running block with System Bridge")
+            return KMError.Exception(e)
         }
     }
 
