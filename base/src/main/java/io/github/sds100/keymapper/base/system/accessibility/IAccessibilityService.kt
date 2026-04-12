@@ -66,4 +66,7 @@ interface IAccessibilityService : SwitchImeInterface {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun injectText(text: String)
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun performImeAction()
 }

@@ -766,9 +766,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.PerformImeAction -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    result = service.performActionOnNode({ it.isFocused }) {
-                        AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_IME_ENTER)
-                    }
+                    service.performImeAction()
+                    result = Success(Unit)
                 } else {
                     result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
                 }
