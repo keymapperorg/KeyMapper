@@ -77,6 +77,7 @@ Example: `#2025 feat: add button to report bug on home screen`
 - Check `KeyMapperIcons` before using other icon sources
 - Use `LocalUriHandler.openUriSafe` extension for URL launching — do not hoist URL launching logic up the call stack
 - Use import statements; never use fully qualified names in Compose code
+- Write `@Preview` composables for every screen
 
 ## Adding a New Action (10-step checklist)
 
