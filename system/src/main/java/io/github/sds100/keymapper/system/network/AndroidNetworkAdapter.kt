@@ -222,11 +222,18 @@ class AndroidNetworkAdapter @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun isHotspotEnabled(): KMResult<Boolean> {
-        // On Android 11 try the public (deprecated) WifiManager API first since
-        // the SystemBridge TetheringConnector may not be available without root/Shizuku.
+        // On Android 11, use reflection to check soft AP state. The deprecated
+        // WifiManager.isWifiApEnabled() may not be available in newer SDK compilation stubs.
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
-            @Suppress("DEPRECATION")
-            return Success(wifiManager.isWifiApEnabled)
+            return try {
+                val method = wifiManager.javaClass.getMethod("isWifiApEnabled")
+                Success(method.invoke(wifiManager) == true)
+            } catch (e: Exception) {
+                Timber.w(e, "Could not check hotspot state via reflection on Android 11")
+                withContext(Dispatchers.IO) {
+                    systemBridgeConnManager.run { systemBridge -> systemBridge.isTetheringEnabled }
+                }
+            }
         }
 
         // isTetheringEnabled is a blocking call that registers a callback
