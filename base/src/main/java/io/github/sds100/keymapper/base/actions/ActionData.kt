@@ -834,6 +834,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object PerformImeAction : ActionData() {
+        override val id = ActionId.PERFORM_IME_ACTION
+    }
+
+    @Serializable
     data object CopyText : ActionData() {
         override val id = ActionId.TEXT_COPY
     }

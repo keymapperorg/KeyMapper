@@ -225,6 +225,7 @@ object ActionUtils {
         ActionId.HIDE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.SHOW_KEYBOARD_PICKER -> ActionCategory.KEYBOARD
         ActionId.SELECT_WORD_AT_CURSOR -> ActionCategory.KEYBOARD
+        ActionId.PERFORM_IME_ACTION -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
@@ -424,6 +425,8 @@ object ActionUtils {
 
         ActionId.SELECT_WORD_AT_CURSOR -> R.string.action_select_word_at_cursor
 
+        ActionId.PERFORM_IME_ACTION -> R.string.action_perform_ime_action
+
         ActionId.SWITCH_KEYBOARD -> R.string.action_switch_keyboard
 
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
@@ -599,6 +602,7 @@ object ActionUtils {
         ActionId.TEXT_COPY -> R.drawable.ic_content_copy
         ActionId.TEXT_PASTE -> R.drawable.ic_content_paste
         ActionId.SELECT_WORD_AT_CURSOR -> null
+        ActionId.PERFORM_IME_ACTION -> null
         ActionId.SWITCH_KEYBOARD -> R.drawable.ic_outline_keyboard_24
         ActionId.TOGGLE_AIRPLANE_MODE -> R.drawable.ic_outline_airplanemode_active_24
         ActionId.ENABLE_AIRPLANE_MODE -> R.drawable.ic_outline_airplanemode_active_24
@@ -676,6 +680,8 @@ object ActionUtils {
         ActionId.TEXT_PASTE,
         ActionId.SELECT_WORD_AT_CURSOR,
             -> Build.VERSION_CODES.JELLY_BEAN_MR2
+
+        ActionId.PERFORM_IME_ACTION -> Build.VERSION_CODES.TIRAMISU
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
 
@@ -1029,6 +1035,7 @@ object ActionUtils {
         ActionId.TEXT_COPY -> Icons.Rounded.ContentCopy
         ActionId.TEXT_PASTE -> Icons.Rounded.ContentPaste
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
+        ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive

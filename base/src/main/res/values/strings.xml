@@ -1074,6 +1074,8 @@
 
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
 
+    <string name="action_perform_ime_action">Keyboard enter/send</string>
+
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
 

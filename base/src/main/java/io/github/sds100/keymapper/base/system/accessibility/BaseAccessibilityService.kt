@@ -569,4 +569,8 @@ abstract class BaseAccessibilityService :
             null,
         )
     }
+
+    override fun performImeAction() {
+        inputMethod?.currentInputConnection?.performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED)
+    }
 }
