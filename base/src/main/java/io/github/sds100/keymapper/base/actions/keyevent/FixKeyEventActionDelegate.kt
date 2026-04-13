@@ -63,10 +63,6 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
         preferenceRepository.get(Keys.keyEventActionsUseSystemBridge)
             .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
 
-    override val isAutoSwitchImeEnabled: Flow<Boolean> =
-        preferenceRepository.get(Keys.changeImeOnInputFocus)
-            .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
-
     private val showBottomSheet: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -170,7 +166,6 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
 
 interface FixKeyEventActionDelegate {
     val fixKeyEventActionState: StateFlow<FixKeyEventActionState?>
-    val isAutoSwitchImeEnabled: Flow<Boolean>
 
     fun showFixKeyEventActionBottomSheet()
     fun dismissFixKeyEventActionBottomSheet()

@@ -908,7 +908,7 @@ class KeyMapListViewModel(
 
     fun showInputMethodPicker() {
         coroutineScope.launch {
-            val autoSwitchEnabled = isAutoSwitchImeEnabled.first()
+            val autoSwitchEnabled = showInputMethodPickerUseCase.isAutoSwitchImeEnabled.first()
 
             if (autoSwitchEnabled) {
                 val response = showDialog(
@@ -923,7 +923,7 @@ class KeyMapListViewModel(
 
                 if (response != DialogResponse.POSITIVE) return@launch
 
-                onAutoSwitchImeCheckedChange(false)
+                showInputMethodPickerUseCase.disableAutoSwitch()
             }
 
             showInputMethodPickerUseCase.show(fromForeground = true)
