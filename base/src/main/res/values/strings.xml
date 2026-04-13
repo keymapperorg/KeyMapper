@@ -1901,4 +1901,7 @@
     <string name="dialog_bug_report_discord_button">Open Discord</string>
     <string name="dialog_bug_report_email_button">Email us</string>
 
+    <string name="dialog_title_disable_auto_switch_ime">Disable auto-switch keyboard?</string>
+    <string name="dialog_message_disable_auto_switch_ime">Choosing a keyboard here will disable the automatic keyboard switching feature. You can re-enable it in Settings.</string>
+
 </resources>
