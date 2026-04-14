@@ -595,6 +595,7 @@ class ActionUiHelper(
         ActionData.SelectWordAtCursor -> getString(R.string.action_select_word_at_cursor)
         ActionData.ShowKeyboard -> getString(R.string.action_show_keyboard)
         ActionData.ShowKeyboardPicker -> getString(R.string.action_show_keyboard_picker)
+        ActionData.PerformImeAction -> getString(R.string.action_perform_ime_action)
         ActionData.ShowPowerMenu -> getString(R.string.action_show_power_menu)
 
         ActionData.StatusBar.Collapse -> getString(R.string.action_collapse_status_bar)

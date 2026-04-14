@@ -1085,6 +1085,8 @@
 
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
 
+    <string name="action_perform_ime_action">Keyboard enter/send</string>
+
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
 
@@ -1352,7 +1354,7 @@
     <!--  About  -->
 
     <!-- Support screen -->
-    <string name="support_key_mapper_title">Support Key Mapper ❤️</string>
+    <string name="support_key_mapper_title">Support Key\u00A0Mapper\u00A0❤️</string>
     <string name="support_key_mapper_subtitle">Choose add-ons to upgrade your experience</string>
     <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive!</string>
     <string name="support_key_mapper_quote">"Floating button feature is a game changer"</string>
@@ -1911,5 +1913,8 @@
     <string name="dialog_message_bug_report">We would prefer it if you report your bug to the Discord server so other users can help you. Otherwise, you can email us at contact@keymapper.app.</string>
     <string name="dialog_bug_report_discord_button">Open Discord</string>
     <string name="dialog_bug_report_email_button">Email us</string>
+
+    <string name="dialog_title_disable_auto_switch_ime">Disable auto-switch keyboard?</string>
+    <string name="dialog_message_disable_auto_switch_ime">Choosing a keyboard here will disable the automatic keyboard switching feature. You can re-enable it in Settings.</string>
 
 </resources>
