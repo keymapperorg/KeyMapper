@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.base.actions.ExecuteShellCommandUseCase
 import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.ShareUtils
 import io.github.sds100.keymapper.base.utils.getFullMessage
@@ -16,7 +17,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.actions.ExecuteShellCommandUseCase
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.handle
