@@ -53,6 +53,9 @@ class LazyActionErrorSnapshot(
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
     private val isVoiceAssistantInstalled by lazy { packageManager.isVoiceAssistantInstalled() }
+    private val isDeviceAssistantInstalled by lazy {
+        packageManager.getDeviceAssistantPackage().isSuccess
+    }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
         buildSet {
@@ -187,6 +190,12 @@ class LazyActionErrorSnapshot(
             is ActionData.VoiceAssistant -> {
                 if (!isVoiceAssistantInstalled) {
                     return KMError.NoVoiceAssistant
+                }
+            }
+
+            is ActionData.DeviceAssistant -> {
+                if (!isDeviceAssistantInstalled) {
+                    return KMError.NoDeviceAssistant
                 }
             }
 
