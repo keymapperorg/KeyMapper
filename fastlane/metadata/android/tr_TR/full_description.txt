@@ -46,10 +46,10 @@ Herhangi bir kullanıcı verisi toplamayacak veya herhangi bir veriyi göndermek
 Erişilebilirlik hizmetimiz, yalnızca kullanıcı cihazındaki fiziksel bir tuşa bastığında tetiklenir. Kullanıcı, sistem erişilebilirlik ayarlarından bu hizmeti istediği zaman kapatabilir.
 
 Discord topluluğumuza gelip merhaba deyin!
-www.keymapper.club
+keymapper.app/discord
 
 Kodu kendiniz görün! (Açık kaynak)
-code.keymapper.club
+github.com/keymapperorg/KeyMapper
 
 Belgeleri okuyun:
-docs.keymapper.club
+keymapper.app
