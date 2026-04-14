@@ -1,3 +1,12 @@
+## [4.1.0](https://github.com/sds100/KeyMapper/releases/tag/v4.1.0)
+
+#### TO BE RELEASED
+
+## Added
+
+- #2045 add action to input on-screen keyboard enter/send button.
+- #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.
+
 ## [4.0.5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.5)
 
 #### 26 February 2026
