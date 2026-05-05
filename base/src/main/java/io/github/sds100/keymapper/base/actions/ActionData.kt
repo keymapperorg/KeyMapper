@@ -925,6 +925,22 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class Toast(val message: String, val duration: Duration) : ActionData() {
+        override val id: ActionId = ActionId.TOAST
+
+        @Serializable
+        enum class Duration {
+            SHORT,
+            LONG,
+        }
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Toast -> compareValuesBy(this, other, { it.message }, { it.duration })
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
     data object AnswerCall : ActionData() {
         override val id: ActionId = ActionId.ANSWER_PHONE_CALL
     }

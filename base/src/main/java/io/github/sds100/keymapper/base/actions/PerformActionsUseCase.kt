@@ -967,6 +967,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = success()
             }
 
+            is ActionData.Toast -> {
+                toastAdapter.show(
+                    message = action.message,
+                    isLong = action.duration == ActionData.Toast.Duration.LONG,
+                )
+                result = success()
+            }
+
             ActionData.AnswerCall -> {
                 phoneAdapter.answerCall()
                 result = success()

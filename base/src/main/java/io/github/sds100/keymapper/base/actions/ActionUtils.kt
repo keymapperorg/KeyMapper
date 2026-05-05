@@ -239,6 +239,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
+        ActionId.TOAST -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
@@ -485,6 +486,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
 
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
+        ActionId.TOAST -> R.string.action_toast
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
 
@@ -632,6 +634,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
         ActionId.CREATE_NOTIFICATION -> R.drawable.ic_notification_play
+        ActionId.TOAST -> R.drawable.ic_outline_message_24
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
@@ -1067,6 +1070,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
         ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
+        ActionId.TOAST -> Icons.AutoMirrored.Outlined.Message
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -1125,6 +1129,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.HttpRequest,
     is ActionData.ShellCommand,
     is ActionData.CreateNotification,
+    is ActionData.Toast,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,

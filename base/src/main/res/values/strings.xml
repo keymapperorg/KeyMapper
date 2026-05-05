@@ -1151,6 +1151,14 @@
     <string name="button_test_create_notification">Test</string>
     <string name="button_testing">Testing…</string>
     <string name="test_create_notification_result_ok">Notification shown successfully</string>
+    <string name="action_toast">Show toast</string>
+    <string name="action_toast_description_short">Show short toast: %1$s</string>
+    <string name="action_toast_description_long">Show long toast: %1$s</string>
+    <string name="action_toast_message_label">Toast message</string>
+    <string name="action_toast_message_hint">Enter toast message</string>
+    <string name="action_toast_message_error">Message cannot be empty</string>
+    <string name="action_toast_duration_short">Short</string>
+    <string name="action_toast_duration_long">Long</string>
     <string name="action_device_controls">Device controls screen</string>
     <string name="action_http_request">HTTP request</string>
     <string name="action_http_request_method_label">HTTP Method</string>

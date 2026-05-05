@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.annotation.SuppressLint
+import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
@@ -163,6 +164,13 @@ class LazyActionErrorSnapshot(
             if (!isPermissionGranted(permission)) {
                 return SystemError.PermissionDenied(permission)
             }
+        }
+
+        if (action is ActionData.Toast &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !isPermissionGranted(Permission.POST_NOTIFICATIONS)
+        ) {
+            return SystemError.PermissionDenied(Permission.POST_NOTIFICATIONS)
         }
 
         when (action) {
