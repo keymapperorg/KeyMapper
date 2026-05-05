@@ -74,8 +74,8 @@ fun GetEventScreen(
         onBackClick = onBackClick,
         onToggleRecordClick = viewModel::onToggleRecordClick,
         onRefreshDeviceInfoClick = viewModel::onRefreshDeviceInfoClick,
-        onCopyToClipboardClick = { tab -> viewModel.onCopyToClipboardClick(tab.toOutputTab()) },
-        onSaveToFileClick = { tab -> viewModel.onSaveToFileClick(tab.toOutputTab()) },
+        onCopyToClipboardClick = viewModel::onCopyToClipboardClick,
+        onSaveToFileClick = viewModel::onSaveToFileClick,
         onSetupExpertModeClick = viewModel::onSetupExpertModeClick,
     )
 }
@@ -91,11 +91,6 @@ private enum class RefreshButtonState {
     STOP,
 }
 
-private fun GetEventTab.toOutputTab(): GetEventViewModel.OutputTab = when (this) {
-    GetEventTab.INFO -> GetEventViewModel.OutputTab.INFO
-    GetEventTab.EVENTS -> GetEventViewModel.OutputTab.EVENTS
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GetEventScreen(
@@ -104,18 +99,16 @@ private fun GetEventScreen(
     onBackClick: () -> Unit = {},
     onToggleRecordClick: () -> Unit = {},
     onRefreshDeviceInfoClick: () -> Unit = {},
-    onCopyToClipboardClick: (GetEventTab) -> Unit = {},
-    onSaveToFileClick: (GetEventTab) -> Unit = {},
+    onCopyToClipboardClick: () -> Unit = {},
+    onSaveToFileClick: () -> Unit = {},
     onSetupExpertModeClick: () -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
     val isExpertModeEnabled = state.expertModeStatus == ExpertModeStatus.ENABLED
     val selectedTab = if (pagerState.currentPage == 0) GetEventTab.INFO else GetEventTab.EVENTS
-    val hasOutputForSelectedTab = when (selectedTab) {
-        GetEventTab.INFO -> state.deviceInfoOutput.isNotEmpty()
-        GetEventTab.EVENTS -> state.recordingOutput.isNotEmpty()
-    }
+    val hasOutputForSelectedTab =
+        state.deviceInfoOutput.isNotEmpty() || state.recordingOutput.isNotEmpty()
     val refreshButtonState = when {
         selectedTab == GetEventTab.INFO -> RefreshButtonState.REFRESH_INFO
         state.isRecording -> RefreshButtonState.STOP
@@ -209,7 +202,7 @@ private fun GetEventScreen(
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(
-                        onClick = { onCopyToClipboardClick(selectedTab) },
+                        onClick = onCopyToClipboardClick,
                         enabled = hasOutputForSelectedTab,
                     ) {
                         Icon(
@@ -218,7 +211,7 @@ private fun GetEventScreen(
                         )
                     }
                     IconButton(
-                        onClick = { onSaveToFileClick(selectedTab) },
+                        onClick = onSaveToFileClick,
                         enabled = hasOutputForSelectedTab,
                     ) {
                         Icon(
@@ -366,7 +359,7 @@ private fun EventsContent(modifier: Modifier = Modifier, state: GetEventViewMode
             )
         }
 
-        if (state.recordingOutput.isNotEmpty()) {
+        if (!state.isRecording && state.recordingOutput.isNotEmpty()) {
             SelectionContainer(
                 modifier = Modifier
                     .weight(1f)

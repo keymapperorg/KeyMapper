@@ -24,11 +24,6 @@ class GetEventViewModel @Inject constructor(
 ) : ViewModel(),
     NavigationProvider by navigationProvider {
 
-    enum class OutputTab {
-        INFO,
-        EVENTS,
-    }
-
     data class State(
         val deviceInfoOutput: String = "",
         val recordingOutput: String = "",
@@ -102,19 +97,27 @@ class GetEventViewModel @Inject constructor(
         }
     }
 
-    fun onCopyToClipboardClick(tab: OutputTab) {
-        outputUseCase.copyOutput(getOutputForTab(tab))
+    fun onCopyToClipboardClick() {
+        outputUseCase.copyOutput(getCombinedOutput())
     }
 
-    fun onSaveToFileClick(tab: OutputTab) {
+    fun onSaveToFileClick() {
         viewModelScope.launch {
-            outputUseCase.shareOutput(getOutputForTab(tab))
+            outputUseCase.shareOutput(getCombinedOutput())
         }
     }
 
-    private fun getOutputForTab(tab: OutputTab): String = when (tab) {
-        OutputTab.INFO -> state.deviceInfoOutput
-        OutputTab.EVENTS -> state.recordingOutput
+    private fun getCombinedOutput(): String = buildString {
+        if (state.deviceInfoOutput.isNotBlank()) {
+            append(state.deviceInfoOutput)
+        }
+
+        if (state.recordingOutput.isNotBlank()) {
+            if (isNotEmpty()) {
+                append("\n\n")
+            }
+            append(state.recordingOutput)
+        }
     }
 
     fun onBackClick() {

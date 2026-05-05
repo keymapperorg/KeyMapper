@@ -152,7 +152,6 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onLoggingToggled = viewModel::onLoggingToggled,
             onViewLogClick = viewModel::onViewLogClick,
-            onGetEventClick = viewModel::onGetEventClick,
             onHideHomeScreenAlertsToggled = viewModel::onHideHomeScreenAlertsToggled,
             onShowDeviceDescriptorsToggled = viewModel::onShowDeviceDescriptorsToggled,
             onAutomaticBackupClick = {
@@ -236,7 +235,6 @@ private fun Content(
     onForceVibrateToggled: (Boolean) -> Unit = { },
     onLoggingToggled: (Boolean) -> Unit = { },
     onViewLogClick: () -> Unit = { },
-    onGetEventClick: () -> Unit = { },
     onShareLogcatClick: () -> Unit = { },
     onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
     onShowDeviceDescriptorsToggled: (Boolean) -> Unit = { },
@@ -398,13 +396,6 @@ private fun Content(
             text = stringResource(R.string.summary_pref_share_logcat),
             icon = Icons.Outlined.Android,
             onClick = onShareLogcatClick,
-        )
-
-        OptionPageButton(
-            title = stringResource(R.string.title_pref_get_event_debug),
-            text = stringResource(R.string.summary_pref_get_event_debug),
-            icon = Icons.Rounded.Keyboard,
-            onClick = onGetEventClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))

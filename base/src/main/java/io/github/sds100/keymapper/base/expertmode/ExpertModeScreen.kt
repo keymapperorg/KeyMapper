@@ -29,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
@@ -74,6 +75,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FakeShizuku
@@ -114,6 +116,7 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
             onLaunchDeveloperOptionsClick = viewModel::onLaunchDeveloperOptionsClick,
             onGetShellStartCommandClick = viewModel::onGetShellStartCommandClick,
+            onGetEventClick = viewModel::onGetEventClick,
         )
     }
 }
@@ -196,6 +199,7 @@ private fun Content(
     onAutoStartAtBootToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
     onGetShellStartCommandClick: () -> Unit = {},
+    onGetEventClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -255,6 +259,27 @@ private fun Content(
                 textAlign = TextAlign.Center,
             )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            icon = Icons.Outlined.BugReport,
+            text = stringResource(R.string.settings_section_debugging_title),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionPageButton(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            title = stringResource(R.string.title_pref_get_event_debug),
+            text = stringResource(R.string.summary_pref_get_event_debug),
+            icon = Icons.Outlined.BugReport,
+            onClick = onGetEventClick,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
