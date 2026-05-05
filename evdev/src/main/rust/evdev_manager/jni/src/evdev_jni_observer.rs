@@ -56,12 +56,7 @@ impl EvdevJniObserver {
     }
 
     /// Handle power button emergency kill.
-    fn handle_power_button(
-        &self,
-        ev_code: u32,
-        android_code: u32,
-        value: i32,
-    ) {
+    fn handle_power_button(&self, ev_code: u32, android_code: u32, value: i32) {
         let mut time_guard = self.power_button_down_time.lock().unwrap();
         // KEY_POWER scan code = 116
         if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
@@ -69,11 +64,8 @@ impl EvdevJniObserver {
                 *time_guard = Some(Instant::now());
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
-                if should_emergency_kill(
-                    *time_guard,
-                    Instant::now(),
-                    EMERGENCY_KILL_HOLD_DURATION,
-                ) {
+                if should_emergency_kill(*time_guard, Instant::now(), EMERGENCY_KILL_HOLD_DURATION)
+                {
                     // Must send log to Key Mapper for diagnostic purposes.
                     warn!("Emergency killing system bridge!");
                     // Call BaseSystemBridge.onEmergencyKillSystemBridge() via JNI
