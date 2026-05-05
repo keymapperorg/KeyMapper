@@ -15,6 +15,7 @@
 ## Fixed
 
 - #2091 show an error on the "open device assistant" action when no device assistant is installed.
+- #2107 clarify the crashed accessibility service dialog text and keep only Cancel/Restart actions.
 
 ## [4.0.5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.5)
 

@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,15 +39,10 @@ fun HandleAccessibilityServiceDialogs(delegate: SetupAccessibilityServiceDelegat
         }
 
         is AccessibilityServiceDialog.RestartService -> {
-            val dontKillMyAppUrl = stringResource(R.string.url_dont_kill_my_app)
             RestartAccessibilityServiceDialog(
                 modifier = Modifier,
                 onDismissRequest = delegate::onCancelClick,
                 onRestartClick = delegate::onRestartServiceClick,
-                onDontKillMyAppClick = {
-                    uriHandler.openUriSafe(context, dontKillMyAppUrl)
-                },
-                onIgnoreClick = delegate::onIgnoreCrashedClick,
             )
         }
 
@@ -113,8 +106,6 @@ private fun RestartAccessibilityServiceDialog(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
     onRestartClick: () -> Unit,
-    onDontKillMyAppClick: () -> Unit,
-    onIgnoreClick: () -> Unit,
 ) {
     AlertDialog(
         modifier = modifier,
@@ -129,19 +120,13 @@ private fun RestartAccessibilityServiceDialog(
             )
         },
         confirmButton = {
-            Row {
-                TextButton(onClick = onRestartClick) {
-                    Text(stringResource(R.string.pos_restart))
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                TextButton(onClick = onDontKillMyAppClick) {
-                    Text(stringResource(R.string.dialog_button_read_dont_kill_my_app_yes))
-                }
+            TextButton(onClick = onRestartClick) {
+                Text(stringResource(R.string.pos_restart))
             }
         },
         dismissButton = {
-            TextButton(onClick = onIgnoreClick) {
-                Text(stringResource(R.string.dialog_button_read_dont_kill_my_app_no))
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.neg_cancel))
             }
         },
     )
@@ -238,8 +223,6 @@ private fun RestartAccessibilityServiceDialogPreview() {
         RestartAccessibilityServiceDialog(
             onDismissRequest = {},
             onRestartClick = {},
-            onDontKillMyAppClick = {},
-            onIgnoreClick = {},
         )
     }
 }

@@ -460,8 +460,8 @@
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
 
-    <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
-    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
+    <string name="dialog_title_key_mapper_crashed">Accessibility service needs restarting</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper\'s accessibility service was stopped by the system.\n\nTo fix this, restart it by turning the accessibility service off and then on again.</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
