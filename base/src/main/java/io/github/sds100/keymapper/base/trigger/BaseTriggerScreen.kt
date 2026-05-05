@@ -640,10 +640,48 @@ private fun VerticalPreview() {
     }
 }
 
+@Preview(device = Devices.PIXEL)
+@Composable
+private fun VerticalPreviewDark() {
+    KeyMapperTheme(darkTheme = true) {
+        TriggerScreenVertical(
+            configState = previewState,
+            recordTriggerState = RecordTriggerState.Idle,
+            expertModeSwitchState = ExpertModeRecordSwitchState(
+                isVisible = true,
+                isChecked = false,
+                isEnabled = true,
+            ),
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
+        )
+    }
+}
+
 @Preview(heightDp = 300, widthDp = 300)
 @Composable
 private fun VerticalPreviewTiny() {
     KeyMapperTheme {
+        TriggerScreenVertical(
+            configState = previewState,
+            recordTriggerState = RecordTriggerState.Idle,
+            expertModeSwitchState = ExpertModeRecordSwitchState(
+                isVisible = true,
+                isChecked = true,
+                isEnabled = true,
+            ),
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
+        )
+    }
+}
+
+@Preview(heightDp = 300, widthDp = 300)
+@Composable
+private fun VerticalPreviewTinyDark() {
+    KeyMapperTheme(darkTheme = true) {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
