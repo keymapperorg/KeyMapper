@@ -1097,6 +1097,8 @@ class CreateActionDelegate(
 
             ActionId.SELECT_WORD_AT_CURSOR -> return ActionData.SelectWordAtCursor
 
+            ActionId.SELECT_ALL_TEXT -> return ActionData.SelectAllText
+
             ActionId.TOGGLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Toggle
 
             ActionId.ENABLE_AIRPLANE_MODE -> return ActionData.AirplaneMode.Enable

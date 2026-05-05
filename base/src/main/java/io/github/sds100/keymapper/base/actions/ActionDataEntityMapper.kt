@@ -625,6 +625,8 @@ object ActionDataEntityMapper {
 
             ActionId.SELECT_WORD_AT_CURSOR -> ActionData.SelectWordAtCursor
 
+            ActionId.SELECT_ALL_TEXT -> ActionData.SelectAllText
+
             ActionId.TOGGLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Toggle
 
             ActionId.ENABLE_AIRPLANE_MODE -> ActionData.AirplaneMode.Enable
@@ -1478,6 +1480,7 @@ object ActionDataEntityMapper {
         ActionId.TEXT_COPY to "text_copy",
         ActionId.TEXT_PASTE to "text_paste",
         ActionId.SELECT_WORD_AT_CURSOR to "select_word_at_cursor",
+        ActionId.SELECT_ALL_TEXT to "select_all_text",
 
         ActionId.SWITCH_KEYBOARD to "switch_keyboard",
 
