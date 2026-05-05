@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -48,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -108,6 +110,7 @@ private fun GetEventScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
+    val isExpertModeEnabled = state.expertModeStatus == ExpertModeStatus.ENABLED
     val selectedTab = if (pagerState.currentPage == 0) GetEventTab.INFO else GetEventTab.EVENTS
     val hasOutputForSelectedTab = when (selectedTab) {
         GetEventTab.INFO -> state.deviceInfoOutput.isNotEmpty()
@@ -129,67 +132,69 @@ private fun GetEventScreen(
         bottomBar = {
             BottomAppBar(
                 floatingActionButton = {
-                    if (state.expertModeStatus == ExpertModeStatus.ENABLED) {
-                        val containerColor = if (refreshButtonState == RefreshButtonState.STOP) {
-                            MaterialTheme.colorScheme.errorContainer
-                        } else {
-                            MaterialTheme.colorScheme.primaryContainer
-                        }
-                        val contentColor = if (refreshButtonState == RefreshButtonState.STOP) {
-                            MaterialTheme.colorScheme.onErrorContainer
-                        } else {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        }
-                        FloatingActionButton(
-                            onClick = {
-                                if (selectedTab == GetEventTab.INFO) {
-                                    onRefreshDeviceInfoClick()
-                                } else {
-                                    if (!state.isRecording) {
-                                        scope.launch { pagerState.animateScrollToPage(1) }
-                                    }
-                                    onToggleRecordClick()
+                    val containerColor = if (refreshButtonState == RefreshButtonState.STOP) {
+                        MaterialTheme.colorScheme.errorContainer
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer
+                    }
+                    val contentColor = if (refreshButtonState == RefreshButtonState.STOP) {
+                        MaterialTheme.colorScheme.onErrorContainer
+                    } else {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    }
+                    FloatingActionButton(
+                        modifier = if (isExpertModeEnabled) Modifier else Modifier.alpha(0.5f),
+                        onClick = {
+                            if (!isExpertModeEnabled) {
+                                return@FloatingActionButton
+                            }
+                            if (selectedTab == GetEventTab.INFO) {
+                                onRefreshDeviceInfoClick()
+                            } else {
+                                if (!state.isRecording) {
+                                    scope.launch { pagerState.animateScrollToPage(1) }
                                 }
+                                onToggleRecordClick()
+                            }
+                        },
+                        containerColor = containerColor,
+                        contentColor = contentColor,
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                    ) {
+                        AnimatedContent(
+                            targetState = refreshButtonState,
+                            transitionSpec = {
+                                fadeIn(animationSpec = tween(200)) togetherWith
+                                    fadeOut(animationSpec = tween(200))
                             },
-                            containerColor = containerColor,
-                            contentColor = contentColor,
-                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-                        ) {
-                            AnimatedContent(
-                                targetState = refreshButtonState,
-                                transitionSpec = {
-                                    fadeIn(animationSpec = tween(200)) togetherWith
-                                        fadeOut(animationSpec = tween(200))
-                                },
-                                label = "refresh_button_state",
-                            ) { buttonState ->
-                                when (buttonState) {
-                                    RefreshButtonState.REFRESH_INFO -> {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Refresh,
-                                            contentDescription = stringResource(
-                                                R.string.debug_getevent_refresh,
-                                            ),
-                                        )
-                                    }
+                            label = "refresh_button_state",
+                        ) { buttonState ->
+                            when (buttonState) {
+                                RefreshButtonState.REFRESH_INFO -> {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Refresh,
+                                        contentDescription = stringResource(
+                                            R.string.debug_getevent_refresh,
+                                        ),
+                                    )
+                                }
 
-                                    RefreshButtonState.START_RECORDING -> {
-                                        Icon(
-                                            imageVector = Icons.Rounded.FiberManualRecord,
-                                            contentDescription = stringResource(
-                                                R.string.debug_getevent_start_recording,
-                                            ),
-                                        )
-                                    }
+                                RefreshButtonState.START_RECORDING -> {
+                                    Icon(
+                                        imageVector = Icons.Rounded.FiberManualRecord,
+                                        contentDescription = stringResource(
+                                            R.string.debug_getevent_start_recording,
+                                        ),
+                                    )
+                                }
 
-                                    RefreshButtonState.STOP -> {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Stop,
-                                            contentDescription = stringResource(
-                                                R.string.debug_getevent_stop_recording,
-                                            ),
-                                        )
-                                    }
+                                RefreshButtonState.STOP -> {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Stop,
+                                        contentDescription = stringResource(
+                                            R.string.debug_getevent_stop_recording,
+                                        ),
+                                    )
                                 }
                             }
                         }
@@ -247,39 +252,38 @@ private fun GetEventScreen(
                             .padding(16.dp),
                         onSetupExpertModeClick = onSetupExpertModeClick,
                     )
-                } else {
-                    PrimaryTabRow(
-                        selectedTabIndex = pagerState.targetPage,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                    ) {
-                        Tab(
-                            selected = pagerState.targetPage == 0,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                            text = { Text(stringResource(R.string.debug_getevent_tab_info)) },
-                        )
-                        Tab(
-                            selected = pagerState.targetPage == 1,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                            text = { Text(stringResource(R.string.debug_getevent_tab_events)) },
-                        )
-                    }
+                }
+                PrimaryTabRow(
+                    selectedTabIndex = pagerState.targetPage,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ) {
+                    Tab(
+                        selected = pagerState.targetPage == 0,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+                        text = { Text(stringResource(R.string.debug_getevent_tab_info)) },
+                    )
+                    Tab(
+                        selected = pagerState.targetPage == 1,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+                        text = { Text(stringResource(R.string.debug_getevent_tab_events)) },
+                    )
+                }
 
-                    HorizontalPager(
-                        modifier = Modifier.fillMaxSize(),
-                        state = pagerState,
-                    ) { pageIndex ->
-                        when (pageIndex) {
-                            0 -> InfoContent(
-                                modifier = Modifier.fillMaxSize(),
-                                state = state,
-                            )
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState,
+                ) { pageIndex ->
+                    when (pageIndex) {
+                        0 -> InfoContent(
+                            modifier = Modifier.fillMaxSize(),
+                            state = state,
+                        )
 
-                            1 -> EventsContent(
-                                modifier = Modifier.fillMaxSize(),
-                                state = state,
-                            )
-                        }
+                        1 -> EventsContent(
+                            modifier = Modifier.fillMaxSize(),
+                            state = state,
+                        )
                     }
                 }
             }
@@ -315,7 +319,8 @@ private fun ExpertModeSetupCard(
 private fun InfoContent(modifier: Modifier = Modifier, state: GetEventViewModel.State) {
     Column(modifier = modifier) {
         if (state.isLoadingDeviceInfo) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(16.dp))
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
         }
 
         if (state.deviceInfoOutput.isNotEmpty()) {
@@ -352,7 +357,13 @@ private fun EventsContent(modifier: Modifier = Modifier, state: GetEventViewMode
 
     Column(modifier = modifier) {
         if (state.isRecording) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(16.dp))
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                text = stringResource(R.string.debug_getevent_events_output_after_recording),
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
 
         if (state.recordingOutput.isNotEmpty()) {
@@ -448,19 +459,6 @@ private fun PreviewRecording() {
                 recordingOutput = """/dev/input/event1: EV_KEY       KEY_VOLUMEDOWN       DOWN
 /dev/input/event1: EV_SYN       SYN_REPORT           00""",
                 isRecording = true,
-                expertModeStatus = ExpertModeStatus.ENABLED,
-            ),
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewEventsContentEmptyIdle() {
-    KeyMapperTheme {
-        GetEventScreen(
-            state = GetEventViewModel.State(
-                isRecording = false,
                 expertModeStatus = ExpertModeStatus.ENABLED,
             ),
         )
