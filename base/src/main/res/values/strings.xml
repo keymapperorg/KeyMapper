@@ -645,6 +645,8 @@
     <string name="debug_getevent_loading">Loading device info\u2026</string>
     <string name="debug_getevent_copy">Copy to clipboard</string>
     <string name="debug_getevent_save">Save to file</string>
+    <string name="debug_getevent_tab_info">Info</string>
+    <string name="debug_getevent_tab_events">Events</string>
 
     <string name="title_pref_report_issue">Report issue</string>
 

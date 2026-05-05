@@ -25,9 +25,9 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
-import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
 import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl

@@ -20,11 +20,11 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.handle
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -40,10 +40,13 @@ class GetEventViewModel @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     @ApplicationContext private val context: Context,
     resourceProvider: ResourceProvider,
-) : ViewModel(), NavigationProvider by navigationProvider, ResourceProvider by resourceProvider {
+) : ViewModel(),
+    NavigationProvider by navigationProvider,
+    ResourceProvider by resourceProvider {
 
     data class State(
-        val output: String = "",
+        val deviceInfoOutput: String = "",
+        val recordingOutput: String = "",
         val isLoadingDeviceInfo: Boolean = false,
         val isRecording: Boolean = false,
         val expertModeStatus: ExpertModeStatus = ExpertModeStatus.DISABLED,
@@ -62,7 +65,10 @@ class GetEventViewModel @Inject constructor(
             }.collect { status ->
                 val wasDisabled = state.expertModeStatus != ExpertModeStatus.ENABLED
                 state = state.copy(expertModeStatus = status)
-                if (status == ExpertModeStatus.ENABLED && wasDisabled && state.output.isEmpty()) {
+                if (status == ExpertModeStatus.ENABLED &&
+                    wasDisabled &&
+                    state.deviceInfoOutput.isEmpty()
+                ) {
                     loadDeviceInfo()
                 }
             }
@@ -81,7 +87,7 @@ class GetEventViewModel @Inject constructor(
                 onSuccess = { it.stdout },
                 onError = { "Error: ${it.getFullMessage(this@GetEventViewModel)}" },
             )
-            state = state.copy(output = output, isLoadingDeviceInfo = false)
+            state = state.copy(deviceInfoOutput = output, isLoadingDeviceInfo = false)
         }
     }
 
@@ -107,7 +113,7 @@ class GetEventViewModel @Inject constructor(
             )
             if (newOutput.isNotEmpty()) {
                 state = state.copy(
-                    output = state.output + "\n--- Recording ---\n" + newOutput,
+                    recordingOutput = state.recordingOutput + newOutput,
                 )
             }
             state = state.copy(isRecording = false)
@@ -125,11 +131,11 @@ class GetEventViewModel @Inject constructor(
     }
 
     fun onClearClick() {
-        state = state.copy(output = "")
+        state = state.copy(recordingOutput = "")
     }
 
     fun onCopyToClipboardClick() {
-        clipboardAdapter.copy("getevent output", state.output)
+        clipboardAdapter.copy("getevent output", state.recordingOutput)
     }
 
     fun onSaveToFileClick() {
@@ -137,7 +143,7 @@ class GetEventViewModel @Inject constructor(
             val fileName = "getevent/key_mapper_getevent_${FileUtils.createFileDate()}.txt"
             val file = fileAdapter.getPrivateFile(fileName)
             file.createFile()
-            file.outputStream()?.bufferedWriter()?.use { it.write(state.output) }
+            file.outputStream()?.bufferedWriter()?.use { it.write(state.recordingOutput) }
             val publicUri = fileAdapter.getPublicUriForPrivateFile(file).toUri()
             ShareUtils.shareFile(context, publicUri, buildConfigProvider.packageName)
         }
@@ -151,7 +157,10 @@ class GetEventViewModel @Inject constructor(
 
     fun onSetupExpertModeClick() {
         viewModelScope.launch {
-            navigationProvider.navigate("getevent_setup_expert_mode", NavDestination.ExpertModeSetup)
+            navigationProvider.navigate(
+                "getevent_setup_expert_mode",
+                NavDestination.ExpertModeSetup,
+            )
         }
     }
 }
