@@ -6,6 +6,7 @@
 
 - #2045 add action to input on-screen keyboard enter/send button.
 - #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.
+- #2081 add getevent debug screen.
 
 ## Fixed
 
