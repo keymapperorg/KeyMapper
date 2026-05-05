@@ -642,6 +642,7 @@
     <string name="debug_getevent_start_recording">Record</string>
     <string name="debug_getevent_stop_recording">Stop Recording</string>
     <string name="debug_getevent_clear">Clear output</string>
+    <string name="debug_getevent_refresh">Refresh</string>
     <string name="debug_getevent_loading">Loading device info\u2026</string>
     <string name="debug_getevent_copy">Copy to clipboard</string>
     <string name="debug_getevent_save">Save to file</string>

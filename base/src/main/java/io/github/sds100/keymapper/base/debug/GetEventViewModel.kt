@@ -44,6 +44,11 @@ class GetEventViewModel @Inject constructor(
     NavigationProvider by navigationProvider,
     ResourceProvider by resourceProvider {
 
+    enum class OutputTab {
+        INFO,
+        EVENTS,
+    }
+
     data class State(
         val deviceInfoOutput: String = "",
         val recordingOutput: String = "",
@@ -69,13 +74,13 @@ class GetEventViewModel @Inject constructor(
                     wasDisabled &&
                     state.deviceInfoOutput.isEmpty()
                 ) {
-                    loadDeviceInfo()
+                    onRefreshDeviceInfoClick()
                 }
             }
         }
     }
 
-    private fun loadDeviceInfo() {
+    fun onRefreshDeviceInfoClick() {
         viewModelScope.launch {
             state = state.copy(isLoadingDeviceInfo = true)
             val result = executeShellCommandUseCase.execute(
@@ -134,19 +139,24 @@ class GetEventViewModel @Inject constructor(
         state = state.copy(recordingOutput = "")
     }
 
-    fun onCopyToClipboardClick() {
-        clipboardAdapter.copy("getevent output", state.recordingOutput)
+    fun onCopyToClipboardClick(tab: OutputTab) {
+        clipboardAdapter.copy("getevent output", getOutputForTab(tab))
     }
 
-    fun onSaveToFileClick() {
+    fun onSaveToFileClick(tab: OutputTab) {
         viewModelScope.launch(Dispatchers.IO) {
             val fileName = "getevent/key_mapper_getevent_${FileUtils.createFileDate()}.txt"
             val file = fileAdapter.getPrivateFile(fileName)
             file.createFile()
-            file.outputStream()?.bufferedWriter()?.use { it.write(state.recordingOutput) }
+            file.outputStream()?.bufferedWriter()?.use { it.write(getOutputForTab(tab)) }
             val publicUri = fileAdapter.getPublicUriForPrivateFile(file).toUri()
             ShareUtils.shareFile(context, publicUri, buildConfigProvider.packageName)
         }
+    }
+
+    private fun getOutputForTab(tab: OutputTab): String = when (tab) {
+        OutputTab.INFO -> state.deviceInfoOutput
+        OutputTab.EVENTS -> state.recordingOutput
     }
 
     fun onBackClick() {

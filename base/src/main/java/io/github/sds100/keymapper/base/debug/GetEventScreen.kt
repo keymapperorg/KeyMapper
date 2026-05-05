@@ -1,5 +1,10 @@
 package io.github.sds100.keymapper.base.debug
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material.icons.rounded.Stop
@@ -66,11 +71,27 @@ fun GetEventScreen(
         state = viewModel.state,
         onBackClick = onBackClick,
         onToggleRecordClick = viewModel::onToggleRecordClick,
-        onClearClick = viewModel::onClearClick,
-        onCopyToClipboardClick = viewModel::onCopyToClipboardClick,
-        onSaveToFileClick = viewModel::onSaveToFileClick,
+        onRefreshDeviceInfoClick = viewModel::onRefreshDeviceInfoClick,
+        onCopyToClipboardClick = { tab -> viewModel.onCopyToClipboardClick(tab.toOutputTab()) },
+        onSaveToFileClick = { tab -> viewModel.onSaveToFileClick(tab.toOutputTab()) },
         onSetupExpertModeClick = viewModel::onSetupExpertModeClick,
     )
+}
+
+private enum class GetEventTab {
+    INFO,
+    EVENTS,
+}
+
+private enum class RefreshButtonState {
+    REFRESH_INFO,
+    START_RECORDING,
+    STOP,
+}
+
+private fun GetEventTab.toOutputTab(): GetEventViewModel.OutputTab = when (this) {
+    GetEventTab.INFO -> GetEventViewModel.OutputTab.INFO
+    GetEventTab.EVENTS -> GetEventViewModel.OutputTab.EVENTS
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,14 +101,23 @@ private fun GetEventScreen(
     state: GetEventViewModel.State,
     onBackClick: () -> Unit = {},
     onToggleRecordClick: () -> Unit = {},
-    onClearClick: () -> Unit = {},
-    onCopyToClipboardClick: () -> Unit = {},
-    onSaveToFileClick: () -> Unit = {},
+    onRefreshDeviceInfoClick: () -> Unit = {},
+    onCopyToClipboardClick: (GetEventTab) -> Unit = {},
+    onSaveToFileClick: (GetEventTab) -> Unit = {},
     onSetupExpertModeClick: () -> Unit = {},
 ) {
-    val hasOutput = state.recordingOutput.isNotEmpty()
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
+    val selectedTab = if (pagerState.currentPage == 0) GetEventTab.INFO else GetEventTab.EVENTS
+    val hasOutputForSelectedTab = when (selectedTab) {
+        GetEventTab.INFO -> state.deviceInfoOutput.isNotEmpty()
+        GetEventTab.EVENTS -> state.recordingOutput.isNotEmpty()
+    }
+    val refreshButtonState = when {
+        selectedTab == GetEventTab.INFO -> RefreshButtonState.REFRESH_INFO
+        state.isRecording -> RefreshButtonState.STOP
+        else -> RefreshButtonState.START_RECORDING
+    }
 
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
@@ -100,41 +130,67 @@ private fun GetEventScreen(
             BottomAppBar(
                 floatingActionButton = {
                     if (state.expertModeStatus == ExpertModeStatus.ENABLED) {
-                        val containerColor = if (state.isRecording) {
+                        val containerColor = if (refreshButtonState == RefreshButtonState.STOP) {
                             MaterialTheme.colorScheme.errorContainer
                         } else {
                             MaterialTheme.colorScheme.primaryContainer
                         }
-                        val contentColor = if (state.isRecording) {
+                        val contentColor = if (refreshButtonState == RefreshButtonState.STOP) {
                             MaterialTheme.colorScheme.onErrorContainer
                         } else {
                             MaterialTheme.colorScheme.onPrimaryContainer
                         }
                         FloatingActionButton(
                             onClick = {
-                                if (!state.isRecording) {
-                                    scope.launch { pagerState.animateScrollToPage(1) }
+                                if (selectedTab == GetEventTab.INFO) {
+                                    onRefreshDeviceInfoClick()
+                                } else {
+                                    if (!state.isRecording) {
+                                        scope.launch { pagerState.animateScrollToPage(1) }
+                                    }
+                                    onToggleRecordClick()
                                 }
-                                onToggleRecordClick()
                             },
                             containerColor = containerColor,
                             contentColor = contentColor,
                             elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                         ) {
-                            if (state.isRecording) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Stop,
-                                    contentDescription = stringResource(
-                                        R.string.debug_getevent_stop_recording,
-                                    ),
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Rounded.FiberManualRecord,
-                                    contentDescription = stringResource(
-                                        R.string.debug_getevent_start_recording,
-                                    ),
-                                )
+                            AnimatedContent(
+                                targetState = refreshButtonState,
+                                transitionSpec = {
+                                    fadeIn(animationSpec = tween(200)) togetherWith
+                                        fadeOut(animationSpec = tween(200))
+                                },
+                                label = "refresh_button_state",
+                            ) { buttonState ->
+                                when (buttonState) {
+                                    RefreshButtonState.REFRESH_INFO -> {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Refresh,
+                                            contentDescription = stringResource(
+                                                R.string.debug_getevent_refresh,
+                                            ),
+                                        )
+                                    }
+
+                                    RefreshButtonState.START_RECORDING -> {
+                                        Icon(
+                                            imageVector = Icons.Rounded.FiberManualRecord,
+                                            contentDescription = stringResource(
+                                                R.string.debug_getevent_start_recording,
+                                            ),
+                                        )
+                                    }
+
+                                    RefreshButtonState.STOP -> {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Stop,
+                                            contentDescription = stringResource(
+                                                R.string.debug_getevent_stop_recording,
+                                            ),
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -148,8 +204,8 @@ private fun GetEventScreen(
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(
-                        onClick = onCopyToClipboardClick,
-                        enabled = hasOutput,
+                        onClick = { onCopyToClipboardClick(selectedTab) },
+                        enabled = hasOutputForSelectedTab,
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.ContentCopy,
@@ -157,21 +213,12 @@ private fun GetEventScreen(
                         )
                     }
                     IconButton(
-                        onClick = onSaveToFileClick,
-                        enabled = hasOutput,
+                        onClick = { onSaveToFileClick(selectedTab) },
+                        enabled = hasOutputForSelectedTab,
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Share,
                             contentDescription = stringResource(R.string.debug_getevent_save),
-                        )
-                    }
-                    IconButton(
-                        onClick = onClearClick,
-                        enabled = hasOutput,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = stringResource(R.string.debug_getevent_clear),
                         )
                     }
                 },
@@ -369,6 +416,31 @@ add device 2: /dev/input/event1
 
 @Preview
 @Composable
+private fun PreviewInfoTabLoading() {
+    KeyMapperTheme {
+        GetEventScreen(
+            state = GetEventViewModel.State(
+                isLoadingDeviceInfo = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewInfoTabEmptyOutput() {
+    KeyMapperTheme {
+        GetEventScreen(
+            state = GetEventViewModel.State(
+                expertModeStatus = ExpertModeStatus.ENABLED,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun PreviewRecording() {
     KeyMapperTheme {
         GetEventScreen(
@@ -376,6 +448,54 @@ private fun PreviewRecording() {
                 recordingOutput = """/dev/input/event1: EV_KEY       KEY_VOLUMEDOWN       DOWN
 /dev/input/event1: EV_SYN       SYN_REPORT           00""",
                 isRecording = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewEventsContentEmptyIdle() {
+    KeyMapperTheme {
+        GetEventScreen(
+            state = GetEventViewModel.State(
+                isRecording = false,
+                expertModeStatus = ExpertModeStatus.ENABLED,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewEventsContentOutputIdle() {
+    KeyMapperTheme {
+        GetEventScreen(
+            state = GetEventViewModel.State(
+                recordingOutput = """/dev/input/event2: EV_KEY       KEY_VOLUMEUP         DOWN
+/dev/input/event2: EV_SYN       SYN_REPORT           00""",
+                isRecording = false,
+                expertModeStatus = ExpertModeStatus.ENABLED,
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewInfoContentOutputAndLoading() {
+    KeyMapperTheme {
+        GetEventScreen(
+            state = GetEventViewModel.State(
+                deviceInfoOutput = """add device 3: /dev/input/event2
+  bus:      0019
+  vendor    0001
+  product   0001
+  version   0100
+  name:     "gpio-keys-2"
+  location: "gpio-keys/input1\"""",
+                isLoadingDeviceInfo = true,
                 expertModeStatus = ExpertModeStatus.ENABLED,
             ),
         )
