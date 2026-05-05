@@ -820,6 +820,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
+            is ActionData.SelectAllText -> {
+                result = service.performActionOnNode({ it.isFocused }) { node ->
+                    val text = node.text?.toString().orEmpty()
+                    if (text.isEmpty()) return@performActionOnNode null
+
+                    val extras = mapOf(
+                        AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to 0,
+                        AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to text.length,
+                    )
+
+                    AccessibilityNodeAction(
+                        AccessibilityNodeInfo.ACTION_SET_SELECTION,
+                        extras,
+                    )
+                }
+            }
+
             is ActionData.AirplaneMode.Toggle -> {
                 result = if (airplaneModeAdapter.isEnabled()) {
                     airplaneModeAdapter.disable()

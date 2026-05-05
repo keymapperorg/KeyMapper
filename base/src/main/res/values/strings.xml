@@ -1098,6 +1098,7 @@
     <string name="action_text_copy">Copy</string>
     <string name="action_text_paste">Paste</string>
     <string name="action_select_word_at_cursor">Select word at cursor</string>
+    <string name="action_select_all_text">Select all text</string>
 
     <string name="action_open_settings">Open settings</string>
     <string name="action_show_power_menu">Show power menu</string>

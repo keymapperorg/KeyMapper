@@ -859,6 +859,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object SelectAllText : ActionData() {
+        override val id = ActionId.SELECT_ALL_TEXT
+    }
+
+    @Serializable
     data object VoiceAssistant : ActionData() {
         override val id = ActionId.OPEN_VOICE_ASSISTANT
     }
