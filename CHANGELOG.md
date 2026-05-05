@@ -8,6 +8,7 @@
 - #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.
 - #2081 add getevent debug screen.
 - #2087 small segmented button text is not readable in dark mode.
+- #2077 rename "This device" and "any device" to "This Android device" and "Any input device" to prevent confusion.
 
 ## Fixed
 

@@ -16,8 +16,8 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="follow_system">Follow system</string>
-    <string name="this_device">This device</string>
-    <string name="any_device">Any device</string>
+    <string name="this_device">This Android device</string>
+    <string name="any_device">Any input device</string>
     <string name="slider_default">Default</string>
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
