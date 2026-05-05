@@ -5,10 +5,12 @@ import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -59,6 +61,7 @@ class GetActionErrorUseCaseTest {
     private lateinit var mockPermissionAdapter: PermissionAdapter
     private lateinit var fakePreferenceRepository: FakePreferenceRepository
     private lateinit var mockSystemBridgeConnectionManager: SystemBridgeConnectionManager
+    private lateinit var mockPackageManagerAdapter: PackageManagerAdapter
 
     @Before
     fun init() {
@@ -66,9 +69,10 @@ class GetActionErrorUseCaseTest {
         mockPermissionAdapter = mock()
         fakePreferenceRepository = FakePreferenceRepository()
         mockSystemBridgeConnectionManager = mock()
+        mockPackageManagerAdapter = mock()
 
         useCase = GetActionErrorUseCaseImpl(
-            packageManagerAdapter = mock(),
+            packageManagerAdapter = mockPackageManagerAdapter,
             inputMethodAdapter = fakeInputMethodAdapter,
             switchImeInterface = mock(),
             permissionAdapter = mockPermissionAdapter,
@@ -299,5 +303,33 @@ class GetActionErrorUseCaseTest {
             val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
 
             assertThat(errors[0], `is`(KMError.KeyEventActionError(SystemBridgeError.Disconnected)))
+        }
+
+    @Test
+    fun `show an error for device assistant action when no device assistant is installed`() =
+        testScope.runTest {
+            whenever(
+                mockPackageManagerAdapter.getDeviceAssistantPackage(),
+            ).thenReturn(KMError.NoDeviceAssistant)
+
+            val action = ActionData.DeviceAssistant
+
+            val errors = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
+
+            assertThat(errors[action], `is`(KMError.NoDeviceAssistant))
+        }
+
+    @Test
+    fun `do not show an error for device assistant action when a device assistant is installed`() =
+        testScope.runTest {
+            whenever(
+                mockPackageManagerAdapter.getDeviceAssistantPackage(),
+            ).thenReturn(Success("com.google.android.googlequicksearchbox"))
+
+            val action = ActionData.DeviceAssistant
+
+            val errors = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
+
+            assertThat(errors[action], nullValue())
         }
 }

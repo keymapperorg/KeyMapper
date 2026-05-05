@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -53,6 +54,9 @@ class LazyActionErrorSnapshot(
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
     private val isVoiceAssistantInstalled by lazy { packageManager.isVoiceAssistantInstalled() }
+    private val isDeviceAssistantInstalled by lazy {
+        packageManager.getDeviceAssistantPackage().isSuccess
+    }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
         buildSet {
@@ -187,6 +191,12 @@ class LazyActionErrorSnapshot(
             is ActionData.VoiceAssistant -> {
                 if (!isVoiceAssistantInstalled) {
                     return KMError.NoVoiceAssistant
+                }
+            }
+
+            is ActionData.DeviceAssistant -> {
+                if (!isDeviceAssistantInstalled) {
+                    return KMError.NoDeviceAssistant
                 }
             }
 
