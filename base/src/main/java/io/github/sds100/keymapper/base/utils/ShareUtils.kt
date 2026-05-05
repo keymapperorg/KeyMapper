@@ -12,9 +12,10 @@ import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.system.files.FileUtils
 
 object ShareUtils {
-    fun sendBugReportEmail(ctx: Context, subject: String) {
+    fun sendBugReportEmail(ctx: Context, subject: String, attachmentUri: Uri? = null) {
         val body = ctx.getString(
             R.string.customer_email_body,
             Build.DEVICE,
@@ -28,12 +29,22 @@ object ShareUtils {
             ctx.applicationContext.packageManager.getPackageInfo(ctx.packageName, 0).versionName,
         )
 
-        sendMail(
-            ctx,
-            email = ctx.getString(R.string.purchasing_contact_email),
-            subject = subject,
-            body = body,
-        )
+        if (attachmentUri == null) {
+            sendMail(
+                ctx,
+                email = ctx.getString(R.string.purchasing_contact_email),
+                subject = subject,
+                body = body,
+            )
+        } else {
+            sendMailWithAttachment(
+                ctx,
+                email = ctx.getString(R.string.purchasing_contact_email),
+                subject = subject,
+                body = body,
+                attachmentUri = attachmentUri,
+            )
+        }
     }
 
     fun sendMail(ctx: Context, email: String, subject: String, body: String) {
@@ -48,6 +59,35 @@ object ShareUtils {
             }
 
             ctx.startActivity(Intent.createChooser(intent, null))
+        } catch (_: ActivityNotFoundException) {
+        }
+    }
+
+    /**
+     * Build an email intent that targets [email] with the given [subject] and [body], plus an
+     * attached file at [attachmentUri]. ACTION_SENDTO doesn't support attachments so we use
+     * ACTION_SEND with a content URI and grant temporary read permission to the chosen app.
+     */
+    fun sendMailWithAttachment(
+        ctx: Context,
+        email: String,
+        subject: String,
+        body: String,
+        attachmentUri: Uri,
+    ) {
+        try {
+            ShareCompat.IntentBuilder(ctx)
+                .setType(FileUtils.MIME_TYPE_ZIP)
+                .setEmailTo(arrayOf(email))
+                .setSubject(subject)
+                .setText(body)
+                .setStream(attachmentUri)
+                .createChooserIntent()
+                .also { intent ->
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    ctx.startActivity(intent)
+                }
         } catch (_: ActivityNotFoundException) {
         }
     }

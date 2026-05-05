@@ -1926,6 +1926,9 @@
     <string name="dialog_message_bug_report">We would prefer it if you report your bug to the Discord server so other users can help you. Otherwise, you can email us at contact@keymapper.app.</string>
     <string name="dialog_bug_report_discord_button">Open Discord</string>
     <string name="dialog_bug_report_email_button">Email us</string>
+    <string name="dialog_bug_report_share_button">Share bug report</string>
+    <string name="dialog_bug_report_compiling">Compiling bug report\u2026</string>
+    <string name="dialog_bug_report_failed">Failed to compile bug report. Please try again.</string>
 
     <string name="dialog_title_disable_auto_switch_ime">Disable auto-switch keyboard?</string>
     <string name="dialog_message_disable_auto_switch_ime">Choosing a keyboard here will disable the automatic keyboard switching feature. You can re-enable it in Settings.</string>

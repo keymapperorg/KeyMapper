@@ -11,14 +11,22 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -26,6 +34,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -41,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,11 +65,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
+import io.github.sds100.keymapper.base.bugreport.BugReportState
+import io.github.sds100.keymapper.base.bugreport.BugReportViewModel
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
@@ -74,7 +87,9 @@ import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.FileUtils
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -362,37 +377,100 @@ fun HandleImportExportState(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BugReportDialog(onDismissRequest: () -> Unit) {
+private fun BugReportDialog(
+    onDismissRequest: () -> Unit,
+    viewModel: BugReportViewModel = hiltViewModel(),
+) {
     val ctx = LocalContext.current
     val subject = stringResource(R.string.customer_email_subject_bug_report)
-
     val discordLink = stringResource(R.string.url_discord_server_invite)
+    val packageName = ctx.packageName
     val uriHandler = LocalUriHandler.current
+    val scope = rememberCoroutineScope()
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val isCompiling = state is BugReportState.Compiling
+
     AlertDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            if (!isCompiling) {
+                onDismissRequest()
+            }
+        },
         title = { Text(stringResource(R.string.dialog_title_bug_report)) },
-        text = { Text(stringResource(R.string.dialog_message_bug_report)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.dialog_message_bug_report))
+
+                AnimatedVisibility(visible = isCompiling) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(stringResource(R.string.dialog_bug_report_compiling))
+                        }
+                    }
+                }
+
+                if (state is BugReportState.Error) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(stringResource(R.string.dialog_bug_report_failed))
+                }
+            }
+        },
         confirmButton = {
-            Row {
+            FlowRow(horizontalArrangement = Arrangement.End) {
                 TextButton(
+                    enabled = !isCompiling,
                     onClick = {
-                        ShareUtils.sendBugReportEmail(ctx, subject)
+                        scope.launch {
+                            val result = viewModel.compile()
+                            if (result is Success) {
+                                val uri = viewModel.getShareUri(result.value)
+                                ShareUtils.sendBugReportEmail(ctx, subject, attachmentUri = uri)
+                                onDismissRequest()
+                            }
+                        }
                     },
                 ) {
                     Text(stringResource(R.string.dialog_bug_report_email_button))
                 }
                 TextButton(
+                    enabled = !isCompiling,
                     onClick = {
-                        uriHandler.openUriSafe(ctx, discordLink)
+                        scope.launch {
+                            // Compile silently so the file is saved to the bug_reports folder,
+                            // then open Discord. Discord can't be auto-attached via intent.
+                            viewModel.compile()
+                            uriHandler.openUriSafe(ctx, discordLink)
+                            onDismissRequest()
+                        }
                     },
                 ) {
                     Text(stringResource(R.string.dialog_bug_report_discord_button))
                 }
+                TextButton(
+                    enabled = !isCompiling,
+                    onClick = {
+                        scope.launch {
+                            val result = viewModel.compile()
+                            if (result is Success) {
+                                val uri = viewModel.getShareUri(result.value)
+                                ShareUtils.shareFile(ctx, uri, packageName)
+                                onDismissRequest()
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.dialog_bug_report_share_button))
+                }
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissRequest) {
+            TextButton(enabled = !isCompiling, onClick = onDismissRequest) {
                 Text(stringResource(R.string.neg_cancel))
             }
         },

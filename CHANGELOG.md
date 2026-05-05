@@ -4,6 +4,7 @@
 
 ## Added
 
+- #2137 compile a zip file with diagnostic information when reporting a bug from the home screen menu.
 - #2067 add action to select all text in the focused field.
 - #2045 add action to input on-screen keyboard enter/send button.
 - #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.

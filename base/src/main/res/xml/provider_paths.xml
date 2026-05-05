@@ -11,4 +11,8 @@
     <files-path
         name="logs"
         path="logs" />
+
+    <files-path
+        name="bug_reports"
+        path="bug_reports" />
 </paths>
