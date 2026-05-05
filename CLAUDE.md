@@ -70,6 +70,13 @@ Types: `feat`, `fix`, `chore`, `refactor`, `style`
 
 Example: `#2025 feat: add button to report bug on home screen`
 
+## Pull Request Requirement
+
+- Any user-facing behavior change, fix, feature, or notable internal change in a PR must include an
+  update to `CHANGELOG.md`.
+- If there is truly no changelog impact (for example, docs-only or CI-only changes), explicitly state
+  that in the PR description.
+
 ## Compose Guidelines
 
 - `Modifier` is always the first parameter after required params
