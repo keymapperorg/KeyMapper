@@ -25,8 +25,6 @@ import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
-import io.github.sds100.keymapper.base.debug.GetEventOutputUseCase
-import io.github.sds100.keymapper.base.debug.GetEventOutputUseCaseImpl
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupDelegateImpl
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupDelegate
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCase
@@ -186,10 +184,6 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindShareLogcatUseCase(impl: ShareLogcatUseCaseImpl): ShareLogcatUseCase
-
-    @Binds
-    @ViewModelScoped
-    abstract fun bindGetEventOutputUseCase(impl: GetEventOutputUseCaseImpl): GetEventOutputUseCase
 
     @Binds
     @ViewModelScoped
