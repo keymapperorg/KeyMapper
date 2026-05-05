@@ -65,6 +65,7 @@ class CreateActionDelegate(
         by mutableStateOf(null)
     var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
         by mutableStateOf(null)
+    var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -354,6 +355,26 @@ class CreateActionDelegate(
         )
 
         createNotificationActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onToastMessageChange(message: String) {
+        toastActionBottomSheetState =
+            toastActionBottomSheetState?.copy(message = message)
+    }
+
+    fun onToastDurationChange(duration: ActionData.Toast.Duration) {
+        toastActionBottomSheetState =
+            toastActionBottomSheetState?.copy(duration = duration)
+    }
+
+    fun onDoneToastClick() {
+        val state = toastActionBottomSheetState ?: return
+        val action = ActionData.Toast(
+            message = state.message,
+            duration = state.duration,
+        )
+        toastActionBottomSheetState = null
         actionResult.update { action }
     }
 
@@ -1118,6 +1139,15 @@ class CreateActionDelegate(
                     timeoutSeconds = ((oldAction?.timeoutMs ?: 30000) / 1000).toInt(),
                 )
 
+                return null
+            }
+
+            ActionId.TOAST -> {
+                val oldAction = oldData as? ActionData.Toast
+                toastActionBottomSheetState = ToastActionBottomSheetState(
+                    message = oldAction?.message ?: "",
+                    duration = oldAction?.duration ?: ActionData.Toast.Duration.SHORT,
+                )
                 return null
             }
 

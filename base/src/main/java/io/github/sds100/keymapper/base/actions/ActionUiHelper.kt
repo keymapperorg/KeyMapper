@@ -674,6 +674,17 @@ class ActionUiHelper(
                 action.title,
             )
         }
+
+        is ActionData.Toast -> {
+            when (action.duration) {
+                ActionData.Toast.Duration.SHORT -> {
+                    getString(R.string.action_toast_description_short, action.message)
+                }
+                ActionData.Toast.Duration.LONG -> {
+                    getString(R.string.action_toast_description_long, action.message)
+                }
+            }
+        }
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {
