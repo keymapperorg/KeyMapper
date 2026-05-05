@@ -70,6 +70,11 @@ Types: `feat`, `fix`, `chore`, `refactor`, `style`
 
 Example: `#2025 feat: add button to report bug on home screen`
 
+## Branch Naming Convention
+
+- Use `feature/123-branch-name` for new features.
+- Use `fix/123-branch-name` for bug fixes.
+
 ## Pull Request Requirement
 
 - Any user-facing behavior change, fix, feature, or notable internal change in a PR must include an
