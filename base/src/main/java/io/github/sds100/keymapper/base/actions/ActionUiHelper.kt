@@ -593,6 +593,7 @@ class ActionUiHelper(
         ActionData.Screenshot -> getString(R.string.action_screenshot)
         ActionData.SecureLock -> getString(R.string.action_secure_lock_device)
         ActionData.SelectWordAtCursor -> getString(R.string.action_select_word_at_cursor)
+        ActionData.SelectAllText -> getString(R.string.action_select_all_text)
         ActionData.ShowKeyboard -> getString(R.string.action_show_keyboard)
         ActionData.ShowKeyboardPicker -> getString(R.string.action_show_keyboard_picker)
         ActionData.PerformImeAction -> getString(R.string.action_perform_ime_action)
