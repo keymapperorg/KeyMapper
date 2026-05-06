@@ -31,4 +31,8 @@ class PurchasingManagerImpl : PurchasingManager {
     }
 
     override fun refresh() {}
+
+    override fun trackCustomPaywallImpression(paywallIdentifier: String) {
+        // Purchasing is not available in FOSS.
+    }
 }

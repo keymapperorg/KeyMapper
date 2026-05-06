@@ -13,4 +13,10 @@ interface PurchasingManager {
     suspend fun getMetadata(): KMResult<Map<String, Any>>
     suspend fun isPurchased(product: ProductId): KMResult<Boolean>
     fun refresh()
+
+    /**
+     * Reports a custom paywall view to RevenueCat (Play build only). No-op in FOSS.
+     * [paywallIdentifier] is the paywall id in RevenueCat custom impression analytics.
+     */
+    fun trackCustomPaywallImpression(paywallIdentifier: String)
 }

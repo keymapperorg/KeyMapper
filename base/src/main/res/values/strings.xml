@@ -1382,9 +1382,18 @@
     <string name="learn_more_button">Learn more</string>
 
     <string name="on_screen_floating_buttons_title">On-screen floating buttons</string>
-    <string name="on_screen_floating_buttons_description">Not enough buttons? Make instant shortcuts and macros in any app, game or on your lock screen!</string>
-    <string name="feature_use_in_games">Use in games</string>
-    <string name="feature_use_on_lock_screen">Use on lock screen</string>
+    <string name="on_screen_floating_buttons_description">Your screen, your controls—gaming and daily driver workflows in one add-on.</string>
+    <!-- Paywall “floating buttons” checklist: [lead] bold in UI, then body. -->
+    <string name="feature_floating_paywall_check_games_lead">Works in games:</string>
+    <string name="feature_floating_paywall_check_games_body">keep your favourite actions one tap away while you play.</string>
+    <string name="feature_floating_paywall_check_lock_screen_lead">Works on your lock screen:</string>
+    <string name="feature_floating_paywall_check_lock_screen_body">access shortcuts without unlocking your phone.</string>
+    <string name="feature_floating_paywall_check_customise_lead">Customise placement + look:</string>
+    <string name="feature_floating_paywall_check_customise_body">drag where you want, adjust size and opacity.</string>
+    <string name="paywall_power_user_title">Level up Key Mapper</string>
+    <string name="paywall_power_user_subtitle">Unlock advanced triggers built for power users and gamers.</string>
+    <string name="paywall_more_addons_section_title">More add-ons</string>
+    <string name="paywall_try_risk_free">Try it risk-free—if it does not work for you, contact us for a refund.</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
     <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
