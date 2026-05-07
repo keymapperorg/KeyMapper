@@ -1390,10 +1390,8 @@
     <string name="feature_floating_paywall_check_lock_screen_body">access shortcuts without unlocking your phone.</string>
     <string name="feature_floating_paywall_check_customise_lead">Customise placement + look:</string>
     <string name="feature_floating_paywall_check_customise_body">drag where you want, adjust size and opacity.</string>
-    <string name="paywall_power_user_title">Level up Key Mapper</string>
-    <string name="paywall_power_user_subtitle">Unlock advanced triggers built for power users and gamers.</string>
     <string name="paywall_more_addons_section_title">More add-ons</string>
-    <string name="paywall_try_risk_free">Try it risk-free—if it does not work for you, contact us for a refund.</string>
+    <string name="paywall_try_risk_free">Try it risk-free. Contact us for a refund if you\'re not satisfied.</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
     <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
