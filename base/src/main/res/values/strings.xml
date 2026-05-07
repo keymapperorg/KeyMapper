@@ -1391,7 +1391,9 @@
     <string name="feature_floating_paywall_check_customise_lead">Customise placement + look:</string>
     <string name="feature_floating_paywall_check_customise_body">drag where you want, adjust size and opacity.</string>
     <string name="paywall_more_addons_section_title">More add-ons</string>
-    <string name="paywall_try_risk_free">Try it risk-free. Contact us for a refund if you\'re not satisfied.</string>
+    <string name="paywall_try_risk_free_1">Try it risk-free.\ </string>
+    <string name="paywall_try_risk_free_2">Contact us</string>
+    <string name="paywall_try_risk_free_3">\ for a refund if you\'re not satisfied.</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
     <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
@@ -1431,6 +1433,7 @@
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.app</string>
     <string name="customer_email_subject_pro" translatable="false">Key Mapper Pro query</string>
+    <string name="customer_email_subject_risk_free" translatable="false">Key Mapper pre-purchase query</string>
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
