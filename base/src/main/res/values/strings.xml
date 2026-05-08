@@ -1368,14 +1368,13 @@
 
     <!-- Support screen -->
     <string name="support_key_mapper_title">Support Key\u00A0Mapper\u00A0❤️</string>
-    <string name="support_key_mapper_subtitle">Choose add-ons to upgrade your experience</string>
-    <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive!</string>
-    <string name="support_key_mapper_quote">"Floating button feature is a game changer"</string>
+    <string name="support_key_mapper_subtitle">Choose add-ons enjoyed by thousands of fellow users</string>
     <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
     <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
-    <string name="support_key_mapper_quote_2">I\'ve been enjoying the floating buttons feature.</string>
+    <string name="support_key_mapper_quote_2">Floating buttons is worth it!</string>
     <string name="support_key_mapper_quote_3">Floating buttons is a brilliant addition.</string>
     <string name="support_key_mapper_quote_4">An essential part of my phone experience.</string>
+    <string name="support_key_mapper_quote_5">I\'ve been enjoying the floating buttons feature.</string>
     <string name="pay_once_unlock_forever">Pay once, unlock forever</string>
     <string name="watch_video_button">Watch video</string>
     <string name="buy_now_button">Buy now (%s)</string>
