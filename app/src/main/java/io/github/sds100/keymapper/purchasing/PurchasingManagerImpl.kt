@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class PurchasingManagerImpl : PurchasingManager {
     override val onCompleteProductPurchase: MutableSharedFlow<RevenueCatEntitlementId> =
         MutableSharedFlow()
-    override val purchases: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> =
+    override val entitlements: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> =
         MutableStateFlow(State.Data(PurchasingError.PurchasingNotImplemented))
 
     override suspend fun launchPurchasingFlow(
@@ -26,7 +26,7 @@ class PurchasingManagerImpl : PurchasingManager {
         return PurchasingError.PurchasingNotImplemented
     }
 
-    override suspend fun isPurchased(entitlement: RevenueCatEntitlementId): KMResult<Boolean> {
+    override suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean> {
         return PurchasingError.PurchasingNotImplemented
     }
 

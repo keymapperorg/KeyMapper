@@ -91,7 +91,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val purchasesFlow: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> = callbackFlow {
         try {
             val value = withTimeout(5000L) {
-                purchasingManager.purchases.filterIsInstance<
+                purchasingManager.entitlements.filterIsInstance<
                     State.Data<KMResult<Set<RevenueCatEntitlementId>>>,
                     >()
                     .first()
@@ -101,7 +101,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         } catch (_: TimeoutCancellationException) {
         }
 
-        purchasingManager.purchases.collect(this::send)
+        purchasingManager.entitlements.collect(this::send)
     }
 
     private val systemBridgeConnectionState: Flow<SystemBridgeConnectionState?> =
@@ -143,7 +143,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     }
 
     override suspend fun isFloatingButtonsPurchased(): Boolean {
-        return purchasingManager.isPurchased(RevenueCatEntitlementId.FLOATING_BUTTONS)
+        return purchasingManager.hasEntitlement(RevenueCatEntitlementId.FLOATING_BUTTONS)
             .valueIfFailure { false }
     }
 

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface PurchasingManager {
     val onCompleteProductPurchase: MutableSharedFlow<RevenueCatEntitlementId>
-    val purchases: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>>
+    val entitlements: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>>
 
     suspend fun launchPurchasingFlow(
         packageId: String,
@@ -16,7 +16,7 @@ interface PurchasingManager {
 
     suspend fun getPackagePrice(packageId: String): KMResult<String>
     suspend fun getCurrentOfferingId(): KMResult<String?>
-    suspend fun isPurchased(entitlement: RevenueCatEntitlementId): KMResult<Boolean>
+    suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean>
     fun refresh()
 
     /**
