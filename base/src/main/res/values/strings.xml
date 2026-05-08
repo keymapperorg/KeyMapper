@@ -1516,7 +1516,7 @@
     <string name="home_floating_layouts_promo_title">Don’t have enough buttons?</string>
     <string name="home_floating_layouts_promo_subtitle">Make your own!</string>
     <string name="home_floating_layouts_promo_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
-    <string name="home_floating_layouts_hide_promo_button">Hide this page</string>
+    <string name="home_floating_layouts_hide_promo_button">Hide</string>
     <string name="home_floating_layouts_empty_title">Thank you for supporting Key\u00A0Mapper\u00A0❤️!</string>
     <string name="home_floating_layouts_empty_text">Create your first layout!</string>
     <string name="home_floating_layouts_explanation">Layouts let you organize floating buttons into groups. They do not affect which buttons can be shown. Any button from any layout can be shown at the same time.</string>
