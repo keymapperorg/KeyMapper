@@ -1369,6 +1369,7 @@
     <!-- Support screen -->
     <string name="support_key_mapper_title">Support Key\u00A0Mapper\u00A0❤️</string>
     <string name="support_key_mapper_subtitle">Loved by thousands of gamers and enthusiasts</string>
+    <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive ❤️</string>
     <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
     <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
     <string name="support_key_mapper_quote_2">Floating buttons is worth it!</string>
@@ -1393,6 +1394,14 @@
     <string name="paywall_try_risk_free_1">Try it risk-free.\ </string>
     <string name="paywall_try_risk_free_2">Contact us</string>
     <string name="paywall_try_risk_free_3">\ for a refund if you\'re not satisfied.</string>
+
+    <string name="paywall_bonus_assistant_trigger">Bonus: Assistant Trigger included</string>
+    <string name="paywall_support_more_optional">Support more (optional)</string>
+    <string name="paywall_buy_me_a_coffee">Buy me a coffee</string>
+    <string name="paywall_buy_me_lunch">Buy me lunch</string>
+    <string name="paywall_support_button">%1$s · %2$s</string>
+    <string name="paywall_all_options_unlock_lead">All options unlock Floating Buttons + Assistant Trigger </string>
+    <string name="paywall_all_options_unlock_forever">forever</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
     <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
@@ -1424,6 +1433,7 @@
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_payment_pending">We are waiting for confirmation from Google Play that your purchase was successful. Reopen the Key\u00A0Mapper app when your card has been successfully charged.</string>
     <string name="purchasing_error_purchase_invalid">Invalid purchase.</string>
+    <string name="purchasing_error_entitlement_not_granted_after_purchase">Purchase can not be verified. Do you have an internet connection?</string>
     <string name="purchasing_pending_error_dialog_title">Payment pending</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>

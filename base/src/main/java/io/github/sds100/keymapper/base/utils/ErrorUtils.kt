@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.telephony.SmsManager
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
+import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
@@ -531,17 +531,22 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 R.string.purchasing_error_purchase_invalid,
             )
 
+        PurchasingError.PurchasingProcessError.EntitlementNotGrantedAfterPurchase ->
+            resourceProvider.getString(
+                R.string.purchasing_error_entitlement_not_granted_after_purchase,
+            )
+
         is PurchasingError.PurchasingProcessError.Unexpected ->
             message
 
         is PurchasingError.ProductNotPurchased ->
-            when (product) {
-                ProductId.ASSISTANT_TRIGGER ->
+            when (entitlement) {
+                RevenueCatEntitlementId.ASSISTANT_TRIGGER ->
                     resourceProvider.getString(
                         R.string.purchasing_error_assistant_not_purchased_home_screen,
                     )
 
-                ProductId.FLOATING_BUTTONS ->
+                RevenueCatEntitlementId.FLOATING_BUTTONS ->
                     resourceProvider.getString(
                         R.string.purchasing_error_floating_buttons_not_purchased_home_screen,
                     )
