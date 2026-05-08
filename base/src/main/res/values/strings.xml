@@ -1377,7 +1377,7 @@
     <string name="support_key_mapper_quote_5">I\'ve been enjoying the floating buttons feature.</string>
     <string name="pay_once_unlock_forever">Pay once, unlock forever</string>
     <string name="watch_video_button">Watch video</string>
-    <string name="buy_now_button">Buy now (%s)</string>
+    <string name="buy_now_button">Unlock for just %s</string>
     <string name="learn_more_button">Learn more</string>
 
     <string name="on_screen_floating_buttons_title">On-screen floating buttons</string>
@@ -1432,7 +1432,7 @@
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.app</string>
     <string name="customer_email_subject_pro" translatable="false">Key Mapper Pro query</string>
-    <string name="customer_email_subject_risk_free" translatable="false">Key Mapper pre-purchase query</string>
+    <string name="customer_email_subject_risk_free" translatable="false">Key Mapper refund query</string>
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
