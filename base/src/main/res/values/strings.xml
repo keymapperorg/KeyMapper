@@ -1402,7 +1402,7 @@
     <string name="paywall_buy_me_lunch">Lunch</string>
     <string name="paywall_support_button_coffee">☕️ Coffee · %1$s</string>
     <string name="paywall_support_button_lunch">🥪 Lunch · %1$s</string>
-    <string name="paywall_support_more_show_options">Support more</string>
+    <string name="paywall_support_more_show_options">Buy us a coffee or lunch</string>
     <string name="paywall_support_more_hide_options">Hide</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
