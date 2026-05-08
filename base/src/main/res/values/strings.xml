@@ -1393,14 +1393,14 @@
     <string name="paywall_more_addons_section_title">More add-ons</string>
     <string name="paywall_try_risk_free_1">Try it risk-free.\ </string>
     <string name="paywall_try_risk_free_2">Contact us</string>
-    <string name="paywall_try_risk_free_3">\ for a refund if you\'re not satisfied.</string>
+    <string name="paywall_try_risk_free_3">\ if you\'re not satisfied.</string>
 
     <string name="paywall_bonus_assistant_trigger">Bonus: Assistant Trigger included</string>
     <string name="paywall_support_more_optional">Support more (optional)</string>
-    <string name="paywall_buy_me_a_coffee">Buy me a coffee</string>
-    <string name="paywall_buy_me_lunch">Buy me lunch</string>
+    <string name="paywall_buy_me_a_coffee">☕️ Buy me a coffee</string>
+    <string name="paywall_buy_me_lunch">🥪 Buy me lunch</string>
     <string name="paywall_support_button">%1$s · %2$s</string>
-    <string name="paywall_all_options_unlock_lead">All options unlock Floating Buttons + Assistant Trigger </string>
+    <string name="paywall_all_options_unlock_lead">All options unlock Floating Buttons + Assistant Trigger\ </string>
     <string name="paywall_all_options_unlock_forever">forever</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
