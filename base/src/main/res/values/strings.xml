@@ -1379,7 +1379,7 @@
     <string name="paywall_bundle_thank_you_video_button">Watch the Floating Buttons video</string>
     <string name="paywall_bundle_thank_you_email_button">Email us</string>
 
-    <string name="customer_email_subject_bundle_thank_you" translatable="false">Key Mapper help</string>
+    <string name="customer_email_subject_bundle_thank_you" translatable="false">Key Mapper Pro help</string>
     <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive</string>
     <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
     <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
@@ -1462,9 +1462,7 @@
     <string name="customer_email_subject_risk_free" translatable="false">Key Mapper refund query</string>
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
-    <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. You can always contact us from the shop.</string>
-    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+      <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="customer_email_subject_foss_support" translatable="false">Key Mapper FOSS support</string>
     <string name="foss_advanced_triggers_support_body_main">Floating Buttons and Assistant trigger aren\'t sold in this FOSS build because RevenueCat and Google Play in-app billing aren\'t included.\n\nYou can still support development on Ko-fi.</string>
     <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later want those products,\ </string>
