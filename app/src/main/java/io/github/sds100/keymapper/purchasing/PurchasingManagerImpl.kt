@@ -26,6 +26,10 @@ class PurchasingManagerImpl : PurchasingManager {
         return PurchasingError.PurchasingNotImplemented
     }
 
+    override suspend fun getNonSubscriptionPurchaseCount(packageId: String): KMResult<Int> {
+        return PurchasingError.PurchasingNotImplemented
+    }
+
     override suspend fun getPackagePrice(packageId: String): KMResult<String> {
         return PurchasingError.PurchasingNotImplemented
     }

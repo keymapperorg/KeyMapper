@@ -17,6 +17,7 @@ interface PurchasingManager {
     suspend fun getPackagePrice(packageId: String): KMResult<String>
     suspend fun getCurrentOfferingId(): KMResult<String?>
     suspend fun isPackagePurchased(packageId: String): KMResult<Boolean>
+    suspend fun getNonSubscriptionPurchaseCount(packageId: String): KMResult<Int>
     suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean>
     fun refresh()
 

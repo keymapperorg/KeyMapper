@@ -1370,6 +1370,16 @@
     <!-- Support screen -->
     <string name="support_key_mapper_title">Support Key\u00A0Mapper\u00A0❤️</string>
     <string name="support_key_mapper_subtitle">Loved by thousands of gamers and enthusiasts</string>
+
+    <string name="paywall_bundle_thank_you_title">Thank you!</string>
+    <string name="paywall_bundle_thank_you_body">You have bought Floating Buttons and Assistant trigger.</string>
+    <string name="paywall_bundle_thank_you_open_source_body">Key Mapper is largely open source, and stays that way thanks to people who chip in. We’d rather offer optional purchases that genuinely help you than fill the app with ads or plug in trackers that harvest your data.</string>
+    <string name="paywall_bundle_thank_you_help_body">We’re happy to help you solve any problems and learn how to use the features.</string>
+    <string name="paywall_bundle_thank_you_discord_button">Ask for help in Discord</string>
+    <string name="paywall_bundle_thank_you_video_button">Watch the Floating Buttons video</string>
+    <string name="paywall_bundle_thank_you_email_button">Email us</string>
+
+    <string name="customer_email_subject_bundle_thank_you" translatable="false">Key Mapper help</string>
     <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive</string>
     <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
     <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
@@ -1399,10 +1409,13 @@
     <string name="paywall_bonus_assistant_trigger">Bonus: Assistant Trigger included</string>
     <string name="paywall_support_more_title">Or buy us a coffee/lunch. All options unlock everything.</string>
     <string name="paywall_support_more_body">Buy us a coffee or lunch. All options unlock everything.</string>
+    <string name="paywall_tip_jar_title">Tip jar</string>
     <string name="paywall_buy_me_a_coffee">Coffee</string>
     <string name="paywall_buy_me_lunch">Lunch</string>
     <string name="paywall_support_button_coffee">☕️ Coffee · %1$s</string>
+    <string name="paywall_support_button_coffee_consumed">☕️ Coffee · %1$s (%2$d given)</string>
     <string name="paywall_support_button_lunch">🥪 Lunch · %1$s</string>
+    <string name="paywall_support_button_lunch_consumed">🥪 Lunch · %1$s (%2$d given) </string>
     <string name="paywall_buy_bundle_button">Buy bundle (%1$s)</string>
     <string name="paywall_support_more_show_options">Buy us a coffee or lunch</string>
     <string name="paywall_support_more_hide_options">Hide</string>
