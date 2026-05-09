@@ -17,8 +17,12 @@ class PurchasingManagerImpl : PurchasingManager {
 
     override suspend fun launchPurchasingFlow(
         packageId: String,
-        verifyEntitlement: RevenueCatEntitlementId,
+        verifyEntitlements: Array<RevenueCatEntitlementId>,
     ): KMResult<Unit> {
+        return PurchasingError.PurchasingNotImplemented
+    }
+
+    override suspend fun isPackagePurchased(packageId: String): KMResult<Boolean> {
         return PurchasingError.PurchasingNotImplemented
     }
 

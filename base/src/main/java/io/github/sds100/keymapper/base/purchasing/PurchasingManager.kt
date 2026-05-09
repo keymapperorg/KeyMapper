@@ -11,11 +11,12 @@ interface PurchasingManager {
 
     suspend fun launchPurchasingFlow(
         packageId: String,
-        verifyEntitlement: RevenueCatEntitlementId,
+        verifyEntitlements: Array<RevenueCatEntitlementId>,
     ): KMResult<Unit>
 
     suspend fun getPackagePrice(packageId: String): KMResult<String>
     suspend fun getCurrentOfferingId(): KMResult<String?>
+    suspend fun isPackagePurchased(packageId: String): KMResult<Boolean>
     suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean>
     fun refresh()
 
