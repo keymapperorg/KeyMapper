@@ -1449,7 +1449,7 @@
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
+    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. You can always contact us from the shop.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
