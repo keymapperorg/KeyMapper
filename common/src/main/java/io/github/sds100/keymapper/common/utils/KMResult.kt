@@ -164,10 +164,12 @@ val <T> KMResult<T>.isError: Boolean
 val <T> KMResult<T>.isSuccess: Boolean
     get() = this is Success
 
-fun <T, U> KMResult<T>.handle(onSuccess: (value: T) -> U, onError: (error: KMError) -> U): U =
-    when (this) {
-        is Success -> onSuccess(value)
-        is KMError -> onError(this)
-    }
+inline fun <T, U> KMResult<T>.handle(
+    onSuccess: (value: T) -> U,
+    onError: (error: KMError) -> U,
+): U = when (this) {
+    is Success -> onSuccess(value)
+    is KMError -> onError(this)
+}
 
 fun <T> T.success() = Success(this)

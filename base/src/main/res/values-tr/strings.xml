@@ -1099,8 +1099,6 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="learn_more_button">Daha fazla bilgi al</string>
     <string name="on_screen_floating_buttons_title">Ekran üstü kayan düğmeler</string>
     <string name="on_screen_floating_buttons_description">Yeterli düğmeniz yok mu? Herhangi bir uygulamada, oyunda veya kilit ekranınızda anında kısayollar ve makrolar oluşturun!</string>
-    <string name="feature_use_in_games">Oyunlarda kullan</string>
-    <string name="feature_use_on_lock_screen">Kilit ekranında kullan</string>
     <string name="side_key_assistant_trigger_title">Yan tuş ve Asistan tetikleyicisi</string>
     <string name="side_key_assistant_trigger_description">İşe yaramaz yan tuş mu? Asistan düğmesini veya cihazınızın yan tuş kısayolunu istediğiniz her şeye yeniden atayın!</string>
     <string name="feature_screen_off">Ekran kapalı</string>

@@ -326,6 +326,7 @@
 
     <!-- URLs -->
     <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
+    <string name="url_kofi" translatable="false">https://ko-fi.com/sethschroeder</string>
     <string name="url_license" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/LICENSE.md</string>
     <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/develop/CHANGELOG.md</string>
     <string name="url_translate" translatable="false">https://keymapper.app/contributing/#translating?utm_source=in_app</string>
@@ -1368,23 +1369,56 @@
 
     <!-- Support screen -->
     <string name="support_key_mapper_title">Support Key\u00A0Mapper\u00A0❤️</string>
-    <string name="support_key_mapper_subtitle">Choose add-ons to upgrade your experience</string>
-    <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive!</string>
-    <string name="support_key_mapper_quote">"Floating button feature is a game changer"</string>
+    <string name="support_key_mapper_subtitle">Loved by thousands of gamers and enthusiasts</string>
+
+    <string name="paywall_bundle_thank_you_title">Thank you!</string>
+    <string name="paywall_bundle_thank_you_body">You have bought Floating Buttons and Assistant trigger.</string>
+    <string name="paywall_bundle_thank_you_open_source_body">Key Mapper is largely open source, and stays that way thanks to people who chip in. We’d rather offer optional purchases that genuinely help you than fill the app with ads or plug in trackers that harvest your data.</string>
+    <string name="paywall_bundle_thank_you_help_body">We’re happy to help you solve any problems and learn how to use the features.</string>
+    <string name="paywall_bundle_thank_you_discord_button">Ask for help in Discord</string>
+    <string name="paywall_bundle_thank_you_video_button">Watch the Floating Buttons video</string>
+    <string name="paywall_bundle_thank_you_email_button">Email us</string>
+
+    <string name="customer_email_subject_bundle_thank_you" translatable="false">Key Mapper Pro help</string>
+    <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive</string>
     <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
     <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
-    <string name="support_key_mapper_quote_2">I\'ve been enjoying the floating buttons feature.</string>
+    <string name="support_key_mapper_quote_2">Floating buttons is worth it!</string>
     <string name="support_key_mapper_quote_3">Floating buttons is a brilliant addition.</string>
     <string name="support_key_mapper_quote_4">An essential part of my phone experience.</string>
+    <string name="support_key_mapper_quote_5">I\'ve been enjoying the floating buttons feature.</string>
     <string name="pay_once_unlock_forever">Pay once, unlock forever</string>
     <string name="watch_video_button">Watch video</string>
-    <string name="buy_now_button">Buy now (%s)</string>
+    <string name="buy_now_button">Unlock for just %s</string>
     <string name="learn_more_button">Learn more</string>
 
     <string name="on_screen_floating_buttons_title">On-screen floating buttons</string>
-    <string name="on_screen_floating_buttons_description">Not enough buttons? Make instant shortcuts and macros in any app, game or on your lock screen!</string>
-    <string name="feature_use_in_games">Use in games</string>
-    <string name="feature_use_on_lock_screen">Use on lock screen</string>
+    <string name="on_screen_floating_buttons_description">Your screen, your controls—gaming and daily driver workflows in one add-on.</string>
+    <!-- Paywall “floating buttons” checklist: [lead] bold in UI, then body. -->
+    <string name="feature_floating_paywall_check_games_lead">Works in games:</string>
+    <string name="feature_floating_paywall_check_games_body">keep your favourite actions one tap away while you play.</string>
+    <string name="feature_floating_paywall_check_lock_screen_lead">Works on your lock screen:</string>
+    <string name="feature_floating_paywall_check_lock_screen_body">access shortcuts without unlocking your phone.</string>
+    <string name="feature_floating_paywall_check_customise_lead">Customise placement + look:</string>
+    <string name="feature_floating_paywall_check_customise_body">drag where you want, adjust size and opacity.</string>
+    <string name="paywall_more_addons_section_title">More add-ons</string>
+    <string name="paywall_try_risk_free_1">Try it risk-free.\ </string>
+    <string name="paywall_try_risk_free_2">Contact us</string>
+    <string name="paywall_try_risk_free_3">\ if you\'re not satisfied.</string>
+
+    <string name="paywall_bonus_assistant_trigger">Bonus: Assistant Trigger included</string>
+    <string name="paywall_support_more_title">Or buy us a coffee/lunch. All options unlock everything.</string>
+    <string name="paywall_support_more_body">Buy us a coffee or lunch. All options unlock everything.</string>
+    <string name="paywall_tip_jar_title">Tip jar</string>
+    <string name="paywall_buy_me_a_coffee">Coffee</string>
+    <string name="paywall_buy_me_lunch">Lunch</string>
+    <string name="paywall_support_button_coffee">☕️ Coffee · %1$s</string>
+    <string name="paywall_support_button_coffee_consumed">☕️ Coffee · %1$s (%2$d given)</string>
+    <string name="paywall_support_button_lunch">🥪 Lunch · %1$s</string>
+    <string name="paywall_support_button_lunch_consumed">🥪 Lunch · %1$s (%2$d given) </string>
+    <string name="paywall_buy_bundle_button">Buy bundle (%1$s)</string>
+    <string name="paywall_support_more_show_options">Buy us a coffee or lunch</string>
+    <string name="paywall_support_more_hide_options">Hide</string>
 
     <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
     <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
@@ -1416,6 +1450,7 @@
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_payment_pending">We are waiting for confirmation from Google Play that your purchase was successful. Reopen the Key\u00A0Mapper app when your card has been successfully charged.</string>
     <string name="purchasing_error_purchase_invalid">Invalid purchase.</string>
+    <string name="purchasing_error_entitlement_not_granted_after_purchase">Purchase can not be verified. Do you have an internet connection?</string>
     <string name="purchasing_pending_error_dialog_title">Payment pending</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
@@ -1424,11 +1459,18 @@
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.app</string>
     <string name="customer_email_subject_pro" translatable="false">Key Mapper Pro query</string>
+    <string name="customer_email_subject_risk_free" translatable="false">Key Mapper refund query</string>
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
-    <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
-    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+      <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+    <string name="customer_email_subject_foss_support" translatable="false">Key Mapper FOSS support</string>
+    <string name="foss_advanced_triggers_support_body_main">Floating Buttons and Assistant trigger aren\'t sold in this FOSS build because RevenueCat and Google Play in-app billing aren\'t included.\n\nYou can still support development on Ko-fi.</string>
+    <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later want those products,\ </string>
+    <string name="foss_advanced_triggers_support_contact_link">contact us</string>
+    <string name="foss_advanced_triggers_support_contact_suffix">\ and we can usually help convert your support so it counts toward Google Play purchases.</string>
+    <string name="foss_advanced_triggers_support_values">Your support helps keep Key Mapper largely open source, without ads or tracking. We don\'t sell your personal data.</string>
+    <string name="foss_advanced_triggers_support_perks">Donations help fund Android compatibility updates, bug fixes and maintenance, improvements and documentation, and keeping the project sustainable.</string>
+    <string name="foss_advanced_triggers_kofi_button">Support on Ko-fi</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
     <!-- No keys recorded bottom sheet -->
@@ -1507,7 +1549,7 @@
     <string name="home_floating_layouts_promo_title">Don’t have enough buttons?</string>
     <string name="home_floating_layouts_promo_subtitle">Make your own!</string>
     <string name="home_floating_layouts_promo_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
-    <string name="home_floating_layouts_hide_promo_button">Hide this page</string>
+    <string name="home_floating_layouts_hide_promo_button">Hide</string>
     <string name="home_floating_layouts_empty_title">Thank you for supporting Key\u00A0Mapper\u00A0❤️!</string>
     <string name="home_floating_layouts_empty_text">Create your first layout!</string>
     <string name="home_floating_layouts_explanation">Layouts let you organize floating buttons into groups. They do not affect which buttons can be shown. Any button from any layout can be shown at the same time.</string>
@@ -1526,7 +1568,7 @@
     <string name="home_floating_layouts_name_delete_yes">Yes, delete</string>
     <string name="home_floating_layouts_name_delete_cancel">Cancel</string>
     <string name="home_floating_layouts_hide_dialog_title">Hide floating layouts</string>
-    <string name="home_floating_layouts_hide_dialog_text">You can find floating buttons in the Shop button when creating a trigger.</string>
+    <string name="home_floating_layouts_hide_dialog_text">You can find Floating Buttons in the Shop button when creating a trigger.</string>
     <string name="home_floating_layouts_app_bar_title">Floating buttons</string>
     <string name="home_app_bar_menu">Menu</string>
     <string name="home_app_bar_sort">Sort</string>
@@ -1840,7 +1882,7 @@
 
     <string name="trigger_discover_promo_title">Upgrade your experience</string>
     <string name="trigger_discover_promo_description">Floating buttons are instant shortcuts in any app, game or on your lock screen. Your support keeps Key Mapper alive ❤️</string>
-    <string name="trigger_discover_promo_see_action">See it in action</string>
+    <string name="trigger_discover_promo_see_action">See how it works</string>
     <string name="trigger_discover_promo_dismiss">Dismiss</string>
     <string name="trigger_discover_promo_unlock">Unlock for just %s</string>
     <!-- Trigger Discover Screen -->

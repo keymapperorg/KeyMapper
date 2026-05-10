@@ -12,6 +12,10 @@
 - #2087 small segmented button text is not readable in dark mode.
 - #2077 rename "This device" and "any device" to "This Android device" and "Any input device" to prevent confusion.
 
+## Changed
+
+- Use a more compact navigation bar on the home screen.
+
 ## Fixed
 
 - #2091 show an error on the "open device assistant" action when no device assistant is installed.
