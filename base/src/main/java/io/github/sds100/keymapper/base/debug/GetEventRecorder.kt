@@ -17,35 +17,48 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.files.IFile
 import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-interface GetEventOutputUseCase {
+interface GetEventRecorder {
+    val isRecording: Flow<Boolean>
     val deviceInfoOutput: Flow<String>
     val eventsOutput: Flow<String>
 
     suspend fun refreshDeviceInfo()
-    suspend fun recordEvents()
-    suspend fun stopRecording()
+    fun recordEvents()
+    fun stopRecording()
     fun copyOutput(output: String)
     suspend fun shareOutput(output: String)
 }
 
-class GetEventOutputUseCaseImpl @Inject constructor(
+@Singleton
+class GetEventRecorderImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val coroutineScope: CoroutineScope,
     private val executeShellCommandUseCase: ExecuteShellCommandUseCase,
     private val preferenceRepository: PreferenceRepository,
     private val clipboardAdapter: ClipboardAdapter,
     private val fileAdapter: FileAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val resourceProvider: ResourceProvider,
-) : GetEventOutputUseCase {
+) : GetEventRecorder {
 
     companion object {
         private const val MAX_COPY_OUTPUT_LENGTH = 150_000
     }
+
+    private val recordingJobState: MutableStateFlow<Job?> = MutableStateFlow(null)
+
+    override val isRecording: Flow<Boolean> = recordingJobState.map { it != null && it.isActive }
 
     override val deviceInfoOutput: Flow<String> = preferenceRepository
         .get(Keys.getEventDeviceInfoOutput)
@@ -59,7 +72,7 @@ class GetEventOutputUseCaseImpl @Inject constructor(
         val output = executeShellCommandUseCase.execute(
             command = "getevent -il",
             executionMode = ShellExecutionMode.ADB,
-            timeoutMillis = 30_000L,
+            timeoutMillis = 5_000L,
         ).handle(
             onSuccess = { it.stdout },
             onError = { "Error: ${it.getFullMessage(resourceProvider)}" },
@@ -67,26 +80,41 @@ class GetEventOutputUseCaseImpl @Inject constructor(
         preferenceRepository.set(Keys.getEventDeviceInfoOutput, output)
     }
 
-    override suspend fun recordEvents() {
-        val output = executeShellCommandUseCase.execute(
-            command = "getevent -lt",
-            executionMode = ShellExecutionMode.ADB,
-            timeoutMillis = 300_000L,
-        ).handle(
-            onSuccess = { it.stdout },
-            onError = { "" },
-        )
-        if (output.isNotEmpty()) {
-            preferenceRepository.set(Keys.getEventEventsOutput, output)
+    override fun recordEvents() {
+        recordingJobState.update { oldJob ->
+            oldJob?.cancel()
+
+            coroutineScope.launch {
+                val output = executeShellCommandUseCase.execute(
+                    command = "getevent -lt",
+                    executionMode = ShellExecutionMode.ADB,
+                    timeoutMillis = 60_000L,
+                ).handle(
+                    onSuccess = { it.stdout },
+                    onError = { "" },
+                )
+
+                if (output.isNotEmpty()) {
+                    preferenceRepository.set(Keys.getEventEventsOutput, output)
+                }
+            }
         }
     }
 
-    override suspend fun stopRecording() {
-        executeShellCommandUseCase.execute(
-            command = "pkill -x getevent || true",
-            executionMode = ShellExecutionMode.ADB,
-            timeoutMillis = 5_000L,
-        )
+    override fun stopRecording() {
+        coroutineScope.launch {
+            executeShellCommandUseCase.execute(
+                command = "pkill -x getevent || true",
+                executionMode = ShellExecutionMode.ADB,
+                timeoutMillis = 5_000L,
+            )
+
+            recordingJobState.update { oldJob ->
+                oldJob?.join()
+                oldJob?.cancel()
+                null
+            }
+        }
     }
 
     override fun copyOutput(output: String) {

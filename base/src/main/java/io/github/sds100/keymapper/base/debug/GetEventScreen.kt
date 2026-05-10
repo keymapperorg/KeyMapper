@@ -95,7 +95,7 @@ private enum class RefreshButtonState {
 @Composable
 private fun GetEventScreen(
     modifier: Modifier = Modifier,
-    state: GetEventViewModel.State,
+    state: GetEventState,
     onBackClick: () -> Unit = {},
     onToggleRecordClick: () -> Unit = {},
     onRefreshDeviceInfoClick: () -> Unit = {},
@@ -309,11 +309,15 @@ private fun ExpertModeSetupCard(
 }
 
 @Composable
-private fun InfoContent(modifier: Modifier = Modifier, state: GetEventViewModel.State) {
+private fun InfoContent(modifier: Modifier = Modifier, state: GetEventState) {
     Column(modifier = modifier) {
         if (state.isLoadingDeviceInfo) {
             Spacer(Modifier.height(16.dp))
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            )
         }
 
         if (state.deviceInfoOutput.isNotEmpty()) {
@@ -339,7 +343,7 @@ private fun InfoContent(modifier: Modifier = Modifier, state: GetEventViewModel.
 }
 
 @Composable
-private fun EventsContent(modifier: Modifier = Modifier, state: GetEventViewModel.State) {
+private fun EventsContent(modifier: Modifier = Modifier, state: GetEventState) {
     val verticalScrollState = rememberScrollState()
 
     LaunchedEffect(state.recordingOutput) {
@@ -351,15 +355,23 @@ private fun EventsContent(modifier: Modifier = Modifier, state: GetEventViewMode
     Column(modifier = modifier) {
         if (state.isRecording) {
             Spacer(Modifier.height(16.dp))
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 text = stringResource(R.string.debug_getevent_events_output_after_recording),
                 style = MaterialTheme.typography.bodySmall,
             )
-        }
-
-        if (!state.isRecording && state.recordingOutput.isNotEmpty()) {
+        } else if (state.recordingOutput.isEmpty()) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                text = stringResource(R.string.debug_getevent_events_empty),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        } else {
             SelectionContainer(
                 modifier = Modifier
                     .weight(1f)
@@ -386,7 +398,7 @@ private fun EventsContent(modifier: Modifier = Modifier, state: GetEventViewMode
 private fun PreviewInfoTab() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 deviceInfoOutput = """add device 1: /dev/input/event0
   bus:      0019
   vendor    0001
@@ -423,7 +435,7 @@ add device 2: /dev/input/event1
 private fun PreviewInfoTabLoading() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 isLoadingDeviceInfo = true,
                 expertModeStatus = ExpertModeStatus.ENABLED,
             ),
@@ -436,7 +448,7 @@ private fun PreviewInfoTabLoading() {
 private fun PreviewInfoTabEmptyOutput() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 expertModeStatus = ExpertModeStatus.ENABLED,
             ),
         )
@@ -448,7 +460,7 @@ private fun PreviewInfoTabEmptyOutput() {
 private fun PreviewRecording() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 recordingOutput = """/dev/input/event1: EV_KEY       KEY_VOLUMEDOWN       DOWN
 /dev/input/event1: EV_SYN       SYN_REPORT           00""",
                 isRecording = true,
@@ -463,7 +475,7 @@ private fun PreviewRecording() {
 private fun PreviewEventsContentOutputIdle() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 recordingOutput = """/dev/input/event2: EV_KEY       KEY_VOLUMEUP         DOWN
 /dev/input/event2: EV_SYN       SYN_REPORT           00""",
                 isRecording = false,
@@ -478,7 +490,7 @@ private fun PreviewEventsContentOutputIdle() {
 private fun PreviewInfoContentOutputAndLoading() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 deviceInfoOutput = """add device 3: /dev/input/event2
   bus:      0019
   vendor    0001
@@ -498,7 +510,7 @@ private fun PreviewInfoContentOutputAndLoading() {
 private fun PreviewExpertModeDisabled() {
     KeyMapperTheme {
         GetEventScreen(
-            state = GetEventViewModel.State(
+            state = GetEventState(
                 expertModeStatus = ExpertModeStatus.DISABLED,
             ),
         )
