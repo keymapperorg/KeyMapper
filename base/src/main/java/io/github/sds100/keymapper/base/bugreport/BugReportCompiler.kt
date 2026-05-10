@@ -79,7 +79,7 @@ class BugReportCompiler @Inject constructor(
     private val _state: MutableStateFlow<BugReportState> = MutableStateFlow(BugReportState.Idle)
     val state: StateFlow<BugReportState> = _state.asStateFlow()
 
-    private val logDateFormat = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
+    private val logDateFormat = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.US)
     private val severityString: Map<Int, String> = mapOf(
         LogEntryEntity.SEVERITY_ERROR to "ERROR",
         LogEntryEntity.SEVERITY_WARNING to "WARN",
@@ -197,10 +197,9 @@ class BugReportCompiler @Inject constructor(
 
         return when (installer) {
             null -> "Sideload"
-            "com.android.vending" -> "Google Play (com.android.vending)"
-            "org.fdroid.fdroid", "org.fdroid.fdroid.privileged" ->
-                "F-Droid ($installer)"
-            "com.github.android" -> "GitHub (com.github.android)"
+            "com.android.vending" -> "Google Play ($installer)"
+            "org.fdroid.fdroid", "org.fdroid.fdroid.privileged" -> "F-Droid ($installer)"
+            "com.github.android" -> "GitHub ($installer)"
             else -> installer
         }
     }
