@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.base.debug.GetEventOutputUseCase
+import io.github.sds100.keymapper.base.debug.GetEventRecorder
 import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
@@ -23,7 +23,6 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 @Singleton
@@ -40,7 +38,7 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val inputEventHub: InputEventHub,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
-    private val getEventOutputUseCase: GetEventOutputUseCase,
+    private val getEventRecorder: GetEventRecorder,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : RecordTriggerController,
     InputEventHubCallback {
@@ -122,9 +120,11 @@ class RecordTriggerControllerImpl @Inject constructor(
                 } else if (event.isUpEvent) {
                     onRecordKey(createEvdevRecordedKey(event))
                     Timber.d(
-                        "Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(
-                            event.androidCode,
-                        )}",
+                        "Recorded evdev event ${event.code} ${
+                            KeyEvent.keyCodeToString(
+                                event.androidCode,
+                            )
+                        }",
                     )
                 }
 
@@ -200,6 +200,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         recordingTriggerJob?.cancel()
         recordingTriggerJob = null
 
+        getEventRecorder.stopRecording()
         dpadMotionEventTracker.reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
         state.update { RecordTriggerState.Completed(recordedKeys) }
@@ -264,17 +265,11 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         // Capture getevent output in parallel for the bug report and getevent debug screen.
         // ADB shell is only available when expert mode (system bridge) is connected.
-        // Launch on the outer coroutineScope so the capture lifecycle is independent of this
-        // job's cancellation state and we can drain its output even when the user stops early.
-        val geteventCaptureJob: Job? = if (systemBridgeConnectionManager.isConnected()) {
-            coroutineScope.launch(Dispatchers.IO) {
-                runCatching { getEventOutputUseCase.refreshDeviceInfo() }
-                    .onFailure { Timber.w(it, "Failed to refresh getevent device info") }
-                runCatching { getEventOutputUseCase.recordEvents() }
-                    .onFailure { Timber.w(it, "Failed to record getevent events") }
-            }
-        } else {
-            null
+        if (systemBridgeConnectionManager.isConnected()) {
+            runCatching { getEventRecorder.refreshDeviceInfo() }
+                .onFailure { Timber.w(it, "Failed to refresh getevent device info") }
+
+            getEventRecorder.recordEvents()
         }
 
         try {
@@ -286,21 +281,14 @@ class RecordTriggerControllerImpl @Inject constructor(
                 delay(1000)
             }
         } finally {
+            // Stop the getevent shell process so the parallel capture job exits and
+            // its output is persisted to the existing preference keys.
+            getEventRecorder.stopRecording()
+
             downKeyEvents.clear()
             dpadMotionEventTracker.reset()
             inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
             state.update { RecordTriggerState.Completed(recordedKeys) }
-
-            if (geteventCaptureJob != null) {
-                // Stop the getevent shell process so the parallel capture job exits and
-                // its output is persisted to the existing preference keys. Run on
-                // NonCancellable so we still kill getevent when this job is cancelled.
-                withContext(NonCancellable) {
-                    runCatching { getEventOutputUseCase.stopRecording() }
-                        .onFailure { Timber.w(it, "Failed to stop parallel getevent capture") }
-                    geteventCaptureJob.join()
-                }
-            }
         }
     }
 }

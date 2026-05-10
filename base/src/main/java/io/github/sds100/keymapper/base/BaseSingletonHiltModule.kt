@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCaseImpl
-import io.github.sds100.keymapper.base.debug.GetEventOutputUseCase
-import io.github.sds100.keymapper.base.debug.GetEventOutputUseCaseImpl
+import io.github.sds100.keymapper.base.debug.GetEventRecorder
+import io.github.sds100.keymapper.base.debug.GetEventRecorderImpl
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
@@ -137,7 +137,7 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindGetEventOutputUseCase(impl: GetEventOutputUseCaseImpl): GetEventOutputUseCase
+    abstract fun bindGetEventOutputUseCase(impl: GetEventRecorderImpl): GetEventRecorder
 
     @Binds
     @Singleton
