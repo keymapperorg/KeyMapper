@@ -1106,8 +1106,6 @@
     <string name="learn_more_button">更多信息</string>
     <string name="on_screen_floating_buttons_title">屏幕悬浮按钮</string>
     <string name="on_screen_floating_buttons_description">设备按键不够用？键映射器可以在任何应用、游戏或锁屏界面上，即刻创建快捷方式与宏命令！</string>
-    <string name="feature_use_in_games">在游戏中使用</string>
-    <string name="feature_use_on_lock_screen">在锁屏界面使用</string>
     <string name="side_key_assistant_trigger_title">侧键与助手触发器</string>
     <string name="side_key_assistant_trigger_description">侧键暂时空闲？可以将助手按键或设备的侧键快捷方式重新映射为您想要的任何功能！</string>
     <string name="feature_screen_off">关闭屏幕</string>

@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.base.trigger
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
-import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
+import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -19,7 +19,7 @@ data class TriggerErrorSnapshot(
     val isKeyMapperImeChosen: Boolean,
     val isDndAccessGranted: Boolean,
     val isRootGranted: Boolean,
-    val purchases: KMResult<Set<ProductId>>,
+    val purchases: KMResult<Set<RevenueCatEntitlementId>>,
     val showDpadImeSetupError: Boolean,
     /**
      * Can be null if the sdk version is not high enough.
@@ -62,11 +62,15 @@ data class TriggerErrorSnapshot(
         }
 
         purchases.onSuccess { purchases ->
-            if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
+            if (key is AssistantTriggerKey &&
+                !purchases.contains(RevenueCatEntitlementId.ASSISTANT_TRIGGER)
+            ) {
                 return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
             }
 
-            if (key is FloatingButtonKey && !purchases.contains(ProductId.FLOATING_BUTTONS)) {
+            if (key is FloatingButtonKey &&
+                !purchases.contains(RevenueCatEntitlementId.FLOATING_BUTTONS)
+            ) {
                 return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
             }
         }.onFailure { error ->

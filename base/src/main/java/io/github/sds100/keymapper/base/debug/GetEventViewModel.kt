@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.utils.ExpertModeStatus
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import javax.inject.Inject
@@ -18,21 +20,16 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class GetEventViewModel @Inject constructor(
-    private val outputUseCase: GetEventOutputUseCase,
+    private val outputUseCase: GetEventRecorder,
     private val navigationProvider: NavigationProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
 ) : ViewModel(),
     NavigationProvider by navigationProvider {
 
-    data class State(
-        val deviceInfoOutput: String = "",
-        val recordingOutput: String = "",
-        val isLoadingDeviceInfo: Boolean = false,
-        val isRecording: Boolean = false,
-        val expertModeStatus: ExpertModeStatus = ExpertModeStatus.DISABLED,
-    )
+    private var resumeKeyMapsOnStop = false
 
-    var state: State by mutableStateOf(State())
+    var state: GetEventState by mutableStateOf(GetEventState())
         private set
 
     init {
@@ -45,6 +42,17 @@ class GetEventViewModel @Inject constructor(
         viewModelScope.launch {
             outputUseCase.eventsOutput.collect { output ->
                 state = state.copy(recordingOutput = output)
+            }
+        }
+
+        viewModelScope.launch {
+            outputUseCase.isRecording.collect { isRecording ->
+                if (!isRecording && resumeKeyMapsOnStop) {
+                    pauseKeyMapsUseCase.resume()
+                    resumeKeyMapsOnStop = false
+                }
+
+                state = state.copy(isRecording = isRecording)
             }
         }
 
@@ -84,11 +92,14 @@ class GetEventViewModel @Inject constructor(
     }
 
     private fun startRecording() {
-        viewModelScope.launch {
-            state = state.copy(isRecording = true)
-            outputUseCase.recordEvents()
-            state = state.copy(isRecording = false)
-        }
+        // Only unpause key maps when recording stops if the user hadn't previously paused it
+        // themselves.
+        resumeKeyMapsOnStop = !pauseKeyMapsUseCase.isPaused.firstBlocking()
+
+        // Key maps should be paused while recording because any events from grabbed devices
+        // will not appear in the getevent log.
+        pauseKeyMapsUseCase.pause()
+        outputUseCase.recordEvents()
     }
 
     private fun stopRecording() {
@@ -135,3 +146,11 @@ class GetEventViewModel @Inject constructor(
         }
     }
 }
+
+data class GetEventState(
+    val deviceInfoOutput: String = "",
+    val recordingOutput: String = "",
+    val isLoadingDeviceInfo: Boolean = false,
+    val isRecording: Boolean = false,
+    val expertModeStatus: ExpertModeStatus = ExpertModeStatus.DISABLED,
+)

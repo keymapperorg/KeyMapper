@@ -7,9 +7,9 @@ import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.input.EvdevDevicesDelegate
-import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError.ProductNotPurchased
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.trigger.TriggerError
@@ -88,10 +88,12 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
      * This waits for the purchases to be processed with a timeout so the UI doesn't
      * say there are no purchases while it is loading.
      */
-    private val purchasesFlow: Flow<State<KMResult<Set<ProductId>>>> = callbackFlow {
+    private val purchasesFlow: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> = callbackFlow {
         try {
             val value = withTimeout(5000L) {
-                purchasingManager.purchases.filterIsInstance<State.Data<KMResult<Set<ProductId>>>>()
+                purchasingManager.entitlements.filterIsInstance<
+                    State.Data<KMResult<Set<RevenueCatEntitlementId>>>,
+                    >()
                     .first()
             }
 
@@ -99,7 +101,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         } catch (_: TimeoutCancellationException) {
         }
 
-        purchasingManager.purchases.collect(this::send)
+        purchasingManager.entitlements.collect(this::send)
     }
 
     private val systemBridgeConnectionState: Flow<SystemBridgeConnectionState?> =
@@ -141,7 +143,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     }
 
     override suspend fun isFloatingButtonsPurchased(): Boolean {
-        return purchasingManager.isPurchased(ProductId.FLOATING_BUTTONS).valueIfFailure { false }
+        return purchasingManager.hasEntitlement(RevenueCatEntitlementId.FLOATING_BUTTONS)
+            .valueIfFailure { false }
     }
 
     override suspend fun fixTriggerError(error: TriggerError) {
@@ -156,7 +159,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 ProductNotPurchased(
-                    ProductId.ASSISTANT_TRIGGER,
+                    RevenueCatEntitlementId.ASSISTANT_TRIGGER,
                 ),
             )
 
@@ -164,7 +167,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
                 ProductNotPurchased(
-                    ProductId.FLOATING_BUTTONS,
+                    RevenueCatEntitlementId.FLOATING_BUTTONS,
                 ),
             )
 
