@@ -764,6 +764,15 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = inputMethodAdapter.showImePicker(fromForeground = false)
             }
 
+            is ActionData.PerformImeAction -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    service.performImeAction()
+                    result = Success(Unit)
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
+                }
+            }
+
             is ActionData.CutText -> {
                 result = service.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
@@ -808,6 +817,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     } else {
                         null
                     }
+                }
+            }
+
+            is ActionData.SelectAllText -> {
+                result = service.performActionOnNode({ it.isFocused }) { node ->
+                    val text = node.text?.toString().orEmpty()
+                    if (text.isEmpty()) return@performActionOnNode null
+
+                    val extras = mapOf(
+                        AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to 0,
+                        AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to text.length,
+                    )
+
+                    AccessibilityNodeAction(
+                        AccessibilityNodeInfo.ACTION_SET_SELECTION,
+                        extras,
+                    )
                 }
             }
 
@@ -955,6 +981,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 )
 
                 notificationAdapter.showNotification(notification)
+                result = success()
+            }
+
+            is ActionData.Toast -> {
+                toastAdapter.show(
+                    message = action.message,
+                    isLong = action.duration == ActionData.Toast.Duration.LONG,
+                )
                 result = success()
             }
 

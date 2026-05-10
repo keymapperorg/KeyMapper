@@ -1,0 +1,16 @@
+---
+description: Compose coding conventions used in KeyMapper
+globs: "**/*.kt"
+alwaysApply: false
+---
+
+# KeyMapper Compose Guidelines
+
+Apply this when editing Compose code:
+
+- Branch names must follow `feature/123-branch-name` or `fix/123-branch-name`.
+- Put `Modifier` as the first optional parameter after required parameters.
+- For non-standard colors, use `LocalCustomColorsPalette` instead of `MaterialTheme.colorScheme`.
+- Check `KeyMapperIcons` before introducing icons from other sources.
+- Use `LocalUriHandler.openUriSafe` for URL launching and do not hoist URL launching logic.
+- Prefer imports; avoid fully qualified names in Compose call sites.

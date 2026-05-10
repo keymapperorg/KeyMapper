@@ -1,3 +1,26 @@
+## [4.1.0](https://github.com/sds100/KeyMapper/releases/tag/v4.1.0)
+
+#### 10 May 2026
+
+## Added
+
+- #2067 add action to select all text in the focused field.
+- #2045 add action to input on-screen keyboard enter/send button.
+- #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.
+- #1029 add action to show a toast message.
+- #2081 add getevent debug screen.
+- #2087 small segmented button text is not readable in dark mode.
+- #2077 rename "This device" and "any device" to "This Android device" and "Any input device" to prevent confusion.
+
+## Changed
+
+- Use a more compact navigation bar on the home screen.
+
+## Fixed
+
+- #2091 show an error on the "open device assistant" action when no device assistant is installed.
+- #2107 clarify the crashed accessibility service dialog text and keep only Cancel/Restart actions.
+
 ## [4.0.5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.5)
 
 #### 26 February 2026

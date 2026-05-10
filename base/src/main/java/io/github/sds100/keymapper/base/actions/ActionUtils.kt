@@ -54,6 +54,7 @@ import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay30
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
+import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SignalCellular4Bar
 import androidx.compose.material.icons.outlined.SignalCellularOff
@@ -225,6 +226,8 @@ object ActionUtils {
         ActionId.HIDE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.SHOW_KEYBOARD_PICKER -> ActionCategory.KEYBOARD
         ActionId.SELECT_WORD_AT_CURSOR -> ActionCategory.KEYBOARD
+        ActionId.SELECT_ALL_TEXT -> ActionCategory.KEYBOARD
+        ActionId.PERFORM_IME_ACTION -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
@@ -238,6 +241,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
+        ActionId.TOAST -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
@@ -424,6 +428,10 @@ object ActionUtils {
 
         ActionId.SELECT_WORD_AT_CURSOR -> R.string.action_select_word_at_cursor
 
+        ActionId.SELECT_ALL_TEXT -> R.string.action_select_all_text
+
+        ActionId.PERFORM_IME_ACTION -> R.string.action_perform_ime_action
+
         ActionId.SWITCH_KEYBOARD -> R.string.action_switch_keyboard
 
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
@@ -482,6 +490,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
 
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
+        ActionId.TOAST -> R.string.action_toast
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
 
@@ -599,6 +608,8 @@ object ActionUtils {
         ActionId.TEXT_COPY -> R.drawable.ic_content_copy
         ActionId.TEXT_PASTE -> R.drawable.ic_content_paste
         ActionId.SELECT_WORD_AT_CURSOR -> null
+        ActionId.SELECT_ALL_TEXT -> null
+        ActionId.PERFORM_IME_ACTION -> null
         ActionId.SWITCH_KEYBOARD -> R.drawable.ic_outline_keyboard_24
         ActionId.TOGGLE_AIRPLANE_MODE -> R.drawable.ic_outline_airplanemode_active_24
         ActionId.ENABLE_AIRPLANE_MODE -> R.drawable.ic_outline_airplanemode_active_24
@@ -628,6 +639,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
         ActionId.CREATE_NOTIFICATION -> R.drawable.ic_notification_play
+        ActionId.TOAST -> R.drawable.ic_outline_message_24
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
@@ -675,7 +687,10 @@ object ActionUtils {
         ActionId.TEXT_COPY,
         ActionId.TEXT_PASTE,
         ActionId.SELECT_WORD_AT_CURSOR,
+        ActionId.SELECT_ALL_TEXT,
             -> Build.VERSION_CODES.JELLY_BEAN_MR2
+
+        ActionId.PERFORM_IME_ACTION -> Build.VERSION_CODES.TIRAMISU
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
 
@@ -1029,6 +1044,8 @@ object ActionUtils {
         ActionId.TEXT_COPY -> Icons.Rounded.ContentCopy
         ActionId.TEXT_PASTE -> Icons.Rounded.ContentPaste
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
+        ActionId.SELECT_ALL_TEXT -> Icons.Outlined.SelectAll
+        ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
@@ -1060,6 +1077,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
         ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
+        ActionId.TOAST -> Icons.AutoMirrored.Outlined.Message
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -1118,6 +1136,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.HttpRequest,
     is ActionData.ShellCommand,
     is ActionData.CreateNotification,
+    is ActionData.Toast,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,

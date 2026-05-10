@@ -1,0 +1,24 @@
+---
+description: Required checklist when adding a new Action
+alwaysApply: true
+---
+
+# Adding A New Action
+
+Before implementing, confirm whether the action is editable.
+- Branch names must follow `feature/123-branch-name` or `fix/123-branch-name`.
+
+Then follow this sequence:
+
+1. Add an ID in `ActionId`.
+2. Add a new `ActionData` sealed class variant.
+3. Map entity conversions in `ActionDataEntityMapper`.
+4. Assign category in `ActionUtils`.
+5. If editable, add it to `ActionUtils.isEditable`.
+6. Add title string in `strings.xml`.
+7. Add title and Compose icon in `ActionUtils` (ignore drawables).
+8. Add title in `ActionUiHelper`.
+9. Add execution handling in `PerformActionsUseCase`.
+10. Handle creation in `CreateActionDelegate`.
+
+Do not delete existing action code; follow existing names and place additions near similar actions.

@@ -593,8 +593,10 @@ class ActionUiHelper(
         ActionData.Screenshot -> getString(R.string.action_screenshot)
         ActionData.SecureLock -> getString(R.string.action_secure_lock_device)
         ActionData.SelectWordAtCursor -> getString(R.string.action_select_word_at_cursor)
+        ActionData.SelectAllText -> getString(R.string.action_select_all_text)
         ActionData.ShowKeyboard -> getString(R.string.action_show_keyboard)
         ActionData.ShowKeyboardPicker -> getString(R.string.action_show_keyboard_picker)
+        ActionData.PerformImeAction -> getString(R.string.action_perform_ime_action)
         ActionData.ShowPowerMenu -> getString(R.string.action_show_power_menu)
 
         ActionData.StatusBar.Collapse -> getString(R.string.action_collapse_status_bar)
@@ -672,6 +674,17 @@ class ActionUiHelper(
                 R.string.action_create_notification_description,
                 action.title,
             )
+        }
+
+        is ActionData.Toast -> {
+            when (action.duration) {
+                ActionData.Toast.Duration.SHORT -> {
+                    getString(R.string.action_toast_description_short, action.message)
+                }
+                ActionData.Toast.Duration.LONG -> {
+                    getString(R.string.action_toast_description_long, action.message)
+                }
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.annotation.SuppressLint
+import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
@@ -8,6 +9,7 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -53,6 +55,9 @@ class LazyActionErrorSnapshot(
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
     private val isVoiceAssistantInstalled by lazy { packageManager.isVoiceAssistantInstalled() }
+    private val isDeviceAssistantInstalled by lazy {
+        packageManager.getDeviceAssistantPackage().isSuccess
+    }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
         buildSet {
@@ -161,6 +166,13 @@ class LazyActionErrorSnapshot(
             }
         }
 
+        if (action is ActionData.Toast &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !isPermissionGranted(Permission.POST_NOTIFICATIONS)
+        ) {
+            return SystemError.PermissionDenied(Permission.POST_NOTIFICATIONS)
+        }
+
         when (action) {
             is ActionData.App -> {
                 return getAppError(action.packageName)
@@ -187,6 +199,12 @@ class LazyActionErrorSnapshot(
             is ActionData.VoiceAssistant -> {
                 if (!isVoiceAssistantInstalled) {
                     return KMError.NoVoiceAssistant
+                }
+            }
+
+            is ActionData.DeviceAssistant -> {
+                if (!isDeviceAssistantInstalled) {
+                    return KMError.NoDeviceAssistant
                 }
             }
 

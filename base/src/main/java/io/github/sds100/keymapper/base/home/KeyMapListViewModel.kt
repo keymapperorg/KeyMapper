@@ -907,7 +907,27 @@ class KeyMapListViewModel(
     }
 
     fun showInputMethodPicker() {
-        showInputMethodPickerUseCase.show(fromForeground = true)
+        coroutineScope.launch {
+            val autoSwitchEnabled = showInputMethodPickerUseCase.isAutoSwitchImeEnabled.first()
+
+            if (autoSwitchEnabled) {
+                val response = showDialog(
+                    "disable_auto_switch_ime_dialog",
+                    DialogModel.Alert(
+                        title = getString(R.string.dialog_title_disable_auto_switch_ime),
+                        message = getString(R.string.dialog_message_disable_auto_switch_ime),
+                        positiveButtonText = getString(R.string.pos_ok),
+                        negativeButtonText = getString(R.string.neg_cancel),
+                    ),
+                )
+
+                if (response != DialogResponse.POSITIVE) return@launch
+
+                showInputMethodPickerUseCase.disableAutoSwitch()
+            }
+
+            showInputMethodPickerUseCase.show(fromForeground = true)
+        }
     }
 
     private suspend fun onAutomaticBackupResult(result: KMResult<*>) {

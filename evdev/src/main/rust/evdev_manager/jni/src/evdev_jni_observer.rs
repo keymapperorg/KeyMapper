@@ -8,12 +8,25 @@ use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
 use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+const EMERGENCY_KILL_HOLD_DURATION: Duration = Duration::from_secs(10);
+
+fn should_emergency_kill(
+    down_time: Option<Instant>,
+    release_time: Instant,
+    threshold: Duration,
+) -> bool {
+    down_time
+        .and_then(|pressed_at| release_time.checked_duration_since(pressed_at))
+        .is_some_and(|hold_duration| hold_duration >= threshold)
+}
 
 pub struct EvdevJniObserver {
     jvm: Arc<JavaVM>,
     system_bridge: GlobalRef,
     key_layout_map_manager: Arc<KeyLayoutMapManager>,
-    power_button_down_time: Mutex<libc::time_t>,
+    power_button_down_time: Mutex<Option<Instant>>,
 }
 
 impl std::fmt::Debug for EvdevJniObserver {
@@ -38,27 +51,21 @@ impl EvdevJniObserver {
             jvm,
             system_bridge,
             key_layout_map_manager,
-            power_button_down_time: Mutex::new(0),
+            power_button_down_time: Mutex::new(None),
         }
     }
 
     /// Handle power button emergency kill.
-    fn handle_power_button(
-        &self,
-        ev_code: u32,
-        android_code: u32,
-        value: i32,
-        time_sec: libc::time_t,
-    ) {
+    fn handle_power_button(&self, ev_code: u32, android_code: u32, value: i32) {
         let mut time_guard = self.power_button_down_time.lock().unwrap();
         // KEY_POWER scan code = 116
         if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
-                *time_guard = time_sec;
+                *time_guard = Some(Instant::now());
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
-                let down_time = *time_guard;
-                if down_time > 0 && time_sec - down_time >= 10 {
+                if should_emergency_kill(*time_guard, Instant::now(), EMERGENCY_KILL_HOLD_DURATION)
+                {
                     // Must send log to Key Mapper for diagnostic purposes.
                     warn!("Emergency killing system bridge!");
                     // Call BaseSystemBridge.onEmergencyKillSystemBridge() via JNI
@@ -72,7 +79,7 @@ impl EvdevJniObserver {
                     }
                     process::exit(0);
                 }
-                *time_guard = 0
+                *time_guard = None
             }
         }
     }
@@ -173,7 +180,7 @@ impl EvdevJniObserver {
         };
 
         // Handle power button emergency kill
-        self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
+        self.handle_power_button(ev_code, android_code, event.value);
 
         // Call BaseSystemBridge.onEvdevEvent() via JNI
 
@@ -278,5 +285,73 @@ impl EvdevJniObserver {
         ) {
             error!("Failed to call onEvdevDevicesChanged: {:?}", e);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{should_emergency_kill, EMERGENCY_KILL_HOLD_DURATION};
+    use std::time::{Duration, Instant};
+
+    #[test]
+    fn no_down_event_never_triggers_emergency_kill() {
+        let release_time = Instant::now();
+        assert!(!should_emergency_kill(
+            None,
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
+    }
+
+    #[test]
+    fn hold_duration_below_threshold_does_not_trigger_emergency_kill() {
+        let pressed_at = Instant::now();
+        let release_time = pressed_at + Duration::from_secs(9);
+        assert!(!should_emergency_kill(
+            Some(pressed_at),
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
+    }
+
+    #[test]
+    fn hold_duration_at_threshold_triggers_emergency_kill() {
+        let pressed_at = Instant::now();
+        let release_time = pressed_at + EMERGENCY_KILL_HOLD_DURATION;
+        assert!(should_emergency_kill(
+            Some(pressed_at),
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
+    }
+
+    #[test]
+    fn backward_time_jump_never_triggers_emergency_kill() {
+        let pressed_at = Instant::now() + Duration::from_secs(5);
+        let release_time = Instant::now();
+        assert!(!should_emergency_kill(
+            Some(pressed_at),
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
+    }
+
+    #[test]
+    fn ignores_event_timestamp_drift_and_uses_monotonic_elapsed_time() {
+        // Simulate issue #1956: evdev event timestamps can drift/jump and suggest
+        // a very long hold, even when real elapsed time is short.
+        let fake_event_down_ts_sec = 1_000_i64;
+        let fake_event_up_ts_sec = fake_event_down_ts_sec + 60;
+        let event_timestamp_delta = fake_event_up_ts_sec - fake_event_down_ts_sec;
+        assert!(event_timestamp_delta >= 10);
+
+        // Real elapsed time is still short (< 10s), so emergency kill must not trigger.
+        let pressed_at = Instant::now();
+        let release_time = pressed_at + Duration::from_secs(2);
+        assert!(!should_emergency_kill(
+            Some(pressed_at),
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
     }
 }

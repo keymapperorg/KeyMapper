@@ -5,6 +5,10 @@
         path="backups" />
 
     <files-path
+        name="getevent"
+        path="getevent" />
+
+    <files-path
         name="logs"
         path="logs" />
 </paths>

@@ -1,0 +1,34 @@
+---
+description: Commit message format convention for KeyMapper
+alwaysApply: true
+---
+
+# KeyMapper Commit Messages
+
+Use this format for commits:
+
+`#<issue_number> <type>: <description>`
+
+Allowed types:
+
+- `feat`
+- `fix`
+- `chore`
+- `refactor`
+- `style`
+
+Example:
+
+`#2025 feat: add button to report bug on home screen`
+
+# Branch Naming Convention
+
+- Use `feature/123-branch-name` for new features.
+- Use `fix/123-branch-name` for bug fixes.
+
+# Pull Request Changelog Requirement
+
+- When preparing a PR, update `CHANGELOG.md` for any user-facing fix/feature/change or notable
+  internal change.
+- If no changelog entry is needed (for example, docs-only or CI-only), explicitly note that in the PR
+  description.

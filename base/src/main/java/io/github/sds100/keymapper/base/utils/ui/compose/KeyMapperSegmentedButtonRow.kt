@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -70,6 +71,8 @@ fun <T> KeyMapperSegmentedButtonRow(
                     ),
                     colors = colors,
                 ) {
+                    val contentColor = LocalContentColor.current
+
                     BasicText(
                         modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
                         text = label,
@@ -79,6 +82,7 @@ fun <T> KeyMapperSegmentedButtonRow(
                             maxFontSize = LocalTextStyle.current.fontSize,
                             minFontSize = 10.sp,
                         ),
+                        color = { contentColor },
                     )
                 }
             } else {

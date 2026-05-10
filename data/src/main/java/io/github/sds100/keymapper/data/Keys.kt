@@ -153,6 +153,8 @@ object Keys {
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")
 
     val shellCommandScriptText = stringPreferencesKey("key_shell_command_script_text")
+    val getEventDeviceInfoOutput = stringPreferencesKey("key_getevent_device_info_output")
+    val getEventEventsOutput = stringPreferencesKey("key_getevent_events_output")
 
     /**
      * This is stored as true when PRO Mode has been auto started after updating

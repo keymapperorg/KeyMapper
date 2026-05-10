@@ -834,6 +834,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object PerformImeAction : ActionData() {
+        override val id = ActionId.PERFORM_IME_ACTION
+    }
+
+    @Serializable
     data object CopyText : ActionData() {
         override val id = ActionId.TEXT_COPY
     }
@@ -851,6 +856,11 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     data object SelectWordAtCursor : ActionData() {
         override val id = ActionId.SELECT_WORD_AT_CURSOR
+    }
+
+    @Serializable
+    data object SelectAllText : ActionData() {
+        override val id = ActionId.SELECT_ALL_TEXT
     }
 
     @Serializable
@@ -915,6 +925,22 @@ sealed class ActionData : Comparable<ActionData> {
 
         override fun compareTo(other: ActionData) = when (other) {
             is CreateNotification -> title.compareTo(other.title)
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class Toast(val message: String, val duration: Duration) : ActionData() {
+        override val id: ActionId = ActionId.TOAST
+
+        @Serializable
+        enum class Duration {
+            SHORT,
+            LONG,
+        }
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is Toast -> compareValuesBy(this, other, { it.message }, { it.duration })
             else -> super.compareTo(other)
         }
     }

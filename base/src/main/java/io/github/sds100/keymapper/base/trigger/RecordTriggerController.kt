@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.base.debug.GetEventRecorder
 import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
@@ -8,6 +9,8 @@ import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isError
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
@@ -35,6 +38,8 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val inputEventHub: InputEventHub,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
+    private val getEventRecorder: GetEventRecorder,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : RecordTriggerController,
     InputEventHubCallback {
     companion object {
@@ -115,9 +120,11 @@ class RecordTriggerControllerImpl @Inject constructor(
                 } else if (event.isUpEvent) {
                     onRecordKey(createEvdevRecordedKey(event))
                     Timber.d(
-                        "Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(
-                            event.androidCode,
-                        )}",
+                        "Recorded evdev event ${event.code} ${
+                            KeyEvent.keyCodeToString(
+                                event.androidCode,
+                            )
+                        }",
                     )
                 }
 
@@ -193,6 +200,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         recordingTriggerJob?.cancel()
         recordingTriggerJob = null
 
+        getEventRecorder.stopRecording()
         dpadMotionEventTracker.reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
         state.update { RecordTriggerState.Completed(recordedKeys) }
@@ -255,18 +263,33 @@ class RecordTriggerControllerImpl @Inject constructor(
             inputEventHub.grabAllEvdevDevices(INPUT_EVENT_HUB_ID)
         }
 
-        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
+        // Capture getevent output in parallel for the bug report and getevent debug screen.
+        // ADB shell is only available when expert mode (system bridge) is connected.
+        if (systemBridgeConnectionManager.isConnected()) {
+            runCatching { getEventRecorder.refreshDeviceInfo() }
+                .onFailure { Timber.w(it, "Failed to refresh getevent device info") }
 
-            state.update { RecordTriggerState.CountingDown(timeLeft) }
-
-            delay(1000)
+            getEventRecorder.recordEvents()
         }
 
-        downKeyEvents.clear()
-        dpadMotionEventTracker.reset()
-        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
-        state.update { RecordTriggerState.Completed(recordedKeys) }
+        try {
+            repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
+                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
+
+                state.update { RecordTriggerState.CountingDown(timeLeft) }
+
+                delay(1000)
+            }
+        } finally {
+            // Stop the getevent shell process so the parallel capture job exits and
+            // its output is persisted to the existing preference keys.
+            getEventRecorder.stopRecording()
+
+            downKeyEvents.clear()
+            dpadMotionEventTracker.reset()
+            inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
+            state.update { RecordTriggerState.Completed(recordedKeys) }
+        }
     }
 }
 
