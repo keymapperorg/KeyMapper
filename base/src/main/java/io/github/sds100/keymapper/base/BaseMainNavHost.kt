@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
@@ -159,6 +160,14 @@ fun BaseMainNavHost(
 
         composable<NavDestination.Log> {
             LogScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<NavDestination.GetEvent> {
+            GetEventScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },

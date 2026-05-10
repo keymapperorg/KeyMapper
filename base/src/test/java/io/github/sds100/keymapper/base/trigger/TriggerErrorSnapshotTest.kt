@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.trigger
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -188,7 +188,7 @@ class TriggerErrorSnapshotTest {
         isKeyMapperImeChosen: Boolean = true,
         isDndAccessGranted: Boolean = true,
         isRootGranted: Boolean = false,
-        purchases: KMResult<Set<ProductId>> = Success(emptySet()),
+        purchases: KMResult<Set<RevenueCatEntitlementId>> = Success(emptySet()),
         showDpadImeSetupError: Boolean = false,
         isSystemBridgeConnected: Boolean? = true,
         evdevDevices: List<EvdevDeviceInfo>? = emptyList(),

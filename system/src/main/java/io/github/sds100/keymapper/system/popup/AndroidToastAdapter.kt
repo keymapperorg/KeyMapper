@@ -9,7 +9,8 @@ import javax.inject.Singleton
 @Singleton
 class AndroidToastAdapter @Inject constructor(@ApplicationContext private val ctx: Context) :
     ToastAdapter {
-    override fun show(message: String) {
-        Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+    override fun show(message: String, isLong: Boolean) {
+        val duration = if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+        Toast.makeText(ctx, message, duration).show()
     }
 }

@@ -1,0 +1,15 @@
+---
+description: Module boundaries and architectural conventions for KeyMapper
+alwaysApply: true
+---
+
+# KeyMapper Architecture
+
+- Branch names must follow `feature/123-branch-name` or `fix/123-branch-name`.
+- Treat the codebase as Clean Architecture + MVVM with unidirectional data flow.
+- Keep dependency direction as `:app` -> `:base` -> `:common`/`:data`/`:system`/`:sysbridge`.
+- Keep domain models in `:common` and persistence entities in `:data` with explicit mappers.
+- Put business logic in use cases and inject them into ViewModels.
+- Expose UI state via `Flow`/`StateFlow`; collect from UI and send events back to ViewModels.
+- Use Hilt for DI and preserve app-specific binding overrides in app modules.
+- Use coroutines for async work and `viewModelScope` for ViewModel-owned jobs.

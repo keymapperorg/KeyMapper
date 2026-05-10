@@ -1,0 +1,16 @@
+---
+description: Build, test, and tooling commands for KeyMapper
+alwaysApply: true
+---
+
+# KeyMapper Build And Tooling
+
+- Branch names must follow `feature/123-branch-name` or `fix/123-branch-name`.
+- Use these common commands:
+  - `./gradlew assembleDebug`
+  - `./gradlew test`
+  - `./gradlew connectedAndroidTest`
+  - `./gradlew ktlintCheck` or `./gradlew ktlintFormat`
+- Release builds require `KEYSTORE_PASSWORD` and `KEY_PASSWORD` environment variables.
+- Target platform constraints: min SDK 26, target SDK 36, Java 11.
+- Dependency versions are managed in `gradle/libs.versions.toml`.

@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 sealed class PurchasingError : KMError() {
     data object PurchasingNotImplemented : PurchasingError()
 
-    data class ProductNotPurchased(val product: ProductId) : PurchasingError()
+    data class ProductNotPurchased(val entitlement: RevenueCatEntitlementId) : PurchasingError()
 
     sealed class PurchasingProcessError : PurchasingError() {
         data object ProductNotFound : PurchasingProcessError()
@@ -14,6 +14,7 @@ sealed class PurchasingError : KMError() {
         data object NetworkError : PurchasingProcessError()
         data object PaymentPending : PurchasingProcessError()
         data object PurchaseInvalid : PurchasingProcessError()
+        data object EntitlementNotGrantedAfterPurchase : PurchasingProcessError()
         data class Unexpected(val message: String) : PurchasingProcessError()
     }
 }

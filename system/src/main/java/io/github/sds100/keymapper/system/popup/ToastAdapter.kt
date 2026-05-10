@@ -1,5 +1,5 @@
 package io.github.sds100.keymapper.system.popup
 
 interface ToastAdapter {
-    fun show(message: String)
+    fun show(message: String, isLong: Boolean = false)
 }
