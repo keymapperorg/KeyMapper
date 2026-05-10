@@ -1462,7 +1462,7 @@
     <string name="customer_email_subject_pro" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_subject_risk_free" translatable="false">Key Mapper refund query</string>
     <string name="customer_email_subject_bug_report" translatable="false">Key Mapper Bug report</string>
-    <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model: %s\n2. Android version: %s\n3. Key Mapper version: %s\n4, Key maps (make a backup in the home screen menu)\n6. Screenshot of Key Mapper home screen\n6. Describe the problem you are having</string>
+    <string name="customer_email_body">Please describe the problem that you are having, otherwise we can not help you.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="customer_email_subject_foss_support" translatable="false">Key Mapper FOSS support</string>
     <string name="foss_advanced_triggers_support_body_main">Floating Buttons and Assistant trigger aren\'t sold in this FOSS build because RevenueCat and Google Play in-app billing aren\'t included.\n\nYou can still support development on Ko-fi.</string>
