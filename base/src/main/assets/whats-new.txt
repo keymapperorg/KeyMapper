@@ -1,34 +1,9 @@
-✨ Screen-off remapping
-You can now remap ALL buttons when the screen is off (including the power button) for free with Expert mode.
-
 🎯 New Actions
-• Run shell commands
-• Send SMS messages
-• Force stop current app or clear from recents
-• Mute/unmute microphone
-• Modify any system setting
-• Show a custom notification
-• Toggle hotspot
-• Toggle night shift
-
-🆕 New Features
-• Redesigned Settings screen
-• Constraints for foldable hinge open/closed
-• Shortcuts on the trigger screen to guide setup
-• Select notification and alarm sounds for Sound action
-• Constraints for keyboard is showing
-• Switch next to record trigger button to use PRO mode
-
-
-⚙️ Enhanced Controls
-• Enable or disable all key maps in a group at once
-• Intent API to enable, disable, or toggle individual key maps
-• Floating buttons can now appear on top of keyboard or in notification panel
-• Make floating buttons movable and completely invisible
+• Select all text at the cursor
+• Input on-screen keyboard enter/send button
+• Show a toast message
 
 🔧 Improvements
-• Auto-switching keyboard more reliable and quicker on Android 13+
-• Wi-Fi connected constraints more reliable
-• A lot of bug fixes
+• Bug fixes
 
 📖 View the complete changelog at: http://keymapper.app/changelog
