@@ -400,11 +400,8 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     private suspend fun onRecordKeyEvent(key: RecordedKey.KeyEvent) {
-        val triggerDevice = if (key.isExternalDevice) {
-            KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
-        } else {
-            KeyEventTriggerDevice.Internal
-        }
+        // See issue #2076
+        val triggerDevice = KeyEventTriggerDevice.Any
 
         config.addKeyEventTriggerKey(
             key.keyCode,

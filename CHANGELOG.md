@@ -1,3 +1,10 @@
+## [4.1.1](https://github.com/sds100/KeyMapper/releases/tag/v4.1.1)
+
+#### 15 May 2026
+
+- #2076 Use "any input device" as the default for triggers.
+
+
 ## [4.1.0](https://github.com/sds100/KeyMapper/releases/tag/v4.1.0)
 
 #### 10 May 2026
