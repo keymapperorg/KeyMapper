@@ -482,6 +482,16 @@ private fun TriggerList(
                     onEditClick = { onEditClick(model.id) },
                     onRemoveClick = { onRemoveClick(model.id) },
                     onFixClick = onFixErrorClick,
+                    onMoveUp = if (isReorderingEnabled && index > 0) {
+                        { onMove(index, index - 1) }
+                    } else {
+                        null
+                    },
+                    onMoveDown = if (isReorderingEnabled && index < triggerList.size - 1) {
+                        { onMove(index, index + 1) }
+                    } else {
+                        null
+                    },
                 )
             }
         }

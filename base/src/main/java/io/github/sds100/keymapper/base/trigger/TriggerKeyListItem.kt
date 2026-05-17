@@ -39,6 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,10 +63,66 @@ fun TriggerKeyListItem(
     onEditClick: () -> Unit = {},
     onRemoveClick: () -> Unit = {},
     onFixClick: (TriggerError) -> Unit = {},
+    onMoveUp: (() -> Unit)? = null,
+    onMoveDown: (() -> Unit)? = null,
 ) {
     val draggableState = rememberDraggableState {
         dragDropState?.onDrag(Offset(0f, it))
     }
+
+    val primaryText = when (model) {
+        is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
+            AssistantTriggerType.ANY -> stringResource(
+                R.string.assistant_any_trigger_name,
+            )
+
+            AssistantTriggerType.VOICE -> stringResource(
+                R.string.assistant_voice_trigger_name,
+            )
+
+            AssistantTriggerType.DEVICE -> stringResource(
+                R.string.assistant_device_trigger_name,
+            )
+        }
+
+        is TriggerKeyListItemModel.FloatingButton -> if (model.buttonName.isBlank()) {
+            stringResource(R.string.trigger_key_floating_button_description_empty)
+        } else {
+            stringResource(
+                R.string.trigger_key_floating_button_description,
+                model.buttonName,
+            )
+        }
+
+        is TriggerKeyListItemModel.KeyEvent -> model.keyName
+
+        is TriggerKeyListItemModel.EvdevEvent -> model.keyName
+
+        is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
+            R.string.trigger_error_floating_button_deleted_title,
+        )
+
+        is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
+            FingerprintGestureType.SWIPE_UP -> stringResource(
+                R.string.trigger_key_fingerprint_gesture_up,
+            )
+
+            FingerprintGestureType.SWIPE_DOWN -> stringResource(
+                R.string.trigger_key_fingerprint_gesture_down,
+            )
+
+            FingerprintGestureType.SWIPE_LEFT -> stringResource(
+                R.string.trigger_key_fingerprint_gesture_left,
+            )
+
+            FingerprintGestureType.SWIPE_RIGHT -> stringResource(
+                R.string.trigger_key_fingerprint_gesture_right,
+            )
+        }
+    }
+
+    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
+    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
 
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
@@ -81,7 +140,19 @@ fun TriggerKeyListItem(
                         dragDropState?.onDragStart(index, offset)
                     },
                     onDragStopped = { dragDropState?.onDragInterrupted() },
-                ),
+                )
+                .semantics {
+                    if (isReorderingEnabled) {
+                        customActions = buildList {
+                            onMoveUp?.let { action ->
+                                add(CustomAccessibilityAction(moveUpLabel) { action(); true })
+                            }
+                            onMoveDown?.let { action ->
+                                add(CustomAccessibilityAction(moveDownLabel) { action(); true })
+                            }
+                        }
+                    }
+                },
             colors = CardDefaults.elevatedCardColors(
                 containerColor = if (isDragging) {
                     MaterialTheme.colorScheme.surfaceContainerHighest
@@ -100,7 +171,7 @@ fun TriggerKeyListItem(
                     Icon(
                         modifier = Modifier.size(24.dp),
                         imageVector = Icons.Rounded.DragHandle,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.drag_handle_for, primaryText),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
@@ -123,57 +194,6 @@ fun TriggerKeyListItem(
                             imageVector = icon,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
-
-                val primaryText = when (model) {
-                    is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
-                        AssistantTriggerType.ANY -> stringResource(
-                            R.string.assistant_any_trigger_name,
-                        )
-
-                        AssistantTriggerType.VOICE -> stringResource(
-                            R.string.assistant_voice_trigger_name,
-                        )
-
-                        AssistantTriggerType.DEVICE -> stringResource(
-                            R.string.assistant_device_trigger_name,
-                        )
-                    }
-
-                    is TriggerKeyListItemModel.FloatingButton -> if (model.buttonName.isBlank()) {
-                        stringResource(R.string.trigger_key_floating_button_description_empty)
-                    } else {
-                        stringResource(
-                            R.string.trigger_key_floating_button_description,
-                            model.buttonName,
-                        )
-                    }
-
-                    is TriggerKeyListItemModel.KeyEvent -> model.keyName
-
-                    is TriggerKeyListItemModel.EvdevEvent -> model.keyName
-
-                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
-                        R.string.trigger_error_floating_button_deleted_title,
-                    )
-
-                    is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
-                        FingerprintGestureType.SWIPE_UP -> stringResource(
-                            R.string.trigger_key_fingerprint_gesture_up,
-                        )
-
-                        FingerprintGestureType.SWIPE_DOWN -> stringResource(
-                            R.string.trigger_key_fingerprint_gesture_down,
-                        )
-
-                        FingerprintGestureType.SWIPE_LEFT -> stringResource(
-                            R.string.trigger_key_fingerprint_gesture_left,
-                        )
-
-                        FingerprintGestureType.SWIPE_RIGHT -> stringResource(
-                            R.string.trigger_key_fingerprint_gesture_right,
                         )
                     }
                 }

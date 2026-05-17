@@ -314,6 +314,16 @@ private fun ActionList(
                     onRemoveClick = { onRemoveClick(model.id) },
                     onFixClick = { onFixErrorClick(model.id) },
                     onTestClick = { onTestClick(model.id) },
+                    onMoveUp = if (isReorderingEnabled && index > 0) {
+                        { onMove(index, index - 1) }
+                    } else {
+                        null
+                    },
+                    onMoveDown = if (isReorderingEnabled && index < actionList.size - 1) {
+                        { onMove(index, index + 1) }
+                    } else {
+                        null
+                    },
                 )
             }
         }
