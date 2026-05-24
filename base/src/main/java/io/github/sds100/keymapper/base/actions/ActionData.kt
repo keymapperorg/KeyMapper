@@ -1043,4 +1043,14 @@ sealed class ActionData : Comparable<ActionData> {
             else -> super.compareTo(other)
         }
     }
+
+    @Serializable
+    data class TalkBackGesture(val gesture: TalkBackGestureType) : ActionData() {
+        override val id: ActionId = ActionId.TALKBACK_GESTURE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is TalkBackGesture -> gesture.compareTo(other.gesture)
+            else -> super.compareTo(other)
+        }
+    }
 }

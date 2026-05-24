@@ -265,6 +265,10 @@ class LazyActionErrorSnapshot(
                 }
             }
 
+            is ActionData.TalkBackGesture -> {
+                return getAppError(TALKBACK_PACKAGE_NAME)
+            }
+
             else -> {}
         }
 
@@ -317,3 +321,5 @@ interface ActionErrorSnapshot {
     fun getError(action: ActionData): KMError?
     fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?>
 }
+
+private const val TALKBACK_PACKAGE_NAME = "com.google.android.marvin.talkback"

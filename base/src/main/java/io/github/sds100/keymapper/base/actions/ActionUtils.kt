@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.automirrored.outlined.VolumeDown
 import androidx.compose.material.icons.automirrored.outlined.VolumeMute
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Accessibility
 import androidx.compose.material.icons.outlined.AirplanemodeActive
 import androidx.compose.material.icons.outlined.AirplanemodeInactive
 import androidx.compose.material.icons.outlined.Assistant
@@ -248,6 +249,7 @@ object ActionUtils {
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
         ActionId.MODIFY_SETTING -> ActionCategory.APPS
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
+        ActionId.TALKBACK_GESTURE -> ActionCategory.INTERFACE
     }
 
     @StringRes
@@ -519,6 +521,8 @@ object ActionUtils {
         ActionId.ENABLE_HOTSPOT -> R.string.action_enable_hotspot
 
         ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
+
+        ActionId.TALKBACK_GESTURE -> R.string.action_talkback_gesture
     }
 
     @DrawableRes
@@ -1090,6 +1094,7 @@ object ActionUtils {
         ActionId.TOGGLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
+        ActionId.TALKBACK_GESTURE -> Icons.Outlined.Accessibility
     }
 }
 
@@ -1140,6 +1145,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,
+    is ActionData.TalkBackGesture,
         -> true
 
     else -> false

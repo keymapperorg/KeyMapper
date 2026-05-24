@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.TalkBackGestureStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -1212,6 +1213,23 @@ class CreateActionDelegate(
                 )
 
                 return null
+            }
+
+            ActionId.TALKBACK_GESTURE -> {
+                val items = TalkBackGestureType.entries.map { gestureType ->
+                    val actionLabel = getString(TalkBackGestureStrings.getActionLabel(gestureType))
+                    val gestureName = getString(TalkBackGestureStrings.getGestureLabel(gestureType))
+                    gestureType to getString(
+                        R.string.talkback_gesture_choice_label,
+                        arrayOf(actionLabel, gestureName),
+                    )
+                }
+
+                val gestureType =
+                    showDialog("pick_talkback_gesture", DialogModel.SingleChoice(items))
+                        ?: return null
+
+                return ActionData.TalkBackGesture(gestureType)
             }
         }
     }

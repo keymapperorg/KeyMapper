@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.TalkBackGestureStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -685,6 +686,11 @@ class ActionUiHelper(
                     getString(R.string.action_toast_description_long, action.message)
                 }
             }
+        }
+
+        is ActionData.TalkBackGesture -> {
+            val actionLabel = getString(TalkBackGestureStrings.getActionLabel(action.gesture))
+            getString(R.string.action_talkback_gesture_formatted, actionLabel)
         }
     }
 

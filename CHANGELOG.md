@@ -1,3 +1,9 @@
+## Unreleased
+
+## Added
+
+- #262 Add "TalkBack gesture" action to simulate TalkBack navigation gestures (swipes, multi-finger taps, and multi-directional swipes).
+
 ## [4.1.1](https://github.com/sds100/KeyMapper/releases/tag/v4.1.1)
 
 #### 15 May 2026

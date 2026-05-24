@@ -161,4 +161,6 @@ enum class ActionId {
     CLEAR_RECENT_APP,
 
     MODIFY_SETTING,
+
+    TALKBACK_GESTURE,
 }
