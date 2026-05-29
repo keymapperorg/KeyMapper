@@ -96,10 +96,20 @@ fun ActionListItem(
                     if (isReorderingEnabled) {
                         customActions = buildList {
                             onMoveUp?.let { action ->
-                                add(CustomAccessibilityAction(moveUpLabel) { action(); true })
+                                add(
+                                    CustomAccessibilityAction(moveUpLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
                             }
                             onMoveDown?.let { action ->
-                                add(CustomAccessibilityAction(moveDownLabel) { action(); true })
+                                add(
+                                    CustomAccessibilityAction(moveDownLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
                             }
                         }
                     }

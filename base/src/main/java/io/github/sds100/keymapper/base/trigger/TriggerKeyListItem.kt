@@ -70,56 +70,7 @@ fun TriggerKeyListItem(
         dragDropState?.onDrag(Offset(0f, it))
     }
 
-    val primaryText = when (model) {
-        is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
-            AssistantTriggerType.ANY -> stringResource(
-                R.string.assistant_any_trigger_name,
-            )
-
-            AssistantTriggerType.VOICE -> stringResource(
-                R.string.assistant_voice_trigger_name,
-            )
-
-            AssistantTriggerType.DEVICE -> stringResource(
-                R.string.assistant_device_trigger_name,
-            )
-        }
-
-        is TriggerKeyListItemModel.FloatingButton -> if (model.buttonName.isBlank()) {
-            stringResource(R.string.trigger_key_floating_button_description_empty)
-        } else {
-            stringResource(
-                R.string.trigger_key_floating_button_description,
-                model.buttonName,
-            )
-        }
-
-        is TriggerKeyListItemModel.KeyEvent -> model.keyName
-
-        is TriggerKeyListItemModel.EvdevEvent -> model.keyName
-
-        is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
-            R.string.trigger_error_floating_button_deleted_title,
-        )
-
-        is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
-            FingerprintGestureType.SWIPE_UP -> stringResource(
-                R.string.trigger_key_fingerprint_gesture_up,
-            )
-
-            FingerprintGestureType.SWIPE_DOWN -> stringResource(
-                R.string.trigger_key_fingerprint_gesture_down,
-            )
-
-            FingerprintGestureType.SWIPE_LEFT -> stringResource(
-                R.string.trigger_key_fingerprint_gesture_left,
-            )
-
-            FingerprintGestureType.SWIPE_RIGHT -> stringResource(
-                R.string.trigger_key_fingerprint_gesture_right,
-            )
-        }
-    }
+    val primaryText = getPrimaryText(model)
 
     val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
     val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
@@ -145,10 +96,20 @@ fun TriggerKeyListItem(
                     if (isReorderingEnabled) {
                         customActions = buildList {
                             onMoveUp?.let { action ->
-                                add(CustomAccessibilityAction(moveUpLabel) { action(); true })
+                                add(
+                                    CustomAccessibilityAction(moveUpLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
                             }
                             onMoveDown?.let { action ->
-                                add(CustomAccessibilityAction(moveDownLabel) { action(); true })
+                                add(
+                                    CustomAccessibilityAction(moveDownLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
                             }
                         }
                     }
@@ -299,6 +260,58 @@ fun TriggerKeyListItem(
             )
             Spacer(Modifier.height(4.dp))
         }
+    }
+}
+
+@Composable
+private fun getPrimaryText(model: TriggerKeyListItemModel): String = when (model) {
+    is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
+        AssistantTriggerType.ANY -> stringResource(
+            R.string.assistant_any_trigger_name,
+        )
+
+        AssistantTriggerType.VOICE -> stringResource(
+            R.string.assistant_voice_trigger_name,
+        )
+
+        AssistantTriggerType.DEVICE -> stringResource(
+            R.string.assistant_device_trigger_name,
+        )
+    }
+
+    is TriggerKeyListItemModel.FloatingButton -> if (model.buttonName.isBlank()) {
+        stringResource(R.string.trigger_key_floating_button_description_empty)
+    } else {
+        stringResource(
+            R.string.trigger_key_floating_button_description,
+            model.buttonName,
+        )
+    }
+
+    is TriggerKeyListItemModel.KeyEvent -> model.keyName
+
+    is TriggerKeyListItemModel.EvdevEvent -> model.keyName
+
+    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
+        R.string.trigger_error_floating_button_deleted_title,
+    )
+
+    is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
+        FingerprintGestureType.SWIPE_UP -> stringResource(
+            R.string.trigger_key_fingerprint_gesture_up,
+        )
+
+        FingerprintGestureType.SWIPE_DOWN -> stringResource(
+            R.string.trigger_key_fingerprint_gesture_down,
+        )
+
+        FingerprintGestureType.SWIPE_LEFT -> stringResource(
+            R.string.trigger_key_fingerprint_gesture_left,
+        )
+
+        FingerprintGestureType.SWIPE_RIGHT -> stringResource(
+            R.string.trigger_key_fingerprint_gesture_right,
+        )
     }
 }
 
