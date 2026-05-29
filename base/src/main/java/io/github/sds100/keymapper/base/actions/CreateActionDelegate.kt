@@ -8,11 +8,12 @@ import androidx.compose.runtime.snapshotFlow
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureStrings
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
-import io.github.sds100.keymapper.base.utils.TalkBackGestureStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate

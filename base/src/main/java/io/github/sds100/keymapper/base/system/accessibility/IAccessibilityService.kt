@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.system.accessibility
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.base.actions.TalkBackGestureType
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMResult

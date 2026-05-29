@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.actions
+package io.github.sds100.keymapper.base.actions.talkback
 
 enum class TalkBackGestureType {
     // 1-finger swipes

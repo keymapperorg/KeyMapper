@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.util.Base64
 import androidx.core.net.toUri
-import io.github.sds100.keymapper.base.actions.TalkBackGestureType
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -70,6 +70,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.MODIFY_SETTING -> ActionId.MODIFY_SETTING
 
             ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
+
             ActionEntity.Type.TOAST -> ActionId.TOAST
         }
 
