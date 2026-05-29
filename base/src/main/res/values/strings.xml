@@ -486,6 +486,8 @@
     <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You must tap the item to enable sorting and toggle ascending/descending.</string>
     <string name="sorting_drag_and_drop_list_help_example">Example: To sort by Actions (ascending) first and Triggers (descending) second: tap and drag Actions to the first position and set it to ascending, then tap and drag Triggers to the second position and set it to descending.</string>
     <string name="drag_handle_for">Drag handle for %1$s</string>
+    <string name="accessibility_action_move_up">Move up</string>
+    <string name="accessibility_action_move_down">Move down</string>
     <string name="show_example">Show example</string>
 
     <string name="dialog_title_request_notification_permission">Turn on notifications</string>
