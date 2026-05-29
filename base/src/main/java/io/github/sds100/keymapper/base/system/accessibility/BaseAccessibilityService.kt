@@ -29,6 +29,8 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.actions.talkback.TalkbackGesturePerformer
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
@@ -561,6 +563,7 @@ abstract class BaseAccessibilityService :
         return imeWindow != null && imeWindow.root?.isVisibleToUser == true
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun injectText(text: String) {
         inputMethod?.currentInputConnection?.commitText(
             text,
@@ -570,7 +573,12 @@ abstract class BaseAccessibilityService :
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun performImeAction() {
         inputMethod?.currentInputConnection?.performEditorAction(EditorInfo.IME_ACTION_UNSPECIFIED)
+    }
+
+    override fun performTalkBackGesture(gesture: TalkBackGestureType): KMResult<*> {
+        return TalkbackGesturePerformer.performTalkBackGesture(this, gesture, gestureHandler)
     }
 }

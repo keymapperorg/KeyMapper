@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -95,6 +96,7 @@ sealed class ActionData : Comparable<ActionData> {
                     { it.showVolumeUi },
                     { it.volumeStream },
                 )
+
                 else -> super.compareTo(other)
             }
         }
@@ -111,6 +113,7 @@ sealed class ActionData : Comparable<ActionData> {
                     { it.showVolumeUi },
                     { it.volumeStream },
                 )
+
                 else -> super.compareTo(other)
             }
         }
@@ -1040,6 +1043,17 @@ sealed class ActionData : Comparable<ActionData> {
                 { it.settingKey },
                 { it.value },
             )
+
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class TalkBackGesture(val gesture: TalkBackGestureType) : ActionData() {
+        override val id: ActionId = ActionId.TALKBACK_GESTURE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is TalkBackGesture -> gesture.compareTo(other.gesture)
             else -> super.compareTo(other)
         }
     }
