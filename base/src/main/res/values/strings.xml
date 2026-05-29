@@ -1246,6 +1246,10 @@
     <string name="action_talkback_gesture_formatted">TalkBack: %s</string>
     <string name="pick_talkback_gesture_title">Choose TalkBack gesture</string>
     <string name="talkback_gesture_choice_label">%1$s (%2$s)</string>
+    <string name="talkback_gesture_section_1_finger">1-finger gestures</string>
+    <string name="talkback_gesture_section_2_finger">2-finger gestures</string>
+    <string name="talkback_gesture_section_3_finger">3-finger gestures</string>
+    <string name="talkback_gesture_section_4_finger">4-finger gestures</string>
 
     <!-- TalkBack gesture action descriptions (what the gesture does) -->
     <string name="talkback_gesture_action_swipe_up">Move reading control up or backwards</string>

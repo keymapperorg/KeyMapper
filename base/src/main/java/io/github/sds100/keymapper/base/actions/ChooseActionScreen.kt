@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.talkback.PickTalkBackGestureDialog
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
@@ -59,6 +60,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     ModifySettingActionBottomSheet(delegate)
     CreateNotificationActionBottomSheet(delegate)
     ToastActionBottomSheet(delegate)
+    PickTalkBackGestureDialog(delegate)
 }
 
 @Composable

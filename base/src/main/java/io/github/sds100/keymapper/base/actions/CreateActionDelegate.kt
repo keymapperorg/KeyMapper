@@ -8,7 +8,7 @@ import androidx.compose.runtime.snapshotFlow
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
-import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureStrings
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureDialogState
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
@@ -63,6 +63,7 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
+    var talkBackGestureDialogState: TalkBackGestureDialogState? by mutableStateOf(null)
     var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState?
         by mutableStateOf(null)
     var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
@@ -202,6 +203,13 @@ class CreateActionDelegate(
 
         smsActionBottomSheetState = null
         actionResult.update { action }
+    }
+
+    fun onDoneConfigTalkBackGestureClick() {
+        talkBackGestureDialogState?.also { state ->
+            talkBackGestureDialogState = null
+            actionResult.update { ActionData.TalkBackGesture(state.selectedGesture) }
+        }
     }
 
     fun onDoneConfigVolumeClick() {
@@ -1217,20 +1225,10 @@ class CreateActionDelegate(
             }
 
             ActionId.TALKBACK_GESTURE -> {
-                val items = TalkBackGestureType.entries.map { gestureType ->
-                    val actionLabel = getString(TalkBackGestureStrings.getActionLabel(gestureType))
-                    val gestureName = getString(TalkBackGestureStrings.getGestureLabel(gestureType))
-                    gestureType to getString(
-                        R.string.talkback_gesture_choice_label,
-                        arrayOf(actionLabel, gestureName),
-                    )
-                }
-
-                val gestureType =
-                    showDialog("pick_talkback_gesture", DialogModel.SingleChoice(items))
-                        ?: return null
-
-                return ActionData.TalkBackGesture(gestureType)
+                val initialGesture = (oldData as? ActionData.TalkBackGesture)?.gesture
+                    ?: TalkBackGestureType.entries.first()
+                talkBackGestureDialogState = TalkBackGestureDialogState(initialGesture)
+                return null
             }
         }
     }
