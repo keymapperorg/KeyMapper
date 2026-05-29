@@ -34,4 +34,9 @@ enum class TalkBackGestureType {
     FOUR_FINGER_SWIPE_DOWN,
     FOUR_FINGER_SWIPE_LEFT,
     FOUR_FINGER_SWIPE_RIGHT,
+
+    // NOTE: 4-finger triple tap is not possible.
+    // Android limits GestureDescription to 10 strokes.
+    // Four-finger triple-tap would require 12 strokes and is not included in the gesture set
+    // for this reason.
 }
