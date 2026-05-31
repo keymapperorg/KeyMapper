@@ -1,5 +1,9 @@
 ## Unreleased
 
+## Added
+
+- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
+
 ## Changed
 
 - #1369 Add content descriptions to drag handles and custom "Move up"/"Move down" accessibility actions for trigger and action list items, improving TalkBack support for reordering.
