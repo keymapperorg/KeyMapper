@@ -82,16 +82,6 @@ fun TriggerKeyListItem(
                 .heightIn(min = 48.dp)
                 .height(IntrinsicSize.Min)
                 .padding(start = 16.dp, end = 16.dp)
-                .draggable(
-                    state = draggableState,
-                    enabled = isDraggingEnabled,
-                    orientation = Orientation.Vertical,
-                    startDragImmediately = false,
-                    onDragStarted = { offset ->
-                        dragDropState?.onDragStart(index, offset)
-                    },
-                    onDragStopped = { dragDropState?.onDragInterrupted() },
-                )
                 .semantics {
                     if (isReorderingEnabled) {
                         customActions = buildList {
@@ -130,7 +120,18 @@ fun TriggerKeyListItem(
 
                 if (isReorderingEnabled) {
                     Icon(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .draggable(
+                                state = draggableState,
+                                enabled = isDraggingEnabled,
+                                orientation = Orientation.Vertical,
+                                startDragImmediately = true,
+                                onDragStarted = { offset ->
+                                    dragDropState?.onDragStart(index, offset)
+                                },
+                                onDragStopped = { dragDropState?.onDragInterrupted() },
+                            ),
                         imageVector = Icons.Rounded.DragHandle,
                         contentDescription = stringResource(R.string.drag_handle_for, primaryText),
                         tint = MaterialTheme.colorScheme.onSurface,
