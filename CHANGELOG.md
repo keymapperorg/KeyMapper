@@ -1,4 +1,4 @@
-## Unreleased
+## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
 ## Fixed
 
@@ -8,11 +8,6 @@
 
 - #1369 Add content descriptions to drag handles and custom "Move up"/"Move down" accessibility actions for trigger and action list items, improving TalkBack support for reordering.
 - #262 Add "TalkBack gesture" action to simulate TalkBack navigation gestures (swipes, multi-finger taps, and multi-directional swipes).
-
-## [4.1.1](https://github.com/sds100/KeyMapper/releases/tag/v4.1.1)
-
-#### 15 May 2026
-
 - #2076 Use "any input device" as the default for triggers.
 
 
