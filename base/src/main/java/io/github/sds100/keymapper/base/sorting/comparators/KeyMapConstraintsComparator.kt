@@ -143,6 +143,8 @@ class KeyMapConstraintsComparator(
             is ConstraintData.PhysicalOrientation -> Success(
                 constraint.data.physicalOrientation.toString(),
             )
+            ConstraintData.NotificationPanelShowing -> Success("")
+            ConstraintData.NotificationPanelNotShowing -> Success("")
         }
     }
 }

@@ -210,6 +210,16 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data object NotificationPanelShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.NOTIFICATION_PANEL_SHOWING
+    }
+
+    @Serializable
+    data object NotificationPanelNotShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING
+    }
+
+    @Serializable
     data class Time(
         val startHour: Int,
         val startMinute: Int,
@@ -387,6 +397,10 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
             ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
+
+            ConstraintEntity.NOTIFICATION_PANEL_SHOWING -> ConstraintData.NotificationPanelShowing
+            ConstraintEntity.NOTIFICATION_PANEL_NOT_SHOWING ->
+                ConstraintData.NotificationPanelNotShowing
 
             ConstraintEntity.TIME -> {
                 val startTime =
@@ -691,6 +705,16 @@ object ConstraintEntityMapper {
         is ConstraintData.HingeOpen -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.HINGE_OPEN,
+        )
+
+        is ConstraintData.NotificationPanelShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.NOTIFICATION_PANEL_SHOWING,
+        )
+
+        is ConstraintData.NotificationPanelNotShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.NOTIFICATION_PANEL_NOT_SHOWING,
         )
 
         is ConstraintData.Time -> ConstraintEntity(

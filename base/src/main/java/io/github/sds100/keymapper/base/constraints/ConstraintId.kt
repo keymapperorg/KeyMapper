@@ -60,5 +60,8 @@ enum class ConstraintId {
     HINGE_CLOSED,
     HINGE_OPEN,
 
+    NOTIFICATION_PANEL_SHOWING,
+    NOTIFICATION_PANEL_NOT_SHOWING,
+
     TIME,
 }

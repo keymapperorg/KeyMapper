@@ -63,6 +63,12 @@ interface IAccessibilityService : SwitchImeInterface {
      */
     val isInputMethodVisible: Flow<Boolean>
 
+    /**
+     * Whether the notification shade (notification panel / status bar) is expanded.
+     * Detection is best-effort; accuracy may vary across OEMs and Android versions.
+     */
+    val isNotificationShadeExpanded: Flow<Boolean>
+
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

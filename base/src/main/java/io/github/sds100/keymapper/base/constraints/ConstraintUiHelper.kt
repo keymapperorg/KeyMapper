@@ -171,6 +171,10 @@ class ConstraintUiHelper(
         is ConstraintData.LockScreenNotShowing -> getString(
             R.string.constraint_lock_screen_not_showing,
         )
+        is ConstraintData.NotificationPanelShowing ->
+            getString(R.string.constraint_notification_panel_showing)
+        is ConstraintData.NotificationPanelNotShowing ->
+            getString(R.string.constraint_notification_panel_not_showing)
         is ConstraintData.Time -> getString(
             R.string.constraint_time_formatted,
             arrayOf(

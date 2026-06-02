@@ -101,6 +101,8 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 }
             ConstraintDependency.KEYBOARD_VISIBLE ->
                 accessibilityService.isInputMethodVisible.map { dependency }
+            ConstraintDependency.NOTIFICATION_PANEL_STATE ->
+                accessibilityService.isNotificationShadeExpanded.map { dependency }
         }
     }
 }

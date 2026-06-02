@@ -18,4 +18,5 @@ enum class ConstraintDependency {
     PHONE_STATE,
     CHARGING_STATE,
     HINGE_STATE,
+    NOTIFICATION_PANEL_STATE,
 }
