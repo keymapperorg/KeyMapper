@@ -98,6 +98,9 @@ data class ConstraintEntity(
         const val HINGE_CLOSED = "hinge_closed"
         const val HINGE_OPEN = "hinge_open"
 
+        const val NOTIFICATION_PANEL_SHOWING = "notification_panel_showing"
+        const val NOTIFICATION_PANEL_NOT_SHOWING = "notification_panel_not_showing"
+
         const val TIME = "time"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"

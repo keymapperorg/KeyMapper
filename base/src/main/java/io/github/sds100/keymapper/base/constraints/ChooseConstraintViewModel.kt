@@ -277,6 +277,12 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
                     returnResult.emit(ConstraintData.LockScreenNotShowing)
 
+                ConstraintId.NOTIFICATION_PANEL_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelShowing)
+
+                ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelNotShowing)
+
                 ConstraintId.TIME -> {
                     timeConstraintState = ConstraintData.Time(
                         startHour = 0,

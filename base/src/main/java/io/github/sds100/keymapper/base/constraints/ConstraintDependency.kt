@@ -19,4 +19,5 @@ enum class ConstraintDependency {
     RINGER_MODE,
     CHARGING_STATE,
     HINGE_STATE,
+    NOTIFICATION_PANEL_STATE,
 }

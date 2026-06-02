@@ -308,6 +308,9 @@
     <string name="constraint_hinge_closed_description">Hinge is closed</string>
     <string name="constraint_hinge_open_description">Hinge is open</string>
 
+    <string name="constraint_notification_panel_showing">Notification panel is showing</string>
+    <string name="constraint_notification_panel_not_showing">Notification panel is not showing</string>
+
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>

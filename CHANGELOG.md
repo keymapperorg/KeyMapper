@@ -1,6 +1,19 @@
+## [4.3.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.0)
+
+#### TO BE RELEASED
+
+## Added
+
+- #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
+- #1980 Add "Notification panel is showing" and "Notification panel is not showing" constraints. Detection uses the accessibility service window list and is best-effort; accuracy may vary across OEMs and Android versions.
+
 ## [4.2.1](https://github.com/sds100/KeyMapper/releases/tag/v4.2.1)
 
 #### 09 June 2026
+
+## Added
+
+- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
 
 ## Fixed
 
@@ -10,13 +23,6 @@
 - #2157 The "choose setting" screen now uses `settings list` via the system bridge when expert mode is active, surfacing all device settings instead of only those visible through the ContentProvider.
 
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
-
-#### 03 June 2026
-
-## Added
-
-- #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
-- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
 
 ## Fixed
 
