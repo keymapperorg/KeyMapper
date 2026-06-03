@@ -1,5 +1,7 @@
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
+#### 03 June 2026
+
 ## Added
 
 - #2140 Add monochrome app icon layer for themed icon support on Android 13+.
