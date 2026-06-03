@@ -1,5 +1,9 @@
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
+## Added
+
+- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
+
 ## Fixed
 
 - #2074 Scrolling the action or trigger list no longer accidentally moves items; reordering by drag now only activates from the drag handle or via long-press.
