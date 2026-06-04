@@ -39,6 +39,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,10 +65,15 @@ fun ActionListItem(
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
     onTestClick: () -> Unit = {},
+    onMoveUp: (() -> Unit)? = null,
+    onMoveDown: (() -> Unit)? = null,
 ) {
     val draggableState = rememberDraggableState {
         dragDropState?.onDrag(Offset(0f, it))
     }
+
+    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
+    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
 
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
@@ -74,16 +82,28 @@ fun ActionListItem(
                 .heightIn(min = 48.dp)
                 .height(IntrinsicSize.Min)
                 .padding(start = 16.dp, end = 16.dp)
-                .draggable(
-                    state = draggableState,
-                    enabled = isDraggingEnabled,
-                    orientation = Orientation.Vertical,
-                    startDragImmediately = false,
-                    onDragStarted = { offset ->
-                        dragDropState?.onDragStart(index, offset)
-                    },
-                    onDragStopped = { dragDropState?.onDragInterrupted() },
-                ),
+                .semantics {
+                    if (isReorderingEnabled) {
+                        customActions = buildList {
+                            onMoveUp?.let { action ->
+                                add(
+                                    CustomAccessibilityAction(moveUpLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
+                            }
+                            onMoveDown?.let { action ->
+                                add(
+                                    CustomAccessibilityAction(moveDownLabel) {
+                                        action()
+                                        true
+                                    },
+                                )
+                            }
+                        }
+                    }
+                },
             colors = CardDefaults.elevatedCardColors(
                 containerColor = if (isDragging) {
                     MaterialTheme.colorScheme.surfaceContainerHighest
@@ -100,9 +120,20 @@ fun ActionListItem(
 
                 if (isReorderingEnabled) {
                     Icon(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .draggable(
+                                state = draggableState,
+                                enabled = isDraggingEnabled,
+                                orientation = Orientation.Vertical,
+                                startDragImmediately = true,
+                                onDragStarted = { offset ->
+                                    dragDropState?.onDragStart(index, offset)
+                                },
+                                onDragStopped = { dragDropState?.onDragInterrupted() },
+                            ),
                         imageVector = Icons.Rounded.DragHandle,
-                        contentDescription = null,
+                        contentDescription = stringResource(R.string.drag_handle_for, model.text),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }

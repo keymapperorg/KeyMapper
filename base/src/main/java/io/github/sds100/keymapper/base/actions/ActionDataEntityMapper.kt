@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.util.Base64
 import androidx.core.net.toUri
+import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -69,6 +70,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.MODIFY_SETTING -> ActionId.MODIFY_SETTING
 
             ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
+
             ActionEntity.Type.TOAST -> ActionId.TOAST
         }
 
@@ -874,6 +876,20 @@ object ActionDataEntityMapper {
 
             ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
 
+            ActionId.TALKBACK_GESTURE -> {
+                val gestureTypeString =
+                    entity.extras.getData(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE)
+                        .valueOrNull() ?: return null
+
+                val gestureType = try {
+                    TalkBackGestureType.valueOf(gestureTypeString)
+                } catch (_: IllegalArgumentException) {
+                    return null
+                }
+
+                ActionData.TalkBackGesture(gesture = gestureType)
+            }
+
             ActionId.MODIFY_SETTING -> {
                 val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
                     .valueOrNull() ?: return null
@@ -1324,6 +1340,10 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_TOAST_DURATION, data.duration.name),
         )
 
+        is ActionData.TalkBackGesture -> listOf(
+            EntityExtra(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE, data.gesture.name),
+        )
+
         else -> emptyList()
     }
 
@@ -1510,5 +1530,7 @@ object ActionDataEntityMapper {
         ActionId.CLEAR_RECENT_APP to "clear_recent_app",
 
         ActionId.MODIFY_SETTING to "modify_setting",
+
+        ActionId.TALKBACK_GESTURE to "talkback_gesture",
     )
 }

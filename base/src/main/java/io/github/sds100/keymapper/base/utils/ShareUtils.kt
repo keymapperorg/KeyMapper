@@ -12,8 +12,21 @@ import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.str
 
 object ShareUtils {
+    fun sendRefundEmail(ctx: Context) {
+        val subject = ctx.str(R.string.customer_email_subject_refund)
+        val body = ctx.str(R.string.customer_email_body_refund)
+
+        sendMail(
+            ctx,
+            email = ctx.getString(R.string.purchasing_contact_email),
+            subject = subject,
+            body = body,
+        )
+    }
+
     fun sendBugReportEmail(ctx: Context, subject: String) {
         val body = ctx.getString(
             R.string.customer_email_body,

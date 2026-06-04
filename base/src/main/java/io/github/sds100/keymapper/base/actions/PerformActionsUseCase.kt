@@ -1115,6 +1115,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     newValue,
                 )
             }
+
+            is ActionData.TalkBackGesture -> {
+                result = service.performTalkBackGesture(action.gesture)
+            }
         }
 
         when (result) {

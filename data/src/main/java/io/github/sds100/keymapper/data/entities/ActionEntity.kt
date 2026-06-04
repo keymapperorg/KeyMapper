@@ -146,6 +146,8 @@ data class ActionEntity(
         const val EXTRA_SETTING_VALUE = "extra_setting_value"
         const val EXTRA_SETTING_TYPE = "extra_setting_type"
 
+        const val EXTRA_TALKBACK_GESTURE_TYPE = "extra_talkback_gesture_type"
+
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byNullableString(NAME_ACTION_TYPE)
             // If it is an unknown type then do not deserialize
