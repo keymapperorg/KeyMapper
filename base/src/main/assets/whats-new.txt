@@ -1,9 +1,6 @@
-🎯 New Actions
-• Select all text at the cursor
-• Input on-screen keyboard enter/send button
-• Show a toast message
-
-🔧 Improvements
-• Bug fixes
+• Talkback actions
+• Monochrome app icon
+• "Any input device" is the default for triggers
+• Bug fixes and accessibility improvements
 
 📖 View the complete changelog at: http://keymapper.app/changelog
