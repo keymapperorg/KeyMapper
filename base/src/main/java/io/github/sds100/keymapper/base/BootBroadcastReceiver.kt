@@ -15,10 +15,13 @@ class BootBroadcastReceiver : BroadcastReceiver() {
                 Timber.i(
                     "Boot completed broadcast: time since boot = ${SystemClock.elapsedRealtime() / 1000}",
                 )
+                (context.applicationContext as? BaseKeyMapperApp)?.onBootUnlocked()
             }
 
             Intent.ACTION_LOCKED_BOOT_COMPLETED -> {
-                (context.applicationContext as? BaseKeyMapperApp)?.onBootUnlocked()
+                Timber.i(
+                    "Locked boot completed broadcast: time since boot = ${SystemClock.elapsedRealtime() / 1000}",
+                )
             }
         }
     }
