@@ -27,8 +27,8 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.Lazy
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
 import io.github.sds100.keymapper.base.actions.talkback.TalkbackGesturePerformer

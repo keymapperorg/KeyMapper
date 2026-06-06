@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import dagger.Lazy
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.base.logging.SystemBridgeLogger
@@ -36,7 +37,6 @@ import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import java.util.Calendar
 import javax.inject.Inject
-import dagger.Lazy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
