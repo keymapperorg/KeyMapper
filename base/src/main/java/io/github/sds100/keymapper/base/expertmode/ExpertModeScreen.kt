@@ -252,6 +252,27 @@ private fun Content(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OptionsHeaderRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                icon = Icons.Outlined.BugReport,
+                text = stringResource(R.string.settings_section_debugging_title),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OptionPageButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                title = stringResource(R.string.title_pref_get_event_debug),
+                text = stringResource(R.string.summary_pref_get_event_debug),
+                icon = Icons.Outlined.BugReport,
+                onClick = onGetEventClick,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         } else {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
@@ -259,27 +280,6 @@ private fun Content(
                 textAlign = TextAlign.Center,
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OptionsHeaderRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            icon = Icons.Outlined.BugReport,
-            text = stringResource(R.string.settings_section_debugging_title),
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OptionPageButton(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            title = stringResource(R.string.title_pref_get_event_debug),
-            text = stringResource(R.string.summary_pref_get_event_debug),
-            icon = Icons.Outlined.BugReport,
-            onClick = onGetEventClick,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
