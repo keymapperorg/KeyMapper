@@ -481,7 +481,7 @@ class SystemBridge : ISystemBridge.Stub() {
 
     override fun setGrabTargets(
         devices: Array<out GrabTargetKeyCode?>?,
-    ): Array<out GrabbedDeviceHandle?>? {
+    ): Array<out GrabbedDeviceHandle?> {
         return setGrabTargetsNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }
 
@@ -915,9 +915,9 @@ class SystemBridge : ISystemBridge.Stub() {
         }
 
         val authority = "settings"
-        val token: android.os.IBinder? = null
+        val token: IBinder? = null
         val userId = UserHandleUtils.getCallingUserId()
-        var provider: android.content.IContentProvider? = null
+        var provider: IContentProvider? = null
 
         try {
             provider = ActivityManagerApis.getContentProviderExternal(
@@ -928,7 +928,10 @@ class SystemBridge : ISystemBridge.Stub() {
             )
 
             if (provider == null) {
-                Log.w(TAG, "getAllSettings: Settings content provider is null for namespace=$namespace")
+                Log.w(
+                    TAG,
+                    "getAllSettings: Settings content provider is null for namespace=$namespace",
+                )
                 return emptyArray()
             }
 
