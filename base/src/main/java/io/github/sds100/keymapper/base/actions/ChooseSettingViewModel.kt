@@ -7,6 +7,9 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import javax.inject.Inject
@@ -18,12 +21,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runInterruptible
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @HiltViewModel
 class ChooseSettingViewModel @Inject constructor(
     private val settingsAdapter: SettingsAdapter,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -36,7 +41,7 @@ class ChooseSettingViewModel @Inject constructor(
     val selectedSettingType = MutableStateFlow(SettingType.SYSTEM)
     val settings: StateFlow<State<List<SettingItem>>> =
         combine(selectedSettingType, searchQuery) { type, query ->
-            val allSettings = settingsAdapter.getAll(type)
+            val allSettings = getSettings(type)
 
             val items = allSettings
                 .filter { (key, _) -> query == null || key.contains(query, ignoreCase = true) }
@@ -45,6 +50,38 @@ class ChooseSettingViewModel @Inject constructor(
             State.Data(items)
         }.flowOn(Dispatchers.Default)
             .stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+
+    private suspend fun getSettings(type: SettingType): Map<String, String?> {
+        if (systemBridgeConnectionManager.isConnected()) {
+            val namespace = when (type) {
+                SettingType.SYSTEM -> "system"
+                SettingType.SECURE -> "secure"
+                SettingType.GLOBAL -> "global"
+            }
+            val result = runInterruptible(Dispatchers.IO) {
+                systemBridgeConnectionManager.run { bridge ->
+                    bridge.getAllSettings(namespace)
+                }
+            }
+            if (result is Success && result.value.isNotEmpty()) {
+                return parseKeyValuePairs(result.value)
+            }
+        }
+        return settingsAdapter.getAll(type)
+    }
+
+    private fun parseKeyValuePairs(pairs: Array<String>): Map<String, String?> {
+        val settings = sortedMapOf<String, String?>()
+        for (entry in pairs) {
+            val eqIdx = entry.indexOf('=')
+            if (eqIdx < 0) continue
+            val key = entry.substring(0, eqIdx)
+            if (key.isBlank()) continue
+            val value = if (eqIdx < entry.length - 1) entry.substring(eqIdx + 1) else null
+            settings[key] = value
+        }
+        return settings
+    }
 
     fun onNavigateBack() {
         viewModelScope.launch {

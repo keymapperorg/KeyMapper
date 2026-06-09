@@ -53,4 +53,11 @@ interface ISystemBridge {
    void registerLogCallback(ILogCallback callback) = 23;
    void unregisterLogCallback() = 24;
    void setLogLevel(int level) = 25;
+
+   /**
+    * Returns all settings for the given namespace as an array of "key=value" strings.
+    * The namespace must be one of "system", "secure", or "global".
+    * Queries the Settings ContentProvider directly with the system bridge's elevated privileges.
+    */
+   String[] getAllSettings(String namespace) = 26;
 }

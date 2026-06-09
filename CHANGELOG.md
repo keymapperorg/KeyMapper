@@ -7,6 +7,7 @@
 - #2154 The expert mode debug screen is now only accessible after the expert mode warning has been acknowledged.
 - #2156 Do not throw an error when the Talkback application can not be found because there are many different package names out there.
 - #2153 Prevent Direct Boot startup from initializing credential-encrypted app storage before the user unlocks.
+- #2157 The "choose setting" screen now uses `settings list` via the system bridge when expert mode is active, surfacing all device settings instead of only those visible through the ContentProvider.
 
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
