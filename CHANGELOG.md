@@ -8,6 +8,7 @@
 
 ## Fixed
 
+- #2153 Prevent Direct Boot startup from initializing credential-encrypted app storage before the user unlocks.
 - #2154 The expert mode debug screen is now only accessible after the expert mode warning has been acknowledged.
 - #2074 Scrolling the action or trigger list no longer accidentally moves items; reordering by drag now only activates from the drag handle or via long-press.
 
