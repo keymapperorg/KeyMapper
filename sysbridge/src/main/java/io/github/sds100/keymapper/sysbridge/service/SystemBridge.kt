@@ -903,4 +903,67 @@ class SystemBridge : ISystemBridge.Stub() {
     override fun setLogLevel(level: Int) {
         setLogLevelNative(level)
     }
+
+    override fun getAllSettings(namespace: String?): Array<String> {
+        namespace ?: return emptyArray()
+
+        val settingsUri = when (namespace) {
+            "system" -> android.provider.Settings.System.CONTENT_URI
+            "secure" -> android.provider.Settings.Secure.CONTENT_URI
+            "global" -> android.provider.Settings.Global.CONTENT_URI
+            else -> return emptyArray()
+        }
+
+        val authority = "settings"
+        val token: android.os.IBinder? = null
+        val userId = UserHandleUtils.getCallingUserId()
+        var provider: android.content.IContentProvider? = null
+
+        try {
+            provider = ActivityManagerApis.getContentProviderExternal(
+                authority,
+                userId,
+                token,
+                authority,
+            )
+
+            if (provider == null) {
+                Log.w(TAG, "getAllSettings: Settings content provider is null for namespace=$namespace")
+                return emptyArray()
+            }
+
+            val cursor = IContentProviderUtils.queryCompat(
+                provider,
+                processPackageName,
+                settingsUri,
+                arrayOf("name", "value"),
+                null,
+            ) ?: return emptyArray()
+
+            val results = mutableListOf<String>()
+            cursor.use {
+                val nameIndex = it.getColumnIndex("name")
+                val valueIndex = it.getColumnIndex("value")
+                if (nameIndex >= 0) {
+                    while (it.moveToNext()) {
+                        val name = it.getString(nameIndex) ?: continue
+                        val value = if (valueIndex >= 0) it.getString(valueIndex) else null
+                        results.add("$name=${value ?: ""}")
+                    }
+                }
+            }
+            return results.toTypedArray()
+        } catch (e: Exception) {
+            Log.e(TAG, "getAllSettings: Failed to query settings for namespace=$namespace", e)
+            return emptyArray()
+        } finally {
+            if (provider != null) {
+                try {
+                    ActivityManagerApis.removeContentProviderExternal(authority, token)
+                } catch (tr: Throwable) {
+                    Log.w(TAG, "getAllSettings: Failed to remove content provider", tr)
+                }
+            }
+        }
+    }
 }
