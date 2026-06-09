@@ -1,3 +1,12 @@
+## [4.2.1](https://github.com/sds100/KeyMapper/releases/tag/v4.2.1)
+
+#### 09 June 2026
+
+## Fixed
+
+- #2154 The expert mode debug screen is now only accessible after the expert mode warning has been acknowledged.
+- #2156 Do not throw an error when the Talkback application can not be found because there are many different package names out there.
+
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
 #### 03 June 2026
@@ -8,9 +17,7 @@
 
 ## Fixed
 
-- #2154 The expert mode debug screen is now only accessible after the expert mode warning has been acknowledged.
 - #2074 Scrolling the action or trigger list no longer accidentally moves items; reordering by drag now only activates from the drag handle or via long-press.
-- #2156 Do not throw an error when the Talkback application can not be found because there are many different package names out there.
 
 ## Changed
 
