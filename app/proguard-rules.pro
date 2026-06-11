@@ -162,6 +162,7 @@
 # android.content package classes
 -keep class android.content.IContentProvider** { *; }
 -keep class android.content.IIntentReceiver** { *; }
+-keep class android.os.ICancellationSignal** { *; }
 
 # android.content.pm package classes
 -keep class android.content.pm.IPackageManager** { *; }
@@ -245,3 +246,4 @@
 -dontwarn android.view.IWindowManager**
 -dontwarn com.android.internal.app.**
 -dontwarn com.android.internal.policy.**
+-dontwarn android.os.ICancellationSignal
