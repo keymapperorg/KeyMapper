@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import dagger.Lazy
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.base.logging.SystemBridgeLogger
@@ -51,46 +52,46 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     private val tag = BaseKeyMapperApp::class.simpleName
 
     @Inject
-    lateinit var appCoroutineScope: CoroutineScope
+    lateinit var appCoroutineScope: Lazy<CoroutineScope>
 
     @Inject
-    lateinit var notificationController: NotificationController
+    lateinit var notificationController: Lazy<NotificationController>
 
     @Inject
-    lateinit var packageManagerAdapter: AndroidPackageManagerAdapter
+    lateinit var packageManagerAdapter: Lazy<AndroidPackageManagerAdapter>
 
     @Inject
-    lateinit var devicesAdapter: AndroidDevicesAdapter
+    lateinit var devicesAdapter: Lazy<AndroidDevicesAdapter>
 
     @Inject
-    lateinit var permissionAdapter: AndroidPermissionAdapter
+    lateinit var permissionAdapter: Lazy<AndroidPermissionAdapter>
 
     @Inject
-    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
+    lateinit var accessibilityServiceAdapter: Lazy<AccessibilityServiceAdapterImpl>
 
     @Inject
-    lateinit var autoGrantPermissionController: AutoGrantPermissionController
+    lateinit var autoGrantPermissionController: Lazy<AutoGrantPermissionController>
 
     @Inject
-    lateinit var loggingTree: KeyMapperLoggingTree
+    lateinit var loggingTree: Lazy<KeyMapperLoggingTree>
 
     @Inject
-    lateinit var settingsRepository: PreferenceRepositoryImpl
+    lateinit var settingsRepository: Lazy<PreferenceRepositoryImpl>
 
     @Inject
-    lateinit var logRepository: LogRepository
+    lateinit var logRepository: Lazy<LogRepository>
 
     @Inject
-    lateinit var keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl
+    lateinit var keyEventRelayServiceWrapper: Lazy<KeyEventRelayServiceWrapperImpl>
 
     @Inject
-    lateinit var systemBridgeAutoStarter: SystemBridgeAutoStarter
+    lateinit var systemBridgeAutoStarter: Lazy<SystemBridgeAutoStarter>
 
     @Inject
-    lateinit var systemBridgeConnectionManager: SystemBridgeConnectionManagerImpl
+    lateinit var systemBridgeConnectionManager: Lazy<SystemBridgeConnectionManagerImpl>
 
     @Inject
-    lateinit var systemBridgeLogger: SystemBridgeLogger
+    lateinit var systemBridgeLogger: Lazy<SystemBridgeLogger>
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
@@ -118,16 +119,18 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         Log.i(tag, "KeyMapperApp: OnCreate")
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
-            // log in a blocking manner and always log regardless of whether the setting is turned on
-            val entry = LogEntryEntity(
-                id = 0,
-                time = Calendar.getInstance().timeInMillis,
-                severity = LogEntryEntity.SEVERITY_ERROR,
-                message = exception.stackTraceToString(),
-            )
+            if (userManager?.isUserUnlocked != false) {
+                // log in a blocking manner and always log regardless of whether the setting is turned on
+                val entry = LogEntryEntity(
+                    id = 0,
+                    time = Calendar.getInstance().timeInMillis,
+                    severity = LogEntryEntity.SEVERITY_ERROR,
+                    message = exception.stackTraceToString(),
+                )
 
-            runBlocking {
-                logRepository.insertSuspend(entry)
+                runBlocking {
+                    logRepository.get().insertSuspend(entry)
+                }
             }
 
             priorExceptionHandler?.uncaughtException(thread, exception)
@@ -168,7 +171,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         registerReceiver(broadcastReceiver, intentFilter)
 
-        settingsRepository.get(Keys.darkTheme)
+        settingsRepository.get().get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {
@@ -178,15 +181,15 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
                 }
             }
             .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
-            .launchIn(appCoroutineScope)
+            .launchIn(appCoroutineScope.get())
 
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debug_release") {
             Timber.plant(Timber.DebugTree())
         }
 
-        Timber.plant(loggingTree)
+        Timber.plant(loggingTree.get())
 
-        notificationController.init()
+        notificationController.get().init()
 
         processLifecycleOwner.lifecycle.addObserver(
             object : LifecycleObserver {
@@ -194,19 +197,19 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
                 @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
                 fun onResume() {
                     // when the user returns to the app let everything know that the permissions could have changed
-                    notificationController.onOpenApp()
+                    notificationController.get().onOpenApp()
 
                     if (BuildConfig.DEBUG &&
-                        permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)
+                        permissionAdapter.get().isGranted(Permission.WRITE_SECURE_SETTINGS)
                     ) {
-                        accessibilityServiceAdapter.start()
+                        accessibilityServiceAdapter.get().start()
                     }
                 }
             },
         )
 
-        appCoroutineScope.launch {
-            notificationController.openApp.collectLatest { intentAction ->
+        appCoroutineScope.get().launch {
+            notificationController.get().openApp.collectLatest { intentAction ->
                 Intent(this@BaseKeyMapperApp, getMainActivityClass()).apply {
                     action = intentAction
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -216,38 +219,38 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             }
         }
 
-        notificationController.showToast.onEach { toast ->
+        notificationController.get().showToast.onEach { toast ->
             Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
-        }.launchIn(appCoroutineScope)
+        }.launchIn(appCoroutineScope.get())
 
-        autoGrantPermissionController.start()
-        keyEventRelayServiceWrapper.bind()
+        autoGrantPermissionController.get().start()
+        keyEventRelayServiceWrapper.get().bind()
 
-        if (systemBridgeConnectionManager.isConnected()) {
+        if (systemBridgeConnectionManager.get().isConnected()) {
             Timber.i("KeyMapperApp: System bridge is connected")
         } else {
             Timber.i("KeyMapperApp: System bridge is disconnected")
         }
 
-        systemBridgeAutoStarter.init()
+        systemBridgeAutoStarter.get().init()
 
         // Initialize SystemBridgeLogger to start receiving log messages from SystemBridge.
         // Using Lazy<> to avoid circular dependency issues and ensure it's only created
         // when the API level requirement is met.
-        systemBridgeLogger.start()
+        systemBridgeLogger.get().start()
 
-        appCoroutineScope.launch {
-            systemBridgeConnectionManager.connectionState.collect { state ->
+        appCoroutineScope.get().launch {
+            systemBridgeConnectionManager.get().connectionState.collect { state ->
                 if (state is SystemBridgeConnectionState.Connected) {
                     val isUsed =
-                        settingsRepository.get(Keys.isSystemBridgeUsed).first() ?: false
+                        settingsRepository.get().get(Keys.isSystemBridgeUsed).first() ?: false
 
                     // Enable the setting to use PRO mode for key event actions the first time they use PRO mode.
                     if (!isUsed) {
-                        settingsRepository.set(Keys.keyEventActionsUseSystemBridge, true)
+                        settingsRepository.get().set(Keys.keyEventActionsUseSystemBridge, true)
                     }
 
-                    settingsRepository.set(Keys.isSystemBridgeUsed, true)
+                    settingsRepository.get().set(Keys.isSystemBridgeUsed, true)
                 }
             }
         }

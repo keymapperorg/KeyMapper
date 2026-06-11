@@ -27,6 +27,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
@@ -54,10 +55,16 @@ abstract class BaseAccessibilityService :
     SavedStateRegistryOwner {
 
     @Inject
-    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
+    lateinit var accessibilityServiceAdapterLazy: Lazy<AccessibilityServiceAdapterImpl>
+
+    val accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
+        get() = accessibilityServiceAdapterLazy.get()
 
     @Inject
-    lateinit var inputMethodAdapter: InputMethodAdapter
+    lateinit var inputMethodAdapterLazy: Lazy<InputMethodAdapter>
+
+    val inputMethodAdapter: InputMethodAdapter
+        get() = inputMethodAdapterLazy.get()
 
     private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
     private var savedStateRegistryController: SavedStateRegistryController? =

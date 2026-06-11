@@ -190,6 +190,7 @@ class ExpertModeViewModel @Inject constructor(
 
     fun onGetEventClick() {
         viewModelScope.launch {
+            if (warningState.value !is ExpertModeWarningState.Understood) return@launch
             navigate("get_event_debug", NavDestination.GetEvent)
         }
     }
