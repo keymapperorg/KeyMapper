@@ -1530,9 +1530,9 @@
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="customer_email_subject_foss_support" translatable="false">Key Mapper FOSS support</string>
     <string name="foss_advanced_triggers_support_body_main">Floating Buttons and Assistant trigger aren\'t sold in this FOSS build because RevenueCat and Google Play in-app billing aren\'t included.\n\nYou can still support development on Ko-fi.</string>
-    <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later want those products,\ </string>
+    <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later get Google Play on another device,\ </string>
     <string name="foss_advanced_triggers_support_contact_link">contact us</string>
-    <string name="foss_advanced_triggers_support_contact_suffix">\ and we can usually help convert your support so it counts toward Google Play purchases.</string>
+    <string name="foss_advanced_triggers_support_contact_suffix">\ and we will give you the paid features so you do not need to pay again.</string>
     <string name="foss_advanced_triggers_support_values">Your support helps keep Key Mapper largely open source, without ads or tracking. We don\'t sell your personal data.</string>
     <string name="foss_advanced_triggers_support_perks">Donations help fund Android compatibility updates, bug fixes and maintenance, improvements and documentation, and keeping the project sustainable.</string>
     <string name="foss_advanced_triggers_kofi_button">Support on Ko-fi</string>
