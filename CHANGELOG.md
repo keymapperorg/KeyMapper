@@ -16,6 +16,7 @@
 ## Added
 
 - #2140 Add monochrome app icon layer for themed icon support on Android 13+.
+- #2174 Add "Do not remap by default" preference to the default options settings page.
 
 ## Fixed
 

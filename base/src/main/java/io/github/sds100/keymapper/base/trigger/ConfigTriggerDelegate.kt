@@ -66,6 +66,7 @@ class ConfigTriggerDelegate {
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
+        defaultDoNotRemap: Boolean = false,
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
@@ -79,7 +80,7 @@ class ConfigTriggerDelegate {
             }
         }
 
-        var consumeKeyEvent = true
+        var consumeKeyEvent = !defaultDoNotRemap
 
         // Issue #753
         if (KeyEventUtils.isModifierKey(keyCode)) {
@@ -130,6 +131,7 @@ class ConfigTriggerDelegate {
         scanCode: Int,
         device: EvdevDeviceInfo,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
+        defaultDoNotRemap: Boolean = false,
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
@@ -158,7 +160,7 @@ class ConfigTriggerDelegate {
             scanCode = scanCode,
             device = device,
             clickType = clickType,
-            consumeEvent = true,
+            consumeEvent = !defaultDoNotRemap,
             detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty(),
         )
 

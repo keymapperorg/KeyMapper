@@ -22,4 +22,6 @@ object PreferenceDefaults {
     // It is false by default and the first time they turn on the system bridge,
     // the preference will be set to true.
     const val KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE = false
+
+    const val DO_NOT_REMAP = false
 }

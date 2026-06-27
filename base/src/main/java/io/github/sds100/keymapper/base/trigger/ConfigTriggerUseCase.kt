@@ -118,6 +118,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             device,
             requiresIme,
             otherTriggerKeys = otherTriggerKeys,
+            defaultDoNotRemap = defaultDoNotRemap.value,
         )
     }
 
@@ -129,6 +130,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
                 scanCode,
                 device,
                 otherTriggerKeys = otherTriggerKeys,
+                defaultDoNotRemap = defaultDoNotRemap.value,
             )
         }
 

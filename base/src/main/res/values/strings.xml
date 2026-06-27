@@ -674,6 +674,9 @@
     <string name="title_pref_default_options">Change default options</string>
     <string name="summary_pref_default_options">For triggers and actions</string>
 
+    <string name="title_pref_default_do_not_remap">Do not remap by default</string>
+    <string name="summary_pref_default_do_not_remap">New trigger keys will not consume the key event by default</string>
+
     <string name="title_pref_reset_settings">Reset all</string>
     <string name="dialog_title_reset_settings">DANGER!</string>
     <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your existing key maps will not be affected. The introductions and warning pop ups will show again.</string>

@@ -55,6 +55,11 @@ class GetDefaultKeyMapOptionsUseCaseImpl @Inject constructor(
         preferenceRepository.get(Keys.defaultVibrateDuration)
             .map { it ?: PreferenceDefaults.VIBRATION_DURATION }
             .stateIn(coroutineScope, SharingStarted.Lazily, PreferenceDefaults.VIBRATION_DURATION)
+
+    override val defaultDoNotRemap: StateFlow<Boolean> =
+        preferenceRepository.get(Keys.defaultDoNotRemap)
+            .map { it ?: PreferenceDefaults.DO_NOT_REMAP }
+            .stateIn(coroutineScope, SharingStarted.Lazily, PreferenceDefaults.DO_NOT_REMAP)
 }
 
 interface GetDefaultKeyMapOptionsUseCase {
@@ -65,4 +70,5 @@ interface GetDefaultKeyMapOptionsUseCase {
     val defaultDoublePressDelay: StateFlow<Int>
     val defaultSequenceTriggerTimeout: StateFlow<Int>
     val defaultVibrateDuration: StateFlow<Int>
+    val defaultDoNotRemap: StateFlow<Boolean>
 }

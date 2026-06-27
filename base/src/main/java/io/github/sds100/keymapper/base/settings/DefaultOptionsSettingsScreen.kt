@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
 import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 
 @Composable
 fun DefaultOptionsSettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
@@ -209,6 +211,16 @@ private fun Content(
             stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
         )
         Spacer(Modifier.height(8.dp))
+
+        // Do not remap
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_default_do_not_remap),
+            text = stringResource(R.string.summary_pref_default_do_not_remap),
+            icon = Icons.Rounded.Keyboard,
+            isChecked = state.doNotRemap,
+            onCheckedChange = { callback.onDefaultDoNotRemapChanged(it) },
+        )
+        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -219,6 +231,7 @@ interface DefaultOptionsSettingsCallback {
     fun onRepeatDelayChanged(delay: Int) = run { }
     fun onRepeatRateChanged(rate: Int) = run { }
     fun onSequenceTriggerTimeoutChanged(timeout: Int) = run { }
+    fun onDefaultDoNotRemapChanged(doNotRemap: Boolean) = run { }
 }
 
 @Preview
