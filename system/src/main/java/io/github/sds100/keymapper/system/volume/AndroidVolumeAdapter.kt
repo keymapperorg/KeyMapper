@@ -1,10 +1,14 @@
 package io.github.sds100.keymapper.system.volume
 
 import android.app.NotificationManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Build
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -18,6 +22,9 @@ import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 
 @Singleton
@@ -29,6 +36,30 @@ class AndroidVolumeAdapter @Inject constructor(
 
     private val audioManager: AudioManager by lazy { ctx.getSystemService()!! }
     private val notificationManager: NotificationManager by lazy { ctx.getSystemService()!! }
+
+    private val ringerModeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent ?: return
+            if (intent.action == AudioManager.RINGER_MODE_CHANGED_ACTION) {
+                _ringerModeFlow.value = ringerMode
+            }
+        }
+    }
+
+    private val _ringerModeFlow: MutableStateFlow<RingerMode> by lazy {
+        MutableStateFlow(ringerMode)
+    }
+    override val ringerModeFlow: StateFlow<RingerMode> by lazy { _ringerModeFlow.asStateFlow() }
+
+    init {
+        val filter = IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
+        ContextCompat.registerReceiver(
+            ctx,
+            ringerModeReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
+    }
 
     override val ringerMode: RingerMode
         get() {

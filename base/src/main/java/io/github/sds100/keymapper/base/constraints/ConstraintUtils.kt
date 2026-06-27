@@ -15,6 +15,9 @@ import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MobileOff
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.RingVolume
 import androidx.compose.material.icons.outlined.ScreenLockPortrait
@@ -101,6 +104,9 @@ object ConstraintUtils {
         ConstraintId.IN_PHONE_CALL,
         ConstraintId.NOT_IN_PHONE_CALL,
         ConstraintId.PHONE_RINGING,
+        ConstraintId.RINGER_MODE_NORMAL,
+        ConstraintId.RINGER_MODE_VIBRATE,
+        ConstraintId.RINGER_MODE_SILENT,
             -> ConstraintCategory.PHONE
 
         ConstraintId.CHARGING,
@@ -180,6 +186,9 @@ object ConstraintUtils {
         ConstraintId.IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.Call)
         ConstraintId.NOT_IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
         ConstraintId.PHONE_RINGING -> ComposeIconInfo.Vector(Icons.Outlined.RingVolume)
+        ConstraintId.RINGER_MODE_NORMAL -> ComposeIconInfo.Vector(Icons.Outlined.Notifications)
+        ConstraintId.RINGER_MODE_VIBRATE -> ComposeIconInfo.Vector(Icons.Outlined.Vibration)
+        ConstraintId.RINGER_MODE_SILENT -> ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
 
         ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
         ConstraintId.DISCHARGING -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
@@ -236,6 +245,9 @@ object ConstraintUtils {
         ConstraintId.IN_PHONE_CALL -> R.string.constraint_in_phone_call
         ConstraintId.NOT_IN_PHONE_CALL -> R.string.constraint_not_in_phone_call
         ConstraintId.PHONE_RINGING -> R.string.constraint_phone_ringing
+        ConstraintId.RINGER_MODE_NORMAL -> R.string.constraint_ringer_mode_normal
+        ConstraintId.RINGER_MODE_VIBRATE -> R.string.constraint_ringer_mode_vibrate
+        ConstraintId.RINGER_MODE_SILENT -> R.string.constraint_ringer_mode_silent
         ConstraintId.CHARGING -> R.string.constraint_charging
         ConstraintId.DISCHARGING -> R.string.constraint_discharging
         ConstraintId.HINGE_CLOSED -> R.string.constraint_hinge_closed

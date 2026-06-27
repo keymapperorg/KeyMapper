@@ -190,6 +190,21 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data object RingerModeNormal : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.RINGER_MODE_NORMAL
+    }
+
+    @Serializable
+    data object RingerModeVibrate : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.RINGER_MODE_VIBRATE
+    }
+
+    @Serializable
+    data object RingerModeSilent : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.RINGER_MODE_SILENT
+    }
+
+    @Serializable
     data object Charging : ConstraintData() {
         override val id: ConstraintId = ConstraintId.CHARGING
     }
@@ -381,6 +396,10 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHONE_RINGING -> ConstraintData.PhoneRinging
             ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
             ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
+
+            ConstraintEntity.RINGER_MODE_NORMAL -> ConstraintData.RingerModeNormal
+            ConstraintEntity.RINGER_MODE_VIBRATE -> ConstraintData.RingerModeVibrate
+            ConstraintEntity.RINGER_MODE_SILENT -> ConstraintData.RingerModeSilent
 
             ConstraintEntity.CHARGING -> ConstraintData.Charging
             ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
@@ -671,6 +690,21 @@ object ConstraintEntityMapper {
         is ConstraintData.PhoneRinging -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.PHONE_RINGING,
+        )
+
+        is ConstraintData.RingerModeNormal -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.RINGER_MODE_NORMAL,
+        )
+
+        is ConstraintData.RingerModeVibrate -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.RINGER_MODE_VIBRATE,
+        )
+
+        is ConstraintData.RingerModeSilent -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.RINGER_MODE_SILENT,
         )
 
         is ConstraintData.Charging -> ConstraintEntity(

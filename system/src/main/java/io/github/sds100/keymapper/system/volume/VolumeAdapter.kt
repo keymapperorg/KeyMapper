@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.system.volume
 
 import io.github.sds100.keymapper.common.utils.KMResult
+import kotlinx.coroutines.flow.Flow
 
 interface VolumeAdapter {
     val ringerMode: RingerMode
+    val ringerModeFlow: Flow<RingerMode>
 
     fun raiseVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): KMResult<*>
     fun lowerVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): KMResult<*>

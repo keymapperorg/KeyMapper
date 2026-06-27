@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
 import io.github.sds100.keymapper.system.foldable.isOpen
 import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.volume.RingerMode
 import java.time.LocalTime
 import timber.log.Timber
 
@@ -26,6 +27,7 @@ class TestConstraintSnapshot(
     val chosenImeId: String? = null,
     val isKeyboardShowing: Boolean = false,
     val callState: CallState = CallState.NONE,
+    val ringerMode: RingerMode = RingerMode.NORMAL,
     val isCharging: Boolean = false,
     val isLocked: Boolean = false,
     val isBackFlashlightOn: Boolean = false,
@@ -107,6 +109,9 @@ class TestConstraintSnapshot(
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
             is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
             is ConstraintData.PhoneRinging -> callState == CallState.RINGING
+            is ConstraintData.RingerModeNormal -> ringerMode == RingerMode.NORMAL
+            is ConstraintData.RingerModeVibrate -> ringerMode == RingerMode.VIBRATE
+            is ConstraintData.RingerModeSilent -> ringerMode == RingerMode.SILENT
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging
             is ConstraintData.LockScreenShowing -> isLockscreenShowing

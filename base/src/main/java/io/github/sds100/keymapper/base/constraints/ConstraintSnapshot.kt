@@ -21,6 +21,8 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import java.time.LocalTime
 
 /**
@@ -38,6 +40,7 @@ class LazyConstraintSnapshot(
     phoneAdapter: PhoneAdapter,
     powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
+    volumeAdapter: VolumeAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
@@ -66,6 +69,7 @@ class LazyConstraintSnapshot(
     }
     private val callState: CallState by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
+    private val ringerMode: RingerMode by lazy { volumeAdapter.ringerMode }
 
     private val isLocked: Boolean by lazy {
         lockScreenAdapter.isLocked()
@@ -164,6 +168,10 @@ class LazyConstraintSnapshot(
             is ConstraintData.PhoneRinging ->
                 callState == CallState.RINGING ||
                     audioVolumeStreams.contains(AudioManager.STREAM_RING)
+
+            is ConstraintData.RingerModeNormal -> ringerMode == RingerMode.NORMAL
+            is ConstraintData.RingerModeVibrate -> ringerMode == RingerMode.VIBRATE
+            is ConstraintData.RingerModeSilent -> ringerMode == RingerMode.SILENT
 
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging
