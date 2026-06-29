@@ -109,7 +109,7 @@ class TestConstraintSnapshot(
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
             is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
             is ConstraintData.PhoneRinging -> callState == CallState.RINGING
-            is ConstraintData.RingerMode -> ringerMode == constraint.ringerMode
+            is ConstraintData.RingerMode -> ringerMode == data.ringerMode
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging
             is ConstraintData.LockScreenShowing -> isLockscreenShowing

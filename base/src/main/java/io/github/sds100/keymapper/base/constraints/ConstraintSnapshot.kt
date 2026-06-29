@@ -169,7 +169,7 @@ class LazyConstraintSnapshot(
                 callState == CallState.RINGING ||
                     audioVolumeStreams.contains(AudioManager.STREAM_RING)
 
-            is ConstraintData.RingerMode -> ringerMode == constraint.ringerMode
+            is ConstraintData.RingerMode -> ringerMode == constraint.data.ringerMode
 
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging

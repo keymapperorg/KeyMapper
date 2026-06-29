@@ -164,7 +164,7 @@ class ConstraintUiHelper(
         is ConstraintData.InPhoneCall -> getString(R.string.constraint_in_phone_call)
         is ConstraintData.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
         is ConstraintData.PhoneRinging -> getString(R.string.constraint_phone_ringing)
-        is ConstraintData.RingerMode -> when (constraint.ringerMode) {
+        is ConstraintData.RingerMode -> when (constraint.data.ringerMode) {
             RingerMode.NORMAL -> getString(R.string.constraint_ringer_mode_normal)
             RingerMode.VIBRATE -> getString(R.string.constraint_ringer_mode_vibrate)
             RingerMode.SILENT -> getString(R.string.constraint_ringer_mode_silent)
