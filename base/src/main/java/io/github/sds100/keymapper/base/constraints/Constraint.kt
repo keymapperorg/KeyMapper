@@ -190,18 +190,14 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data object RingerModeNormal : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.RINGER_MODE_NORMAL
-    }
-
-    @Serializable
-    data object RingerModeVibrate : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.RINGER_MODE_VIBRATE
-    }
-
-    @Serializable
-    data object RingerModeSilent : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.RINGER_MODE_SILENT
+    data class RingerMode(
+        val ringerMode: io.github.sds100.keymapper.system.volume.RingerMode,
+    ) : ConstraintData() {
+        override val id: ConstraintId = when (ringerMode) {
+            io.github.sds100.keymapper.system.volume.RingerMode.NORMAL -> ConstraintId.RINGER_MODE_NORMAL
+            io.github.sds100.keymapper.system.volume.RingerMode.VIBRATE -> ConstraintId.RINGER_MODE_VIBRATE
+            io.github.sds100.keymapper.system.volume.RingerMode.SILENT -> ConstraintId.RINGER_MODE_SILENT
+        }
     }
 
     @Serializable
@@ -397,9 +393,9 @@ object ConstraintEntityMapper {
             ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
             ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
 
-            ConstraintEntity.RINGER_MODE_NORMAL -> ConstraintData.RingerModeNormal
-            ConstraintEntity.RINGER_MODE_VIBRATE -> ConstraintData.RingerModeVibrate
-            ConstraintEntity.RINGER_MODE_SILENT -> ConstraintData.RingerModeSilent
+            ConstraintEntity.RINGER_MODE_NORMAL -> ConstraintData.RingerMode(io.github.sds100.keymapper.system.volume.RingerMode.NORMAL)
+            ConstraintEntity.RINGER_MODE_VIBRATE -> ConstraintData.RingerMode(io.github.sds100.keymapper.system.volume.RingerMode.VIBRATE)
+            ConstraintEntity.RINGER_MODE_SILENT -> ConstraintData.RingerMode(io.github.sds100.keymapper.system.volume.RingerMode.SILENT)
 
             ConstraintEntity.CHARGING -> ConstraintData.Charging
             ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
@@ -692,20 +688,20 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHONE_RINGING,
         )
 
-        is ConstraintData.RingerModeNormal -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.RINGER_MODE_NORMAL,
-        )
-
-        is ConstraintData.RingerModeVibrate -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.RINGER_MODE_VIBRATE,
-        )
-
-        is ConstraintData.RingerModeSilent -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.RINGER_MODE_SILENT,
-        )
+        is ConstraintData.RingerMode -> when (constraint.data.ringerMode) {
+            io.github.sds100.keymapper.system.volume.RingerMode.NORMAL -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_NORMAL,
+            )
+            io.github.sds100.keymapper.system.volume.RingerMode.VIBRATE -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_VIBRATE,
+            )
+            io.github.sds100.keymapper.system.volume.RingerMode.SILENT -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_SILENT,
+            )
+        }
 
         is ConstraintData.Charging -> ConstraintEntity(
             uid = constraint.uid,
