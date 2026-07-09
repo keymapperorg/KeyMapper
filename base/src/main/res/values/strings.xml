@@ -297,6 +297,9 @@
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
     <string name="constraint_phone_ringing">Phone ringing</string>
+    <string name="constraint_ringer_mode_normal">Ringer mode: Ring</string>
+    <string name="constraint_ringer_mode_vibrate">Ringer mode: Vibrate</string>
+    <string name="constraint_ringer_mode_silent">Ringer mode: Silent</string>
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
@@ -304,6 +307,9 @@
     <string name="constraint_hinge_open">Hinge open</string>
     <string name="constraint_hinge_closed_description">Hinge is closed</string>
     <string name="constraint_hinge_open_description">Hinge is open</string>
+
+    <string name="constraint_notification_panel_showing">Notification panel is showing</string>
+    <string name="constraint_notification_panel_not_showing">Notification panel is not showing</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>

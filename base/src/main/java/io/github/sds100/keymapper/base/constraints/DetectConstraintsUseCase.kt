@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
@@ -34,6 +35,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val phoneAdapter: PhoneAdapter,
     private val powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
+    private val volumeAdapter: VolumeAdapter,
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -53,6 +55,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         phoneAdapter,
         powerAdapter,
         foldableAdapter,
+        volumeAdapter,
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -92,6 +95,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 ).map { dependency }
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
+            ConstraintDependency.RINGER_MODE -> volumeAdapter.ringerModeFlow.map { dependency }
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
             ConstraintDependency.HINGE_STATE ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -101,6 +105,8 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 }
             ConstraintDependency.KEYBOARD_VISIBLE ->
                 accessibilityService.isInputMethodVisible.map { dependency }
+            ConstraintDependency.NOTIFICATION_PANEL_STATE ->
+                accessibilityService.isNotificationShadeExpanded.map { dependency }
         }
     }
 }

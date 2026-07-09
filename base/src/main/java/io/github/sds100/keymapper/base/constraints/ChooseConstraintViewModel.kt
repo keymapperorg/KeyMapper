@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.RingerMode
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -249,6 +250,15 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.PHONE_RINGING ->
                     returnResult.emit(ConstraintData.PhoneRinging)
 
+                ConstraintId.RINGER_MODE_NORMAL ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.NORMAL))
+
+                ConstraintId.RINGER_MODE_VIBRATE ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.VIBRATE))
+
+                ConstraintId.RINGER_MODE_SILENT ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.SILENT))
+
                 ConstraintId.CHARGING ->
                     returnResult.emit(ConstraintData.Charging)
 
@@ -266,6 +276,12 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
                     returnResult.emit(ConstraintData.LockScreenNotShowing)
+
+                ConstraintId.NOTIFICATION_PANEL_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelShowing)
+
+                ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelNotShowing)
 
                 ConstraintId.TIME -> {
                     timeConstraintState = ConstraintData.Time(

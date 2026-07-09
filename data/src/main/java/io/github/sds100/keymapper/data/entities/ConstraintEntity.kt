@@ -88,11 +88,18 @@ data class ConstraintEntity(
         const val NOT_IN_PHONE_CALL = "not_in_phone_call"
         const val PHONE_RINGING = "phone_ringing"
 
+        const val RINGER_MODE_NORMAL = "ringer_mode_normal"
+        const val RINGER_MODE_VIBRATE = "ringer_mode_vibrate"
+        const val RINGER_MODE_SILENT = "ringer_mode_silent"
+
         const val CHARGING = "charging"
         const val DISCHARGING = "discharging"
 
         const val HINGE_CLOSED = "hinge_closed"
         const val HINGE_OPEN = "hinge_open"
+
+        const val NOTIFICATION_PANEL_SHOWING = "notification_panel_showing"
+        const val NOTIFICATION_PANEL_NOT_SHOWING = "notification_panel_not_showing"
 
         const val TIME = "time"
 

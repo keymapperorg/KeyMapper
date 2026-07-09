@@ -112,6 +112,7 @@ class KeyMapConstraintsComparator(
             is ConstraintData.OrientationLandscape -> Success("")
             is ConstraintData.OrientationPortrait -> Success("")
             is ConstraintData.PhoneRinging -> Success("")
+            is ConstraintData.RingerMode -> Success("")
             is ConstraintData.ScreenOff -> Success("")
             is ConstraintData.ScreenOn -> Success("")
             is ConstraintData.WifiConnected -> if (constraint.data.ssid == null) {
@@ -143,6 +144,8 @@ class KeyMapConstraintsComparator(
             is ConstraintData.PhysicalOrientation -> Success(
                 constraint.data.physicalOrientation.toString(),
             )
+            ConstraintData.NotificationPanelShowing -> Success("")
+            ConstraintData.NotificationPanelNotShowing -> Success("")
         }
     }
 }
