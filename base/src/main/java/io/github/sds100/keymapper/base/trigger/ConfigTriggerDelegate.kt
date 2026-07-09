@@ -66,7 +66,7 @@ class ConfigTriggerDelegate {
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
-        doNotRemap: Boolean,
+        doNotRemap: Boolean = false,
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
