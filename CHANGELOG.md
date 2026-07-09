@@ -15,6 +15,7 @@
 
 ## Added
 
+- #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
 - #2140 Add monochrome app icon layer for themed icon support on Android 13+.
 
 ## Fixed

@@ -16,6 +16,7 @@ enum class ConstraintDependency {
     DEVICE_LOCKED_STATE,
     LOCK_SCREEN_SHOWING,
     PHONE_STATE,
+    RINGER_MODE,
     CHARGING_STATE,
     HINGE_STATE,
 }

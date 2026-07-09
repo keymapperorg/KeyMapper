@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.common.utils.TimeUtils
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.RingerMode
 import java.time.format.FormatStyle
 
 class ConstraintUiHelper(
@@ -163,6 +164,11 @@ class ConstraintUiHelper(
         is ConstraintData.InPhoneCall -> getString(R.string.constraint_in_phone_call)
         is ConstraintData.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
         is ConstraintData.PhoneRinging -> getString(R.string.constraint_phone_ringing)
+        is ConstraintData.RingerMode -> when (constraint.data.ringerMode) {
+            RingerMode.NORMAL -> getString(R.string.constraint_ringer_mode_normal)
+            RingerMode.VIBRATE -> getString(R.string.constraint_ringer_mode_vibrate)
+            RingerMode.SILENT -> getString(R.string.constraint_ringer_mode_silent)
+        }
         is ConstraintData.Charging -> getString(R.string.constraint_charging)
         is ConstraintData.Discharging -> getString(R.string.constraint_discharging)
         is ConstraintData.HingeClosed -> getString(R.string.constraint_hinge_closed_description)

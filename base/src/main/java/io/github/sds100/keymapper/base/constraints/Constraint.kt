@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.RingerMode as SystemRingerMode
 import java.time.LocalTime
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -187,6 +188,15 @@ sealed class ConstraintData {
     @Serializable
     data object PhoneRinging : ConstraintData() {
         override val id: ConstraintId = ConstraintId.PHONE_RINGING
+    }
+
+    @Serializable
+    data class RingerMode(val ringerMode: SystemRingerMode) : ConstraintData() {
+        override val id: ConstraintId = when (ringerMode) {
+            SystemRingerMode.NORMAL -> ConstraintId.RINGER_MODE_NORMAL
+            SystemRingerMode.VIBRATE -> ConstraintId.RINGER_MODE_VIBRATE
+            SystemRingerMode.SILENT -> ConstraintId.RINGER_MODE_SILENT
+        }
     }
 
     @Serializable
@@ -381,6 +391,13 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHONE_RINGING -> ConstraintData.PhoneRinging
             ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
             ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
+
+            ConstraintEntity.RINGER_MODE_NORMAL ->
+                ConstraintData.RingerMode(SystemRingerMode.NORMAL)
+            ConstraintEntity.RINGER_MODE_VIBRATE ->
+                ConstraintData.RingerMode(SystemRingerMode.VIBRATE)
+            ConstraintEntity.RINGER_MODE_SILENT ->
+                ConstraintData.RingerMode(SystemRingerMode.SILENT)
 
             ConstraintEntity.CHARGING -> ConstraintData.Charging
             ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
@@ -672,6 +689,21 @@ object ConstraintEntityMapper {
             uid = constraint.uid,
             ConstraintEntity.PHONE_RINGING,
         )
+
+        is ConstraintData.RingerMode -> when (constraint.data.ringerMode) {
+            SystemRingerMode.NORMAL -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_NORMAL,
+            )
+            SystemRingerMode.VIBRATE -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_VIBRATE,
+            )
+            SystemRingerMode.SILENT -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_SILENT,
+            )
+        }
 
         is ConstraintData.Charging -> ConstraintEntity(
             uid = constraint.uid,
