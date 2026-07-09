@@ -72,27 +72,32 @@ class SettingsViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
     val defaultSettingsScreenState: StateFlow<DefaultSettingsState> = combine(
-        useCase.getPreference(Keys.defaultLongPressDelay),
-        useCase.getPreference(Keys.defaultDoublePressDelay),
-        useCase.getPreference(Keys.defaultVibrateDuration),
-        useCase.getPreference(Keys.defaultRepeatDelay),
-        useCase.getPreference(Keys.defaultRepeatRate),
-        useCase.getPreference(Keys.defaultSequenceTriggerTimeout),
-    ) { values ->
-        DefaultSettingsState(
-            longPressDelay = values[0] ?: PreferenceDefaults.LONG_PRESS_DELAY,
-            defaultLongPressDelay = PreferenceDefaults.LONG_PRESS_DELAY,
-            doublePressDelay = values[1] ?: PreferenceDefaults.DOUBLE_PRESS_DELAY,
-            defaultDoublePressDelay = PreferenceDefaults.DOUBLE_PRESS_DELAY,
-            vibrateDuration = values[2] ?: PreferenceDefaults.VIBRATION_DURATION,
-            defaultVibrateDuration = PreferenceDefaults.VIBRATION_DURATION,
-            repeatDelay = values[3] ?: PreferenceDefaults.REPEAT_DELAY,
-            defaultRepeatDelay = PreferenceDefaults.REPEAT_DELAY,
-            repeatRate = values[4] ?: PreferenceDefaults.REPEAT_RATE,
-            defaultRepeatRate = PreferenceDefaults.REPEAT_RATE,
-            sequenceTriggerTimeout = values[5] ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
-            defaultSequenceTriggerTimeout = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
-        )
+        combine(
+            useCase.getPreference(Keys.defaultLongPressDelay),
+            useCase.getPreference(Keys.defaultDoublePressDelay),
+            useCase.getPreference(Keys.defaultVibrateDuration),
+            useCase.getPreference(Keys.defaultRepeatDelay),
+            useCase.getPreference(Keys.defaultRepeatRate),
+            useCase.getPreference(Keys.defaultSequenceTriggerTimeout),
+        ) { values ->
+            DefaultSettingsState(
+                longPressDelay = values[0] ?: PreferenceDefaults.LONG_PRESS_DELAY,
+                defaultLongPressDelay = PreferenceDefaults.LONG_PRESS_DELAY,
+                doublePressDelay = values[1] ?: PreferenceDefaults.DOUBLE_PRESS_DELAY,
+                defaultDoublePressDelay = PreferenceDefaults.DOUBLE_PRESS_DELAY,
+                vibrateDuration = values[2] ?: PreferenceDefaults.VIBRATION_DURATION,
+                defaultVibrateDuration = PreferenceDefaults.VIBRATION_DURATION,
+                repeatDelay = values[3] ?: PreferenceDefaults.REPEAT_DELAY,
+                defaultRepeatDelay = PreferenceDefaults.REPEAT_DELAY,
+                repeatRate = values[4] ?: PreferenceDefaults.REPEAT_RATE,
+                defaultRepeatRate = PreferenceDefaults.REPEAT_RATE,
+                sequenceTriggerTimeout = values[5] ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+                defaultSequenceTriggerTimeout = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+            )
+        },
+        useCase.getPreference(Keys.defaultDoNotRemap),
+    ) { state, doNotRemap ->
+        state.copy(doNotRemap = doNotRemap ?: PreferenceDefaults.DO_NOT_REMAP)
     }.stateIn(viewModelScope, SharingStarted.Lazily, DefaultSettingsState())
 
     val automaticChangeImeSettingsState: StateFlow<AutomaticChangeImeSettingsState> = combine(
@@ -238,6 +243,12 @@ class SettingsViewModel @Inject constructor(
     override fun onSequenceTriggerTimeoutChanged(timeout: Int) {
         viewModelScope.launch {
             useCase.setPreference(Keys.defaultSequenceTriggerTimeout, timeout)
+        }
+    }
+
+    override fun onDefaultDoNotRemapChanged(doNotRemap: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultDoNotRemap, doNotRemap)
         }
     }
 
@@ -387,6 +398,8 @@ data class DefaultSettingsState(
 
     val sequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
     val defaultSequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+
+    val doNotRemap: Boolean = PreferenceDefaults.DO_NOT_REMAP,
 )
 
 data class AutomaticChangeImeSettingsState(

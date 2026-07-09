@@ -66,6 +66,7 @@ class ConfigTriggerDelegate {
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
+        doNotRemap: Boolean = false,
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
@@ -79,7 +80,7 @@ class ConfigTriggerDelegate {
             }
         }
 
-        var consumeKeyEvent = true
+        var consumeKeyEvent = !doNotRemap
 
         // Issue #753
         if (KeyEventUtils.isModifierKey(keyCode)) {
@@ -130,6 +131,7 @@ class ConfigTriggerDelegate {
         scanCode: Int,
         device: EvdevDeviceInfo,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
+        doNotRemap: Boolean = false,
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
@@ -158,7 +160,7 @@ class ConfigTriggerDelegate {
             scanCode = scanCode,
             device = device,
             clickType = clickType,
-            consumeEvent = true,
+            consumeEvent = !doNotRemap,
             detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty(),
         )
 
@@ -186,6 +188,7 @@ class ConfigTriggerDelegate {
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+
             newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
