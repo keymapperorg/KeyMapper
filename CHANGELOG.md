@@ -24,10 +24,6 @@
 
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
-## Added
-
-- #1980 Add "Notification panel is showing" and "Notification panel is not showing" constraints. Detection uses the accessibility service window list and is best-effort; accuracy may vary across OEMs and Android versions.
-
 ## Fixed
 
 - #2074 Scrolling the action or trigger list no longer accidentally moves items; reordering by drag now only activates from the drag handle or via long-press.
