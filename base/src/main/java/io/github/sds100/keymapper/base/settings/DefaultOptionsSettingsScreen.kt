@@ -214,6 +214,9 @@ private fun Content(
 
         // Do not remap
         SwitchPreferenceCompose(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_default_do_not_remap),
             text = stringResource(R.string.summary_pref_default_do_not_remap),
             icon = Icons.Rounded.Keyboard,
