@@ -79,6 +79,10 @@ class LazyConstraintSnapshot(
         lockScreenAdapter.isLockScreenShowing()
     }
 
+    private val isNotificationShadeExpanded: Boolean by lazy {
+        accessibilityService.isNotificationShadeExpanded.firstBlocking()
+    }
+
     private val localTime = LocalTime.now()
 
     private fun isMediaPlaying(): Boolean {
@@ -204,6 +208,9 @@ class LazyConstraintSnapshot(
             is ConstraintData.LockScreenNotShowing ->
                 !isLockscreenShowing ||
                     appInForeground != "com.android.systemui"
+
+            is ConstraintData.NotificationPanelShowing -> isNotificationShadeExpanded
+            is ConstraintData.NotificationPanelNotShowing -> !isNotificationShadeExpanded
 
             is ConstraintData.Time ->
                 if (constraint.data.startTime.isAfter(constraint.data.endTime)) {

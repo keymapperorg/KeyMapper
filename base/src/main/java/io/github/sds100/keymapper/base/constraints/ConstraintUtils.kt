@@ -117,6 +117,10 @@ object ConstraintUtils {
         ConstraintId.HINGE_OPEN,
             -> ConstraintCategory.DEVICE
 
+        ConstraintId.NOTIFICATION_PANEL_SHOWING,
+        ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING,
+            -> ConstraintCategory.DISPLAY
+
         ConstraintId.TIME -> ConstraintCategory.TIME
     }
 
@@ -200,6 +204,12 @@ object ConstraintUtils {
             Icons.Outlined.ScreenLockPortrait,
         )
         ConstraintId.LOCK_SCREEN_NOT_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
+
+        ConstraintId.NOTIFICATION_PANEL_SHOWING ->
+            ComposeIconInfo.Vector(Icons.Outlined.Notifications)
+        ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING ->
+            ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
+
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
     }
 
@@ -254,6 +264,10 @@ object ConstraintUtils {
         ConstraintId.HINGE_OPEN -> R.string.constraint_hinge_open
         ConstraintId.LOCK_SCREEN_SHOWING -> R.string.constraint_lock_screen_showing
         ConstraintId.LOCK_SCREEN_NOT_SHOWING -> R.string.constraint_lock_screen_not_showing
+        ConstraintId.NOTIFICATION_PANEL_SHOWING ->
+            R.string.constraint_notification_panel_showing
+        ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING ->
+            R.string.constraint_notification_panel_not_showing
         ConstraintId.TIME -> R.string.constraint_time
     }
 }
