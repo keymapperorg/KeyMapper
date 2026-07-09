@@ -130,6 +130,13 @@ abstract class BaseAccessibilityService :
     override val isInputMethodVisible: Flow<Boolean>
         get() = _isInputMethodVisible
 
+    private val _isNotificationShadeExpanded by lazy {
+        MutableStateFlow(isNotificationShadeVisible())
+    }
+
+    override val isNotificationShadeExpanded: Flow<Boolean>
+        get() = _isNotificationShadeExpanded
+
     override var serviceFlags: Int?
         get() = serviceInfo?.flags
         set(value) {
@@ -295,6 +302,7 @@ abstract class BaseAccessibilityService :
 
             _activeWindowPackage.update { rootNode?.packageName?.toString() }
             _isInputMethodVisible.update { isImeWindowVisible() }
+            _isNotificationShadeExpanded.update { isNotificationShadeVisible() }
         }
 
         getController()?.onAccessibilityEvent(event)
@@ -568,6 +576,14 @@ abstract class BaseAccessibilityService :
             windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
 
         return imeWindow != null && imeWindow.root?.isVisibleToUser == true
+    }
+
+    private fun isNotificationShadeVisible(): Boolean {
+        return windows?.any { window ->
+            if (window.type != AccessibilityWindowInfo.TYPE_SYSTEM) return@any false
+            val root = window.root ?: return@any false
+            root.packageName?.toString() == "com.android.systemui" && root.isVisibleToUser
+        } ?: false
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

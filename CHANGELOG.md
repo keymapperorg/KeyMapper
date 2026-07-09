@@ -11,6 +11,10 @@
 
 #### 09 June 2026
 
+## Added
+
+- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
+
 ## Fixed
 
 - #2154 The expert mode debug screen is now only accessible after the expert mode warning has been

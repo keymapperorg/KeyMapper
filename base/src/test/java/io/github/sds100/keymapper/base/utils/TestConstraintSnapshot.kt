@@ -35,6 +35,7 @@ class TestConstraintSnapshot(
     val isLockscreenShowing: Boolean = false,
     val localTime: LocalTime = LocalTime.now(),
     val hingeState: HingeState = HingeState.Unavailable,
+    val isNotificationPanelShowing: Boolean = false,
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -129,6 +130,8 @@ class TestConstraintSnapshot(
                 hingeState is HingeState.Available && hingeState.isClosed()
             ConstraintData.HingeOpen ->
                 hingeState is HingeState.Available && hingeState.isOpen()
+            ConstraintData.NotificationPanelShowing -> isNotificationPanelShowing
+            ConstraintData.NotificationPanelNotShowing -> !isNotificationPanelShowing
         }
 
         if (isSatisfied) {
