@@ -95,6 +95,8 @@ class ChooseConstraintViewModel @Inject constructor(
 
     var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
 
+    var displayResolutionState: DisplayResolutionSheetState? by mutableStateOf(null)
+
     init {
         viewModelScope.launch {
             returnResult.collect { constraintData ->
@@ -109,6 +111,13 @@ class ChooseConstraintViewModel @Inject constructor(
                 returnResult.emit(constraintData)
                 timeConstraintState = null
             }
+        }
+    }
+
+    fun onDoneConfigDisplayResolutionClick(width: Int, height: Int) {
+        viewModelScope.launch {
+            returnResult.emit(ConstraintData.DisplayResolution(width = width, height = height))
+            displayResolutionState = null
         }
     }
 
@@ -151,6 +160,15 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.SCREEN_ON -> returnResult.emit(ConstraintData.ScreenOn)
 
                 ConstraintId.SCREEN_OFF -> returnResult.emit(ConstraintData.ScreenOff)
+
+                ConstraintId.DISPLAY_RESOLUTION -> {
+                    val currentResolution = useCase.getCurrentResolution()
+                    displayResolutionState = DisplayResolutionSheetState(
+                        supportedResolutions = useCase.getSupportedResolutions(),
+                        initialWidth = currentResolution.width,
+                        initialHeight = currentResolution.height,
+                    )
+                }
 
                 ConstraintId.DISPLAY_ORIENTATION_PORTRAIT ->
                     returnResult.emit(ConstraintData.OrientationPortrait)

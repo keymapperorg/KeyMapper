@@ -15,6 +15,12 @@ interface DisplayAdapter {
     val size: SizeKM
     val isAmbientDisplayEnabled: Flow<Boolean>
 
+    /**
+     * The distinct resolutions supported by the default display, taken from the
+     * display's supported modes. The dimensions are in the display's natural orientation.
+     */
+    fun getSupportedResolutions(): List<SizeKM>
+
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): KMResult<*>
     fun disableAutoRotate(): KMResult<*>

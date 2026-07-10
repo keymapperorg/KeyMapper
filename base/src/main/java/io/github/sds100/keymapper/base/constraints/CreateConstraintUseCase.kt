@@ -3,10 +3,12 @@ package io.github.sds100.keymapper.base.constraints
 import android.content.pm.PackageManager
 import android.os.Build
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
@@ -20,6 +22,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val cameraAdapter: CameraAdapter,
+    private val displayAdapter: DisplayAdapter,
 ) : CreateConstraintUseCase {
 
     override fun isSupported(constraint: ConstraintId): KMError? {
@@ -74,6 +77,10 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     override fun getFlashlightLenses(): Set<CameraLens> {
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
     }
+
+    override fun getSupportedResolutions(): List<SizeKM> = displayAdapter.getSupportedResolutions()
+
+    override fun getCurrentResolution(): SizeKM = displayAdapter.size
 }
 
 interface CreateConstraintUseCase {
@@ -85,4 +92,7 @@ interface CreateConstraintUseCase {
     fun getSavedWifiSSIDs(): Flow<List<String>>
 
     fun getFlashlightLenses(): Set<CameraLens>
+
+    fun getSupportedResolutions(): List<SizeKM>
+    fun getCurrentResolution(): SizeKM
 }

@@ -4,6 +4,8 @@
 
 ## Added
 
+- #2184 Add a display resolution constraint. Pick from the display's supported resolutions or enter a
+  custom width and height.
 - #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
 - #2140 Add monochrome app icon layer for themed icon support on Android 13+.
 - #2174 Add "Do not remap by default" preference to the default options settings page.

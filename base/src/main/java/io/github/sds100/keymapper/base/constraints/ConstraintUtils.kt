@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.constraints
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AspectRatio
 import androidx.compose.material.icons.outlined.Battery2Bar
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.BluetoothConnected
@@ -77,6 +78,7 @@ object ConstraintUtils {
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
+        ConstraintId.DISPLAY_RESOLUTION,
             -> ConstraintCategory.DISPLAY
 
         ConstraintId.FLASHLIGHT_ON,
@@ -167,6 +169,8 @@ object ConstraintUtils {
         ConstraintId.SCREEN_OFF -> ComposeIconInfo.Vector(Icons.Outlined.MobileOff)
         ConstraintId.SCREEN_ON -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
+        ConstraintId.DISPLAY_RESOLUTION -> ComposeIconInfo.Vector(Icons.Outlined.AspectRatio)
+
         ConstraintId.FLASHLIGHT_OFF -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOff)
         ConstraintId.FLASHLIGHT_ON -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn)
 
@@ -225,6 +229,7 @@ object ConstraintUtils {
             R.string.constraint_choose_bluetooth_device_disconnected
         ConstraintId.SCREEN_ON -> R.string.constraint_choose_screen_on_description
         ConstraintId.SCREEN_OFF -> R.string.constraint_choose_screen_off_description
+        ConstraintId.DISPLAY_RESOLUTION -> R.string.constraint_choose_display_resolution
         ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> R.string.constraint_choose_orientation_portrait
         ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE ->
             R.string.constraint_choose_orientation_landscape

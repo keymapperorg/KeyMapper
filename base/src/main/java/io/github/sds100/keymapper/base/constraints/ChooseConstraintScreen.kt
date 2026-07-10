@@ -55,6 +55,7 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     TimeConstraintBottomSheet(viewModel)
+    DisplayResolutionConstraintBottomSheet(viewModel)
 
     ChooseConstraintScreen(
         modifier = modifier,

@@ -101,6 +101,14 @@ class AndroidDisplayAdapter @Inject constructor(
     override val size: SizeKM
         get() = ctx.getRealDisplaySize()
 
+    override fun getSupportedResolutions(): List<SizeKM> {
+        val display = displayManager.displays.firstOrNull() ?: return emptyList()
+
+        return display.supportedModes
+            .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
+            .distinct()
+    }
+
     override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(isAodEnabled())
 

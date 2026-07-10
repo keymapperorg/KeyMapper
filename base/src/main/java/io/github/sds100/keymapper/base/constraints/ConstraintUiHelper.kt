@@ -105,6 +105,11 @@ class ConstraintUiHelper(
         is ConstraintData.ScreenOn ->
             getString(R.string.constraint_screen_on_description)
 
+        is ConstraintData.DisplayResolution -> getString(
+            R.string.constraint_display_resolution_description,
+            arrayOf(constraint.data.width, constraint.data.height),
+        )
+
         is ConstraintData.FlashlightOff -> if (constraint.data.lens == CameraLens.FRONT) {
             getString(R.string.constraint_front_flashlight_off_description)
         } else {
