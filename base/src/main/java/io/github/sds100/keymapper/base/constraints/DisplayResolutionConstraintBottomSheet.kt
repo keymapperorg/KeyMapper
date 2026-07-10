@@ -21,11 +21,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,19 +34,6 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.common.utils.SizeKM
 import kotlinx.coroutines.launch
 
-/**
- * State passed to the display resolution bottom sheet.
- *
- * @param supportedResolutions the resolutions the display reports as supported.
- * @param initialWidth the current real display width, used to prefill the custom fields.
- * @param initialHeight the current real display height, used to prefill the custom fields.
- */
-data class DisplayResolutionSheetState(
-    val supportedResolutions: List<SizeKM>,
-    val initialWidth: Int,
-    val initialHeight: Int,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayResolutionConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
@@ -60,20 +43,13 @@ fun DisplayResolutionConstraintBottomSheet(viewModel: ChooseConstraintViewModel)
     DisplayResolutionConstraintBottomSheet(
         sheetState = sheetState,
         state = state,
-        onDismissRequest = { viewModel.displayResolutionState = null },
-        onDoneClick = { width, height ->
-            viewModel.onDoneConfigDisplayResolutionClick(width, height)
-        },
+        onSelectResolution = viewModel::onSelectDisplayResolution,
+        onSelectCustom = viewModel::onSelectCustomDisplayResolution,
+        onWidthChange = viewModel::onDisplayResolutionWidthChange,
+        onHeightChange = viewModel::onDisplayResolutionHeightChange,
+        onDismissRequest = viewModel::onDismissDisplayResolution,
+        onDoneClick = viewModel::onDoneConfigDisplayResolutionClick,
     )
-}
-
-/**
- * Compares two resolutions ignoring orientation so that e.g. 1080x1920 and 1920x1080
- * are treated as the same resolution.
- */
-private fun SizeKM.matchesIgnoringOrientation(other: SizeKM): Boolean {
-    return (width == other.width && height == other.height) ||
-        (width == other.height && height == other.width)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,35 +57,14 @@ private fun SizeKM.matchesIgnoringOrientation(other: SizeKM): Boolean {
 private fun DisplayResolutionConstraintBottomSheet(
     sheetState: SheetState,
     state: DisplayResolutionSheetState,
+    onSelectResolution: (SizeKM) -> Unit = {},
+    onSelectCustom: () -> Unit = {},
+    onWidthChange: (String) -> Unit = {},
+    onHeightChange: (String) -> Unit = {},
     onDismissRequest: () -> Unit = {},
-    onDoneClick: (width: Int, height: Int) -> Unit = { _, _ -> },
+    onDoneClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-
-    val initialSize = remember(state) { SizeKM(state.initialWidth, state.initialHeight) }
-    val matchingResolution = remember(state) {
-        state.supportedResolutions.firstOrNull { it.matchesIgnoringOrientation(initialSize) }
-    }
-
-    // Show the text fields immediately when there is nothing meaningful to pick from
-    // or when the current resolution isn't one of the supported modes.
-    var isCustom by remember(state) {
-        mutableStateOf(state.supportedResolutions.size <= 1 || matchingResolution == null)
-    }
-    var selectedResolution by remember(state) {
-        mutableStateOf(matchingResolution ?: state.supportedResolutions.firstOrNull())
-    }
-    var widthText by remember(state) { mutableStateOf(state.initialWidth.toString()) }
-    var heightText by remember(state) { mutableStateOf(state.initialHeight.toString()) }
-
-    val customWidth = widthText.toIntOrNull()
-    val customHeight = heightText.toIntOrNull()
-
-    val isValid = if (isCustom) {
-        customWidth != null && customWidth > 0 && customHeight != null && customHeight > 0
-    } else {
-        selectedResolution != null
-    }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -140,18 +95,15 @@ private fun DisplayResolutionConstraintBottomSheet(
                 ) {
                     for (resolution in state.supportedResolutions) {
                         FilterChip(
-                            selected = !isCustom && selectedResolution == resolution,
-                            onClick = {
-                                isCustom = false
-                                selectedResolution = resolution
-                            },
+                            selected = !state.isCustom && state.selectedResolution == resolution,
+                            onClick = { onSelectResolution(resolution) },
                             label = { Text("${resolution.width} × ${resolution.height}") },
                         )
                     }
 
                     FilterChip(
-                        selected = isCustom,
-                        onClick = { isCustom = true },
+                        selected = state.isCustom,
+                        onClick = onSelectCustom,
                         label = {
                             Text(
                                 stringResource(
@@ -165,7 +117,7 @@ private fun DisplayResolutionConstraintBottomSheet(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (isCustom) {
+            if (state.isCustom) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,8 +127,8 @@ private fun DisplayResolutionConstraintBottomSheet(
                 ) {
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
-                        value = widthText,
-                        onValueChange = { widthText = it.filter(Char::isDigit) },
+                        value = state.widthText,
+                        onValueChange = onWidthChange,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         label = {
@@ -186,8 +138,8 @@ private fun DisplayResolutionConstraintBottomSheet(
 
                     OutlinedTextField(
                         modifier = Modifier.weight(1f),
-                        value = heightText,
-                        onValueChange = { heightText = it.filter(Char::isDigit) },
+                        value = state.heightText,
+                        onValueChange = onHeightChange,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         label = {
@@ -222,16 +174,11 @@ private fun DisplayResolutionConstraintBottomSheet(
 
                 Button(
                     modifier = Modifier.weight(1f),
-                    enabled = isValid,
+                    enabled = state.isValid,
                     onClick = {
-                        val width = if (isCustom) customWidth else selectedResolution?.width
-                        val height = if (isCustom) customHeight else selectedResolution?.height
-
-                        if (width != null && height != null) {
-                            scope.launch {
-                                sheetState.hide()
-                                onDoneClick(width, height)
-                            }
+                        scope.launch {
+                            sheetState.hide()
+                            onDoneClick()
                         }
                     },
                 ) {
@@ -262,8 +209,10 @@ private fun PreviewWithModes() {
                     SizeKM(1080, 2400),
                     SizeKM(1440, 3200),
                 ),
-                initialWidth = 1080,
-                initialHeight = 2400,
+                isCustom = false,
+                selectedResolution = SizeKM(1080, 2400),
+                widthText = "1080",
+                heightText = "2400",
             ),
         )
     }
@@ -284,8 +233,10 @@ private fun PreviewCustomOnly() {
             sheetState = sheetState,
             state = DisplayResolutionSheetState(
                 supportedResolutions = emptyList(),
-                initialWidth = 1080,
-                initialHeight = 2400,
+                isCustom = true,
+                selectedResolution = null,
+                widthText = "1080",
+                heightText = "2400",
             ),
         )
     }
