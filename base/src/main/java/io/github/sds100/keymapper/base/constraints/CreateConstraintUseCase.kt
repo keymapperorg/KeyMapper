@@ -34,11 +34,13 @@ class CreateConstraintUseCaseImpl @Inject constructor(
                     return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
                 }
             }
+
             ConstraintId.HINGE_CLOSED, ConstraintId.HINGE_OPEN -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                     return KMError.SdkVersionTooLow(Build.VERSION_CODES.R)
                 }
             }
+
             else -> Unit
         }
 
@@ -78,7 +80,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
     }
 
-    override fun getSupportedResolutions(): List<SizeKM> = displayAdapter.getSupportedResolutions()
+    override fun getSupportedResolutions(): Set<SizeKM> = displayAdapter.supportedResolutions.value
 
     override fun getCurrentResolution(): SizeKM = displayAdapter.size
 }
@@ -93,6 +95,6 @@ interface CreateConstraintUseCase {
 
     fun getFlashlightLenses(): Set<CameraLens>
 
-    fun getSupportedResolutions(): List<SizeKM>
+    fun getSupportedResolutions(): Set<SizeKM>
     fun getCurrentResolution(): SizeKM
 }

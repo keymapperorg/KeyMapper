@@ -173,6 +173,7 @@ class ChooseConstraintViewModel @Inject constructor(
                     onSelectDisplayOrientationConstraint()
                     return@launch
                 }
+
                 PHYSICAL_ORIENTATION_LIST_ITEM_ID -> {
                     onSelectPhysicalOrientationConstraint()
                     return@launch
@@ -187,6 +188,7 @@ class ChooseConstraintViewModel @Inject constructor(
                     -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
+
                 ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(ConstraintData.NoMediaPlaying)
 
                 ConstraintId.BT_DEVICE_CONNECTED,
@@ -268,6 +270,7 @@ class ChooseConstraintViewModel @Inject constructor(
                 }
 
                 ConstraintId.WIFI_ON -> returnResult.emit(ConstraintData.WifiOn)
+
                 ConstraintId.WIFI_OFF -> returnResult.emit(ConstraintData.WifiOff)
 
                 ConstraintId.WIFI_CONNECTED,
@@ -355,7 +358,7 @@ class ChooseConstraintViewModel @Inject constructor(
         }
 
         return DisplayResolutionSheetState(
-            supportedResolutions = supportedResolutions,
+            supportedResolutions = supportedResolutions.sortedBy { it.width },
             // Show the text fields immediately when there is nothing meaningful to pick
             // from or when the current resolution isn't one of the supported modes.
             isCustom = supportedResolutions.size <= 1 || matchingResolution == null,
@@ -406,15 +409,21 @@ class ChooseConstraintViewModel @Inject constructor(
 
         val constraintData = when (selectedOrientation) {
             ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
+
             ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
+
             ConstraintId.DISPLAY_ORIENTATION_0 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0)
+
             ConstraintId.DISPLAY_ORIENTATION_90 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90)
+
             ConstraintId.DISPLAY_ORIENTATION_180 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180)
+
             ConstraintId.DISPLAY_ORIENTATION_270 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270)
+
             else -> return
         }
 

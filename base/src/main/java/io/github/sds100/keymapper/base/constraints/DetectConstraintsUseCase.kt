@@ -63,6 +63,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map {
                 dependency
             }
+
             ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
                 merge(
                     mediaAdapter.getActiveMediaSessionPackagesFlow(),
@@ -71,11 +72,15 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.CONNECTED_BT_DEVICES ->
                 devicesAdapter.connectedBluetoothDevices.map { dependency }
+
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
+
             ConstraintDependency.DISPLAY_ORIENTATION ->
                 displayAdapter.orientation.map { dependency }
+
             ConstraintDependency.PHYSICAL_ORIENTATION ->
                 displayAdapter.physicalOrientation.map { dependency }
+
             ConstraintDependency.FLASHLIGHT_STATE -> merge(
                 cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
                 cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
@@ -83,8 +88,11 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.WIFI_SSID ->
                 networkAdapter.connectedWifiSSIDFlow.map { dependency }
+
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
+
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
+
             ConstraintDependency.DEVICE_LOCKED_STATE ->
                 lockScreenAdapter.isLockedFlow().map { dependency }
 
@@ -95,18 +103,27 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 ).map { dependency }
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
+
             ConstraintDependency.RINGER_MODE -> volumeAdapter.ringerModeFlow.map { dependency }
+
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
+
             ConstraintDependency.HINGE_STATE ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     foldableAdapter.hingeState.map { dependency }
                 } else {
                     emptyFlow()
                 }
+
             ConstraintDependency.KEYBOARD_VISIBLE ->
                 accessibilityService.isInputMethodVisible.map { dependency }
+
             ConstraintDependency.NOTIFICATION_PANEL_STATE ->
                 accessibilityService.isNotificationShadeExpanded.map { dependency }
+
+            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
+                dependency
+            }
         }
     }
 }

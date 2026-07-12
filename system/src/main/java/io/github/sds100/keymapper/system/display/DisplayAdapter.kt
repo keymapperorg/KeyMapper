@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface DisplayAdapter {
     val isScreenOn: Flow<Boolean>
@@ -19,7 +20,7 @@ interface DisplayAdapter {
      * The distinct resolutions supported by the default display, taken from the
      * display's supported modes. The dimensions are in the display's natural orientation.
      */
-    fun getSupportedResolutions(): List<SizeKM>
+    val supportedResolutions: StateFlow<Set<SizeKM>>
 
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): KMResult<*>

@@ -20,4 +20,5 @@ enum class ConstraintDependency {
     CHARGING_STATE,
     HINGE_STATE,
     NOTIFICATION_PANEL_STATE,
+    DISPLAY_RESOLUTIONS,
 }

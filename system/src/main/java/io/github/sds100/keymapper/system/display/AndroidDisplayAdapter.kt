@@ -101,16 +101,11 @@ class AndroidDisplayAdapter @Inject constructor(
     override val size: SizeKM
         get() = ctx.getRealDisplaySize()
 
-    override fun getSupportedResolutions(): List<SizeKM> {
-        val display = displayManager.displays.firstOrNull() ?: return emptyList()
-
-        return display.supportedModes
-            .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
-            .distinct()
-    }
-
     override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(isAodEnabled())
+
+    override val supportedResolutions: MutableStateFlow<Set<SizeKM>> =
+        MutableStateFlow(getSupportedResolutions())
 
     private val orientationEventListener = object : OrientationEventListener(ctx) {
         override fun onOrientationChanged(orientationDegrees: Int) {
@@ -127,15 +122,15 @@ class AndroidDisplayAdapter @Inject constructor(
         displayManager.registerDisplayListener(
             object : DisplayManager.DisplayListener {
                 override fun onDisplayAdded(displayId: Int) {
-                    _orientation.update { getDisplayOrientation() }
+                    onDisplaysChanged()
                 }
 
                 override fun onDisplayRemoved(displayId: Int) {
-                    _orientation.update { getDisplayOrientation() }
+                    onDisplaysChanged()
                 }
 
                 override fun onDisplayChanged(displayId: Int) {
-                    _orientation.update { getDisplayOrientation() }
+                    onDisplaysChanged()
 
                     // This listener API has lower latency than the broadcast receiver so also use this.
                     val isScreenStateOn = displayManager.displays.first().state == Display.STATE_ON
@@ -291,12 +286,16 @@ class AndroidDisplayAdapter @Inject constructor(
             Surface.ROTATION_90 -> Orientation.ORIENTATION_90
             Surface.ROTATION_180 -> Orientation.ORIENTATION_180
             Surface.ROTATION_270 -> Orientation.ORIENTATION_270
-
             else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
         }
 
     private fun isAodEnabled(): Boolean {
         return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
+    }
+
+    private fun onDisplaysChanged() {
+        _orientation.update { getDisplayOrientation() }
+        supportedResolutions.update { getSupportedResolutions() }
     }
 
     /**
@@ -321,13 +320,25 @@ class AndroidDisplayAdapter @Inject constructor(
             degrees >= (360 - ORIENTATION_TOLERANCE) ||
                 degrees < ORIENTATION_TOLERANCE ->
                 PhysicalOrientation.PORTRAIT
+
             degrees in (90 - ORIENTATION_TOLERANCE) until (90 + ORIENTATION_TOLERANCE) ->
                 PhysicalOrientation.LANDSCAPE
+
             degrees in (180 - ORIENTATION_TOLERANCE) until (180 + ORIENTATION_TOLERANCE) ->
                 PhysicalOrientation.PORTRAIT_INVERTED
+
             degrees in (270 - ORIENTATION_TOLERANCE) until (270 + ORIENTATION_TOLERANCE) ->
                 PhysicalOrientation.LANDSCAPE_INVERTED
+
             else -> _physicalOrientation.value // Keep current orientation in transition zone
         }
+    }
+
+    private fun getSupportedResolutions(): Set<SizeKM> {
+        val display = displayManager.displays.firstOrNull() ?: return emptySet()
+
+        return display.supportedModes
+            .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
+            .toSet()
     }
 }
