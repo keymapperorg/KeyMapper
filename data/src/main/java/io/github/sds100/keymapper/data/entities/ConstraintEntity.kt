@@ -65,6 +65,8 @@ data class ConstraintEntity(
         const val PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED =
             "constraint_physical_orientation_landscape_inverted"
 
+        const val DISPLAY_RESOLUTION = "constraint_display_resolution"
+
         const val FLASHLIGHT_ON = "flashlight_on"
         const val FLASHLIGHT_OFF = "flashlight_off"
 
@@ -110,6 +112,9 @@ data class ConstraintEntity(
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
+
+        const val EXTRA_RESOLUTION_WIDTH = "extra_resolution_width"
+        const val EXTRA_RESOLUTION_HEIGHT = "extra_resolution_height"
 
         /**
          * The time is stored in the following format: 20:25.

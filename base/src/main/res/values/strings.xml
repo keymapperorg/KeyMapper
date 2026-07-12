@@ -262,6 +262,12 @@
     <string name="constraint_choose_physical_orientation_landscape">Physical: Landscape</string>
     <string name="constraint_choose_physical_orientation_portrait_inverted">Physical: Portrait (upside down)</string>
     <string name="constraint_choose_physical_orientation_landscape_inverted">Physical: Landscape (inverted)</string>
+    <string name="constraint_choose_display_resolution">Display resolution</string>
+    <string name="constraint_display_resolution_description">Resolution is %1$d × %2$d</string>
+    <string name="constraint_display_resolution_bottom_sheet_title">Display resolution</string>
+    <string name="constraint_display_resolution_custom_chip">Custom</string>
+    <string name="constraint_display_resolution_width">Width</string>
+    <string name="constraint_display_resolution_height">Height</string>
     <string name="constraint_choose_app_playing_media">App playing media</string>
     <string name="constraint_choose_app_not_playing_media">App not playing media</string>
     <string name="constraint_choose_media_playing">Media is playing</string>

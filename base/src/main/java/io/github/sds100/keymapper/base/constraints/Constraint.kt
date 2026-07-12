@@ -106,6 +106,11 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data class DisplayResolution(val width: Int, val height: Int) : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.DISPLAY_RESOLUTION
+    }
+
+    @Serializable
     data class FlashlightOn(val lens: CameraLens) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.FLASHLIGHT_ON
     }
@@ -302,6 +307,12 @@ object ConstraintEntityMapper {
             return extraValue
         }
 
+        fun getResolutionWidth(): Int =
+            entity.extras.getData(ConstraintEntity.EXTRA_RESOLUTION_WIDTH).valueOrNull()!!.toInt()
+
+        fun getResolutionHeight(): Int =
+            entity.extras.getData(ConstraintEntity.EXTRA_RESOLUTION_HEIGHT).valueOrNull()!!.toInt()
+
         val constraintData = when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> ConstraintData.AppInForeground(
                 getPackageName(),
@@ -361,6 +372,11 @@ object ConstraintEntityMapper {
                 ConstraintData.PhysicalOrientation(PhysicalOrientation.PORTRAIT_INVERTED)
             ConstraintEntity.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
                 ConstraintData.PhysicalOrientation(PhysicalOrientation.LANDSCAPE_INVERTED)
+
+            ConstraintEntity.DISPLAY_RESOLUTION -> ConstraintData.DisplayResolution(
+                width = getResolutionWidth(),
+                height = getResolutionHeight(),
+            )
 
             ConstraintEntity.SCREEN_OFF -> ConstraintData.ScreenOff
             ConstraintEntity.SCREEN_ON -> ConstraintData.ScreenOn
@@ -574,6 +590,19 @@ object ConstraintEntityMapper {
                 ConstraintEntity.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
             )
         }
+
+        is ConstraintData.DisplayResolution -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.DISPLAY_RESOLUTION,
+            EntityExtra(
+                ConstraintEntity.EXTRA_RESOLUTION_WIDTH,
+                constraint.data.width.toString(),
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_RESOLUTION_HEIGHT,
+                constraint.data.height.toString(),
+            ),
+        )
 
         is ConstraintData.ScreenOff -> ConstraintEntity(
             uid = constraint.uid,

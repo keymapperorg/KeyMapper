@@ -294,6 +294,8 @@ abstract class BaseAccessibilityService :
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
+        Timber.i("On Accessibility event: $event")
+
         if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
             // Catch exceptions because there is a crash report where
             // getRootInActivityWindow() fails internally inside the AccessibilityService.
