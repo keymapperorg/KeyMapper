@@ -1,6 +1,6 @@
 ## [4.3.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.0)
 
-#### TO BE RELEASED
+#### 13 July 2026
 
 ## Added
 
@@ -8,6 +8,9 @@
   custom width and height.
 - #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
 - #2174 Add "Do not remap by default" preference to the default options settings page.
+
+## Fixed
+- #2187 App constraints do not work with floating buttons
 
 ## [4.2.1](https://github.com/sds100/KeyMapper/releases/tag/v4.2.1)
 
