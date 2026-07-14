@@ -262,6 +262,12 @@
     <string name="constraint_choose_physical_orientation_landscape">Physical: Landscape</string>
     <string name="constraint_choose_physical_orientation_portrait_inverted">Physical: Portrait (upside down)</string>
     <string name="constraint_choose_physical_orientation_landscape_inverted">Physical: Landscape (inverted)</string>
+    <string name="constraint_choose_display_resolution">Display resolution</string>
+    <string name="constraint_display_resolution_description">Resolution is %1$d × %2$d</string>
+    <string name="constraint_display_resolution_bottom_sheet_title">Display resolution</string>
+    <string name="constraint_display_resolution_custom_chip">Custom</string>
+    <string name="constraint_display_resolution_width">Width</string>
+    <string name="constraint_display_resolution_height">Height</string>
     <string name="constraint_choose_app_playing_media">App playing media</string>
     <string name="constraint_choose_app_not_playing_media">App not playing media</string>
     <string name="constraint_choose_media_playing">Media is playing</string>
@@ -297,6 +303,9 @@
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
     <string name="constraint_phone_ringing">Phone ringing</string>
+    <string name="constraint_ringer_mode_normal">Ringer mode: Ring</string>
+    <string name="constraint_ringer_mode_vibrate">Ringer mode: Vibrate</string>
+    <string name="constraint_ringer_mode_silent">Ringer mode: Silent</string>
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
@@ -304,6 +313,9 @@
     <string name="constraint_hinge_open">Hinge open</string>
     <string name="constraint_hinge_closed_description">Hinge is closed</string>
     <string name="constraint_hinge_open_description">Hinge is open</string>
+
+    <string name="constraint_notification_panel_showing">Notification panel is showing</string>
+    <string name="constraint_notification_panel_not_showing">Notification panel is not showing</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>
@@ -673,6 +685,9 @@
 
     <string name="title_pref_default_options">Change default options</string>
     <string name="summary_pref_default_options">For triggers and actions</string>
+
+    <string name="title_pref_default_do_not_remap">Do not remap by default</string>
+    <string name="summary_pref_default_do_not_remap">New trigger keys will not consume the key event by default</string>
 
     <string name="title_pref_reset_settings">Reset all</string>
     <string name="dialog_title_reset_settings">DANGER!</string>
@@ -1530,9 +1545,9 @@
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="customer_email_subject_foss_support" translatable="false">Key Mapper FOSS support</string>
     <string name="foss_advanced_triggers_support_body_main">Floating Buttons and Assistant trigger aren\'t sold in this FOSS build because RevenueCat and Google Play in-app billing aren\'t included.\n\nYou can still support development on Ko-fi.</string>
-    <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later want those products,\ </string>
+    <string name="foss_advanced_triggers_support_contact_prefix">If you donate and later get Google Play on another device,\ </string>
     <string name="foss_advanced_triggers_support_contact_link">contact us</string>
-    <string name="foss_advanced_triggers_support_contact_suffix">\ and we can usually help convert your support so it counts toward Google Play purchases.</string>
+    <string name="foss_advanced_triggers_support_contact_suffix">\ and we will give you the paid features so you do not need to pay again.</string>
     <string name="foss_advanced_triggers_support_values">Your support helps keep Key Mapper largely open source, without ads or tracking. We don\'t sell your personal data.</string>
     <string name="foss_advanced_triggers_support_perks">Donations help fund Android compatibility updates, bug fixes and maintenance, improvements and documentation, and keeping the project sustainable.</string>
     <string name="foss_advanced_triggers_kofi_button">Support on Ko-fi</string>

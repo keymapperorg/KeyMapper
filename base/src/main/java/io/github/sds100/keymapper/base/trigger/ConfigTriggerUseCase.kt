@@ -63,7 +63,9 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
                     .mapNotNull { key ->
                         when (key) {
                             is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
+
                             is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(key)
+
                             is AssistantTriggerKeyEntity,
                             is FingerprintTriggerKeyEntity,
                             is FloatingButtonKeyEntity,
@@ -118,6 +120,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             device,
             requiresIme,
             otherTriggerKeys = otherTriggerKeys,
+            doNotRemap = defaultDoNotRemap.value,
         )
     }
 
@@ -129,6 +132,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
                 scanCode,
                 device,
                 otherTriggerKeys = otherTriggerKeys,
+                doNotRemap = defaultDoNotRemap.value,
             )
         }
 

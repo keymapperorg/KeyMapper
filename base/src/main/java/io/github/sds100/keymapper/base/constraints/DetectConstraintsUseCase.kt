@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
@@ -34,6 +35,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val phoneAdapter: PhoneAdapter,
     private val powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
+    private val volumeAdapter: VolumeAdapter,
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -53,6 +55,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         phoneAdapter,
         powerAdapter,
         foldableAdapter,
+        volumeAdapter,
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -60,6 +63,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map {
                 dependency
             }
+
             ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
                 merge(
                     mediaAdapter.getActiveMediaSessionPackagesFlow(),
@@ -68,11 +72,15 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.CONNECTED_BT_DEVICES ->
                 devicesAdapter.connectedBluetoothDevices.map { dependency }
+
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
+
             ConstraintDependency.DISPLAY_ORIENTATION ->
                 displayAdapter.orientation.map { dependency }
+
             ConstraintDependency.PHYSICAL_ORIENTATION ->
                 displayAdapter.physicalOrientation.map { dependency }
+
             ConstraintDependency.FLASHLIGHT_STATE -> merge(
                 cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
                 cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
@@ -80,8 +88,11 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.WIFI_SSID ->
                 networkAdapter.connectedWifiSSIDFlow.map { dependency }
+
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
+
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
+
             ConstraintDependency.DEVICE_LOCKED_STATE ->
                 lockScreenAdapter.isLockedFlow().map { dependency }
 
@@ -92,15 +103,27 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 ).map { dependency }
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
+
+            ConstraintDependency.RINGER_MODE -> volumeAdapter.ringerModeFlow.map { dependency }
+
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
+
             ConstraintDependency.HINGE_STATE ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     foldableAdapter.hingeState.map { dependency }
                 } else {
                     emptyFlow()
                 }
+
             ConstraintDependency.KEYBOARD_VISIBLE ->
                 accessibilityService.isInputMethodVisible.map { dependency }
+
+            ConstraintDependency.NOTIFICATION_PANEL_STATE ->
+                accessibilityService.isNotificationShadeExpanded.map { dependency }
+
+            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
+                dependency
+            }
         }
     }
 }

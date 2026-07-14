@@ -275,14 +275,6 @@ abstract class BaseAccessibilityServiceController(
             }
         }
 
-        // The accessibility event is only used on older than SDK 33. On newer versions the
-        // accessibility input method API is used.
-        val imeInputStartedEvents = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            AccessibilityEvent.TYPE_WINDOWS_CHANGED
-        } else {
-            0
-        }
-
         val recordNodeEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
 
@@ -298,13 +290,8 @@ abstract class BaseAccessibilityServiceController(
                     if (!changeImeOnInputFocus &&
                         recordState == RecordAccessibilityNodeState.Idle
                     ) {
-                        newEventTypes =
-                            newEventTypes and (imeInputStartedEvents or recordNodeEvents).inv()
+                        newEventTypes = newEventTypes and (recordNodeEvents).inv()
                     } else {
-                        if (changeImeOnInputFocus) {
-                            newEventTypes = newEventTypes or imeInputStartedEvents
-                        }
-
                         if (recordState is RecordAccessibilityNodeState.CountingDown) {
                             newEventTypes = newEventTypes or recordNodeEvents
                         }

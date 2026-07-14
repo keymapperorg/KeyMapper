@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.RingerMode as SystemRingerMode
 import java.time.LocalTime
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -105,6 +106,11 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data class DisplayResolution(val width: Int, val height: Int) : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.DISPLAY_RESOLUTION
+    }
+
+    @Serializable
     data class FlashlightOn(val lens: CameraLens) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.FLASHLIGHT_ON
     }
@@ -190,6 +196,15 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data class RingerMode(val ringerMode: SystemRingerMode) : ConstraintData() {
+        override val id: ConstraintId = when (ringerMode) {
+            SystemRingerMode.NORMAL -> ConstraintId.RINGER_MODE_NORMAL
+            SystemRingerMode.VIBRATE -> ConstraintId.RINGER_MODE_VIBRATE
+            SystemRingerMode.SILENT -> ConstraintId.RINGER_MODE_SILENT
+        }
+    }
+
+    @Serializable
     data object Charging : ConstraintData() {
         override val id: ConstraintId = ConstraintId.CHARGING
     }
@@ -207,6 +222,16 @@ sealed class ConstraintData {
     @Serializable
     data object HingeOpen : ConstraintData() {
         override val id: ConstraintId = ConstraintId.HINGE_OPEN
+    }
+
+    @Serializable
+    data object NotificationPanelShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.NOTIFICATION_PANEL_SHOWING
+    }
+
+    @Serializable
+    data object NotificationPanelNotShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING
     }
 
     @Serializable
@@ -282,6 +307,12 @@ object ConstraintEntityMapper {
             return extraValue
         }
 
+        fun getResolutionWidth(): Int =
+            entity.extras.getData(ConstraintEntity.EXTRA_RESOLUTION_WIDTH).valueOrNull()!!.toInt()
+
+        fun getResolutionHeight(): Int =
+            entity.extras.getData(ConstraintEntity.EXTRA_RESOLUTION_HEIGHT).valueOrNull()!!.toInt()
+
         val constraintData = when (entity.type) {
             ConstraintEntity.APP_FOREGROUND -> ConstraintData.AppInForeground(
                 getPackageName(),
@@ -342,6 +373,11 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
                 ConstraintData.PhysicalOrientation(PhysicalOrientation.LANDSCAPE_INVERTED)
 
+            ConstraintEntity.DISPLAY_RESOLUTION -> ConstraintData.DisplayResolution(
+                width = getResolutionWidth(),
+                height = getResolutionHeight(),
+            )
+
             ConstraintEntity.SCREEN_OFF -> ConstraintData.ScreenOff
             ConstraintEntity.SCREEN_ON -> ConstraintData.ScreenOn
 
@@ -382,11 +418,22 @@ object ConstraintEntityMapper {
             ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
             ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
 
+            ConstraintEntity.RINGER_MODE_NORMAL ->
+                ConstraintData.RingerMode(SystemRingerMode.NORMAL)
+            ConstraintEntity.RINGER_MODE_VIBRATE ->
+                ConstraintData.RingerMode(SystemRingerMode.VIBRATE)
+            ConstraintEntity.RINGER_MODE_SILENT ->
+                ConstraintData.RingerMode(SystemRingerMode.SILENT)
+
             ConstraintEntity.CHARGING -> ConstraintData.Charging
             ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
 
             ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
             ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
+
+            ConstraintEntity.NOTIFICATION_PANEL_SHOWING -> ConstraintData.NotificationPanelShowing
+            ConstraintEntity.NOTIFICATION_PANEL_NOT_SHOWING ->
+                ConstraintData.NotificationPanelNotShowing
 
             ConstraintEntity.TIME -> {
                 val startTime =
@@ -544,6 +591,19 @@ object ConstraintEntityMapper {
             )
         }
 
+        is ConstraintData.DisplayResolution -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.DISPLAY_RESOLUTION,
+            EntityExtra(
+                ConstraintEntity.EXTRA_RESOLUTION_WIDTH,
+                constraint.data.width.toString(),
+            ),
+            EntityExtra(
+                ConstraintEntity.EXTRA_RESOLUTION_HEIGHT,
+                constraint.data.height.toString(),
+            ),
+        )
+
         is ConstraintData.ScreenOff -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.SCREEN_OFF,
@@ -673,6 +733,21 @@ object ConstraintEntityMapper {
             ConstraintEntity.PHONE_RINGING,
         )
 
+        is ConstraintData.RingerMode -> when (constraint.data.ringerMode) {
+            SystemRingerMode.NORMAL -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_NORMAL,
+            )
+            SystemRingerMode.VIBRATE -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_VIBRATE,
+            )
+            SystemRingerMode.SILENT -> ConstraintEntity(
+                uid = constraint.uid,
+                ConstraintEntity.RINGER_MODE_SILENT,
+            )
+        }
+
         is ConstraintData.Charging -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.CHARGING,
@@ -691,6 +766,16 @@ object ConstraintEntityMapper {
         is ConstraintData.HingeOpen -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.HINGE_OPEN,
+        )
+
+        is ConstraintData.NotificationPanelShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.NOTIFICATION_PANEL_SHOWING,
+        )
+
+        is ConstraintData.NotificationPanelNotShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.NOTIFICATION_PANEL_NOT_SHOWING,
         )
 
         is ConstraintData.Time -> ConstraintEntity(

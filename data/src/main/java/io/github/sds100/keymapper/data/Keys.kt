@@ -40,6 +40,7 @@ object Keys {
     val defaultRepeatRate = intPreferencesKey("pref_repeat_delay")
     val defaultSequenceTriggerTimeout = intPreferencesKey("pref_sequence_trigger_timeout")
     val defaultHoldDownDuration = intPreferencesKey("pref_hold_down_duration")
+    val defaultDoNotRemap = booleanPreferencesKey("pref_default_do_not_remap")
     val toggleKeyboardOnToggleKeymaps =
         booleanPreferencesKey("key_toggle_keyboard_on_pause_resume_keymaps")
     val automaticBackupLocation = stringPreferencesKey("pref_automatic_backup_location")

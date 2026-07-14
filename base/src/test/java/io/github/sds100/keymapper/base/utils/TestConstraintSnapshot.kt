@@ -5,12 +5,14 @@ import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
 import io.github.sds100.keymapper.system.foldable.isOpen
 import io.github.sds100.keymapper.system.phone.CallState
+import io.github.sds100.keymapper.system.volume.RingerMode
 import java.time.LocalTime
 import timber.log.Timber
 
@@ -26,6 +28,7 @@ class TestConstraintSnapshot(
     val chosenImeId: String? = null,
     val isKeyboardShowing: Boolean = false,
     val callState: CallState = CallState.NONE,
+    val ringerMode: RingerMode = RingerMode.NORMAL,
     val isCharging: Boolean = false,
     val isLocked: Boolean = false,
     val isBackFlashlightOn: Boolean = false,
@@ -33,6 +36,8 @@ class TestConstraintSnapshot(
     val isLockscreenShowing: Boolean = false,
     val localTime: LocalTime = LocalTime.now(),
     val hingeState: HingeState = HingeState.Unavailable,
+    val isNotificationPanelShowing: Boolean = false,
+    val displaySize: SizeKM = SizeKM(1080, 1920),
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -69,6 +74,9 @@ class TestConstraintSnapshot(
 
             is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn
+            is ConstraintData.DisplayResolution ->
+                (displaySize.width == data.width && displaySize.height == data.height) ||
+                    (displaySize.width == data.height && displaySize.height == data.width)
             is ConstraintData.FlashlightOff -> when (data.lens) {
                 CameraLens.BACK -> !isBackFlashlightOn
                 CameraLens.FRONT -> !isFrontFlashlightOn
@@ -107,6 +115,7 @@ class TestConstraintSnapshot(
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
             is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
             is ConstraintData.PhoneRinging -> callState == CallState.RINGING
+            is ConstraintData.RingerMode -> ringerMode == data.ringerMode
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging
             is ConstraintData.LockScreenShowing -> isLockscreenShowing
@@ -126,6 +135,8 @@ class TestConstraintSnapshot(
                 hingeState is HingeState.Available && hingeState.isClosed()
             ConstraintData.HingeOpen ->
                 hingeState is HingeState.Available && hingeState.isOpen()
+            ConstraintData.NotificationPanelShowing -> isNotificationPanelShowing
+            ConstraintData.NotificationPanelNotShowing -> !isNotificationPanelShowing
         }
 
         if (isSatisfied) {

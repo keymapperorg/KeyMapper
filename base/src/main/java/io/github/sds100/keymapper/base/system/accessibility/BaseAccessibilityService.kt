@@ -6,6 +6,7 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
 import android.accessibilityservice.InputMethod
 import android.app.ActivityManager
+import android.app.KeyguardManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Path
@@ -53,6 +54,8 @@ abstract class BaseAccessibilityService :
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {
+
+    private val keyguardManager: KeyguardManager by lazy { getSystemService()!! }
 
     @Inject
     lateinit var accessibilityServiceAdapterLazy: Lazy<AccessibilityServiceAdapterImpl>
@@ -129,6 +132,13 @@ abstract class BaseAccessibilityService :
 
     override val isInputMethodVisible: Flow<Boolean>
         get() = _isInputMethodVisible
+
+    private val _isNotificationShadeExpanded by lazy {
+        MutableStateFlow(isNotificationShadeVisible())
+    }
+
+    override val isNotificationShadeExpanded: Flow<Boolean>
+        get() = _isNotificationShadeExpanded
 
     override var serviceFlags: Int?
         get() = serviceInfo?.flags
@@ -295,6 +305,7 @@ abstract class BaseAccessibilityService :
 
             _activeWindowPackage.update { rootNode?.packageName?.toString() }
             _isInputMethodVisible.update { isImeWindowVisible() }
+            _isNotificationShadeExpanded.update { isNotificationShadeVisible() }
         }
 
         getController()?.onAccessibilityEvent(event)
@@ -568,6 +579,31 @@ abstract class BaseAccessibilityService :
             windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
 
         return imeWindow != null && imeWindow.root?.isVisibleToUser == true
+    }
+
+    fun isNotificationShadeVisible(
+        isKeyguardLocked: Boolean = keyguardManager.isKeyguardLocked,
+    ): Boolean {
+        if (rootInActiveWindow?.packageName != "com.android.systemui") {
+            return false
+        }
+
+        // Use a simple method of determining whether the status bar is expanded. If the system
+        // ui is showing and the the user is not on the lock screen the assume it is the status
+        // bar. The latter method commented out below isn't reliable and it is unique
+        // to every skin and version of Android, which leads to false positives.
+        if (isKeyguardLocked) {
+            // Assume the quick settings drawer is expanded if the brightness seekbar is showing.
+            val seekbar = rootInActiveWindow?.findAccessibilityNodeInfosByViewId(
+                "com.android.systemui:id/slider",
+            )
+                // isVisibleToUser is required on Samsung S5e tablet.
+                ?.any { it.className == "android.widget.SeekBar" && it.isVisibleToUser } == true
+
+            return seekbar
+        }
+
+        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

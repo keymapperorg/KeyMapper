@@ -23,8 +23,10 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.RingerMode
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -94,6 +96,9 @@ class ChooseConstraintViewModel @Inject constructor(
 
     var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
 
+    var displayResolutionState: DisplayResolutionSheetState? by mutableStateOf(null)
+        private set
+
     init {
         viewModelScope.launch {
             returnResult.collect { constraintData ->
@@ -111,6 +116,49 @@ class ChooseConstraintViewModel @Inject constructor(
         }
     }
 
+    fun onSelectDisplayResolution(resolution: SizeKM) {
+        displayResolutionState = displayResolutionState?.copy(
+            isCustom = false,
+            selectedResolution = resolution,
+        )
+    }
+
+    fun onSelectCustomDisplayResolution() {
+        displayResolutionState = displayResolutionState?.copy(isCustom = true)
+    }
+
+    fun onDisplayResolutionWidthChange(width: String) {
+        displayResolutionState = displayResolutionState?.copy(
+            widthText = width.filter(Char::isDigit),
+        )
+    }
+
+    fun onDisplayResolutionHeightChange(height: String) {
+        displayResolutionState = displayResolutionState?.copy(
+            heightText = height.filter(Char::isDigit),
+        )
+    }
+
+    fun onDismissDisplayResolution() {
+        displayResolutionState = null
+    }
+
+    fun onDoneConfigDisplayResolutionClick() {
+        val state = displayResolutionState ?: return
+
+        val resolution = state.resolvedResolution ?: return
+
+        viewModelScope.launch {
+            returnResult.emit(
+                ConstraintData.DisplayResolution(
+                    width = resolution.width,
+                    height = resolution.height,
+                ),
+            )
+            displayResolutionState = null
+        }
+    }
+
     fun onNavigateBack() {
         viewModelScope.launch {
             popBackStack()
@@ -125,6 +173,7 @@ class ChooseConstraintViewModel @Inject constructor(
                     onSelectDisplayOrientationConstraint()
                     return@launch
                 }
+
                 PHYSICAL_ORIENTATION_LIST_ITEM_ID -> {
                     onSelectPhysicalOrientationConstraint()
                     return@launch
@@ -139,6 +188,7 @@ class ChooseConstraintViewModel @Inject constructor(
                     -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
+
                 ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(ConstraintData.NoMediaPlaying)
 
                 ConstraintId.BT_DEVICE_CONNECTED,
@@ -150,6 +200,10 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.SCREEN_ON -> returnResult.emit(ConstraintData.ScreenOn)
 
                 ConstraintId.SCREEN_OFF -> returnResult.emit(ConstraintData.ScreenOff)
+
+                ConstraintId.DISPLAY_RESOLUTION -> {
+                    displayResolutionState = buildDisplayResolutionState()
+                }
 
                 ConstraintId.DISPLAY_ORIENTATION_PORTRAIT ->
                     returnResult.emit(ConstraintData.OrientationPortrait)
@@ -216,6 +270,7 @@ class ChooseConstraintViewModel @Inject constructor(
                 }
 
                 ConstraintId.WIFI_ON -> returnResult.emit(ConstraintData.WifiOn)
+
                 ConstraintId.WIFI_OFF -> returnResult.emit(ConstraintData.WifiOff)
 
                 ConstraintId.WIFI_CONNECTED,
@@ -249,6 +304,15 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.PHONE_RINGING ->
                     returnResult.emit(ConstraintData.PhoneRinging)
 
+                ConstraintId.RINGER_MODE_NORMAL ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.NORMAL))
+
+                ConstraintId.RINGER_MODE_VIBRATE ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.VIBRATE))
+
+                ConstraintId.RINGER_MODE_SILENT ->
+                    returnResult.emit(ConstraintData.RingerMode(RingerMode.SILENT))
+
                 ConstraintId.CHARGING ->
                     returnResult.emit(ConstraintData.Charging)
 
@@ -267,6 +331,12 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
                     returnResult.emit(ConstraintData.LockScreenNotShowing)
 
+                ConstraintId.NOTIFICATION_PANEL_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelShowing)
+
+                ConstraintId.NOTIFICATION_PANEL_NOT_SHOWING ->
+                    returnResult.emit(ConstraintData.NotificationPanelNotShowing)
+
                 ConstraintId.TIME -> {
                     timeConstraintState = ConstraintData.Time(
                         startHour = 0,
@@ -277,6 +347,25 @@ class ChooseConstraintViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun buildDisplayResolutionState(): DisplayResolutionSheetState {
+        val supportedResolutions = useCase.getSupportedResolutions()
+        val currentResolution = useCase.getCurrentResolution()
+
+        val matchingResolution = supportedResolutions.firstOrNull {
+            it.matchesIgnoringOrientation(currentResolution)
+        }
+
+        return DisplayResolutionSheetState(
+            supportedResolutions = supportedResolutions.sortedBy { it.width },
+            // Show the text fields immediately when there is nothing meaningful to pick
+            // from or when the current resolution isn't one of the supported modes.
+            isCustom = supportedResolutions.size <= 1 || matchingResolution == null,
+            selectedResolution = matchingResolution ?: supportedResolutions.firstOrNull(),
+            widthText = currentResolution.width.toString(),
+            heightText = currentResolution.height.toString(),
+        )
     }
 
     private suspend fun chooseFlashlightLens(): CameraLens? {
@@ -320,15 +409,21 @@ class ChooseConstraintViewModel @Inject constructor(
 
         val constraintData = when (selectedOrientation) {
             ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
+
             ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
+
             ConstraintId.DISPLAY_ORIENTATION_0 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0)
+
             ConstraintId.DISPLAY_ORIENTATION_90 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90)
+
             ConstraintId.DISPLAY_ORIENTATION_180 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180)
+
             ConstraintId.DISPLAY_ORIENTATION_270 ->
                 ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270)
+
             else -> return
         }
 
@@ -581,4 +676,52 @@ class ChooseConstraintViewModel @Inject constructor(
 
         returnResult.emit(constraintData)
     }
+}
+
+/**
+ * State for the display resolution bottom sheet.
+ *
+ * @param supportedResolutions the resolutions the display reports as supported.
+ * @param isCustom whether the user is entering a custom resolution instead of picking a chip.
+ * @param selectedResolution the currently selected supported resolution, if any.
+ * @param widthText the custom width input.
+ * @param heightText the custom height input.
+ */
+data class DisplayResolutionSheetState(
+    val supportedResolutions: List<SizeKM>,
+    val isCustom: Boolean,
+    val selectedResolution: SizeKM?,
+    val widthText: String,
+    val heightText: String,
+) {
+    private val customWidth: Int? get() = widthText.toIntOrNull()
+    private val customHeight: Int? get() = heightText.toIntOrNull()
+
+    /**
+     * The resolution that will be saved, or null when the current input is not valid.
+     */
+    val resolvedResolution: SizeKM?
+        get() = if (isCustom) {
+            val width = customWidth
+            val height = customHeight
+
+            if (width != null && width > 0 && height != null && height > 0) {
+                SizeKM(width, height)
+            } else {
+                null
+            }
+        } else {
+            selectedResolution
+        }
+
+    val isValid: Boolean get() = resolvedResolution != null
+}
+
+/**
+ * Compares two resolutions ignoring orientation so that e.g. 1080x1920 and 1920x1080
+ * are treated as the same resolution.
+ */
+private fun SizeKM.matchesIgnoringOrientation(other: SizeKM): Boolean {
+    return (width == other.width && height == other.height) ||
+        (width == other.height && height == other.width)
 }

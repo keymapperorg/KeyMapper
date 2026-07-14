@@ -65,6 +65,8 @@ data class ConstraintEntity(
         const val PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED =
             "constraint_physical_orientation_landscape_inverted"
 
+        const val DISPLAY_RESOLUTION = "constraint_display_resolution"
+
         const val FLASHLIGHT_ON = "flashlight_on"
         const val FLASHLIGHT_OFF = "flashlight_off"
 
@@ -88,11 +90,18 @@ data class ConstraintEntity(
         const val NOT_IN_PHONE_CALL = "not_in_phone_call"
         const val PHONE_RINGING = "phone_ringing"
 
+        const val RINGER_MODE_NORMAL = "ringer_mode_normal"
+        const val RINGER_MODE_VIBRATE = "ringer_mode_vibrate"
+        const val RINGER_MODE_SILENT = "ringer_mode_silent"
+
         const val CHARGING = "charging"
         const val DISCHARGING = "discharging"
 
         const val HINGE_CLOSED = "hinge_closed"
         const val HINGE_OPEN = "hinge_open"
+
+        const val NOTIFICATION_PANEL_SHOWING = "notification_panel_showing"
+        const val NOTIFICATION_PANEL_NOT_SHOWING = "notification_panel_not_showing"
 
         const val TIME = "time"
 
@@ -103,6 +112,9 @@ data class ConstraintEntity(
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
+
+        const val EXTRA_RESOLUTION_WIDTH = "extra_resolution_width"
+        const val EXTRA_RESOLUTION_HEIGHT = "extra_resolution_height"
 
         /**
          * The time is stored in the following format: 20:25.
