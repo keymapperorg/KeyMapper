@@ -1,3 +1,9 @@
+## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
+
+## Fixed
+
+- #1929 Dismiss all notifications stops working after a while.
+
 ## [4.3.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.0)
 
 #### 13 July 2026

@@ -63,7 +63,7 @@ class NotificationReceiverAdapterImpl @Inject constructor(
     }
 
     override suspend fun send(event: NotificationServiceEvent): KMResult<*> {
-        if (isEnabled.value) {
+        if (!isEnabled.value) {
             return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }
 
