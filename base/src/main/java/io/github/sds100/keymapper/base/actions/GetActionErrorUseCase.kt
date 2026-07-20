@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
@@ -34,6 +35,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val preferenceRepository: PreferenceRepository,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
 ) : GetActionErrorUseCase {
 
     private val invalidateActionErrors = merge(
@@ -43,6 +45,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
         permissionAdapter.onPermissionsUpdate,
         soundsManager.soundFiles.drop(1).map { },
         packageManagerAdapter.onPackagesChanged,
+        notificationReceiverAdapter.isEnabled,
         merge(
             systemBridgeConnectionManager.connectionState.drop(1).map { },
             preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),

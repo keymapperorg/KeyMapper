@@ -63,7 +63,9 @@ class NotificationReceiverAdapterImpl @Inject constructor(
     }
 
     override suspend fun send(event: NotificationServiceEvent): KMResult<*> {
-        if (!isEnabled.value) {
+        // Check eagerly that the service is actually enabled. For some reason, the local
+        // stateflow was false when the action was executed. See #1929.
+        if (!getIsEnabled()) {
             return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }
 
