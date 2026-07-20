@@ -83,6 +83,7 @@ class GetActionErrorUseCaseTest {
             buildConfigProvider = TestBuildConfigProvider(sdkInt = 36),
             systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
             preferenceRepository = fakePreferenceRepository,
+            notificationReceiverAdapter = mock(),
         )
     }
 
