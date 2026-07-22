@@ -150,6 +150,14 @@ object Keys {
         longPreferencesKey("key_system_bridge_last_manual_start_time")
     val systemBridgeLastAutoStartTime = longPreferencesKey("key_system_bridge_last_auto_start_time")
 
+    /**
+     * The unix time in seconds of the last device boot at which the system bridge was auto
+     * started. Used to detect whether the device has rebooted since the last auto start so that
+     * the auto start cooldown is not applied after a reboot.
+     */
+    val systemBridgeLastAutoStartBootTime =
+        longPreferencesKey("key_system_bridge_last_auto_start_boot_time")
+
     val keyEventActionsUseSystemBridge =
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")
 
