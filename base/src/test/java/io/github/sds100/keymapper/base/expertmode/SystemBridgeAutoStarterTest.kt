@@ -783,4 +783,33 @@ class SystemBridgeAutoStarterTest {
                 verify(mockConnectionManager, never()).startWithRoot()
             }
         }
+
+    @Test
+    fun `auto start within 5 minutes of the last auto start if the device rebooted in between`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
+            // The system bridge was last auto started only 2 minutes ago, which is within the
+            // cooldown, but that was during a previous boot because the device has rebooted since.
+            fakePreferences.set(
+                Keys.systemBridgeLastAutoStartTime,
+                testScopeClock.unixTimestamp() - 120,
+            )
+            fakePreferences.set(
+                Keys.systemBridgeLastAutoStartBootTime,
+                // Booted an hour before the current boot, i.e. the device has rebooted since.
+                testScopeClock.unixTimestamp() - testScopeClock.elapsedRealtime() / 1000 - 3600,
+            )
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+
+                // The cooldown is skipped because the device rebooted, so it auto starts.
+                verify(mockConnectionManager).startWithRoot()
+            }
+        }
 }

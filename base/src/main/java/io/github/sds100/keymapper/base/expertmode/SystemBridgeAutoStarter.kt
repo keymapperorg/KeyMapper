@@ -284,6 +284,7 @@ class SystemBridgeAutoStarter @Inject constructor(
         // Otherwise, it may not autostart on reboot if it started earlier than when it last auto
         // started relative to the last boot.
         preferences.set(Keys.systemBridgeLastAutoStartTime, clock.unixTimestamp())
+        preferences.set(Keys.systemBridgeLastAutoStartBootTime, bootTimestamp())
 
         when (type) {
             AutoStartType.ADB -> {
@@ -349,6 +350,8 @@ class SystemBridgeAutoStarter @Inject constructor(
     private suspend fun isWithinAutoStartCooldown(): Boolean {
         val lastAutoStartTime = preferences.get(Keys.systemBridgeLastAutoStartTime).first()
         val lastManualStartTime = preferences.get(Keys.systemBridgeLastManualStartTime).first()
+        val lastAutoStartBootTime =
+            preferences.get(Keys.systemBridgeLastAutoStartBootTime).first()
         val currentTime = clock.unixTimestamp()
 
         if (lastAutoStartTime == null) {
@@ -362,8 +365,29 @@ class SystemBridgeAutoStarter @Inject constructor(
             return false
         }
 
+        // If the device has rebooted since the last auto start then the system bridge stopped
+        // because of the reboot and not because it crashed. The cooldown only exists to prevent
+        // an infinite restart loop within a single boot session, so ignore it after a reboot.
+        // Otherwise rebooting twice within 5 minutes wrongly prevents the system bridge from
+        // auto starting again.
+        if (lastAutoStartBootTime != null &&
+            bootTimestamp() - lastAutoStartBootTime > REBOOT_DETECTION_TOLERANCE_SEC
+        ) {
+            return false
+        }
+
         return currentTime >= lastAutoStartTime &&
             currentTime - lastAutoStartTime < (5 * 60)
+    }
+
+    /**
+     * The approximate unix time in seconds at which the device last booted, calculated from the
+     * current wall clock time minus the time elapsed since boot. This value is stable within a
+     * boot session (aside from small clock adjustments) and jumps forward when the device
+     * reboots, so it can be used to detect that a reboot has happened.
+     */
+    private fun bootTimestamp(): Long {
+        return clock.unixTimestamp() - (clock.elapsedRealtime() / 1000)
     }
 
     private suspend fun isAutoStartEnabled(): Boolean {
@@ -450,5 +474,15 @@ class SystemBridgeAutoStarter @Inject constructor(
         )
 
         notificationAdapter.showNotification(model)
+    }
+
+    companion object {
+        /**
+         * The boot timestamp is only accurate to within a few seconds because the wall clock and
+         * elapsed realtime are not sampled at exactly the same instant and the clock may be
+         * adjusted by the system. This tolerance avoids mistaking that jitter for a reboot while
+         * still reliably detecting a real reboot, which shifts the boot timestamp far more.
+         */
+        private const val REBOOT_DETECTION_TOLERANCE_SEC = 60L
     }
 }
