@@ -71,7 +71,7 @@ Read the [documentation!](https://keymapper.app/?utm_source=github)
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://www.star-history.com/#keymapperorg/KeyMapper&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=keymapperorg/KeyMapper&type=Date)](https://star-history.dera.page/#keymapperorg/KeyMapper&Date)
 ## Contributing
 There are many ways to help with this project. 😃
 Check out the contributing guide in the [documentation.](https://keymapper.app/contributing/introduction/?utm_source=github)
