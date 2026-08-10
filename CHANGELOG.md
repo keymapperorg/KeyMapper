@@ -1,5 +1,12 @@
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
+## Added
+
+- #2207 Restore purchases button on the paywalls and the thank you screen so purchases can be
+  recovered
+  on another device or after reinstalling.
+- #2207 Show the RevenueCat customer ID on the About screen. Tap it to copy it.
+
 ## Fixed
 
 - #1929 Dismiss all notifications stops working after a while.
@@ -16,6 +23,7 @@
 - #2174 Add "Do not remap by default" preference to the default options settings page.
 
 ## Fixed
+
 - #2187 App constraints do not work with floating buttons
 
 ## [4.2.1](https://github.com/sds100/KeyMapper/releases/tag/v4.2.1)

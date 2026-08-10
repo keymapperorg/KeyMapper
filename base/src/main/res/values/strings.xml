@@ -1422,6 +1422,9 @@
     <string name="about_privacy_policy_title">Privacy Policy</string>
     <string name="about_privacy_policy_subtitle">We don\'t collect any personal information but here is a privacy policy saying this.</string>
 
+    <string name="about_customer_id_title">Customer ID</string>
+    <string name="about_customer_id_copied_toast">Copied customer ID</string>
+
     <string name="about_header_our_team">Our team</string>
 
     <string name="about_team_sds100_name" translatable="false">Seth Schroeder (sds100)</string>
@@ -1489,6 +1492,9 @@
     <string name="paywall_support_more_title">Or buy us a coffee/lunch. All options unlock everything.</string>
     <string name="paywall_support_more_body">Buy us a coffee or lunch. All options unlock everything.</string>
     <string name="paywall_tip_jar_title">Tip jar</string>
+    <string name="paywall_restore_purchases_button">Restore purchases</string>
+    <string name="paywall_restore_purchases_prompt">Already purchased?\ </string>
+    <string name="paywall_restore_purchases_link">Restore</string>
     <string name="paywall_buy_me_a_coffee">Coffee</string>
     <string name="paywall_buy_me_lunch">Lunch</string>
     <string name="paywall_support_button_coffee">☕️ Coffee · %1$s</string>
@@ -1534,6 +1540,9 @@
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
     <string name="purchasing_contact_developer_button">Contact developer</string>
+    <string name="purchasing_restore_success_message">Your purchases have been restored!</string>
+    <string name="purchasing_restore_none_found_dialog_title">No purchases found</string>
+    <string name="purchasing_restore_none_found_dialog_message">There are no Key Mapper purchases for the Google account that this device is signed in to. Check that you are signed in to the same Google account that you bought Key Mapper with.\n\nIf you are, please get in touch and include the order ID from your Google Play purchase confirmation email. You can find your customer ID on the About screen.</string>
     <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the side key trigger feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.app</string>

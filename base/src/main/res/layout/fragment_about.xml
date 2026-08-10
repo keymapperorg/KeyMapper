@@ -7,8 +7,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="version"
+            type="String" />
+
+        <!--  Null when purchasing isn't available, such as in the FOSS build.  -->
+        <variable
+            name="customerId"
             type="String" />
     </data>
 
@@ -318,6 +325,60 @@
                                     bind:subtitle="@{@string/about_privacy_policy_subtitle}"
                                     bind:title="@{@string/about_privacy_policy_title}"
                                     bind:url="@{@string/url_privacy_policy}" />
+
+                                <!--  This can't use list_item_about_item because that layout
+                                      only supports opening a URL when it is clicked.  -->
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:id="@+id/layoutCustomerId"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:padding="8dp"
+                                    android:visibility="@{customerId == null ? View.GONE : View.VISIBLE}"
+                                    tools:visibility="visible">
+
+                                    <LinearLayout
+                                        android:id="@+id/layoutCustomerIdDescription"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="16dp"
+                                        android:gravity="center_vertical"
+                                        android:minHeight="40dp"
+                                        android:orientation="vertical"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintStart_toEndOf="@+id/imageViewCustomerId"
+                                        app:layout_constraintTop_toTopOf="parent">
+
+                                        <TextView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/about_customer_id_title"
+                                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                                            android:textColor="?attr/colorOnSurface" />
+
+                                        <TextView
+                                            android:id="@+id/textViewCustomerId"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="@{customerId}"
+                                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                            tools:text="$RCAnonymousID:1a2b3c4d5e6f" />
+                                    </LinearLayout>
+
+                                    <com.google.android.material.imageview.ShapeableImageView
+                                        android:id="@+id/imageViewCustomerId"
+                                        android:layout_width="40dp"
+                                        android:layout_height="40dp"
+                                        android:layout_marginStart="8dp"
+                                        android:padding="4dp"
+                                        android:src="@drawable/ic_content_copy"
+                                        android:tint="@color/md_theme_onSurface"
+                                        app:layout_constraintBottom_toBottomOf="@id/layoutCustomerIdDescription"
+                                        app:layout_constraintEnd_toStartOf="@+id/layoutCustomerIdDescription"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="@id/layoutCustomerIdDescription"
+                                        app:layout_constraintVertical_bias="0.0" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
                             </LinearLayout>
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </com.google.android.material.card.MaterialCardView>
