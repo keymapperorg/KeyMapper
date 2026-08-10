@@ -69,9 +69,6 @@ Read the [documentation!](https://keymapper.app/?utm_source=github)
 [![sk proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=sk&style=flat&logo=crowdin&query=%24.progress.11.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
 [![zh-CN proofreading](https://img.shields.io/badge/dynamic/json?color=green&label=zh-CN&style=flat&logo=crowdin&query=%24.progress.15.data.approvalProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-13864667-360045-update.json)](https://crowdin.com/project/key-mapper)
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=keymapperorg/KeyMapper&type=Date)](https://www.star-history.com/#keymapperorg/KeyMapper&Date)
 ## Contributing
 There are many ways to help with this project. 😃
 Check out the contributing guide in the [documentation.](https://keymapper.app/contributing/introduction/?utm_source=github)
