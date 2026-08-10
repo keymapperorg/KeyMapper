@@ -60,4 +60,10 @@ interface ISystemBridge {
     * Queries the Settings ContentProvider directly with the system bridge's elevated privileges.
     */
    String[] getAllSettings(String namespace) = 26;
+
+   /**
+    * Enable or disable the power button emergency stop (holding the power button for 10+
+    * seconds and releasing it kills the system bridge). Defaults to enabled.
+    */
+   void setEmergencyStopEnabled(boolean enabled) = 27;
 }

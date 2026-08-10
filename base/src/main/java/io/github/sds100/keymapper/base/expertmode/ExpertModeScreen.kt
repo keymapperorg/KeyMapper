@@ -36,6 +36,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
+import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.WarningAmber
@@ -114,6 +115,7 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
             onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
             onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
+            onEmergencyStopToggled = { viewModel.onEmergencyStopToggled() },
             onLaunchDeveloperOptionsClick = viewModel::onLaunchDeveloperOptionsClick,
             onGetShellStartCommandClick = viewModel::onGetShellStartCommandClick,
             onGetEventClick = viewModel::onGetEventClick,
@@ -197,6 +199,7 @@ private fun Content(
     onSetupWithKeyMapperClick: () -> Unit = {},
     onRequestNotificationPermissionClick: () -> Unit = {},
     onAutoStartAtBootToggled: () -> Unit = {},
+    onEmergencyStopToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
     onGetShellStartCommandClick: () -> Unit = {},
     onGetEventClick: () -> Unit = {},
@@ -247,6 +250,7 @@ private fun Content(
                         onSetupWithKeyMapperClick = onSetupWithKeyMapperClick,
                         onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
                         onAutoStartAtBootToggled = onAutoStartAtBootToggled,
+                        onEmergencyStopToggled = onEmergencyStopToggled,
                         onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
                         onGetShellStartCommandClick = onGetShellStartCommandClick,
                     )
@@ -293,6 +297,7 @@ private fun LoadedContent(
     onSetupWithKeyMapperClick: () -> Unit,
     onRequestNotificationPermissionClick: () -> Unit = {},
     onAutoStartAtBootToggled: () -> Unit = {},
+    onEmergencyStopToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
     onGetShellStartCommandClick: () -> Unit = {},
 ) {
@@ -389,6 +394,16 @@ private fun LoadedContent(
                     onCheckedChange = { onAutoStartAtBootToggled() },
                     isEnabled = state.autoStartBootEnabled,
 
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                SwitchPreferenceCompose(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    title = stringResource(R.string.title_pref_expert_mode_emergency_stop),
+                    text = stringResource(R.string.summary_pref_expert_mode_emergency_stop),
+                    icon = Icons.Rounded.PowerSettingsNew,
+                    isChecked = state.emergencyStopChecked,
+                    onCheckedChange = { onEmergencyStopToggled() },
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -1006,6 +1021,7 @@ private fun PreviewDark() {
                         autoStartBootChecked = true,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        emergencyStopChecked = true,
                     ),
                 ),
                 showInfoCard = false,
@@ -1049,6 +1065,7 @@ private fun PreviewStarted() {
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        emergencyStopChecked = true,
                     ),
                 ),
                 showInfoCard = false,
@@ -1098,6 +1115,7 @@ private fun PreviewUsbDebuggingSecuritySettingsCard() {
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        emergencyStopChecked = true,
                     ),
                 ),
                 showInfoCard = false,

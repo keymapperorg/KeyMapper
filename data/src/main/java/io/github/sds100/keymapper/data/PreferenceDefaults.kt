@@ -19,6 +19,8 @@ object PreferenceDefaults {
 
     const val EXPERT_MODE_KEEP_ALIVE = true
 
+    const val SYSTEM_BRIDGE_EMERGENCY_STOP_ENABLED = true
+
     // It is false by default and the first time they turn on the system bridge,
     // the preference will be set to true.
     const val KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE = false

@@ -7,19 +7,32 @@ use evdev_manager_core::grabbed_device_handle::GrabbedDeviceHandle;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 const EMERGENCY_KILL_HOLD_DURATION: Duration = Duration::from_secs(10);
 
+/// Whether the power button emergency stop is enabled. Controlled from Kotlin via
+/// `SystemBridge.setEmergencyStopEnabledNative`. Defaults to enabled to preserve the
+/// safety kill-switch behaviour when no preference has been pushed yet.
+static EMERGENCY_STOP_ENABLED: AtomicBool = AtomicBool::new(true);
+
+/// Set from Kotlin whether the power button emergency stop is enabled.
+pub fn set_emergency_stop_enabled(enabled: bool) {
+    EMERGENCY_STOP_ENABLED.store(enabled, Ordering::Relaxed);
+}
+
 fn should_emergency_kill(
+    enabled: bool,
     down_time: Option<Instant>,
     release_time: Instant,
     threshold: Duration,
 ) -> bool {
-    down_time
-        .and_then(|pressed_at| release_time.checked_duration_since(pressed_at))
-        .is_some_and(|hold_duration| hold_duration >= threshold)
+    enabled
+        && down_time
+            .and_then(|pressed_at| release_time.checked_duration_since(pressed_at))
+            .is_some_and(|hold_duration| hold_duration >= threshold)
 }
 
 pub struct EvdevJniObserver {
@@ -64,8 +77,13 @@ impl EvdevJniObserver {
                 *time_guard = Some(Instant::now());
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
-                if should_emergency_kill(*time_guard, Instant::now(), EMERGENCY_KILL_HOLD_DURATION)
-                {
+                let enabled = EMERGENCY_STOP_ENABLED.load(Ordering::Relaxed);
+                if should_emergency_kill(
+                    enabled,
+                    *time_guard,
+                    Instant::now(),
+                    EMERGENCY_KILL_HOLD_DURATION,
+                ) {
                     // Must send log to Key Mapper for diagnostic purposes.
                     warn!("Emergency killing system bridge!");
                     // Call BaseSystemBridge.onEmergencyKillSystemBridge() via JNI
@@ -297,6 +315,7 @@ mod tests {
     fn no_down_event_never_triggers_emergency_kill() {
         let release_time = Instant::now();
         assert!(!should_emergency_kill(
+            true,
             None,
             release_time,
             EMERGENCY_KILL_HOLD_DURATION
@@ -308,6 +327,7 @@ mod tests {
         let pressed_at = Instant::now();
         let release_time = pressed_at + Duration::from_secs(9);
         assert!(!should_emergency_kill(
+            true,
             Some(pressed_at),
             release_time,
             EMERGENCY_KILL_HOLD_DURATION
@@ -319,6 +339,7 @@ mod tests {
         let pressed_at = Instant::now();
         let release_time = pressed_at + EMERGENCY_KILL_HOLD_DURATION;
         assert!(should_emergency_kill(
+            true,
             Some(pressed_at),
             release_time,
             EMERGENCY_KILL_HOLD_DURATION
@@ -330,6 +351,7 @@ mod tests {
         let pressed_at = Instant::now() + Duration::from_secs(5);
         let release_time = Instant::now();
         assert!(!should_emergency_kill(
+            true,
             Some(pressed_at),
             release_time,
             EMERGENCY_KILL_HOLD_DURATION
@@ -349,6 +371,21 @@ mod tests {
         let pressed_at = Instant::now();
         let release_time = pressed_at + Duration::from_secs(2);
         assert!(!should_emergency_kill(
+            true,
+            Some(pressed_at),
+            release_time,
+            EMERGENCY_KILL_HOLD_DURATION
+        ));
+    }
+
+    #[test]
+    fn disabled_never_triggers_emergency_kill_even_when_held_past_threshold() {
+        // With the emergency stop disabled a long hold must not trigger the kill,
+        // e.g. issue #2203 where a faulty power button spuriously fires it.
+        let pressed_at = Instant::now();
+        let release_time = pressed_at + EMERGENCY_KILL_HOLD_DURATION + Duration::from_secs(5);
+        assert!(!should_emergency_kill(
+            false,
             Some(pressed_at),
             release_time,
             EMERGENCY_KILL_HOLD_DURATION

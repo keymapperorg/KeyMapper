@@ -263,6 +263,16 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         }
     }
 
+    override val isEmergencyStopEnabled: Flow<Boolean> =
+        preferences.get(Keys.isSystemBridgeEmergencyStopEnabled)
+            .map { it ?: PreferenceDefaults.SYSTEM_BRIDGE_EMERGENCY_STOP_ENABLED }
+
+    override fun toggleEmergencyStop() {
+        preferences.update(Keys.isSystemBridgeEmergencyStopEnabled) {
+            !(it ?: PreferenceDefaults.SYSTEM_BRIDGE_EMERGENCY_STOP_ENABLED)
+        }
+    }
+
     /**
      * This applies to older Android versions (tested on Android 11 and 13).
      * Having the "Default USB Configuration" in developer options set to something other
@@ -322,6 +332,9 @@ interface SystemBridgeSetupUseCase {
     val isAutoStartBootEnabled: Flow<Boolean>
     val isAutoStartBootAllowed: Flow<Boolean>
     fun toggleAutoStartBoot()
+
+    val isEmergencyStopEnabled: Flow<Boolean>
+    fun toggleEmergencyStop()
 
     val isSetupAssistantEnabled: Flow<Boolean>
     fun toggleSetupAssistant()

@@ -112,6 +112,16 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
     KeyMapperLogger::set_level(AndroidLogLevel::from(level as i32));
 }
 
+/// Enable or disable the power button emergency stop from Kotlin.
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setEmergencyStopEnabledNative(
+    _env: JNIEnv,
+    _class: JClass,
+    enabled: jboolean,
+) {
+    crate::evdev_jni_observer::set_emergency_stop_enabled(enabled != 0);
+}
+
 /// Set the list of grabbed devices. Takes an array of GrabTargetKeyCode and returns an array of GrabbedDeviceHandle.
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setGrabTargetsNative(

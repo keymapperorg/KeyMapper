@@ -6,6 +6,8 @@
   recovered
   on another device or after reinstalling.
 - #2207 Show the RevenueCat customer ID on the About screen. Tap it to copy it.
+- #2203 Add an Expert Mode setting to turn off the power button emergency stop for people whose
+  faulty power button stops Expert Mode by accident.
 
 ## Fixed
 
