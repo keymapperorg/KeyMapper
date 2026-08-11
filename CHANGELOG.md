@@ -1,5 +1,7 @@
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
+#### 11 August 2026
+
 ## Added
 
 - #2207 Restore purchases button on the paywalls and the thank you screen so purchases can be
