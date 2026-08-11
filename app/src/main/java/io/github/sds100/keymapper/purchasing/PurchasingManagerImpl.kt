@@ -42,6 +42,14 @@ class PurchasingManagerImpl : PurchasingManager {
         return PurchasingError.PurchasingNotImplemented
     }
 
+    override suspend fun restorePurchases(): KMResult<Set<RevenueCatEntitlementId>> {
+        return PurchasingError.PurchasingNotImplemented
+    }
+
+    override suspend fun getCustomerId(): KMResult<String> {
+        return PurchasingError.PurchasingNotImplemented
+    }
+
     override fun refresh() {}
 
     override fun trackCustomPaywallImpression(paywallIdentifier: String) {

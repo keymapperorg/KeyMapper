@@ -168,6 +168,10 @@ class ExpertModeViewModel @Inject constructor(
         useCase.toggleAutoStartBoot()
     }
 
+    fun onEmergencyStopToggled() {
+        useCase.toggleEmergencyStop()
+    }
+
     fun onLaunchDeveloperOptionsClick() {
         useCase.launchDeveloperOptions()
     }
@@ -221,7 +225,13 @@ class ExpertModeViewModel @Inject constructor(
         useCase.isAutoStartBootEnabled,
         useCase.isAutoStartBootAllowed,
         useCase.xiaomiAdbSecuritySettingsEnabled,
-    ) { autoStartBootChecked, autoStartBootEnabled, xiaomiAdbSecuritySettingsEnabled ->
+        useCase.isEmergencyStopEnabled,
+    ) {
+            autoStartBootChecked,
+            autoStartBootEnabled,
+            xiaomiAdbSecuritySettingsEnabled,
+            emergencyStopChecked,
+        ->
         ExpertModeState.Started(
             isDefaultUsbModeCompatible =
             useCase.isCompatibleUsbModeSelected().valueOrNull()
@@ -229,6 +239,7 @@ class ExpertModeViewModel @Inject constructor(
             autoStartBootChecked = autoStartBootChecked,
             autoStartBootEnabled = autoStartBootEnabled,
             showXiaomiAdbInputSecurityWarning = !xiaomiAdbSecuritySettingsEnabled,
+            emergencyStopChecked = emergencyStopChecked,
         )
     }
 }
@@ -253,6 +264,7 @@ sealed class ExpertModeState {
         val autoStartBootChecked: Boolean,
         val autoStartBootEnabled: Boolean,
         val showXiaomiAdbInputSecurityWarning: Boolean,
+        val emergencyStopChecked: Boolean,
     ) : ExpertModeState()
 }
 

@@ -16,6 +16,22 @@ interface PurchasingManager {
 
     suspend fun getPackagePrice(packageId: String): KMResult<String>
     suspend fun getCurrentOfferingId(): KMResult<String?>
+
+    /**
+     * Ask the store to restore the purchases made with the store account that is currently signed
+     * in. This must only be called from an explicit user action, such as tapping a "restore
+     * purchases" button, because it can show OS level sign-in prompts.
+     *
+     * Returns the entitlements the customer has after restoring, which is empty if the store
+     * account has no purchases.
+     */
+    suspend fun restorePurchases(): KMResult<Set<RevenueCatEntitlementId>>
+
+    /**
+     * The id identifying this customer in RevenueCat so it can be looked up when they ask for
+     * help. This fails if purchasing isn't implemented.
+     */
+    suspend fun getCustomerId(): KMResult<String>
     suspend fun isPackagePurchased(packageId: String): KMResult<Boolean>
     suspend fun getNonSubscriptionPurchaseCount(packageId: String): KMResult<Int>
     suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean>

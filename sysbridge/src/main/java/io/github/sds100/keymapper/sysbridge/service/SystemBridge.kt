@@ -91,6 +91,9 @@ class SystemBridge : ISystemBridge.Stub() {
     @Suppress("KotlinJniMissingFunction")
     external fun setLogLevelNative(level: Int)
 
+    @Suppress("KotlinJniMissingFunction")
+    external fun setEmergencyStopEnabledNative(enabled: Boolean)
+
     /**
      * Called from Rust via JNI when an evdev event occurs.
      * Forwards the call to the registered IEvdevCallback and returns whether the event was consumed.
@@ -902,6 +905,10 @@ class SystemBridge : ISystemBridge.Stub() {
 
     override fun setLogLevel(level: Int) {
         setLogLevelNative(level)
+    }
+
+    override fun setEmergencyStopEnabled(enabled: Boolean) {
+        setEmergencyStopEnabledNative(enabled)
     }
 
     override fun getAllSettings(namespace: String?): Array<String> {

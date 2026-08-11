@@ -17,6 +17,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import dagger.Lazy
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeAutoStarter
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeConfigSync
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.base.logging.SystemBridgeLogger
 import io.github.sds100.keymapper.base.settings.Theme
@@ -92,6 +93,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var systemBridgeLogger: Lazy<SystemBridgeLogger>
+
+    @Inject
+    lateinit var systemBridgeConfigSync: Lazy<SystemBridgeConfigSync>
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
@@ -238,6 +242,10 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         // Using Lazy<> to avoid circular dependency issues and ensure it's only created
         // when the API level requirement is met.
         systemBridgeLogger.get().start()
+
+        // Push system bridge config preferences (e.g. the power button emergency stop
+        // toggle) down to the SystemBridge process on connect and whenever they change.
+        systemBridgeConfigSync.get().start()
 
         appCoroutineScope.get().launch {
             systemBridgeConnectionManager.get().connectionState.collect { state ->
