@@ -8,6 +8,7 @@
   pairing is broken.
 - #2220 make invisible floating buttons more visible when editing.
 - Expert mode works on 16KB page size systems.
+- Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 

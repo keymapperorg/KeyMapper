@@ -318,11 +318,17 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             val packageName = "com.android.settings"
             setPackage(packageName)
 
+            val qsTileClass = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                "com.android.settings.development.qstile.AdbWirelessDebuggingDevelopmentTile"
+            } else {
+                "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging"
+            }
+
             putExtra(
                 Intent.EXTRA_COMPONENT_NAME,
                 ComponentName(
                     packageName,
-                    "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging",
+                    qsTileClass,
                 ),
             )
 
@@ -396,7 +402,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
             ?.firstOrNull {
-                it.taskInfo.topActivity?.className ==
+                it.taskInfo?.topActivity?.className ==
                     keyMapperClassProvider.getMainActivity().name
             }
         return task
