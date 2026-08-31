@@ -6,6 +6,7 @@
 
 - #2099 do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB
   pairing is broken.
+- #2220 make invisible floating buttons more visible when editing.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
