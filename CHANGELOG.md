@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- Target Android 17 SDK.
+
 ## Fixed
 
 - #2099 do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB
