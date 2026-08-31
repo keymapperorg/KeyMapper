@@ -4,7 +4,7 @@ min-sdk = "26"
 build-tools = "37.0.0"
 target-sdk = "37"
 
-android-gradle-plugin = "8.13.2"
+android-gradle-plugin = "9.2.1"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
@@ -20,11 +20,11 @@ androidx-lifecycle = "2.9.0"
 androidx-lifecycle-extensions = "2.2.0" # Note: lifecycle-extensions is deprecated
 androidx-multidex = "2.0.1"
 androidx-navigation = "2.9.6" # App level nav_version
-androidx-navigation-safeargs-gradle-plugin = "2.6.0" # Project level nav_version
+androidx-navigation-safeargs-gradle-plugin = "2.9.6" # Project level nav_version
 androidx-preference-ktx = "1.2.1"
 androidx-recyclerview = "1.4.0"
 androidx-room = "2.7.1" # room_version for dependencies
-androidx-room-gradle-plugin = "2.6.1" # For plugin
+androidx-room-gradle-plugin = "2.7.2" # For plugin
 androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
 
@@ -48,12 +48,12 @@ rikkax-core = "1.4.1"
 junit = "4.13.2"
 junit-params = "1.1.1"
 
-kotlin = "2.1.0"
+kotlin = "2.2.10"
 kotlin-serialization-json = "1.8.0"
 coroutines = "1.9.0"
 
 kotson = "2.5.0"
-ksp-gradle-plugin = "2.1.0-1.0.28"
+ksp-gradle-plugin = "2.3.2"
 ktlint-gradle = "13.1.0"
 #leakcanary = "2.6" # Commented out in original file
 lingala-zip4j = "2.8.0"
@@ -78,7 +78,7 @@ ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 libsu-core = "6.0.0"
 rikka-hidden = "4.4.0"
 
-rust-android-gradle = "0.9.6"
+rust-android-gradle = "0.10.0"
 
 [libraries]
 # Kotlin
