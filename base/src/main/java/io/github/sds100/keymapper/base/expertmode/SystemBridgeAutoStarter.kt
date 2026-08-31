@@ -130,7 +130,9 @@ class SystemBridgeAutoStarter @Inject constructor(
                                     AutoStartEligibility.NotEligible.WriteSecureSettingsRevoked
                                 }
 
-                                !setupController.isAdbPaired() -> {
+                                isAdbPaired == false ||
+                                    !setupController.isAdbPaired()
+                                        .also { isAdbPaired = it } -> {
                                     AutoStartEligibility.NotEligible.AdbUnpaired
                                 }
 
@@ -151,8 +153,18 @@ class SystemBridgeAutoStarter @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartFlow: Flow<AutoStartEligibility> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
+            if (connectionState is SystemBridgeConnectionState.Connected) {
+                // Reset this flag so it checks its paired next time.
+                isAdbPaired = null
+            }
+
             getAutoStartEligibility(connectionState)
         }
+
+    /**
+     * Null if it hasn't been checked before or it is cleared so it is checked again.
+     */
+    private var isAdbPaired: Boolean? = null
 
     /**
      * This must only be called once in the application lifecycle
@@ -227,7 +239,16 @@ class SystemBridgeAutoStarter @Inject constructor(
                 )
             }
 
-            AutoStartEligibility.NotEligible.WiFiDisconnected -> showWiFiDisconnectedNotification()
+            AutoStartEligibility.NotEligible.WiFiDisconnected ->
+                // Do not show the notification it previously determined that ADB
+                // was not paired correctly. This prevents the wifi disconnected notification
+                // from repeatedly showing every time the phone disconnects from WiFi. Connecting
+                // to WiFi won't fix the problem so stop spamming the user.
+                if (isAdbPaired != false) {
+                    showWiFiDisconnectedNotification()
+                }
+
+            AutoStartEligibility.NotEligible.AdbUnpaired -> showAutoStartFailedNotification()
 
             else -> {
                 Timber.w("Not auto starting the system bridge: $eligibility")

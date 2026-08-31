@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:tools="http://schemas.android.com/tools">
+    <!--
+    Robolectric requires isIncludeAndroidResources = true, which forces a manifest merge for
+    unit tests. :sysbridge declares minSdk 29 even though :base's minSdk is 26, which the merger
+    otherwise rejects. Unit tests never run on a real device below API 29, so it's safe to
+    override here.
+    -->
+    <uses-sdk tools:overrideLibrary="io.github.sds100.keymapper.sysbridge" />
+</manifest>

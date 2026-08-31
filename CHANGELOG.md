@@ -1,3 +1,12 @@
+## [4.3.2](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
+
+#### TO BE RELEASED
+
+## Fixed
+
+- #2099 do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB
+  pairing is broken.
+
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
 #### 11 August 2026
@@ -21,7 +30,8 @@
 
 ## Added
 
-- #2184 Add a display resolution constraint. Pick from the display's supported resolutions or enter a
+- #2184 Add a display resolution constraint. Pick from the display's supported resolutions or enter
+  a
   custom width and height.
 - #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
 - #2174 Add "Do not remap by default" preference to the default options settings page.

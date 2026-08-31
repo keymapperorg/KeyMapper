@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.expertmode
 
 import androidx.core.app.NotificationCompat
+import androidx.test.core.app.ApplicationProvider
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
@@ -8,6 +9,7 @@ import io.github.sds100.keymapper.base.system.notifications.NotificationControll
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
 import io.github.sds100.keymapper.base.utils.TestScopeClock
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -33,9 +35,12 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.InOrder
+import org.mockito.junit.MockitoJUnit
+import org.mockito.junit.MockitoRule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
@@ -43,12 +48,18 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.mockito.verification.VerificationMode
+import org.robolectric.RobolectricTestRunner
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class SystemBridgeAutoStarterTest {
+
+    @get:Rule
+    val mockitoRule: MockitoRule = MockitoJUnit.rule()
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testCoroutineScope = TestScope(testDispatcher)
@@ -64,7 +75,7 @@ class SystemBridgeAutoStarterTest {
     private lateinit var mockNetworkAdapter: NetworkAdapter
     private lateinit var mockPermissionAdapter: PermissionAdapter
     private lateinit var mockNotificationAdapter: NotificationAdapter
-    private lateinit var mockResourceProvider: ResourceProvider
+    private lateinit var resourceProvider: ResourceProvider
     private lateinit var testBuildConfig: TestBuildConfigProvider
 
     private lateinit var isRootGrantedFlow: MutableStateFlow<Boolean>
@@ -119,9 +130,7 @@ class SystemBridgeAutoStarterTest {
 
         mockNotificationAdapter = mock()
 
-        mockResourceProvider = mock {
-            on { getString(any()) } doReturn "test_string"
-        }
+        resourceProvider = ResourceProviderImpl(ApplicationProvider.getApplicationContext())
 
         testScopeClock = TestScopeClock(testCoroutineScope)
 
@@ -138,8 +147,18 @@ class SystemBridgeAutoStarterTest {
             networkAdapter = mockNetworkAdapter,
             permissionAdapter = mockPermissionAdapter,
             notificationAdapter = mockNotificationAdapter,
-            resourceProvider = mockResourceProvider,
+            resourceProvider = resourceProvider,
             buildConfig = testBuildConfig,
+        )
+    }
+
+    private fun InOrder.verifyNotificationText(verificationMode: VerificationMode, text: String) {
+        val argument = argumentCaptor<NotificationModel>()
+        verify(mockNotificationAdapter, verificationMode).showNotification(argument.capture())
+
+        assertThat(
+            argument.firstValue.text,
+            `is`(text),
         )
     }
 
@@ -482,8 +501,12 @@ class SystemBridgeAutoStarterTest {
             val expectedModel = NotificationModel(
                 id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
                 channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
-                title = "test_string",
-                text = "test_string",
+                title = resourceProvider.getString(
+                    R.string.system_bridge_wifi_disconnected_notification_title,
+                ),
+                text = resourceProvider.getString(
+                    R.string.system_bridge_wifi_disconnected_notification_text,
+                ),
                 icon = R.drawable.offline_bolt_24px,
                 onClickAction = KMNotificationAction.Activity.MainActivity(
                     action = BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
@@ -618,9 +641,6 @@ class SystemBridgeAutoStarterTest {
             fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
             fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
-            whenever(
-                mockResourceProvider.getString(R.string.system_bridge_died_notification_title),
-            ).thenReturn("died")
             whenever(mockSetupController.isAdbPaired()).thenReturn(true)
             isWifiConnectedFlow.value = true
             writeSecureSettingsGrantedFlow.value = true
@@ -642,7 +662,12 @@ class SystemBridgeAutoStarterTest {
                 val argument = argumentCaptor<NotificationModel>()
                 verify(mockNotificationAdapter).showNotification(argument.capture())
 
-                assertThat(argument.firstValue.title, `is`("died"))
+                assertThat(
+                    argument.firstValue.title,
+                    `is`(
+                        resourceProvider.getString(R.string.system_bridge_died_notification_title),
+                    ),
+                )
             }
         }
 
@@ -783,4 +808,98 @@ class SystemBridgeAutoStarterTest {
                 verify(mockConnectionManager, never()).startWithRoot()
             }
         }
+
+    /**
+     * See #2099
+     */
+    @Test
+    fun `Show notification that ADB pairing is broken the first time it connects to wifi and never again on subsequent (dis)connections`() {
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            writeSecureSettingsGrantedFlow.value = true
+
+            // WiFi is disconnected initially
+            isWifiConnectedFlow.value = false
+
+            // Must not be stopped by user. This reproduces the case that it was previously working, but they rebooted and it is not any more. Or they deleted the ADB pairing.
+            connectionStateFlow.value =
+                SystemBridgeConnectionState.Disconnected(time = 0L, isStoppedByUser = false)
+            whenever(mockSetupController.isAdbPaired()).thenReturn(false)
+
+            inOrder(mockNotificationAdapter) {
+                systemBridgeAutoStarter.init()
+
+                advanceUntilIdle()
+                verifyNotificationText(times(1), "Your phone must be connected to a WiFi network")
+
+                isWifiConnectedFlow.value = true
+                advanceUntilIdle()
+
+                verifyNotificationText(
+                    times(1),
+                    "Tap to set up again. Try ADB pairing and rebooting your phone if it repeatedly fails.",
+                )
+
+                isWifiConnectedFlow.value = false
+
+                advanceUntilIdle()
+
+                // No more notifications should be sent when disconnecting from WiFi.
+                verifyNoMoreInteractions()
+            }
+        }
+    }
+
+    /**
+     * See #2099. The system dialog asking whether to trust this wifi network for wireless ADB should
+     * not show every time the phone connects to a new wifi network. Key Mapper was causing
+     * this to show because it was checking whether ADB was paired by starting wireless ADB.
+     */
+    @Test
+    fun `do not check ADB is paired if system bridge is running and connecting to a new network`() {
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            writeSecureSettingsGrantedFlow.value = true
+
+            // WiFi is disconnected initially
+            isWifiConnectedFlow.value = false
+
+            connectionStateFlow.value =
+                SystemBridgeConnectionState.Disconnected(time = 0L, isStoppedByUser = false)
+
+            inOrder(mockSetupController) {
+                systemBridgeAutoStarter.init()
+                advanceUntilIdle()
+
+                // Connect to WiFi. It should check whether ADB is paired
+                isWifiConnectedFlow.value = true
+                advanceUntilIdle()
+                verify(mockSetupController, times(1)).isAdbPaired()
+
+                // Disconnect and connect WiFi again. It should not check ADB is paired again.
+                isWifiConnectedFlow.value = false
+                advanceUntilIdle()
+                isWifiConnectedFlow.value = true
+                advanceUntilIdle()
+
+                // It should never check for ADB being paired
+                verify(mockSetupController, never()).isAdbPaired()
+
+                // The user sets up the system bridge again
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Connected(time = 0L)
+                advanceUntilIdle()
+
+                // The system bridge disconnects for some reason and the app then checks whether
+                // ADB is paired again because it was working again.
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 0L, isStoppedByUser = false)
+                advanceUntilIdle()
+                verify(mockSetupController, times(1)).isAdbPaired()
+            }
+        }
+    }
 }
