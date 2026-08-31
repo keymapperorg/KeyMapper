@@ -17,6 +17,10 @@
 <noscript><a href="https://buy.stripe.com/00g16L9YEabldDWdQQ"><img alt="Donate using Stripe" src="https://img.shields.io/badge/Donate-Stripe-blueviolet?style=for-the-badge&logo=stripe"></a></noscript>
 </p>
 
+<p align="center">
+<img width="700"  src="https://github.com/user-attachments/assets/0411203c-4490-42ff-8aff-667cbde32f49" />
+</p>
+
 ## Unleash your keys!
 
 Make custom macros on your keyboard or gamepad, make on-screen buttons in any app, and unlock new functionality from your volume buttons!
