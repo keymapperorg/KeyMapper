@@ -45,3 +45,12 @@ fun String.getWordBoundaries(cursorPosition: Int): Pair<Int, Int>? {
 fun Float.toPercentString(): String {
     return "${(this * 100).roundToInt()}%"
 }
+
+/**
+ * Replace Windows (\r\n) and classic Mac (\r) line endings with Unix (\n) ones. A shell does not
+ * treat \r as whitespace so a trailing \r stops reserved words like "then" and "else" from being
+ * recognized, which breaks multi-line scripts pasted from a computer. See issue #2209.
+ */
+fun String.normalizeLineEndings(): String {
+    return replace("\r\n", "\n").replace('\r', '\n')
+}

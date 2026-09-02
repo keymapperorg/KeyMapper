@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.normalizeLineEndings
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
@@ -14,6 +15,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 
+/**
+ * Line endings are normalized before executing because a shell does not recognize reserved words
+ * like "then" when they are followed by a \r, so scripts pasted with Windows line endings fail to
+ * parse. See issue #2209.
+ */
 class ExecuteShellCommandUseCase @Inject constructor(
     private val shellAdapter: ShellAdapter,
     private val suAdapter: SuAdapter,
@@ -24,10 +30,12 @@ class ExecuteShellCommandUseCase @Inject constructor(
         executionMode: ShellExecutionMode,
         timeoutMillis: Long,
     ): KMResult<ShellResult> = withContext(Dispatchers.IO) {
+        val sanitizedCommand = command.normalizeLineEndings()
+
         when (executionMode) {
-            ShellExecutionMode.STANDARD -> shellAdapter.execute(command, timeoutMillis)
-            ShellExecutionMode.ROOT -> suAdapter.execute(command, timeoutMillis)
-            ShellExecutionMode.ADB -> executeCommandSystemBridge(command, timeoutMillis)
+            ShellExecutionMode.STANDARD -> shellAdapter.execute(sanitizedCommand, timeoutMillis)
+            ShellExecutionMode.ROOT -> suAdapter.execute(sanitizedCommand, timeoutMillis)
+            ShellExecutionMode.ADB -> executeCommandSystemBridge(sanitizedCommand, timeoutMillis)
         }
     }
 
@@ -36,16 +44,23 @@ class ExecuteShellCommandUseCase @Inject constructor(
         executionMode: ShellExecutionMode,
         timeoutMillis: Long,
     ): Flow<KMResult<ShellResult>> {
+        val sanitizedCommand = command.normalizeLineEndings()
+
         return when (executionMode) {
             ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(
-                command,
+                sanitizedCommand,
                 timeoutMillis,
             )
 
-            ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command, timeoutMillis)
+            ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(
+                sanitizedCommand,
+                timeoutMillis,
+            )
 
             // ADB mode doesn't support streaming
-            ShellExecutionMode.ADB -> flowOf(executeCommandSystemBridge(command, timeoutMillis))
+            ShellExecutionMode.ADB -> flowOf(
+                executeCommandSystemBridge(sanitizedCommand, timeoutMillis),
+            )
         }
     }
 

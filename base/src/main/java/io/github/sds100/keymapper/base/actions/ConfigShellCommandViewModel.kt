@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.isExecuting
 import io.github.sds100.keymapper.common.utils.handle
+import io.github.sds100.keymapper.common.utils.normalizeLineEndings
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -142,15 +143,19 @@ class ConfigShellCommandViewModel @Inject constructor(
             return false
         }
 
+        // Scripts pasted from a computer can have Windows line endings, which a shell fails to
+        // parse. See issue #2209.
+        val command = state.command.normalizeLineEndings()
+
         val action = ActionData.ShellCommand(
             description = state.description,
-            command = state.command,
+            command = command,
             executionMode = state.executionMode,
             timeoutMillis = state.timeoutSeconds * 1000,
         )
 
         // Save script text before navigating away
-        saveScriptText(state.command)
+        saveScriptText(command)
 
         viewModelScope.launch {
             navigationProvider.popBackStackWithResult(Json.encodeToString(action))

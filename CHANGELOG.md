@@ -11,6 +11,7 @@
 - #2099 do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB
   pairing is broken.
 - #2220 make invisible floating buttons more visible when editing.
+- #2209 multi-line shell command actions no longer fail with a syntax error when the script is pasted with Windows line endings.
 - Expert mode works on 16KB page size systems.
 - Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
 
