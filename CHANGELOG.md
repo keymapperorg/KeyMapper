@@ -14,6 +14,7 @@
 - #2209 multi-line shell command actions no longer fail with a syntax error when the script is pasted with Windows line endings.
 - Expert mode works on 16KB page size systems.
 - Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
+- #2219 fix: scale floating buttons when screen resolution changes.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
