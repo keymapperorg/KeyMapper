@@ -8,6 +8,8 @@
 
 ## Fixed
 
+- #2160 edits to the activity in a send intent action are no longer discarded when the screen is
+  recreated (for example on a configuration change) before saving.
 - #2099 do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB
   pairing is broken.
 - #2220 make invisible floating buttons more visible when editing.
