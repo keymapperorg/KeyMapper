@@ -233,6 +233,15 @@ class ConfigIntentViewModel @Inject constructor(
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
+    /**
+     * Whether the initial [ConfigIntentResult] argument has already been applied. The fragment
+     * calls [loadResult] from onCreate, which runs again when the screen is recreated (for example
+     * on a configuration change) while this ViewModel survives. Re-applying the original argument
+     * then would discard the edits the user has made in the meantime, such as changing the chosen
+     * activity. See issue #2160.
+     */
+    private var isResultLoaded = false
+
     fun setActivityTargetChecked(isChecked: Boolean) {
         if (isChecked) {
             target.value = IntentTarget.ACTIVITY
@@ -402,6 +411,13 @@ class ConfigIntentViewModel @Inject constructor(
     }
 
     fun loadResult(result: ConfigIntentResult) {
+        // Only apply the initial argument once so that recreating the screen does not overwrite
+        // the user's edits with the original value. See issue #2160.
+        if (isResultLoaded) {
+            return
+        }
+        isResultLoaded = true
+
         val intent = Intent.parseUri(result.uri, 0)
 
         description.value = result.description
