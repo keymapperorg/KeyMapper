@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.actions.tapscreen
 
 import android.graphics.Bitmap
-import android.graphics.Point
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,6 +9,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.common.utils.SizeKM
+import io.github.sds100.keymapper.system.display.DisplayAdapter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PickDisplayCoordinateViewModel @Inject constructor(
+    private val displayAdapter: DisplayAdapter,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
@@ -61,10 +63,20 @@ class PickDisplayCoordinateViewModel @Inject constructor(
 
     private val description: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
+    /**
+     * The display size that the coordinate is for. See issue #2217. This is the size of the
+     * screenshot if one is chosen because the coordinate is in the screenshot's pixel space,
+     * otherwise the resolution of the action being edited, otherwise the current display size.
+     */
+    private val screenshotResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
+    private val loadedResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
+
+    fun selectedScreenshot(newBitmap: Bitmap) {
+        val displaySize = displayAdapter.size
+
         // check whether the height and width of the bitmap match the display size, even when it is rotated.
-        if ((displaySize.x != newBitmap.width && displaySize.y != newBitmap.height) &&
-            (displaySize.y != newBitmap.width && displaySize.x != newBitmap.height)
+        if ((displaySize.width != newBitmap.width && displaySize.height != newBitmap.height) &&
+            (displaySize.height != newBitmap.width && displaySize.width != newBitmap.height)
         ) {
             viewModelScope.launch {
                 val snackBar = DialogModel.SnackBar(
@@ -77,6 +89,7 @@ class PickDisplayCoordinateViewModel @Inject constructor(
             return
         }
 
+        screenshotResolution.value = SizeKM(newBitmap.width, newBitmap.height)
         _bitmap.value = newBitmap
     }
 
@@ -116,8 +129,20 @@ class PickDisplayCoordinateViewModel @Inject constructor(
                 ),
             ) ?: return@launch
 
-            _returnResult.emit(PickCoordinateResult(x, y, description))
+            _returnResult.emit(
+                PickCoordinateResult(x, y, description, screenResolution()),
+            )
         }
+    }
+
+    /**
+     * See issue #2217. Prefer the screenshot's resolution because the coordinate is in its pixel
+     * space, then the resolution the action was already saved with so that editing an action on a
+     * device that has since changed resolution does not stamp the wrong one on unchanged
+     * coordinates.
+     */
+    private fun screenResolution(): SizeKM {
+        return screenshotResolution.value ?: loadedResolution.value ?: displayAdapter.size
     }
 
     fun loadResult(result: PickCoordinateResult) {
@@ -125,6 +150,7 @@ class PickDisplayCoordinateViewModel @Inject constructor(
             x.value = result.x
             y.value = result.y
             description.value = result.description
+            loadedResolution.value = result.screenResolution
         }
     }
 

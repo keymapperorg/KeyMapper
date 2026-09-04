@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.actions.pinchscreen
 
 import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
-import android.graphics.Point
 import android.os.Build
 import android.view.View
 import android.widget.AdapterView
@@ -15,6 +14,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.PinchScreenType
+import io.github.sds100.keymapper.common.utils.SizeKM
+import io.github.sds100.keymapper.system.display.DisplayAdapter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PinchPickDisplayCoordinateViewModel @Inject constructor(
+    private val displayAdapter: DisplayAdapter,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
@@ -49,6 +51,15 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
     private val _returnResult = MutableSharedFlow<PinchPickCoordinateResult>()
 
     private val description: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    /**
+     * The display size that the coordinates and distance are for. See issue #2217. This is the size
+     * of the screenshot if one is chosen because the coordinates are in the screenshot's pixel
+     * space, otherwise the resolution of the action being edited, otherwise the current display
+     * size.
+     */
+    private val screenshotResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
+    private val loadedResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
 
     val xString = x.map {
         it ?: return@map ""
@@ -164,10 +175,12 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             isCoordinatesValid && fingerCountError == null && durationError == null
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
+    fun selectedScreenshot(newBitmap: Bitmap) {
+        val displaySize = displayAdapter.size
+
         // check whether the height and width of the bitmap match the display size, even when it is rotated.
-        if ((displaySize.x != newBitmap.width && displaySize.y != newBitmap.height) &&
-            (displaySize.y != newBitmap.width && displaySize.x != newBitmap.height)
+        if ((displaySize.width != newBitmap.width && displaySize.height != newBitmap.height) &&
+            (displaySize.height != newBitmap.width && displaySize.width != newBitmap.height)
         ) {
             viewModelScope.launch {
                 val snackBar = DialogModel.SnackBar(
@@ -180,6 +193,7 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             return
         }
 
+        screenshotResolution.value = SizeKM(newBitmap.width, newBitmap.height)
         _bitmap.value = newBitmap
     }
 
@@ -252,9 +266,20 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
                     fingerCount,
                     duration,
                     description,
+                    screenResolution(),
                 ),
             )
         }
+    }
+
+    /**
+     * See issue #2217. Prefer the screenshot's resolution because the coordinates are in its pixel
+     * space, then the resolution the action was already saved with so that editing an action on a
+     * device that has since changed resolution does not stamp the wrong one on unchanged
+     * coordinates.
+     */
+    private fun screenResolution(): SizeKM {
+        return screenshotResolution.value ?: loadedResolution.value ?: displayAdapter.size
     }
 
     fun onPinchTypeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -270,6 +295,7 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             fingerCount.value = result.fingerCount
             duration.value = result.duration
             description.value = result.description
+            loadedResolution.value = result.screenResolution
         }
     }
 

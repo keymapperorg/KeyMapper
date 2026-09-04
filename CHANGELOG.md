@@ -15,6 +15,8 @@
 - Expert mode works on 16KB page size systems.
 - Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
 - #2219 fix: scale floating buttons when screen resolution changes.
+- #2217 tap, swipe and pinch screen actions now scale to the current display resolution, including
+  the pinch distance.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
