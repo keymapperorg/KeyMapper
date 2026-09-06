@@ -15,6 +15,9 @@
 - Expert mode works on 16KB page size systems.
 - Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
 - #2219 fix: scale floating buttons when screen resolution changes.
+- #2194 the accessibility service now only requests the permissions that the features you are
+  actually using need, instead of requesting everything all the time. This reduces the chance of
+  other apps, such as Google Pay, refusing to work while Key Mapper is enabled.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 

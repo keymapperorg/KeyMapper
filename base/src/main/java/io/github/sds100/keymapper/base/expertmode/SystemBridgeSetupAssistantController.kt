@@ -94,7 +94,11 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private val activityManager: ActivityManager = accessibilityService.getSystemService()!!
 
-    private val isInteractive: StateFlow<Boolean> =
+    /**
+     * Whether the setup assistant is allowed to read and tap the screen. The accessibility
+     * service only requests the features to do that while this is true.
+     */
+    val isInteractive: StateFlow<Boolean> =
         preferenceRepository.get(Keys.isExpertModeInteractiveSetupAssistantEnabled)
             .map { it ?: PreferenceDefaults.EXPERT_MODE_INTERACTIVE_SETUP_ASSISTANT }
             .stateIn(

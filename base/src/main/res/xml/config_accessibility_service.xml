@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+    Deliberately declare no accessibilityFlags and no accessibilityEventTypes. They are requested
+    at runtime by AccessibilityServiceInfoController, and only the ones that the features the user
+    is actually using need. The capabilities below can not be narrowed at runtime because they are
+    fixed when the service is bound.
+-->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:canPerformGestures="true"
     android:canRequestFilterKeyEvents="true"
