@@ -233,13 +233,6 @@ class ConfigIntentViewModel @Inject constructor(
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
-    /**
-     * Whether the initial [ConfigIntentResult] argument has already been applied. The fragment
-     * calls [loadResult] from onCreate, which runs again when the screen is recreated (for example
-     * on a configuration change) while this ViewModel survives. Re-applying the original argument
-     * then would discard the edits the user has made in the meantime, such as changing the chosen
-     * activity. See issue #2160.
-     */
     private var isResultLoaded = false
 
     fun setActivityTargetChecked(isChecked: Boolean) {
@@ -455,21 +448,37 @@ class ConfigIntentViewModel @Inject constructor(
 
             val extraType = when (value) {
                 is Boolean -> BoolExtraType
+
                 is BooleanArray -> BoolArrayExtraType
+
                 is Int -> IntExtraType
+
                 is IntArray -> IntArrayExtraType
+
                 is Long -> LongExtraType
+
                 is LongArrayExtraType -> LongArrayExtraType
+
                 is Byte -> ByteExtraType
+
                 is ByteArrayExtraType -> ByteArrayExtraType
+
                 is Double -> DoubleExtraType
+
                 is DoubleArray -> DoubleArrayExtraType
+
                 is Float -> FloatExtraType
+
                 is FloatArray -> FloatArrayExtraType
+
                 is Short -> ShortExtraType
+
                 is ShortArray -> ShortArrayExtraType
+
                 is String -> StringExtraType
+
                 is Array<*> -> StringArrayExtraType
+
                 else -> throw IllegalArgumentException(
                     "Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType",
                 )
