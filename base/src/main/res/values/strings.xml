@@ -922,6 +922,7 @@
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
     <string name="error_read_logs_permission_denied">Denied permission to read logs!</string>
+    <string name="error_local_network_permission_denied">Denied permission to access the local network!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
     <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
@@ -1899,6 +1900,10 @@
     <string name="expert_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
     <string name="expert_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
     <string name="expert_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
+
+    <string name="expert_mode_setup_wizard_local_network_permission_title">Allow local network access</string>
+    <string name="expert_mode_setup_wizard_local_network_permission_description">Key Mapper needs access to the local network to connect to the ADB service on your device.</string>
+    <string name="expert_mode_setup_wizard_local_network_permission_button">Give permission</string>
 
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>

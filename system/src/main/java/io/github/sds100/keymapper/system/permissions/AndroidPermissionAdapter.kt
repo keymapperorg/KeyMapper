@@ -335,6 +335,16 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.READ_LOGS,
             ) == PERMISSION_GRANTED
         }
+
+        Permission.ACCESS_LOCAL_NETWORK ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ACCESS_LOCAL_NETWORK,
+                ) == PERMISSION_GRANTED
+            } else {
+                true
+            }
     }
 
     override fun isGrantedFlow(permission: Permission): Flow<Boolean> = channelFlow {

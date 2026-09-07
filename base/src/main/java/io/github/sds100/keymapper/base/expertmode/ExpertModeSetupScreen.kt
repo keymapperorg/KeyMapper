@@ -22,6 +22,7 @@ import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.CheckCircleOutline
+import androidx.compose.material.icons.rounded.Lan
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -346,6 +347,7 @@ private fun getIconForStep(step: SystemBridgeSetupStep): ImageVector {
     return when (step) {
         SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> Icons.Rounded.Accessibility
         SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> Icons.Rounded.Notifications
+        SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> Icons.Rounded.Lan
         SystemBridgeSetupStep.DEVELOPER_OPTIONS -> Icons.Rounded.Build
         SystemBridgeSetupStep.WIFI_NETWORK -> KeyMapperIcons.SignalWifiNotConnected
         SystemBridgeSetupStep.WIRELESS_DEBUGGING -> Icons.Rounded.BugReport
@@ -382,6 +384,19 @@ private fun createPreviewStepContent(step: SystemBridgeSetupStep): StepContent {
             icon = icon,
             buttonText = stringResource(
                 R.string.expert_mode_setup_wizard_enable_notification_permission_button,
+            ),
+        )
+
+        SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> StepContent(
+            title = stringResource(
+                R.string.expert_mode_setup_wizard_local_network_permission_title,
+            ),
+            message = stringResource(
+                R.string.expert_mode_setup_wizard_local_network_permission_description,
+            ),
+            icon = icon,
+            buttonText = stringResource(
+                R.string.expert_mode_setup_wizard_local_network_permission_button,
             ),
         )
 
@@ -470,6 +485,27 @@ private fun ExpertModeSetupScreenNotificationPermissionPreview() {
                 ExpertModeSetupState(
                     stepNumber = 2,
                     stepCount = 6,
+                    step = step,
+                    stepContent = createPreviewStepContent(step),
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(name = "Local Network Permission Step")
+@Composable
+private fun ExpertModeSetupScreenLocalNetworkPermissionPreview() {
+    KeyMapperTheme {
+        val step = SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION
+        ExpertModeSetupScreen(
+            state = State.Data(
+                ExpertModeSetupState(
+                    stepNumber = 3,
+                    stepCount = 9,
                     step = step,
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,

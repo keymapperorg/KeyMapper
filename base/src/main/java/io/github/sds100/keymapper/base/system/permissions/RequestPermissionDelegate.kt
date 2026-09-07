@@ -130,6 +130,12 @@ class RequestPermissionDelegate(
             }
 
             Permission.READ_LOGS -> permissionAdapter.grant(Manifest.permission.READ_LOGS)
+
+            Permission.ACCESS_LOCAL_NETWORK -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.CINNAMON_BUN
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            }
         }
     }
 

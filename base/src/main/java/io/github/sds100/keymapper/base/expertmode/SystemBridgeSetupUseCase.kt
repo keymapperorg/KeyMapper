@@ -113,6 +113,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     override val isNotificationPermissionGranted: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS)
 
+    override val isLocalNetworkPermissionGranted: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.ACCESS_LOCAL_NETWORK)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.R)
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
@@ -127,16 +130,36 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
                         AdbAutoStartEligibility.CHECKING -> emptyFlow()
 
-                        AdbAutoStartEligibility.NOT_ELIGIBLE -> combine(
-                            accessibilityServiceAdapter.state,
-                            isNotificationPermissionGranted,
-                            systemBridgeSetupController.isDeveloperOptionsEnabled,
-                            networkAdapter.isWifiConnected,
-                            systemBridgeSetupController.isWirelessDebuggingEnabled,
-                            ::getNextStep,
-                        )
+                        AdbAutoStartEligibility.NOT_ELIGIBLE -> getNextStepFlow()
                     }
                 }
+            }
+        }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun getNextStepFlow(): Flow<SystemBridgeSetupStep> =
+        accessibilityServiceAdapter.state.flatMapLatest { accessibilityServiceState ->
+            combine(
+                isNotificationPermissionGranted,
+                isLocalNetworkPermissionGranted,
+                systemBridgeSetupController.isDeveloperOptionsEnabled,
+                networkAdapter.isWifiConnected,
+                systemBridgeSetupController.isWirelessDebuggingEnabled,
+            ) {
+                    isNotificationGranted,
+                    isLocalNetworkGranted,
+                    isDeveloperOptionsEnabled,
+                    isWifiConnected,
+                    isWirelessDebuggingEnabled,
+                ->
+                getNextStep(
+                    accessibilityServiceState = accessibilityServiceState,
+                    isNotificationPermissionGranted = isNotificationGranted,
+                    isLocalNetworkPermissionGranted = isLocalNetworkGranted,
+                    isDeveloperOptionsEnabled = isDeveloperOptionsEnabled,
+                    isWifiConnected = isWifiConnected,
+                    isWirelessDebuggingEnabled = isWirelessDebuggingEnabled,
+                )
             }
         }
 
@@ -165,6 +188,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override fun requestNotificationPermission() {
         permissionAdapter.request(Permission.POST_NOTIFICATIONS)
+    }
+
+    override fun requestLocalNetworkPermission() {
+        permissionAdapter.request(Permission.ACCESS_LOCAL_NETWORK)
     }
 
     override fun stopSystemBridge() {
@@ -295,6 +322,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
         isNotificationPermissionGranted: Boolean,
+        isLocalNetworkPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
         isWifiConnected: Boolean,
         isWirelessDebuggingEnabled: Boolean,
@@ -304,6 +332,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                 SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
 
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
+
+            !isLocalNetworkPermissionGranted ->
+                SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION
 
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
 
@@ -352,6 +383,9 @@ interface SystemBridgeSetupUseCase {
 
     val isNotificationPermissionGranted: Flow<Boolean>
     fun requestNotificationPermission()
+
+    val isLocalNetworkPermissionGranted: Flow<Boolean>
+    fun requestLocalNetworkPermission()
 
     fun stopSystemBridge()
     fun enableAccessibilityService()
