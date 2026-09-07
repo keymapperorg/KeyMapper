@@ -74,6 +74,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
 
                 Permission.READ_LOGS ->
                     R.string.error_read_logs_permission_denied
+
+                Permission.ACCESS_LOCAL_NETWORK ->
+                    R.string.error_local_network_permission_denied
             }
 
             resourceProvider.getString(resId)

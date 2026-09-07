@@ -18,4 +18,5 @@ enum class Permission {
     FIND_NEARBY_DEVICES,
     POST_NOTIFICATIONS,
     READ_LOGS,
+    ACCESS_LOCAL_NETWORK,
 }

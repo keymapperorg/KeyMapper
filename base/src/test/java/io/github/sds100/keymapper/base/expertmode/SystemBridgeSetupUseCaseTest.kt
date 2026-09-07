@@ -3,14 +3,20 @@ package io.github.sds100.keymapper.base.expertmode
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
+import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -20,6 +26,7 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -127,6 +134,51 @@ class SystemBridgeSetupUseCaseTest {
             assertThat(
                 fakePreferences.get(Keys.isSystemBridgeStoppedByUser).first(),
                 `is`(false),
+            )
+        }
+
+    @Test
+    fun `next step is ACCESS_LOCAL_NETWORK_PERMISSION when notification permission granted but local network permission is not`() =
+        runTest {
+            whenever(mockAccessibilityServiceAdapter.state)
+                .thenReturn(MutableStateFlow(AccessibilityServiceState.ENABLED))
+            whenever(mockPermissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS))
+                .thenReturn(flowOf(true))
+            whenever(mockPermissionAdapter.isGrantedFlow(Permission.ACCESS_LOCAL_NETWORK))
+                .thenReturn(flowOf(false))
+            whenever(mockNetworkAdapter.isWifiConnected).thenReturn(flowOf(false))
+            whenever(mockSystemBridgeSetupController.isDeveloperOptionsEnabled)
+                .thenReturn(flowOf(false))
+            whenever(mockSystemBridgeSetupController.isWirelessDebuggingEnabled)
+                .thenReturn(flowOf(false))
+            whenever(mockSystemBridgeConnectionManager.connectionState)
+                .thenReturn(
+                    MutableStateFlow(
+                        SystemBridgeConnectionState.Disconnected(
+                            time = 0L,
+                            isStoppedByUser = false,
+                        ),
+                    ),
+                )
+
+            // isSystemBridgeConnected/adbAutoStartEligibility are computed eagerly from the
+            // constructor params, so the use case must be constructed after the mocks it reads
+            // from are stubbed.
+            val useCaseWithStubs = SystemBridgeSetupUseCaseImpl(
+                preferences = fakePreferences,
+                suAdapter = mockSuAdapter,
+                systemBridgeSetupController = mockSystemBridgeSetupController,
+                systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
+                shizukuAdapter = mockShizukuAdapter,
+                permissionAdapter = mockPermissionAdapter,
+                accessibilityServiceAdapter = mockAccessibilityServiceAdapter,
+                networkAdapter = mockNetworkAdapter,
+                clock = mock(),
+            )
+
+            assertThat(
+                useCaseWithStubs.nextSetupStep.first(),
+                `is`(SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION),
             )
         }
 }
