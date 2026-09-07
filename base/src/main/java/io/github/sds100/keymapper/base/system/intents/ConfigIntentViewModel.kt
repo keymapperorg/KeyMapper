@@ -233,6 +233,8 @@ class ConfigIntentViewModel @Inject constructor(
     private val _returnResult = MutableSharedFlow<ConfigIntentResult>()
     val returnResult = _returnResult.asSharedFlow()
 
+    private var isResultLoaded = false
+
     fun setActivityTargetChecked(isChecked: Boolean) {
         if (isChecked) {
             target.value = IntentTarget.ACTIVITY
@@ -402,6 +404,13 @@ class ConfigIntentViewModel @Inject constructor(
     }
 
     fun loadResult(result: ConfigIntentResult) {
+        // Only apply the initial argument once so that recreating the screen does not overwrite
+        // the user's edits with the original value. See issue #2160.
+        if (isResultLoaded) {
+            return
+        }
+        isResultLoaded = true
+
         val intent = Intent.parseUri(result.uri, 0)
 
         description.value = result.description
@@ -439,21 +448,37 @@ class ConfigIntentViewModel @Inject constructor(
 
             val extraType = when (value) {
                 is Boolean -> BoolExtraType
+
                 is BooleanArray -> BoolArrayExtraType
+
                 is Int -> IntExtraType
+
                 is IntArray -> IntArrayExtraType
+
                 is Long -> LongExtraType
+
                 is LongArrayExtraType -> LongArrayExtraType
+
                 is Byte -> ByteExtraType
+
                 is ByteArrayExtraType -> ByteArrayExtraType
+
                 is Double -> DoubleExtraType
+
                 is DoubleArray -> DoubleArrayExtraType
+
                 is Float -> FloatExtraType
+
                 is FloatArray -> FloatArrayExtraType
+
                 is Short -> ShortExtraType
+
                 is ShortArray -> ShortArrayExtraType
+
                 is String -> StringExtraType
+
                 is Array<*> -> StringArrayExtraType
+
                 else -> throw IllegalArgumentException(
                     "Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType",
                 )
