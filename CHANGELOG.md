@@ -18,6 +18,7 @@
 - Expert mode works on 16KB page size systems.
 - Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
 - #2219 fix: scale floating buttons when screen resolution changes.
+- #2210 Android TV DPAD center button behaves normally when accessibility service enabled.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 

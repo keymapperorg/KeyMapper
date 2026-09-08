@@ -154,10 +154,11 @@ abstract class BaseAccessibilityServiceController(
     private var serviceFlags: MutableStateFlow<Int> = MutableStateFlow(initialServiceFlags)
 
     /**
-     * FEEDBACK_GENERIC is for some reason required on Android 8.0 to get accessibility events.
+     * Feedback is required to get accessibility events. This used to use
+     * FEEDBACK_GENERIC but it broke the DPAD_CENTER button on Android TV. See issue #2210.
      */
     private var serviceFeedbackType: MutableStateFlow<Int> =
-        MutableStateFlow(AccessibilityServiceInfo.FEEDBACK_GENERIC)
+        MutableStateFlow(AccessibilityServiceInfo.FEEDBACK_HAPTIC)
 
     val serviceEventTypes: MutableStateFlow<Int> =
         MutableStateFlow(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
