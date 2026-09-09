@@ -19,6 +19,7 @@
 - [#2210](https://github.com/keymapperorg/KeyMapper/issues/2210) Android TV DPAD center button behaves normally when accessibility service enabled.
 - [#2070](https://github.com/keymapperorg/KeyMapper/issues/2070) long pressing a movable floating button now activates its long press key map instead of only being possible to drag.
 - Floating Buttons immediately respond to toggling locked position.
+- [#2232](https://github.com/keymapperorg/KeyMapper/issues/2232) Floating button options to show over keyboard and status bar apply immediately.
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
