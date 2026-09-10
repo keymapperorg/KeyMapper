@@ -72,6 +72,7 @@ abstract class KMError : KMResult<Nothing>() {
     data class TargetFileNotFound(val uri: String) : KMError()
     data class TargetDirectoryNotFound(val uri: String) : KMError()
     data object UnknownIOError : KMError()
+    data object StarterFilesUnavailable : KMError()
     data object FileOperationCancelled : KMError()
     data object TargetDirectoryMatchesSourceDirectory : KMError()
     data class NoSpaceLeftOnTarget(val uri: String) : KMError()

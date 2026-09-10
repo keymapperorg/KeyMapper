@@ -32,6 +32,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -55,6 +56,13 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     companion object {
         private const val TAG = "SystemBridgeConnectionManagerImpl"
         private const val MIUI_OPTIMIZATION_SETTING = "miui_optimization"
+
+        /**
+         * The shared storage that the starter files are copied to usually becomes available again
+         * within a minute, so stop retrying after that rather than trying forever.
+         */
+        private const val REFRESH_STARTER_SCRIPT_ATTEMPTS = 6
+        private const val REFRESH_STARTER_SCRIPT_RETRY_DELAY_MS = 10000L
     }
 
     private val systemBridgeLock: Any = Any()
@@ -96,11 +104,27 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         // Refresh the starter script because the paths to the apk and libs may
         // have changed.
         coroutineScope.launch {
-            try {
-                starter.refreshStarterScript()
-            } catch (e: Exception) {
-                Timber.e("Failed to refresh system bridge starter script. $e")
+            repeat(REFRESH_STARTER_SCRIPT_ATTEMPTS) { attempt ->
+                if (attempt > 0) {
+                    delay(REFRESH_STARTER_SCRIPT_RETRY_DELAY_MS)
+                }
+
+                // There is nowhere to copy the starter files to while the shared storage is
+                // unavailable, so try again shortly instead of giving up.
+                if (!starter.canStartSystemBridge()) {
+                    return@repeat
+                }
+
+                try {
+                    starter.refreshStarterScript()
+                } catch (e: Exception) {
+                    Timber.e("Failed to refresh system bridge starter script. $e")
+                }
+
+                return@launch
             }
+
+            Timber.w("Gave up refreshing the system bridge starter script. Storage is unavailable.")
         }
     }
 
@@ -289,6 +313,10 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     override suspend fun getShellStartCommand(): KMResult<String> {
         return starter.getStartCommand()
     }
+
+    override fun canStartSystemBridge(): Boolean {
+        return starter.canStartSystemBridge()
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -309,6 +337,13 @@ interface SystemBridgeConnectionManager {
     suspend fun startWithAdb()
 
     suspend fun getShellStartCommand(): KMResult<String>
+
+    /**
+     * Whether starting the system bridge can be attempted at all. This is false while there is
+     * nowhere to copy the starter files to because the shared storage is unavailable, which can
+     * happen at any point while the device is running.
+     */
+    fun canStartSystemBridge(): Boolean
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {

@@ -34,6 +34,7 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
+import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -109,6 +110,7 @@ class SystemBridgeAutoStarterTest {
 
         mockConnectionManager = mock {
             on { connectionState } doReturn connectionStateFlow
+            on { canStartSystemBridge() } doReturn true
         }
 
         mockSetupController = mock()
@@ -345,6 +347,25 @@ class SystemBridgeAutoStarterTest {
             advanceUntilIdle()
 
             verify(mockConnectionManager, never()).startWithShizuku()
+        }
+
+    @Test
+    fun `do not auto start or start the cooldown when the storage is unavailable`() =
+        runTest(testDispatcher) {
+            advanceTimeBy(1_000_000L)
+            whenever(mockConnectionManager.canStartSystemBridge()).thenReturn(false)
+            isRootGrantedFlow.value = true
+            fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            systemBridgeAutoStarter.init()
+            advanceUntilIdle()
+
+            verify(mockConnectionManager, never()).startWithRoot()
+            assertThat(
+                fakePreferences.get(Keys.systemBridgeLastAutoStartTime).first(),
+                `is`(nullValue()),
+            )
         }
 
     @Test

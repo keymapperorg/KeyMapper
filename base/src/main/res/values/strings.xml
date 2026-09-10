@@ -874,6 +874,7 @@
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_file_access_denied">File access denied! %s</string>
     <string name="error_io_error">Unknown IO error!</string>
+    <string name="error_starter_files_unavailable">Storage is unavailable. Please try again in a moment.</string>
     <string name="error_file_operation_cancelled">Canceled!</string>
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>

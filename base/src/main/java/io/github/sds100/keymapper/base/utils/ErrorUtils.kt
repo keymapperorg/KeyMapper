@@ -461,6 +461,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.UnknownIOError ->
             resourceProvider.getString(R.string.error_io_error)
 
+        KMError.StarterFilesUnavailable ->
+            resourceProvider.getString(R.string.error_starter_files_unavailable)
+
         KMError.ShizukuNotStarted ->
             resourceProvider.getString(R.string.error_shizuku_not_started)
 
