@@ -136,6 +136,50 @@ class RequestPermissionDelegate(
             ) {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
             }
+
+            Permission.MANAGE_EXTERNAL_STORAGE -> requestManageExternalStorage()
+        }
+    }
+
+    private fun requestManageExternalStorage() {
+        if (showDialogs) {
+            activity.materialAlertDialog {
+                titleResource = R.string.dialog_title_manage_external_storage
+                messageResource = R.string.dialog_message_manage_external_storage
+
+                positiveButton(R.string.pos_grant_access) {
+                    showManageExternalStorageSystemSettings()
+                }
+
+                negativeButton(R.string.neg_cancel) { it.cancel() }
+
+                show()
+            }
+        } else {
+            showManageExternalStorageSystemSettings()
+        }
+    }
+
+    private fun showManageExternalStorageSystemSettings() {
+        val intent = Intent(
+            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+            Uri.parse("package:${buildConfigProvider.packageName}"),
+        )
+
+        try {
+            startActivityForResultLauncher.launch(intent)
+        } catch (e: ActivityNotFoundException) {
+            try {
+                startActivityForResultLauncher.launch(
+                    Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION),
+                )
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    activity,
+                    R.string.error_manage_external_storage_activity_not_found,
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
         }
     }
 

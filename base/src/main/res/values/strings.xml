@@ -470,6 +470,9 @@
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimization</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
+    <string name="dialog_title_manage_external_storage">Grant full file access</string>
+    <string name="dialog_message_manage_external_storage">Key Mapper needs "All files access" to show backup files copied here from another device, since Android TV has no built-in file picker. This permission is only requested in the F-Droid build because Google Play restricts it to file-manager apps.</string>
+
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
 
@@ -527,6 +530,7 @@
     <string name="pos_understood">Understood</string>
     <string name="pos_turn_on">Turn on</string>
     <string name="pos_proceed">Proceed</string>
+    <string name="pos_grant_access">Grant access</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
@@ -814,6 +818,7 @@
 
     <string name="error_app_is_disabled_package_name">App %s is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings.</string>
+    <string name="error_action_requires_manage_external_storage_permission">Key Mapper needs "All files access" permission for this.</string>
     <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">Requires Android %s or newer</string>
@@ -860,6 +865,7 @@
     <string name="error_fix_key_event_action">This action needs setting up</string>
 
     <string name="error_battery_optimisation_activity_not_found">Battery optimization settings not found! If it exists, open it manually.</string>
+    <string name="error_manage_external_storage_activity_not_found">Couldn\'t find the "All files access" settings page on this device.</string>
 
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
@@ -1685,6 +1691,10 @@
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>
     <string name="home_export_error_snackbar">Failed: %s</string>
+    <string name="home_export_finished_downloads_snackbar">Saved %s to Downloads</string>
+    <string name="home_import_choose_backup_dialog_title">Choose a backup</string>
+    <string name="home_import_no_backups_found_in_downloads">No previous Key Mapper backups found in Downloads. Export a backup on this device first, then it will appear here.</string>
+    <string name="home_import_grant_full_access_button">Grant access to see files from other apps</string>
     <string name="import_dialog_title_loading">Loading file…</string>
     <string name="import_dialog_title_success">Import successful!</string>
     <string name="import_dialog_title_importing">Importing…</string>

@@ -20,6 +20,7 @@
 - [#2070](https://github.com/keymapperorg/KeyMapper/issues/2070) long pressing a movable floating button now activates its long press key map instead of only being possible to drag.
 - Floating Buttons immediately respond to toggling locked position.
 - [#2232](https://github.com/keymapperorg/KeyMapper/issues/2232) Floating button options to show over keyboard and status bar apply immediately.
+- [#2098](https://github.com/keymapperorg/KeyMapper/issues/2098) [#2233](https://github.com/keymapperorg/KeyMapper/issues/2233) export and import key maps on Android TV, where there is no usable system file picker. Export now saves directly to the Downloads folder, and import lets you choose from backups found there (in the F-Droid build, you can optionally grant "All files access" to see backups copied in from other devices; this is not requested in the Play Store build).
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 

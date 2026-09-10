@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.backup.ImportExportState
@@ -75,6 +76,7 @@ import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +94,7 @@ fun HomeKeyMapListScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val importFileLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri ?: return@rememberLauncherForActivityResult
 
             viewModel.onChooseImportFile(uri.toString())
@@ -105,6 +107,8 @@ fun HomeKeyMapListScreen(
         snackbarState = snackbarState,
         setIdleState = viewModel::setImportExportIdle,
         onConfirmImport = viewModel::onConfirmImport,
+        onChooseImportFile = viewModel::onChooseImportFile,
+        onRequestFullFileAccessClick = viewModel::onRequestFullFileAccessClick,
     )
 
     if (viewModel.showSortBottomSheet) {
@@ -206,7 +210,13 @@ fun HomeKeyMapListScreen(
                 onSortClick = { viewModel.showSortBottomSheet = true },
                 onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 onExportClick = viewModel::onExportClick,
-                onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                onImportClick = {
+                    if (LeanbackUtils.isTvDevice(ctx)) {
+                        viewModel.onImportClick()
+                    } else {
+                        importFileLauncher.launch(arrayOf(FileUtils.MIME_TYPE_ALL))
+                    }
+                },
                 onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
                 onFixWarningClick = viewModel::onFixWarningClick,
@@ -300,6 +310,8 @@ fun HandleImportExportState(
     snackbarState: SnackbarHostState,
     setIdleState: () -> Unit,
     onConfirmImport: (RestoreType) -> Unit,
+    onChooseImportFile: (String) -> Unit = {},
+    onRequestFullFileAccessClick: () -> Unit = {},
 ) {
     when (val state = state) {
         is ImportExportState.Error -> {
@@ -327,14 +339,43 @@ fun HandleImportExportState(
 
         is ImportExportState.FinishedExport -> {
             snackbarState.currentSnackbarData?.dismiss()
-            LocalActivity.current?.let {
-                ShareUtils.shareFile(
-                    it,
+            LocalActivity.current?.let { activity ->
+                val shared = ShareUtils.shareFile(
+                    activity,
                     state.uri.toUri(),
                     packageName = LocalContext.current.packageName,
                 )
+
+                // Fall back to a direct file picker if there is no app installed that
+                // can receive a shared file, for example on Android TV.
+                if (!shared) {
+                    (activity as? BaseMainActivity)?.saveFileToUserChosenLocation(
+                        state.uri.toUri(),
+                    )
+                }
             }
             setIdleState()
+        }
+
+        is ImportExportState.FinishedExportToDownloads -> {
+            val text =
+                stringResource(R.string.home_export_finished_downloads_snackbar, state.fileName)
+            LaunchedEffect(state) {
+                snackbarState.currentSnackbarData?.dismiss()
+                snackbarState.showSnackbar(text, duration = SnackbarDuration.Short)
+                setIdleState()
+            }
+        }
+
+        is ImportExportState.ChooseImportFileFromDownloads -> {
+            snackbarState.currentSnackbarData?.dismiss()
+            BackupFilePickerDialog(
+                files = state.files,
+                canRequestFullAccess = state.canRequestFullAccess,
+                onFileClick = onChooseImportFile,
+                onRequestFullAccessClick = onRequestFullFileAccessClick,
+                onDismissRequest = setIdleState,
+            )
         }
 
         is ImportExportState.FinishedImport -> {

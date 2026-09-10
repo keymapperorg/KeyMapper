@@ -77,6 +77,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
 
                 Permission.ACCESS_LOCAL_NETWORK ->
                     R.string.error_local_network_permission_denied
+
+                Permission.MANAGE_EXTERNAL_STORAGE ->
+                    R.string.error_action_requires_manage_external_storage_permission
             }
 
             resourceProvider.getString(resId)

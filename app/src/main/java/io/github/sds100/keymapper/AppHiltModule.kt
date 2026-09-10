@@ -42,6 +42,12 @@ class AppHiltModule {
             get() = BuildConfig.VERSION_CODE
         override val sdkInt: Int
             get() = Build.VERSION.SDK_INT
+
+        // Android TV users predominantly sideload this FOSS build rather than
+        // install from Google Play, which restricts this permission to
+        // file-manager apps, so it's safe to request it here.
+        override val canRequestAllFilesAccess: Boolean
+            get() = true
     }
 
     @Singleton

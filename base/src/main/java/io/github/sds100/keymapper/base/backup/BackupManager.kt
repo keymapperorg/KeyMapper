@@ -185,11 +185,7 @@ class BackupManagerImpl @Inject constructor(
 
             val dataJsonFile = fileAdapter.getFile(extractedDir, DATA_JSON_FILE_NAME)
 
-            val inputStream = dataJsonFile.inputStream()
-
-            if (inputStream == null) {
-                return KMError.UnknownIOError
-            }
+            val inputStream = dataJsonFile.inputStream() ?: return KMError.UnknownIOError
 
             return parseBackupContent(inputStream)
         }

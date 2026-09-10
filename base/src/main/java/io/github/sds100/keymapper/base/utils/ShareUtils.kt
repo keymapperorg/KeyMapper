@@ -65,10 +65,26 @@ object ShareUtils {
         }
     }
 
-    fun shareFile(ctx: Context, file: Uri, packageName: String) {
-        try {
-            val type = ctx.contentResolver.getType(file)
+    /**
+     * @return whether a share target was found and the share sheet was shown. This is false
+     * if there is no app installed that can receive a shared file, for example on Android TV,
+     * so the caller can fall back to a direct file picker instead.
+     */
+    fun shareFile(ctx: Context, file: Uri, packageName: String): Boolean {
+        val type = ctx.contentResolver.getType(file)
 
+        // Check for a real share target before showing the chooser because on Android TV
+        // the launcher intercepts unresolvable ACTION_SEND intents and shows its own
+        // "not supported" toast without throwing ActivityNotFoundException back to us.
+        val hasShareTarget = ctx.packageManager
+            .queryIntentActivities(Intent(Intent.ACTION_SEND).setType(type), 0)
+            .isNotEmpty()
+
+        if (!hasShareTarget) {
+            return false
+        }
+
+        return try {
             ShareCompat.IntentBuilder(ctx)
                 .setType(type)
                 .setStream(file)
@@ -101,7 +117,9 @@ object ShareUtils {
 
                     ctx.startActivity(intent)
                 }
+            true
         } catch (_: ActivityNotFoundException) {
+            false
         }
     }
 }
