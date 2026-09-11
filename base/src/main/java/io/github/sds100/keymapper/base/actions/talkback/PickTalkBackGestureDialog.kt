@@ -60,6 +60,7 @@ private fun PickTalkBackGestureDialog(
     val groups = remember {
         listOf(
             R.string.talkback_gesture_section_1_finger to listOf(
+                TalkBackGestureType.ONE_FINGER_DOUBLE_TAP,
                 TalkBackGestureType.SWIPE_UP,
                 TalkBackGestureType.SWIPE_DOWN,
                 TalkBackGestureType.SWIPE_LEFT,
@@ -72,6 +73,7 @@ private fun PickTalkBackGestureDialog(
             ),
             R.string.talkback_gesture_section_2_finger to listOf(
                 TalkBackGestureType.TWO_FINGER_TAP,
+                TalkBackGestureType.TWO_FINGER_DOUBLE_TAP,
                 TalkBackGestureType.TWO_FINGER_DOUBLE_TAP_HOLD,
                 TalkBackGestureType.TWO_FINGER_TRIPLE_TAP,
                 TalkBackGestureType.TWO_FINGER_TRIPLE_TAP_HOLD,

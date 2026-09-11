@@ -25,6 +25,17 @@ object TalkbackGesturePerformer {
         val gestureBuilder = GestureDescription.Builder()
 
         when (gesture) {
+            TalkBackGestureType.ONE_FINGER_DOUBLE_TAP ->
+                AccessibilityGestureUtils.addMultiFingerTaps(
+                    gestureBuilder,
+                    cx,
+                    cy,
+                    fingerSpacing,
+                    fingerCount = 1,
+                    tapCount = 2,
+                    holdDuration = 50,
+                )
+
             TalkBackGestureType.SWIPE_UP ->
                 gestureBuilder.addStroke(
                     AccessibilityGestureUtils.buildSwipe(
@@ -187,6 +198,17 @@ object TalkbackGesturePerformer {
                     fingerSpacing,
                     fingerCount = 2,
                     tapCount = 1,
+                    holdDuration = 50,
+                )
+
+            TalkBackGestureType.TWO_FINGER_DOUBLE_TAP ->
+                AccessibilityGestureUtils.addMultiFingerTaps(
+                    gestureBuilder,
+                    cx,
+                    cy,
+                    fingerSpacing,
+                    fingerCount = 2,
+                    tapCount = 2,
                     holdDuration = 50,
                 )
 

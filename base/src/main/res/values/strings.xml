@@ -1277,6 +1277,7 @@
     <string name="talkback_gesture_section_4_finger">4-finger gestures</string>
 
     <!-- TalkBack gesture action descriptions (what the gesture does) -->
+    <string name="talkback_gesture_action_one_finger_double_tap">Activate the focused item</string>
     <string name="talkback_gesture_action_swipe_up">Move reading control up or backwards</string>
     <string name="talkback_gesture_action_swipe_down">Move reading control down or forwards</string>
     <string name="talkback_gesture_action_swipe_left">Previous item</string>
@@ -1287,6 +1288,7 @@
     <string name="talkback_gesture_action_swipe_right_then_left">Scroll forwards</string>
     <string name="talkback_gesture_action_swipe_right_then_up">Start voice command</string>
     <string name="talkback_gesture_action_two_finger_tap">Pause or resume speech</string>
+    <string name="talkback_gesture_action_two_finger_double_tap">Play or pause media, answer or end calls</string>
     <string name="talkback_gesture_action_two_finger_double_tap_hold">Start or end selection mode</string>
     <string name="talkback_gesture_action_two_finger_triple_tap">Read from focused item</string>
     <string name="talkback_gesture_action_two_finger_triple_tap_hold">Turn speech on or off</string>
@@ -1303,6 +1305,7 @@
     <string name="talkback_gesture_action_four_finger_swipe_right">Next container</string>
 
     <!-- TalkBack gesture names (how to perform the gesture) -->
+    <string name="talkback_gesture_name_one_finger_double_tap">Double-tap</string>
     <string name="talkback_gesture_name_swipe_up">Swipe up</string>
     <string name="talkback_gesture_name_swipe_down">Swipe down</string>
     <string name="talkback_gesture_name_swipe_left">Swipe left</string>
@@ -1313,6 +1316,7 @@
     <string name="talkback_gesture_name_swipe_right_then_left">Swipe right then left</string>
     <string name="talkback_gesture_name_swipe_right_then_up">Swipe right then up</string>
     <string name="talkback_gesture_name_two_finger_tap">Tap with 2 fingers</string>
+    <string name="talkback_gesture_name_two_finger_double_tap">Double-tap with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_double_tap_hold">Double-tap and hold with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_triple_tap">Triple-tap with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_triple_tap_hold">Triple-tap and hold with 2 fingers</string>

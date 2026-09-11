@@ -4,6 +4,9 @@ import io.github.sds100.keymapper.base.R
 
 object TalkBackGestureStrings {
     fun getActionLabel(gesture: TalkBackGestureType): Int = when (gesture) {
+        TalkBackGestureType.ONE_FINGER_DOUBLE_TAP ->
+            R.string.talkback_gesture_action_one_finger_double_tap
+
         TalkBackGestureType.SWIPE_UP ->
             R.string.talkback_gesture_action_swipe_up
 
@@ -33,6 +36,9 @@ object TalkBackGestureStrings {
 
         TalkBackGestureType.TWO_FINGER_TAP ->
             R.string.talkback_gesture_action_two_finger_tap
+
+        TalkBackGestureType.TWO_FINGER_DOUBLE_TAP ->
+            R.string.talkback_gesture_action_two_finger_double_tap
 
         TalkBackGestureType.TWO_FINGER_DOUBLE_TAP_HOLD ->
             R.string.talkback_gesture_action_two_finger_double_tap_hold
@@ -78,6 +84,9 @@ object TalkBackGestureStrings {
     }
 
     fun getGestureLabel(gesture: TalkBackGestureType): Int = when (gesture) {
+        TalkBackGestureType.ONE_FINGER_DOUBLE_TAP ->
+            R.string.talkback_gesture_name_one_finger_double_tap
+
         TalkBackGestureType.SWIPE_UP ->
             R.string.talkback_gesture_name_swipe_up
 
@@ -107,6 +116,9 @@ object TalkBackGestureStrings {
 
         TalkBackGestureType.TWO_FINGER_TAP ->
             R.string.talkback_gesture_name_two_finger_tap
+
+        TalkBackGestureType.TWO_FINGER_DOUBLE_TAP ->
+            R.string.talkback_gesture_name_two_finger_double_tap
 
         TalkBackGestureType.TWO_FINGER_DOUBLE_TAP_HOLD ->
             R.string.talkback_gesture_name_two_finger_double_tap_hold
