@@ -1641,6 +1641,7 @@
     <string name="sort_bottom_sheet_actions">Actions</string>
     <string name="sort_bottom_sheet_constraints">Constraints</string>
     <string name="sort_bottom_sheet_options">Options</string>
+    <string name="sort_bottom_sheet_enabled">Enabled</string>
     <string name="home_nav_bar_key_maps">Key maps</string>
     <string name="home_nav_bar_floating_buttons">Floating buttons</string>
     <string name="home_fab_new_key_map">New key map</string>

@@ -8,6 +8,7 @@
 - Target Android 17 SDK.
 - [#2227](https://github.com/keymapperorg/KeyMapper/issues/2227) Add a step to the Expert Mode setup wizard to grant local network access permission, required for ADB on Android 17+.
 - #2223 Add one-finger and two-finger double-tap gestures to the TalkBack gesture action.
+- [#2211](https://github.com/keymapperorg/KeyMapper/issues/2211) Add an "Enabled" field to sort the key map list by whether key maps are enabled or disabled.
 
 ## Fixed
 

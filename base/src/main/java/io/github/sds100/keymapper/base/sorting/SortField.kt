@@ -8,4 +8,5 @@ enum class SortField {
     ACTIONS,
     CONSTRAINTS,
     OPTIONS,
+    ENABLED,
 }
