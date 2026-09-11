@@ -1927,6 +1927,33 @@
     <string name="expert_mode_usb_debugging_security_settings_description">You need to enable \"USB debugging security settings\" in Developer options for Expert Mode to work properly. This is mainly required on Xiaomi devices.</string>
     <string name="expert_mode_usb_debugging_security_settings_button">Open Developer options</string>
 
+    <string name="expert_mode_xiaomi_optimization_title">Reduce app killing</string>
+    <string name="expert_mode_xiaomi_optimization_description">Xiaomi devices (MIUI/HyperOS) aggressively close background apps. Apply a few settings to keep Expert Mode running.</string>
+
+    <string name="xiaomi_optimization_title">Reduce app killing</string>
+    <string name="xiaomi_optimization_hero_text">Xiaomi devices (MIUI/HyperOS) aggressively close background apps and revoke permissions. These settings help keep Expert Mode running. You may need to re-apply them after a system update.</string>
+    <string name="xiaomi_optimization_not_connected">Start Expert Mode to change this setting.</string>
+    <string name="xiaomi_optimization_apply_error">Something went wrong. Make sure Expert Mode is running and try again.</string>
+    <string name="xiaomi_optimization_open_settings_error">Couldn\'t open the settings screen on this device.</string>
+    <string name="xiaomi_optimization_applied">Applied</string>
+
+    <string name="xiaomi_optimization_auto_apply_title">Battery fixes</string>
+    <string name="xiaomi_optimization_auto_apply_description">Whitelists the app from battery optimisation and allows it to run in the background. These are safe to apply.</string>
+    <string name="xiaomi_optimization_auto_apply_button">Apply battery fixes</string>
+
+    <string name="xiaomi_optimization_advanced_title">MIUI optimization</string>
+    <string name="xiaomi_optimization_advanced_warning">Disabling MIUI optimization is the most effective fix, but it can change the behaviour of some MIUI features.</string>
+    <string name="xiaomi_optimization_advanced_switch">Disable MIUI optimization</string>
+    <string name="xiaomi_optimization_advanced_reboot_note">You may need to restart your device for this to fully take effect. Turn it off again to revert.</string>
+
+    <string name="xiaomi_optimization_open_button">Open</string>
+    <string name="xiaomi_optimization_autostart_title">Enable autostart</string>
+    <string name="xiaomi_optimization_autostart_description">Allow the app to start automatically so it can run after your device restarts.</string>
+    <string name="xiaomi_optimization_battery_saver_title">Battery saver</string>
+    <string name="xiaomi_optimization_battery_saver_description">Set the app\'s battery saver to \"No restrictions\" so it isn\'t closed in the background.</string>
+    <string name="xiaomi_optimization_lock_recents_title">Lock the app in recents</string>
+    <string name="xiaomi_optimization_lock_recents_description">Open the recent apps screen, then swipe down on the app\'s card (or long-press it) and tap the padlock. This stops \"clear all\" from closing it.</string>
+
     <string name="expert_mode_setup_assistant_notification_channel">Setup assistant</string>
 
     <string name="expert_mode_setup_wizard_complete_title">Expert Mode is running</string>

@@ -28,6 +28,7 @@ import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
+import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
 import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
@@ -154,6 +155,13 @@ fun BaseMainNavHost(
 
         composable<NavDestination.ExpertModeSetup> {
             ExpertModeSetupScreen(
+                viewModel = hiltViewModel(),
+            )
+        }
+
+        composable<NavDestination.XiaomiOptimization> {
+            XiaomiOptimizationScreen(
+                modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
             )
         }

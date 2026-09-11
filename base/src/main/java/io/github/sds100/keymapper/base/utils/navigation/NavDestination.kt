@@ -46,6 +46,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_LOG = "log"
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
         const val ID_GET_EVENT = "get_event"
+        const val ID_XIAOMI_OPTIMIZATION = "xiaomi_optimization"
     }
 
     @Serializable
@@ -216,5 +217,10 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object GetEvent : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_GET_EVENT
+    }
+
+    @Serializable
+    data object XiaomiOptimization : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_XIAOMI_OPTIMIZATION
     }
 }

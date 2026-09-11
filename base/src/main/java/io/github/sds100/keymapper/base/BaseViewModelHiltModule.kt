@@ -29,6 +29,8 @@ import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupDelegateImpl
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupDelegate
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCase
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCaseImpl
+import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationUseCase
+import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationUseCaseImpl
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
@@ -200,4 +202,10 @@ abstract class BaseViewModelHiltModule {
     abstract fun bindExpertModeSetupDelegate(
         impl: ExpertModeSetupDelegateImpl,
     ): SystemBridgeSetupDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindXiaomiOptimizationUseCase(
+        impl: XiaomiOptimizationUseCaseImpl,
+    ): XiaomiOptimizationUseCase
 }
