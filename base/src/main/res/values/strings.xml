@@ -865,6 +865,9 @@
     <string name="error_fix_key_event_action">This action needs setting up</string>
 
     <string name="error_battery_optimisation_activity_not_found">Battery optimization settings not found! If it exists, open it manually.</string>
+    <string name="toast_find_keymapper_in_battery_optimisation_list">Find Key Mapper in the list and disable battery optimization for it</string>
+    <string name="toast_tv_find_special_app_access">Go to Special app access -> Energy Optimization -> Disable Key Mapper</string>
+    <string name="toast_tv_can_not_find_special_app_access">Go to Settings -> Special app access -> Energy Optimization -> Disable Key Mapper</string>
     <string name="error_manage_external_storage_activity_not_found">Couldn\'t find the "All files access" settings page on this device.</string>
 
     <string name="error_extra_not_found">Extra (%s) not found!</string>
