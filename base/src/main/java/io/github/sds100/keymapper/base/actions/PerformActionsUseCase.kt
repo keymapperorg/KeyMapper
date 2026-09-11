@@ -297,6 +297,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
+            is ActionData.CycleKeyboardLanguage -> {
+                result = inputMethodAdapter.cycleInputMethodSubtype()
+            }
+
             is ActionData.Volume.Down -> {
                 result = audioAdapter.lowerVolume(
                     stream = action.volumeStream,

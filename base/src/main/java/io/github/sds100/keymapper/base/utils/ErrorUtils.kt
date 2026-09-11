@@ -389,6 +389,12 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.EnableImeFailed ->
             resourceProvider.getString(R.string.error_failed_to_enable_ime)
 
+        KMError.CycleImeSubtypeFailed ->
+            resourceProvider.getString(R.string.error_failed_to_cycle_ime_subtype)
+
+        KMError.NotEnoughInputMethodSubtypes ->
+            resourceProvider.getString(R.string.error_not_enough_ime_subtypes)
+
         KMError.NoCameraApp ->
             resourceProvider.getString(R.string.error_no_camera_app)
 

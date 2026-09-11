@@ -619,6 +619,8 @@ object ActionDataEntityMapper {
 
             ActionId.PERFORM_IME_ACTION -> ActionData.PerformImeAction
 
+            ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionData.CycleKeyboardLanguage
+
             ActionId.TEXT_CUT -> ActionData.CutText
 
             ActionId.TEXT_COPY -> ActionData.CopyText
@@ -1503,6 +1505,7 @@ object ActionDataEntityMapper {
         ActionId.SELECT_ALL_TEXT to "select_all_text",
 
         ActionId.SWITCH_KEYBOARD to "switch_keyboard",
+        ActionId.CYCLE_KEYBOARD_LANGUAGE to "cycle_keyboard_language",
 
         ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
         ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",

@@ -58,6 +58,8 @@ abstract class KMError : KMResult<Nothing>() {
     data class FailedToModifySystemSetting(val setting: String) : KMError()
     data object SwitchImeFailed : KMError()
     data object EnableImeFailed : KMError()
+    data object CycleImeSubtypeFailed : KMError()
+    data object NotEnoughInputMethodSubtypes : KMError()
     data object NoAppToOpenUrl : KMError()
     data object NoAppToPhoneCall : KMError()
     data object NoAppToSendSms : KMError()

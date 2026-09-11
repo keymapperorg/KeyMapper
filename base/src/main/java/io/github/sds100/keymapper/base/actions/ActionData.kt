@@ -246,6 +246,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object CycleKeyboardLanguage : ActionData() {
+        override val id = ActionId.CYCLE_KEYBOARD_LANGUAGE
+    }
+
+    @Serializable
     sealed class DoNotDisturb : ActionData() {
 
         @Serializable

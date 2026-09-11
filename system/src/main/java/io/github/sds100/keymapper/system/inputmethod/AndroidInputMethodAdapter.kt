@@ -182,4 +182,37 @@ class AndroidInputMethodAdapter @Inject constructor(
             Success(imeId)
         }
     }
+
+    override fun cycleInputMethodSubtype(): KMResult<Unit> {
+        val chosenImeId = getChosenImeId()
+
+        val inputMethodInfo = inputMethodManager.inputMethodList.find { it.id == chosenImeId }
+            ?: return KMError.InputMethodNotFound(chosenImeId)
+
+        val subtypes =
+            inputMethodManager.getEnabledInputMethodSubtypeList(inputMethodInfo, true)
+
+        if (subtypes.size < 2) {
+            return KMError.NotEnoughInputMethodSubtypes
+        }
+
+        val currentSubtypeHashCode = Settings.Secure.getInt(
+            ctx.contentResolver,
+            Settings.Secure.SELECTED_INPUT_METHOD_SUBTYPE,
+            -1,
+        )
+
+        val currentIndex = subtypes.indexOfFirst { it.hashCode() == currentSubtypeHashCode }
+        val nextSubtype = subtypes[(currentIndex + 1) % subtypes.size]
+
+        return try {
+            @Suppress("DEPRECATION")
+            inputMethodManager.currentInputMethodSubtype = nextSubtype
+
+            Success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to cycle input method subtype")
+            KMError.CycleImeSubtypeFailed
+        }
+    }
 }

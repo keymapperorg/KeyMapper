@@ -230,6 +230,7 @@ object ActionUtils {
         ActionId.SELECT_ALL_TEXT -> ActionCategory.KEYBOARD
         ActionId.PERFORM_IME_ACTION -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
@@ -436,6 +437,8 @@ object ActionUtils {
 
         ActionId.SWITCH_KEYBOARD -> R.string.action_switch_keyboard
 
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> R.string.action_cycle_keyboard_language
+
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
 
         ActionId.ENABLE_AIRPLANE_MODE -> R.string.action_enable_airplane_mode
@@ -492,6 +495,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
 
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
+
         ActionId.TOAST -> R.string.action_toast
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
@@ -902,6 +906,8 @@ object ActionUtils {
                 return listOf(Permission.WRITE_SECURE_SETTINGS)
             }
 
+            ActionId.CYCLE_KEYBOARD_LANGUAGE -> return listOf(Permission.WRITE_SECURE_SETTINGS)
+
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
@@ -1051,6 +1057,7 @@ object ActionUtils {
         ActionId.SELECT_ALL_TEXT -> Icons.Outlined.SelectAll
         ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.DISABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeInactive

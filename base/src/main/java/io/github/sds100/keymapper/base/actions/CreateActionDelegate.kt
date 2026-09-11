@@ -1099,6 +1099,8 @@ class CreateActionDelegate(
 
             ActionId.PERFORM_IME_ACTION -> return ActionData.PerformImeAction
 
+            ActionId.CYCLE_KEYBOARD_LANGUAGE -> return ActionData.CycleKeyboardLanguage
+
             ActionId.TEXT_CUT -> return ActionData.CutText
 
             ActionId.TEXT_COPY -> return ActionData.CopyText

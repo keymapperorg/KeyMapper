@@ -906,6 +906,8 @@
     <string name="error_ime_disabled">You need to enable %s!</string>
     <string name="error_failed_to_change_ime">Failed to change input method!</string>
     <string name="error_failed_to_enable_ime">Failed to enable input method!</string>
+    <string name="error_failed_to_cycle_ime_subtype">Failed to cycle keyboard language!</string>
+    <string name="error_not_enough_ime_subtypes">The current keyboard doesn\'t have multiple languages enabled!</string>
     <string name="error_no_camera_app">Your device has no camera app!</string>
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>
@@ -1120,6 +1122,7 @@
 
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
+    <string name="action_cycle_keyboard_language">Cycle keyboard language</string>
 
     <string name="action_text_cut">Cut</string>
     <string name="action_text_copy">Copy</string>

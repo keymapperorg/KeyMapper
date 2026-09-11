@@ -36,4 +36,8 @@ class FakeInputMethodAdapter : InputMethodAdapter {
             ?.let { Success(it) }
             ?: KMError.InputMethodNotFound(packageName)
     }
+
+    override fun cycleInputMethodSubtype(): KMResult<Unit> {
+        return Success(Unit)
+    }
 }
