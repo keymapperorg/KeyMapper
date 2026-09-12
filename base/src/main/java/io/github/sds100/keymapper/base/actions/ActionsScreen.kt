@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -233,6 +234,11 @@ private fun ActionList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
+        verticalArrangement = if (state is ConfigActionsState.Empty) {
+            Arrangement.Center
+        } else {
+            Arrangement.Top
+        },
     ) {
         // Display action tip if available
         tipModel?.let { tip ->
@@ -331,6 +337,18 @@ private fun ActionList(
 @Preview
 @Composable
 private fun EmptyPreview() {
+    KeyMapperTheme {
+        ActionsScreen(
+            state = State.Data(
+                ConfigActionsState.Empty(shortcuts = emptySet()),
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun EmptyWithShortcutsPreview() {
     KeyMapperTheme {
         ActionsScreen(
             state = State.Data(
