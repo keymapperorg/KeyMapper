@@ -1,6 +1,11 @@
-• Display resolution constraint
-• Ringer mode constraint
-• Set "do not remap" by default in settings
-• Bug fixes
+• "Reduce app killing" tips for Xiaomi/Redmi/Poco devices
+• Sort key maps by enabled/disabled
+• Cycle keyboard language action
+• Custom seek amount for media step actions
+• Export/import key maps on Android TV
+• Fix some crashes when auto starting Expert Mode
+• Fix shell commands failing with Windows line endings
+• Screen tap/swipe/pinch actions now scale to display resolution
+• Many other bug fixes and improvements
 
 📖 View the complete changelog at: http://keymapper.app/changelog
