@@ -47,7 +47,7 @@ fun TipCard(
         Box(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Column {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.padding(start = 16.dp, end = 48.dp),
@@ -123,6 +123,18 @@ private fun TipCardPreview() {
                 This is a helpful tip message that explains something important to the user. 
                 It can be multiple lines long and provides useful information.
             """.trimIndent(),
+            buttonText = "Button",
+        )
+    }
+}
+
+@Preview(widthDp = 300)
+@Composable
+private fun TipCardPreviewWide() {
+    KeyMapperTheme {
+        TipCard(
+            title = "Tip Title",
+            message = "Short message",
             buttonText = "Button",
         )
     }

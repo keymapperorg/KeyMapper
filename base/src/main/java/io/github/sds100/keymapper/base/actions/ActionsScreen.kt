@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.actions
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -133,10 +132,12 @@ private fun ActionsScreen(
             },
             text = { Text(stringResource(R.string.action_list_delete_dialog_text)) },
             confirmButton = {
-                TextButton(onClick = {
-                    onRemoveClick(actionToDelete!!)
-                    showDeleteDialog = false
-                }) {
+                TextButton(
+                    onClick = {
+                        onRemoveClick(actionToDelete!!)
+                        showDeleteDialog = false
+                    },
+                ) {
                     Text(stringResource(R.string.action_list_delete_yes))
                 }
             },
@@ -154,88 +155,22 @@ private fun ActionsScreen(
         is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
             Column {
                 Spacer(Modifier.height(8.dp))
-
-                // Display action tip if available
-                tipModel?.let { tip ->
-                    TipCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        title = tip.title,
-                        message = tip.message,
-                        isDismissable = tip.isDismissable,
-                        onDismiss = onActionTipDismiss,
-                        buttonText = tip.buttonText,
-                        onButtonClick = { onTipButtonClick(tip.id) },
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-                }
-
-                when (val data = state.data) {
-                    is ConfigActionsState.Empty -> {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth(),
-                                text = stringResource(R.string.actions_recyclerview_placeholder),
-                                textAlign = TextAlign.Center,
-                            )
-
-                            if (data.shortcuts.isNotEmpty()) {
-                                Text(
-                                    text = stringResource(R.string.recently_used_actions),
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-
-                                Spacer(Modifier.height(8.dp))
-
-                                ShortcutRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth(),
-                                    shortcuts = data.shortcuts,
-                                    onClick = onClickShortcut,
-                                )
-                            }
-                        }
-                    }
-
-                    is ConfigActionsState.Loaded -> {
-                        if (data.actions.isNotEmpty()) {
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(R.string.action_list_explanation_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        ActionList(
-                            modifier = Modifier.weight(1f),
-                            actionList = data.actions,
-                            shortcuts = data.shortcuts,
-                            isReorderingEnabled = data.isReorderingEnabled,
-                            onRemoveClick = {
-                                actionToDelete = it
-                                showDeleteDialog = true
-                            },
-                            onEditClick = onEditClick,
-                            onFixErrorClick = onFixErrorClick,
-                            onMove = onMoveAction,
-                            onClickShortcut = onClickShortcut,
-                            onTestClick = onTestClick,
-                        )
-                    }
-                }
+                ActionList(
+                    modifier = Modifier.weight(1f),
+                    state = state.data,
+                    tipModel = tipModel,
+                    onRemoveClick = {
+                        actionToDelete = it
+                        showDeleteDialog = true
+                    },
+                    onEditClick = onEditClick,
+                    onFixErrorClick = onFixErrorClick,
+                    onMove = onMoveAction,
+                    onClickShortcut = onClickShortcut,
+                    onTestClick = onTestClick,
+                    onActionTipDismiss,
+                    onTipButtonClick,
+                )
 
                 FilledTonalButton(
                     modifier = Modifier
@@ -264,27 +199,33 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun ActionList(
     modifier: Modifier = Modifier,
-    actionList: List<ActionListItemModel>,
-    shortcuts: Set<ShortcutModel<ActionData>>,
-    isReorderingEnabled: Boolean,
+    state: ConfigActionsState,
+    tipModel: OnboardingTipModel?,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onClickShortcut: (ActionData) -> Unit,
     onTestClick: (String) -> Unit,
+    onActionTipDismiss: () -> Unit,
+    onTipButtonClick: (String) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onMove = onMove,
-        // Do not drag and drop the row of shortcuts
-        ignoreLastItems = if (shortcuts.isEmpty()) {
-            0
-        } else {
-            1
-        },
-    )
+
+    val dragDropState = if (state is ConfigActionsState.Loaded) {
+        rememberDragDropState(
+            lazyListState = lazyListState,
+            onMove = onMove,
+            // Do not drag and drop the row of shortcuts
+            ignoreLastItems = if (state.shortcuts.isEmpty()) {
+                0
+            } else {
+                1
+            },
+        )
+    } else {
+        null
+    }
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -293,42 +234,79 @@ private fun ActionList(
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-        itemsIndexed(
-            actionList,
-            key = { _, item -> item.id },
-            contentType = { _, _ -> "action" },
-        ) { index, model ->
-            DraggableItem(
-                dragDropState = dragDropState,
-                index = index,
-            ) { isDragging ->
-                ActionListItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    model = model,
-                    index = index,
-                    isDraggingEnabled = actionList.size > 1,
-                    isDragging = isDragging,
-                    isReorderingEnabled = isReorderingEnabled,
-                    dragDropState = dragDropState,
-                    onEditClick = { onEditClick(model.id) },
-                    onRemoveClick = { onRemoveClick(model.id) },
-                    onFixClick = { onFixErrorClick(model.id) },
-                    onTestClick = { onTestClick(model.id) },
-                    onMoveUp = if (isReorderingEnabled && index > 0) {
-                        { onMove(index, index - 1) }
-                    } else {
-                        null
-                    },
-                    onMoveDown = if (isReorderingEnabled && index < actionList.size - 1) {
-                        { onMove(index, index + 1) }
-                    } else {
-                        null
-                    },
+        // Display action tip if available
+        tipModel?.let { tip ->
+            item {
+                TipCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = tip.title,
+                    message = tip.message,
+                    isDismissable = tip.isDismissable,
+                    onDismiss = onActionTipDismiss,
+                    buttonText = tip.buttonText,
+                    onButtonClick = { onTipButtonClick(tip.id) },
                 )
+
+                Spacer(Modifier.height(8.dp))
             }
         }
 
-        if (shortcuts.isNotEmpty()) {
+        when (state) {
+            is ConfigActionsState.Empty -> {
+                item {
+                    Text(
+                        modifier = Modifier
+                            .padding(32.dp)
+                            .fillMaxWidth(),
+                        text = stringResource(R.string.actions_recyclerview_placeholder),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+
+            is ConfigActionsState.Loaded -> {
+                itemsIndexed(
+                    state.actions,
+                    key = { _, item -> item.id },
+                    contentType = { _, _ -> "action" },
+                ) { index, model ->
+                    DraggableItem(
+                        dragDropState = dragDropState!!,
+                        index = index,
+                    ) { isDragging ->
+                        ActionListItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            model = model,
+                            index = index,
+                            isDraggingEnabled = state.actions.size > 1,
+                            isDragging = isDragging,
+                            isReorderingEnabled = state.isReorderingEnabled,
+                            dragDropState = dragDropState,
+                            onEditClick = { onEditClick(model.id) },
+                            onRemoveClick = { onRemoveClick(model.id) },
+                            onFixClick = { onFixErrorClick(model.id) },
+                            onTestClick = { onTestClick(model.id) },
+                            onMoveUp = if (state.isReorderingEnabled && index > 0) {
+                                { onMove(index, index - 1) }
+                            } else {
+                                null
+                            },
+                            onMoveDown = if (state.isReorderingEnabled &&
+                                index < state.actions.size - 1
+                            ) {
+                                { onMove(index, index + 1) }
+                            } else {
+                                null
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
+        if (state.shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -342,7 +320,7 @@ private fun ActionList(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 32.dp),
-                        shortcuts = shortcuts,
+                        shortcuts = state.shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
                 }
@@ -384,6 +362,13 @@ private fun EmptyPreview() {
 private fun LoadedPreview() {
     KeyMapperTheme {
         ActionsScreen(
+            tipModel = OnboardingTipModel(
+                id = "id",
+                title = "Use a dedicated action instead",
+                message = "Use the \"Flashlight\" action instead.",
+                isDismissable = false,
+                buttonText = "Replace action",
+            ),
             state = State.Data(
                 ConfigActionsState.Loaded(
                     actions = listOf(
