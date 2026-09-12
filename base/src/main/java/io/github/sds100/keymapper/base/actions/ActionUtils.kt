@@ -840,6 +840,10 @@ object ActionUtils {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
+            ActionId.STEP_FORWARD,
+            ActionId.STEP_FORWARD_PACKAGE,
+            ActionId.STEP_BACKWARD,
+            ActionId.STEP_BACKWARD_PACKAGE,
                 -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.VOLUME_UP,
