@@ -173,24 +173,24 @@ class AndroidMediaAdapter @Inject constructor(
         }
     }
 
-    override fun stepForward(packageName: String?): KMResult<*> {
+    override fun stepForward(packageName: String?, durationMs: Long?): KMResult<*> {
         val session = getPackageMediaSession(packageName) ?: return KMError.NoMediaSessions
 
         if (session.isPlaybackActionSupported(PlaybackState.ACTION_SEEK_TO)) {
             val position = session.playbackState?.position ?: return KMError.NoMediaSessions
-            session.transportControls.seekTo(position + SEEK_AMOUNT)
+            session.transportControls.seekTo(position + (durationMs ?: SEEK_AMOUNT))
             return Success(Unit)
         } else {
             return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_FORWARD, packageName)
         }
     }
 
-    override fun stepBackward(packageName: String?): KMResult<*> {
+    override fun stepBackward(packageName: String?, durationMs: Long?): KMResult<*> {
         val session = getPackageMediaSession(packageName) ?: return KMError.NoMediaSessions
 
         if (session.isPlaybackActionSupported(PlaybackState.ACTION_SEEK_TO)) {
             val position = session.playbackState?.position ?: return KMError.NoMediaSessions
-            session.transportControls.seekTo(max(0, position - SEEK_AMOUNT))
+            session.transportControls.seekTo(max(0, position - (durationMs ?: SEEK_AMOUNT)))
             return Success(Unit)
         } else {
             return sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD, packageName)

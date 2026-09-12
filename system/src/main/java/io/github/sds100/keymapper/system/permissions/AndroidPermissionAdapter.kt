@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.IPackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
+import android.os.Environment
 import android.os.PowerManager
 import android.os.Process
 import android.permission.IPermissionManager
@@ -335,6 +336,19 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.READ_LOGS,
             ) == PERMISSION_GRANTED
         }
+
+        Permission.ACCESS_LOCAL_NETWORK ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.ACCESS_LOCAL_NETWORK,
+                ) == PERMISSION_GRANTED
+            } else {
+                true
+            }
+
+        Permission.MANAGE_EXTERNAL_STORAGE ->
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()
     }
 
     override fun isGrantedFlow(permission: Permission): Flow<Boolean> = channelFlow {

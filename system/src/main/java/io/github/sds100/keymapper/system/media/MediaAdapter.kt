@@ -33,8 +33,8 @@ interface MediaAdapter {
     fun previousTrack(packageName: String? = null): KMResult<*>
     fun nextTrack(packageName: String? = null): KMResult<*>
     fun stop(packageName: String? = null): KMResult<*>
-    fun stepForward(packageName: String? = null): KMResult<*>
-    fun stepBackward(packageName: String? = null): KMResult<*>
+    fun stepForward(packageName: String? = null, durationMs: Long? = null): KMResult<*>
+    fun stepBackward(packageName: String? = null, durationMs: Long? = null): KMResult<*>
 
     fun playFile(uri: String, stream: VolumeStream): KMResult<*>
     fun stopFileMedia(): KMResult<*>

@@ -34,13 +34,13 @@ class DocumentFileWrapper(val file: DocumentFile, context: Context) : IFile {
         get() = file.getAbsolutePath(ctx)
 
     override val name: String?
-        get() = file.name
+        get() = file.name ?: file.uri.lastPathSegment
 
     override val baseName: String?
-        get() = file.name?.substringBeforeLast('.')
+        get() = name?.substringBeforeLast('.')
 
     override val extension: String?
-        get() = file.name?.substringAfterLast('.')
+        get() = name?.substringAfterLast('.')
 
     override val isDirectory: Boolean
         get() = file.isDirectory || toJavaFile().isDirectory
@@ -105,20 +105,26 @@ class DocumentFileWrapper(val file: DocumentFile, context: Context) : IFile {
 
                         val error = when (errorCode) {
                             ErrorCode.STORAGE_PERMISSION_DENIED -> KMError.StoragePermissionDenied
+
                             ErrorCode.CANNOT_CREATE_FILE_IN_TARGET ->
                                 KMError.CannotCreateFileInTarget(directory.uri)
 
                             ErrorCode.SOURCE_FILE_NOT_FOUND ->
                                 KMError.SourceFileNotFound(this@DocumentFileWrapper.uri)
+
                             ErrorCode.TARGET_FILE_NOT_FOUND ->
                                 KMError.TargetFileNotFound(directory.uri)
+
                             ErrorCode.TARGET_FOLDER_NOT_FOUND ->
                                 KMError.TargetDirectoryNotFound(directory.uri)
 
                             ErrorCode.UNKNOWN_IO_ERROR -> KMError.UnknownIOError
+
                             ErrorCode.CANCELED -> KMError.FileOperationCancelled
+
                             ErrorCode.TARGET_FOLDER_CANNOT_HAVE_SAME_PATH_WITH_SOURCE_FOLDER ->
                                 KMError.TargetDirectoryMatchesSourceDirectory
+
                             ErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> KMError.NoSpaceLeftOnTarget(
                                 directory.uri,
                             )

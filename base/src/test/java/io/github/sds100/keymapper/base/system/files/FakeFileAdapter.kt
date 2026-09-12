@@ -25,6 +25,10 @@ class FakeFileAdapter(private val tempFolder: TemporaryFolder) : FileAdapter {
         throw Exception()
     }
 
+    override fun getDownloads(): KMResult<List<IFile>> {
+        throw Exception()
+    }
+
     override fun getPrivateFile(path: String): IFile {
         val file = File(privateFolder, path)
 

@@ -98,6 +98,7 @@ data class ActionEntity(
         const val EXTRA_NOTIFICATION_TITLE = "extra_notification_title"
         const val EXTRA_NOTIFICATION_TIMEOUT = "extra_notification_timeout"
         const val EXTRA_TOAST_DURATION = "extra_toast_duration"
+        const val EXTRA_STEP_MEDIA_DURATION = "extra_step_media_duration"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"

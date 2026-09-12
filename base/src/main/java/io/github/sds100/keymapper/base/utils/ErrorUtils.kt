@@ -74,6 +74,12 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
 
                 Permission.READ_LOGS ->
                     R.string.error_read_logs_permission_denied
+
+                Permission.ACCESS_LOCAL_NETWORK ->
+                    R.string.error_local_network_permission_denied
+
+                Permission.MANAGE_EXTERNAL_STORAGE ->
+                    R.string.error_action_requires_manage_external_storage_permission
             }
 
             resourceProvider.getString(resId)
@@ -383,6 +389,12 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.EnableImeFailed ->
             resourceProvider.getString(R.string.error_failed_to_enable_ime)
 
+        KMError.CycleImeSubtypeFailed ->
+            resourceProvider.getString(R.string.error_failed_to_cycle_ime_subtype)
+
+        KMError.NotEnoughInputMethodSubtypes ->
+            resourceProvider.getString(R.string.error_not_enough_ime_subtypes)
+
         KMError.NoCameraApp ->
             resourceProvider.getString(R.string.error_no_camera_app)
 
@@ -454,6 +466,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
 
         KMError.UnknownIOError ->
             resourceProvider.getString(R.string.error_io_error)
+
+        KMError.StarterFilesUnavailable ->
+            resourceProvider.getString(R.string.error_starter_files_unavailable)
 
         KMError.ShizukuNotStarted ->
             resourceProvider.getString(R.string.error_shizuku_not_started)

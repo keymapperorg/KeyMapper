@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.CheckCircleOutline
+import androidx.compose.material.icons.rounded.Lan
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -47,6 +48,8 @@ abstract class SystemBridgeSetupDelegateImpl(
         when (currentStep) {
             SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
             SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
+            SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION ->
+                useCase.requestLocalNetworkPermission()
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.enableDeveloperOptions()
             SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
@@ -87,6 +90,19 @@ abstract class SystemBridgeSetupDelegateImpl(
                 icon = Icons.Rounded.Notifications,
                 buttonText = getString(
                     R.string.expert_mode_setup_wizard_enable_notification_permission_button,
+                ),
+            )
+
+            SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> StepContent(
+                title = getString(
+                    R.string.expert_mode_setup_wizard_local_network_permission_title,
+                ),
+                message = getString(
+                    R.string.expert_mode_setup_wizard_local_network_permission_description,
+                ),
+                icon = Icons.Rounded.Lan,
+                buttonText = getString(
+                    R.string.expert_mode_setup_wizard_local_network_permission_button,
                 ),
             )
 

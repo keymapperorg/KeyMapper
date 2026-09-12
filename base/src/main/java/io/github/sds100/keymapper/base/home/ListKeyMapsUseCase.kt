@@ -4,7 +4,9 @@ import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
+import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.BackupUtils
+import io.github.sds100.keymapper.base.backup.ExportedBackupLocation
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
@@ -19,7 +21,6 @@ import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
@@ -50,6 +51,7 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
     private val floatingButtonRepository: FloatingButtonRepository,
     private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,
+    private val backupRestoreMappingsUseCase: BackupRestoreMappingsUseCase,
     private val resourceProvider: ResourceProvider,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
@@ -363,18 +365,18 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String): KMResult<String> {
+    override suspend fun backupKeyMaps(vararg uid: String): KMResult<ExportedBackupLocation> {
         val fileName = BackupUtils.createBackupFileName()
 
         // Share in private files so the share sheet can show the file name. This is some quirk
         // of the storage access framework https://issuetracker.google.com/issues/268079113.
         // Saving it directly to Downloads with the MediaStore returns a content URI
         // that only contains a numerical ID, not the file name.
-        return fileAdapter.getPrivateFile("${BackupManagerImpl.BACKUP_DIR}/$fileName").let { file ->
-            file.createFile()
-            backupManager.backupKeyMaps(file, uid.asList())
-            Success(fileAdapter.getPublicUriForPrivateFile(file))
-        }
+        val file = fileAdapter.getPrivateFile("${BackupManagerImpl.BACKUP_DIR}/$fileName")
+        file.createFile()
+        backupManager.backupKeyMaps(file, uid.asList())
+
+        return backupRestoreMappingsUseCase.exportToUserAccessibleLocation(file, fileName)
     }
 }
 
@@ -403,5 +405,5 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)
     fun duplicateKeyMap(vararg uid: String)
-    suspend fun backupKeyMaps(vararg uid: String): KMResult<String>
+    suspend fun backupKeyMaps(vararg uid: String): KMResult<ExportedBackupLocation>
 }

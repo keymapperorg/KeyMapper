@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.files
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
@@ -82,6 +83,55 @@ class AndroidFileAdapter @Inject constructor(
 
     override fun getPicturesFolder(): String =
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
+
+    override fun getDownloads(): KMResult<List<IFile>> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+            Environment.isExternalStorageManager()
+        ) {
+            val downloadsDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+            val files = downloadsDir.listFiles()
+                .orEmpty()
+                .map { file -> DocumentFileWrapper(DocumentFile.fromFile(file), ctx) }
+                .sortedBy { it.name }
+
+            return Success(files)
+        }
+
+        // MediaStore.Downloads didn't exist before Q, and apps can only read entries
+        // they own without MANAGE_EXTERNAL_STORAGE, so there's nothing to list.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return Success(emptyList())
+        }
+
+        val files = mutableListOf<IFile>()
+
+        contentResolver.query(
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            arrayOf(MediaStore.MediaColumns._ID),
+            "${MediaStore.MediaColumns.OWNER_PACKAGE_NAME} = ?",
+            arrayOf(buildConfigProvider.packageName),
+            "${MediaStore.MediaColumns.DATE_MODIFIED} DESC",
+        )?.use { cursor ->
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+
+            while (cursor.moveToNext()) {
+                val uri = ContentUris.withAppendedId(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    cursor.getLong(idColumn),
+                )
+
+                DocumentFile.fromSingleUri(ctx, uri)?.let {
+                    files.add(DocumentFileWrapper(it, ctx))
+                }
+            }
+        }
+
+        files.sortBy { it.name }
+
+        return Success(files)
+    }
 
     override fun createZipFile(destination: IFile, files: Set<IFile>): KMResult<*> {
         val zipUid = UUID.randomUUID().toString()

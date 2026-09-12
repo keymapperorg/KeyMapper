@@ -247,6 +247,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object CycleKeyboardLanguage : ActionData() {
+        override val id = ActionId.CYCLE_KEYBOARD_LANGUAGE
+    }
+
+    @Serializable
     sealed class DoNotDisturb : ActionData() {
 
         @Serializable
@@ -379,12 +384,18 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class StepForward(override val packageName: String) : ControlMediaForApp() {
+        data class StepForward(
+            override val packageName: String,
+            val stepDurationMs: Long? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_FORWARD_PACKAGE
         }
 
         @Serializable
-        data class StepBackward(override val packageName: String) : ControlMediaForApp() {
+        data class StepBackward(
+            override val packageName: String,
+            val stepDurationMs: Long? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_BACKWARD_PACKAGE
         }
     }
@@ -432,12 +443,12 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data object StepForward : ControlMedia() {
+        data class StepForward(val stepDurationMs: Long? = null) : ControlMedia() {
             override val id = ActionId.STEP_FORWARD
         }
 
         @Serializable
-        data object StepBackward : ControlMedia() {
+        data class StepBackward(val stepDurationMs: Long? = null) : ControlMedia() {
             override val id = ActionId.STEP_BACKWARD
         }
     }

@@ -301,6 +301,13 @@ class SystemBridgeAutoStarter @Inject constructor(
             return
         }
 
+        // Return before setting the auto start time, otherwise the cooldown would block
+        // auto starting again once the storage becomes available.
+        if (!connectionManager.canStartSystemBridge()) {
+            Timber.w("Not auto starting with $type because the storage is unavailable.")
+            return
+        }
+
         // This must use the unix timestamp and not a time relative to the uptime of the device.
         // Otherwise, it may not autostart on reboot if it started earlier than when it last auto
         // started relative to the last boot.

@@ -33,11 +33,12 @@ import androidx.compose.material.icons.outlined.FastForward
 import androidx.compose.material.icons.outlined.FastRewind
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material.icons.outlined.Forward30
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Lock
@@ -52,7 +53,6 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
-import androidx.compose.material.icons.outlined.Replay30
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.SelectAll
@@ -230,6 +230,7 @@ object ActionUtils {
         ActionId.SELECT_ALL_TEXT -> ActionCategory.KEYBOARD
         ActionId.PERFORM_IME_ACTION -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
@@ -436,6 +437,8 @@ object ActionUtils {
 
         ActionId.SWITCH_KEYBOARD -> R.string.action_switch_keyboard
 
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> R.string.action_cycle_keyboard_language
+
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
 
         ActionId.ENABLE_AIRPLANE_MODE -> R.string.action_enable_airplane_mode
@@ -492,6 +495,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
 
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
+
         ActionId.TOAST -> R.string.action_toast
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
@@ -836,6 +840,10 @@ object ActionUtils {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
+            ActionId.STEP_FORWARD,
+            ActionId.STEP_FORWARD_PACKAGE,
+            ActionId.STEP_BACKWARD,
+            ActionId.STEP_BACKWARD_PACKAGE,
                 -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.VOLUME_UP,
@@ -901,6 +909,8 @@ object ActionUtils {
             ActionId.SWITCH_KEYBOARD -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 return listOf(Permission.WRITE_SECURE_SETTINGS)
             }
+
+            ActionId.CYCLE_KEYBOARD_LANGUAGE -> return listOf(Permission.WRITE_SECURE_SETTINGS)
 
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
@@ -1022,10 +1032,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> Icons.Outlined.FastRewind
         ActionId.STOP_MEDIA -> Icons.Outlined.StopCircle
         ActionId.STOP_MEDIA_PACKAGE -> Icons.Outlined.StopCircle
-        ActionId.STEP_FORWARD -> Icons.Outlined.Forward30
-        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.Forward30
-        ActionId.STEP_BACKWARD -> Icons.Outlined.Replay30
-        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.Replay30
+        ActionId.STEP_FORWARD -> Icons.Outlined.KeyboardDoubleArrowRight
+        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.KeyboardDoubleArrowRight
+        ActionId.STEP_BACKWARD -> Icons.Outlined.KeyboardDoubleArrowLeft
+        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.KeyboardDoubleArrowLeft
         ActionId.GO_BACK -> Icons.AutoMirrored.Outlined.ArrowBack
         ActionId.GO_HOME -> Icons.Outlined.Home
         ActionId.OPEN_RECENTS -> Icons.Outlined.ViewArray
@@ -1051,6 +1061,7 @@ object ActionUtils {
         ActionId.SELECT_ALL_TEXT -> Icons.Outlined.SelectAll
         ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.DISABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeInactive
@@ -1118,6 +1129,8 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Sound,
     is ActionData.SwitchKeyboard,
     is ActionData.ControlMediaForApp,
+    is ActionData.ControlMedia.StepForward,
+    is ActionData.ControlMedia.StepBackward,
     is ActionData.Volume.Up,
     is ActionData.Volume.Down,
     is ActionData.Volume.Mute,

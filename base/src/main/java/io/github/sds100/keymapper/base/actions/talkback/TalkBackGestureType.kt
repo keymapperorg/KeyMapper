@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.actions.talkback
 
 enum class TalkBackGestureType {
+    // 1-finger gestures
+    ONE_FINGER_DOUBLE_TAP,
+
     // 1-finger swipes
     SWIPE_UP,
     SWIPE_DOWN,
@@ -16,6 +19,7 @@ enum class TalkBackGestureType {
 
     // 2-finger gestures
     TWO_FINGER_TAP,
+    TWO_FINGER_DOUBLE_TAP,
     TWO_FINGER_DOUBLE_TAP_HOLD,
     TWO_FINGER_TRIPLE_TAP,
     TWO_FINGER_TRIPLE_TAP_HOLD,

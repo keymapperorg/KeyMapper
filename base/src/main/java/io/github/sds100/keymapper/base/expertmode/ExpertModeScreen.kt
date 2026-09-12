@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
@@ -119,6 +120,7 @@ fun ExpertModeScreen(modifier: Modifier = Modifier, viewModel: ExpertModeViewMod
             onLaunchDeveloperOptionsClick = viewModel::onLaunchDeveloperOptionsClick,
             onGetShellStartCommandClick = viewModel::onGetShellStartCommandClick,
             onGetEventClick = viewModel::onGetEventClick,
+            onXiaomiOptimizationClick = viewModel::onXiaomiOptimizationClick,
         )
     }
 }
@@ -203,6 +205,7 @@ private fun Content(
     onLaunchDeveloperOptionsClick: () -> Unit = {},
     onGetShellStartCommandClick: () -> Unit = {},
     onGetEventClick: () -> Unit = {},
+    onXiaomiOptimizationClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -253,6 +256,7 @@ private fun Content(
                         onEmergencyStopToggled = onEmergencyStopToggled,
                         onLaunchDeveloperOptionsClick = onLaunchDeveloperOptionsClick,
                         onGetShellStartCommandClick = onGetShellStartCommandClick,
+                        onXiaomiOptimizationClick = onXiaomiOptimizationClick,
                     )
                 }
             }
@@ -300,6 +304,7 @@ private fun LoadedContent(
     onEmergencyStopToggled: () -> Unit = {},
     onLaunchDeveloperOptionsClick: () -> Unit = {},
     onGetShellStartCommandClick: () -> Unit = {},
+    onXiaomiOptimizationClick: () -> Unit = {},
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -365,6 +370,17 @@ private fun LoadedContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                if (state.showXiaomiOptimizationCard) {
+                    XiaomiOptimizationCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        onButtonClick = onXiaomiOptimizationClick,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -602,6 +618,30 @@ private fun UsbDebuggingSecuritySettingsCard(modifier: Modifier = Modifier) {
                 null,
             )
         },
+    )
+}
+
+@Composable
+private fun XiaomiOptimizationCard(modifier: Modifier = Modifier, onButtonClick: () -> Unit = {}) {
+    SetupCard(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.BatteryChargingFull,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        title = stringResource(R.string.expert_mode_xiaomi_optimization_title),
+        content = {
+            Text(
+                text = stringResource(R.string.expert_mode_xiaomi_optimization_description),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        buttonText = stringResource(R.string.button_fix),
+        onButtonClick = onButtonClick,
     )
 }
 
@@ -1021,6 +1061,7 @@ private fun PreviewDark() {
                         autoStartBootChecked = true,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        showXiaomiOptimizationCard = false,
                         emergencyStopChecked = true,
                     ),
                 ),
@@ -1065,6 +1106,7 @@ private fun PreviewStarted() {
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        showXiaomiOptimizationCard = false,
                         emergencyStopChecked = true,
                     ),
                 ),
@@ -1115,6 +1157,33 @@ private fun PreviewUsbDebuggingSecuritySettingsCard() {
                         autoStartBootChecked = false,
                         autoStartBootEnabled = true,
                         showXiaomiAdbInputSecurityWarning = false,
+                        showXiaomiOptimizationCard = false,
+                        emergencyStopChecked = true,
+                    ),
+                ),
+                showInfoCard = false,
+                onInfoCardDismiss = {},
+                onAutoStartAtBootToggled = {},
+                onLaunchDeveloperOptionsClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewXiaomiOptimizationCard() {
+    KeyMapperTheme {
+        ExpertModeScreen {
+            Content(
+                warningState = ExpertModeWarningState.Understood,
+                setupState = State.Data(
+                    ExpertModeState.Started(
+                        isDefaultUsbModeCompatible = true,
+                        autoStartBootChecked = false,
+                        autoStartBootEnabled = true,
+                        showXiaomiAdbInputSecurityWarning = false,
+                        showXiaomiOptimizationCard = true,
                         emergencyStopChecked = true,
                     ),
                 ),

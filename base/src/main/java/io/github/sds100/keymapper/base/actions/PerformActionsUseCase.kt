@@ -246,11 +246,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ControlMediaForApp.StepForward -> {
-                result = mediaAdapter.stepForward(action.packageName)
+                result = mediaAdapter.stepForward(action.packageName, action.stepDurationMs)
             }
 
             is ActionData.ControlMediaForApp.StepBackward -> {
-                result = mediaAdapter.stepBackward(action.packageName)
+                result = mediaAdapter.stepBackward(action.packageName, action.stepDurationMs)
             }
 
             is ActionData.Rotation.CycleRotations -> {
@@ -298,6 +298,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 } else {
                     result = Success(Unit)
                 }
+            }
+
+            is ActionData.CycleKeyboardLanguage -> {
+                result = inputMethodAdapter.cycleInputMethodSubtype()
             }
 
             is ActionData.Volume.Down -> {
@@ -670,11 +674,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ControlMedia.StepForward -> {
-                result = mediaAdapter.stepForward()
+                result = mediaAdapter.stepForward(durationMs = action.stepDurationMs)
             }
 
             is ActionData.ControlMedia.StepBackward -> {
-                result = mediaAdapter.stepBackward()
+                result = mediaAdapter.stepBackward(durationMs = action.stepDurationMs)
             }
 
             is ActionData.GoBack -> {

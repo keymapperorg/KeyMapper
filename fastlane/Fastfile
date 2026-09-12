@@ -103,7 +103,7 @@ lane :internal do
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
-    live_version_codes = google_play_track_version_codes(track: "alpha")
+    live_version_codes = google_play_track_version_codes(track: "internal")
     latest_live_version_code = live_version_codes.max || 0
 
     if version_code.to_i <= latest_live_version_code

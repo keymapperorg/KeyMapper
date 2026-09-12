@@ -268,6 +268,15 @@ class SystemBridgeStarter @Inject constructor(
     }
 
     /**
+     * Whether starting the system bridge can be attempted at all. This is false while there is
+     * nowhere to copy the starter files to because the shared storage is unavailable, which can
+     * happen at any point while the device is running.
+     */
+    fun canStartSystemBridge(): Boolean {
+        return getStarterFilesDirectory() != null
+    }
+
+    /**
      * Get the shell command that can be used to start the system bridge manually.
      * This command should be executed with 'adb shell'.
      */
@@ -276,28 +285,37 @@ class SystemBridgeStarter @Inject constructor(
     }
 
     private suspend fun writeStarterScript(): KMResult<String> {
-        val directory = if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
-            try {
+        val directory = getStarterFilesDirectory() ?: return KMError.StarterFilesUnavailable
+
+        return copyStarterFiles(directory)
+    }
+
+    /**
+     * @return The directory to copy the starter files to, or null if it is unavailable.
+     * getExternalFilesDir returns null while the shared storage is not mounted, which can happen
+     * at any point while the device is running and usually resolves itself within a minute.
+     */
+    private fun getStarterFilesDirectory(): File? {
+        if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
+            return try {
                 ctx.getExternalFilesDir(null)?.parentFile
             } catch (e: IOException) {
-                return KMError.UnknownIOError
+                null
             }
-        } else {
-            // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
-            val protectedStorageDir =
-                ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
-
-            try {
-                // 0711
-                Os.chmod(protectedStorageDir.absolutePath, 457)
-            } catch (e: ErrnoException) {
-                e.printStackTrace()
-            }
-
-            protectedStorageDir
         }
 
-        return copyStarterFiles(directory!!)
+        // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
+        val protectedStorageDir =
+            ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
+
+        try {
+            // 0711
+            Os.chmod(protectedStorageDir.absolutePath, 457)
+        } catch (e: ErrnoException) {
+            e.printStackTrace()
+        }
+
+        return protectedStorageDir
     }
 
     /**

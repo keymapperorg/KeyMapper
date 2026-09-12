@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapConstraintsComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapEnabledComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
 import io.github.sds100.keymapper.data.Keys
@@ -80,6 +81,7 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
             )
 
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
+            SortField.ENABLED -> KeyMapEnabledComparator(reverseOrder)
         }
     }
 
@@ -89,6 +91,7 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
             SortFieldOrder(SortField.ACTIONS),
             SortFieldOrder(SortField.CONSTRAINTS),
             SortFieldOrder(SortField.OPTIONS),
+            SortFieldOrder(SortField.ENABLED),
         )
     }
 }
