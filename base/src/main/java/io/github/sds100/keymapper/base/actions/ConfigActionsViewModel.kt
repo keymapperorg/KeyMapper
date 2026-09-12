@@ -452,13 +452,15 @@ class ConfigActionsViewModel @Inject constructor(
 }
 
 sealed class ConfigActionsState {
-    data class Empty(val shortcuts: Set<ShortcutModel<ActionData>> = emptySet()) :
+    abstract val shortcuts: Set<ShortcutModel<ActionData>>
+
+    data class Empty(override val shortcuts: Set<ShortcutModel<ActionData>> = emptySet()) :
         ConfigActionsState()
 
     data class Loaded(
         val actions: List<ActionListItemModel> = emptyList(),
         val isReorderingEnabled: Boolean = false,
-        val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
+        override val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
     ) : ConfigActionsState()
 }
 

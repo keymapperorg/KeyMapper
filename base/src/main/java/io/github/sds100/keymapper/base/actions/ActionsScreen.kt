@@ -239,7 +239,6 @@ private fun ActionList(
             item {
                 TipCard(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     title = tip.title,
                     message = tip.message,
