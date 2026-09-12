@@ -13,7 +13,6 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.BadParcelableException
 import android.os.Build
 import android.os.RemoteException
@@ -23,6 +22,7 @@ import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -103,7 +103,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
                 val packages = withContext(Dispatchers.Default) {
                     try {
-                        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                        packageManager.getInstalledApplications(0)
                             .mapNotNull { createPackageInfoModel(it) }
                     } catch (_: BadParcelableException) {
                         emptyList()
@@ -134,13 +134,13 @@ class AndroidPackageManagerAdapter @Inject constructor(
     override fun downloadApp(packageName: String) {
         try {
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("market://details?id=$packageName")
+            intent.data = "market://details?id=$packageName".toUri()
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             ctx.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             val intent = Intent(Intent.ACTION_VIEW)
 
-            intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+            intent.data = "https://play.google.com/store/apps/details?id=$packageName".toUri()
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
             ctx.startActivity(intent)
@@ -186,7 +186,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
     override fun enableApp(packageName: String) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.parse("package:$packageName")
+            data = "package:$packageName".toUri()
             flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
             ctx.startActivity(this)
@@ -338,7 +338,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
     override fun getPackageInfo(packageName: String): PackageInfo? {
         try {
             val applicationInfo =
-                packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+                packageManager.getApplicationInfo(packageName, 0)
 
             return createPackageInfoModel(applicationInfo)
         } catch (e: PackageManager.NameNotFoundException) {
@@ -411,7 +411,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
             val packageInfo = packageManager.getPackageInfo(
                 packageName,
-                PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA,
+                PackageManager.GET_ACTIVITIES,
             )
 
             if (packageInfo == null) {
