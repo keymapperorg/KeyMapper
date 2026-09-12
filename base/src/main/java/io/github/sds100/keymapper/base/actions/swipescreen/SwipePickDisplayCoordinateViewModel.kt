@@ -2,15 +2,16 @@ package io.github.sds100.keymapper.base.actions.swipescreen
 
 import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
-import android.graphics.Point
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.ScreenshotPickerDelegate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.system.display.DisplayAdapter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -31,6 +31,7 @@ enum class ScreenshotTouchType {
 
 @HiltViewModel
 class SwipePickDisplayCoordinateViewModel @Inject constructor(
+    private val displayAdapter: DisplayAdapter,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
@@ -46,7 +47,12 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
     private val fingerCount = MutableStateFlow<Int?>(1)
     private val duration = MutableStateFlow<Int?>(200)
 
-    private val _bitmap = MutableStateFlow<Bitmap?>(null)
+    private val screenshotDelegate = ScreenshotPickerDelegate(
+        viewModelScope,
+        displayAdapter,
+        resourceProvider,
+        dialogProvider,
+    )
     private val _returnResult = MutableSharedFlow<SwipePickCoordinateResult>()
     private val screenshotTouchType = MutableStateFlow(ScreenshotTouchType.START)
 
@@ -127,7 +133,7 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
         null
     }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val bitmap = _bitmap.asStateFlow()
+    val bitmap = screenshotDelegate.bitmap
     val returnResult = _returnResult.asSharedFlow()
 
     val isSelectStartEndSwitchEnabled: StateFlow<Boolean> = combine(bitmap) {
@@ -157,25 +163,9 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
             isCoordinatesValid && isOptionsValid
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    fun selectedScreenshot(newBitmap: Bitmap, displaySize: Point) {
+    fun selectedScreenshot(newBitmap: Bitmap) {
         screenshotTouchType.value = ScreenshotTouchType.START
-
-        // check whether the height and width of the bitmap match the display size, even when it is rotated.
-        if ((displaySize.x != newBitmap.width && displaySize.y != newBitmap.height) &&
-            (displaySize.y != newBitmap.width && displaySize.x != newBitmap.height)
-        ) {
-            viewModelScope.launch {
-                val snackBar = DialogModel.SnackBar(
-                    message = getString(R.string.toast_incorrect_screenshot_resolution),
-                )
-
-                showDialog("incorrect_resolution", snackBar)
-            }
-
-            return
-        }
-
-        _bitmap.value = newBitmap
+        screenshotDelegate.selectedScreenshot(newBitmap)
     }
 
     fun setXStart(x: String) {
@@ -252,6 +242,7 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
                     fingerCount,
                     duration,
                     description,
+                    screenshotDelegate.screenResolution(),
                 ),
             )
         }
@@ -266,12 +257,12 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
             fingerCount.value = result.fingerCount
             duration.value = result.duration
             description.value = result.description
+            screenshotDelegate.setLoadedResolution(result.screenResolution)
         }
     }
 
     override fun onCleared() {
-        bitmap.value?.recycle()
-        _bitmap.value = null
+        screenshotDelegate.recycle()
 
         super.onCleared()
     }

@@ -33,6 +33,7 @@
 - Actions screen scrolls when empty and tip does not fill up screen on small displays.
 - Request notification listener permission for step media actions.
 - Slider does not jiggle when sliding over the default value.
+- #2217 tap, swipe and pinch screen actions now scale to the current display resolution, including
 
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 

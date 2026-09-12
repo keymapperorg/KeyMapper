@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PointKM
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.getWordBoundaries
@@ -72,6 +74,7 @@ import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -356,15 +359,29 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                result = service.tapScreen(action.x, action.y, inputEventAction)
+                val displaySize = displayAdapter.size
+                val point =
+                    scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
+
+                result = service.tapScreen(point.x, point.y, inputEventAction)
             }
 
             is ActionData.SwipeScreen -> {
-                result = service.swipeScreen(
+                val displaySize = displayAdapter.size
+                val start = scaleCoordinate(
                     action.xStart,
                     action.yStart,
-                    action.xEnd,
-                    action.yEnd,
+                    action.screenResolution,
+                    displaySize,
+                )
+                val end =
+                    scaleCoordinate(action.xEnd, action.yEnd, action.screenResolution, displaySize)
+
+                result = service.swipeScreen(
+                    start.x,
+                    start.y,
+                    end.x,
+                    end.y,
                     action.fingerCount,
                     action.duration,
                     inputEventAction,
@@ -372,10 +389,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.PinchScreen -> {
+                val displaySize = displayAdapter.size
+                val point =
+                    scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
+                val distance =
+                    scaleDistance(action.distance, action.screenResolution, displaySize)
+
                 result = service.pinchScreen(
-                    action.x,
-                    action.y,
-                    action.distance,
+                    point.x,
+                    point.y,
+                    distance,
                     action.pinchType,
                     action.fingerCount,
                     action.duration,
@@ -1228,6 +1251,74 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private fun <T> compareIfNonNull(a: T?, b: T?): Boolean {
         return a != null && b != null && a == b
     }
+}
+
+/**
+ * See issue #2217. Scale a coordinate that was picked on a display of size [from] so that it lands
+ * in the same relative position on a display of size [to]. Samsung phones let you change the
+ * display resolution dynamically so the coordinate that was saved with the action can be for a
+ * different resolution to the current one.
+ *
+ * The coordinate is returned unchanged if there is nothing to scale by. See
+ * [normaliseSourceDisplaySize].
+ */
+internal fun scaleCoordinate(x: Int, y: Int, from: SizeKM?, to: SizeKM): PointKM {
+    val source = normaliseSourceDisplaySize(from, to) ?: return PointKM(x, y)
+
+    val xRatio = x.toFloat() / source.width
+    val yRatio = y.toFloat() / source.height
+
+    return PointKM((xRatio * to.width).roundToInt(), (yRatio * to.height).roundToInt())
+}
+
+/**
+ * See issue #2217. Scale a pixel distance, such as the pinch distance, that was picked on a display
+ * of size [from] to a display of size [to].
+ *
+ * A distance is a radius around a point rather than a position so it must be scaled by a single
+ * factor. The average of the horizontal and vertical ratio is used, which is the same as either
+ * one of them whenever both axes scale equally.
+ */
+internal fun scaleDistance(distance: Int, from: SizeKM?, to: SizeKM): Int {
+    val source = normaliseSourceDisplaySize(from, to) ?: return distance
+
+    val xRatio = to.width.toFloat() / source.width
+    val yRatio = to.height.toFloat() / source.height
+
+    return (distance * (xRatio + yRatio) / 2).roundToInt()
+}
+
+/**
+ * The display size to scale from, or null if there is nothing to scale by because [from] is unknown,
+ * either size is invalid, or the sizes already match.
+ *
+ * If [from] was saved in the opposite orientation to [to] then its width and height are swapped
+ * first. This means rotating the device on its own never moves the coordinate and only a genuine
+ * change in resolution does.
+ */
+private fun normaliseSourceDisplaySize(from: SizeKM?, to: SizeKM): SizeKM? {
+    if (from == null) {
+        return null
+    }
+
+    if (from.width <= 0 || from.height <= 0 || to.width <= 0 || to.height <= 0) {
+        return null
+    }
+
+    val isFromLandscape = from.width > from.height
+    val isToLandscape = to.width > to.height
+
+    val source = if (isFromLandscape == isToLandscape) {
+        from
+    } else {
+        SizeKM(width = from.height, height = from.width)
+    }
+
+    if (source == to) {
+        return null
+    }
+
+    return source
 }
 
 interface PerformActionsUseCase {

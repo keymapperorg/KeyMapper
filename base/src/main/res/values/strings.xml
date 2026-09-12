@@ -195,7 +195,7 @@
     <string name="toast_automatic_backup_successful">Automatic back up successful!</string>
     <string name="toast_automatic_backup_failed">Automatic back up failed!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
-    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <string name="toast_incorrect_screenshot_resolution">Screenshot doesn\'t have the same aspect ratio as this device\'s screen!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a key map</string>
     <string name="toast_copied_log">Copied log</string>

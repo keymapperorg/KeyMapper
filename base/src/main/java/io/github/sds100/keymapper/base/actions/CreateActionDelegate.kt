@@ -829,6 +829,7 @@ class CreateActionDelegate(
                         oldData.x,
                         oldData.y,
                         oldData.description ?: "",
+                        oldData.screenResolution,
                     )
                 } else {
                     null
@@ -845,6 +846,7 @@ class CreateActionDelegate(
                     result.x,
                     result.y,
                     description,
+                    result.screenResolution,
                 )
             }
 
@@ -858,6 +860,7 @@ class CreateActionDelegate(
                         oldData.fingerCount,
                         oldData.duration,
                         oldData.description ?: "",
+                        oldData.screenResolution,
                     )
                 } else {
                     null
@@ -878,6 +881,7 @@ class CreateActionDelegate(
                     result.fingerCount,
                     result.duration,
                     description,
+                    result.screenResolution,
                 )
             }
 
@@ -891,6 +895,7 @@ class CreateActionDelegate(
                         oldData.fingerCount,
                         oldData.duration,
                         oldData.description ?: "",
+                        oldData.screenResolution,
                     )
                 } else {
                     null
@@ -911,6 +916,7 @@ class CreateActionDelegate(
                     result.fingerCount,
                     result.duration,
                     description,
+                    result.screenResolution,
                 )
             }
 

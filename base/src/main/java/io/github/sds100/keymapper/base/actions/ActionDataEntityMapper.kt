@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.PinchScreenType
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.getKey
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -129,7 +130,12 @@ object ActionDataEntityMapper {
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
                     .valueOrNull()
 
-                ActionData.TapScreen(x = x, y = y, description = description)
+                ActionData.TapScreen(
+                    x = x,
+                    y = y,
+                    description = description,
+                    screenResolution = getScreenResolution(entity),
+                )
             }
 
             ActionId.SWIPE_SCREEN -> {
@@ -176,6 +182,7 @@ object ActionDataEntityMapper {
                     fingerCount = fingerCount,
                     duration = duration,
                     description = description,
+                    screenResolution = getScreenResolution(entity),
                 )
             }
 
@@ -230,6 +237,7 @@ object ActionDataEntityMapper {
                     fingerCount = fingerCount,
                     duration = duration,
                     description = description,
+                    screenResolution = getScreenResolution(entity),
                 )
             }
 
@@ -936,6 +944,38 @@ object ActionDataEntityMapper {
         KMError.Exception(e)
     }
 
+    /**
+     * The display size that the coordinates of a tap, swipe or pinch screen action were picked for.
+     * See issue #2217. This is null for actions created before the resolution was saved, and for
+     * anything that can not be parsed, so that a broken value never stops the action loading.
+     */
+    private fun getScreenResolution(entity: ActionEntity): SizeKM? {
+        val extraValue = entity.extras.getData(ActionEntity.EXTRA_SCREEN_RESOLUTION).valueOrNull()
+            ?: return null
+
+        val split = extraValue.split(',')
+
+        if (split.size != 2) {
+            return null
+        }
+
+        val width = split[0].trim().toIntOrNull() ?: return null
+        val height = split[1].trim().toIntOrNull() ?: return null
+
+        if (width <= 0 || height <= 0) {
+            return null
+        }
+
+        return SizeKM(width = width, height = height)
+    }
+
+    private fun createScreenResolutionExtra(screenResolution: SizeKM): EntityExtra {
+        return EntityExtra(
+            ActionEntity.EXTRA_SCREEN_RESOLUTION,
+            "${screenResolution.width},${screenResolution.height}",
+        )
+    }
+
     fun toEntity(data: ActionData): ActionEntity {
         val type = when (data) {
             is ActionData.Intent -> ActionEntity.Type.INTENT
@@ -1246,17 +1286,29 @@ object ActionDataEntityMapper {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
+            }
         }.toList()
 
         is ActionData.SwipeScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
+            }
         }.toList()
 
         is ActionData.PinchScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
             }
         }.toList()
 
