@@ -266,8 +266,8 @@ fun HomeKeyMapListScreen(
 
                 SelectionBottomSheet(
                     modifier = Modifier.onSizeChanged { size ->
-                        keyMapListBottomPadding =
-                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+//                        keyMapListBottomPadding =
+//                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
                     },
                     enabled = selectionState.selectionCount > 0,
                     groups = selectionState.groups,
@@ -798,6 +798,44 @@ private fun PreviewKeyMapsWarningsEmpty() {
     )
 
     val listState = State.Data(emptyList<KeyMapListItemModel>())
+
+    KeyMapperTheme {
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
+
+                )
+            },
+            appBarContent = {
+                KeyMapListAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(device = Devices.PIXEL)
+@Composable
+private fun PreviewKeyMapsLoading() {
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = true,
+    )
+
+    val listState = State.Loading
 
     KeyMapperTheme {
         HomeKeyMapListScreen(
