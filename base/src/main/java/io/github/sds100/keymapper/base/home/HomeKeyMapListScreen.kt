@@ -165,6 +165,7 @@ fun HomeKeyMapListScreen(
     val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
+    val lazyListState = rememberLazyListState()
 
     HomeKeyMapListScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -189,8 +190,22 @@ fun HomeKeyMapListScreen(
         listContent = {
             KeyMapList(
                 modifier = Modifier.animateContentSize(),
-                lazyListState = rememberLazyListState(),
+                lazyListState = lazyListState,
                 listItems = state.listItems,
+                header = {
+                    KeyMapListHeader(
+                        state = state.appBarState,
+                        scrollBehavior = scrollBehavior,
+                        onFixWarningClick = viewModel::onFixWarningClick,
+                        onNewGroupClick = viewModel::onNewGroupClick,
+                        onGroupClick = viewModel::onGroupClick,
+                        onNewConstraintClick = viewModel::onNewGroupConstraintClick,
+                        onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                        onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
+                        onFixConstraintClick = viewModel::onFixClick,
+                        onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
+                    )
+                },
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
                 isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
                 onClickKeyMap = viewModel::onKeyMapCardClick,
@@ -219,23 +234,15 @@ fun HomeKeyMapListScreen(
                 },
                 onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
-                onFixWarningClick = viewModel::onFixWarningClick,
                 onBackClick = {
                     if (!viewModel.onBackClick()) {
                         finishActivity()
                     }
                 },
                 onSelectAllClick = viewModel::onSelectAllClick,
-                onNewGroupClick = viewModel::onNewGroupClick,
                 onRenameGroupClick = viewModel::onRenameGroupClick,
                 onEditGroupNameClick = viewModel::onEditGroupNameClick,
-                onGroupClick = viewModel::onGroupClick,
                 onDeleteGroupClick = viewModel::onDeleteGroupClick,
-                onNewConstraintClick = viewModel::onNewGroupConstraintClick,
-                onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
-                onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
-                onFixConstraintClick = viewModel::onFixClick,
-                onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                 onReportBugClick = {
                     showBugReportDialog = true
                 },
@@ -619,6 +626,7 @@ private fun PreviewSelectingKeyMaps() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 4),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = true,
                 )
@@ -662,6 +670,7 @@ private fun PreviewKeyMapsRunning() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -698,6 +707,7 @@ private fun PreviewKeyMapsPaused() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -753,6 +763,7 @@ private fun PreviewKeyMapsWarnings() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -800,6 +811,7 @@ private fun PreviewKeyMapsWarningsEmpty() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )

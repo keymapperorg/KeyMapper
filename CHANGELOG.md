@@ -15,6 +15,7 @@
 
 ## Fixed
 
+- #2212 The warnings, group chips, breadcrumbs and group constraints on the home screen now scroll with the key map list instead of being pinned under the app bar, so there is much more room for key maps on small screens and in landscape.
 - [#2231](https://github.com/keymapperorg/KeyMapper/issues/2231) Key Mapper no longer crashes when the system bridge starter files are copied while the device storage is temporarily unavailable, and the system bridge is no longer blocked by the auto start cooldown afterwards.
 - [#2160](https://github.com/keymapperorg/KeyMapper/issues/2160) edits to the activity in a send intent action are no longer discarded when the screen is recreated (for example on a configuration change) before saving.
 - [#2099](https://github.com/keymapperorg/KeyMapper/issues/2099) do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB pairing is broken.

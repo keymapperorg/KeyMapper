@@ -5,18 +5,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,7 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
@@ -62,16 +56,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,9 +74,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -99,17 +88,8 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.DeleteGroupDialog
-import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
-import io.github.sds100.keymapper.base.groups.GroupConstraintRow
-import io.github.sds100.keymapper.base.groups.GroupListItemModel
-import io.github.sds100.keymapper.base.groups.GroupRow
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.Import
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.drawable
-import io.github.sds100.keymapper.common.utils.KMError
 import kotlinx.coroutines.launch
 
 @Composable
@@ -122,204 +102,178 @@ fun KeyMapListAppBar(
     onSortClick: () -> Unit = {},
     onHelpClick: () -> Unit = {},
     onTogglePausedClick: () -> Unit = {},
-    onFixWarningClick: (String) -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
     onInputMethodPickerClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onSelectAllClick: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
-    onNewGroupClick: () -> Unit = {},
-    onGroupClick: (String?) -> Unit = {},
     onRenameGroupClick: suspend (String) -> Boolean = { true },
     onEditGroupNameClick: () -> Unit = {},
     onDeleteGroupClick: () -> Unit = {},
-    onNewConstraintClick: () -> Unit = {},
-    onRemoveConstraintClick: (String) -> Unit = {},
-    onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (KMError) -> Unit = {},
-    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
     onReportBugClick: () -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
     // Use the class as the content key so the content is animated if the data inside the
     // same state class changes.
-    AnimatedContent(state, contentKey = { it::class }) { state ->
-        when (state) {
-            is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
-                modifier = modifier,
-                state = state,
-                scrollBehavior = scrollBehavior,
-                onTogglePausedClick = onTogglePausedClick,
-                onFixWarningClick = onFixWarningClick,
-                onNewGroupClick = onNewGroupClick,
-                onGroupClick = onGroupClick,
-                navigationIcon = {
-                    IconButton(onClick = onSortClick) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.Sort,
-                            contentDescription = stringResource(R.string.home_app_bar_sort),
-                        )
-                    }
-                },
-                actions = {
-                    var expandedDropdown by rememberSaveable { mutableStateOf(false) }
-
-                    AppBarActions(
-                        onHelpClick,
-                        onMenuClick = { expandedDropdown = true },
-                        dropdownMenuContent = {
-                            RootGroupDropdownMenu(
-                                expanded = expandedDropdown,
-                                onSettingsClick = {
-                                    expandedDropdown = false
-                                    onSettingsClick()
-                                },
-                                onAboutClick = {
-                                    expandedDropdown = false
-                                    onAboutClick()
-                                },
-                                onExportClick = {
-                                    expandedDropdown = false
-                                    onExportClick()
-                                },
-                                onImportClick = {
-                                    expandedDropdown = false
-                                    onImportClick()
-                                },
-                                onInputMethodPickerClick = {
-                                    expandedDropdown = false
-                                    onInputMethodPickerClick()
-                                },
-                                onReportBugClick = {
-                                    expandedDropdown = false
-                                    onReportBugClick()
-                                },
-                                onDismissRequest = { expandedDropdown = false },
-                            )
-                        },
-                    )
-                },
-            )
-
-            is KeyMapAppBarState.Selecting -> SelectingAppBar(
-                modifier = modifier,
-                state = state,
-                onBackClick = onBackClick,
-                onSelectAllClick = onSelectAllClick,
-            )
-
-            is KeyMapAppBarState.ChildGroup -> {
-                val scope = rememberCoroutineScope()
-                val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
-                var error: String? by rememberSaveable { mutableStateOf(null) }
-                var newName by remember {
-                    mutableStateOf(
-                        TextFieldValue(
-                            state.groupName,
-                            selection = TextRange(state.groupName.length),
-                        ),
+    when (state) {
+        is KeyMapAppBarState.RootGroup -> RootGroupAppBar(
+            modifier = modifier,
+            state = state,
+            scrollBehavior = scrollBehavior,
+            onTogglePausedClick = onTogglePausedClick,
+            navigationIcon = {
+                IconButton(onClick = onSortClick) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.Sort,
+                        contentDescription = stringResource(R.string.home_app_bar_sort),
                     )
                 }
-                var showDeleteGroupDialog by remember { mutableStateOf(false) }
+            },
+            actions = {
+                var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
-                LaunchedEffect(state.groupName) {
-                    showDeleteGroupDialog = false
-                    error = null
-                    val endPosition = state.groupName.length
+                AppBarActions(
+                    onHelpClick,
+                    onMenuClick = { expandedDropdown = true },
+                    dropdownMenuContent = {
+                        RootGroupDropdownMenu(
+                            expanded = expandedDropdown,
+                            onSettingsClick = {
+                                expandedDropdown = false
+                                onSettingsClick()
+                            },
+                            onAboutClick = {
+                                expandedDropdown = false
+                                onAboutClick()
+                            },
+                            onExportClick = {
+                                expandedDropdown = false
+                                onExportClick()
+                            },
+                            onImportClick = {
+                                expandedDropdown = false
+                                onImportClick()
+                            },
+                            onInputMethodPickerClick = {
+                                expandedDropdown = false
+                                onInputMethodPickerClick()
+                            },
+                            onReportBugClick = {
+                                expandedDropdown = false
+                                onReportBugClick()
+                            },
+                            onDismissRequest = { expandedDropdown = false },
+                        )
+                    },
+                )
+            },
+        )
 
-                    if (state.isEditingGroupName) {
-                        if (state.isNewGroup) {
-                            newName = TextFieldValue()
-                        } else {
-                            newName =
-                                TextFieldValue(state.groupName, selection = TextRange(endPosition))
-                        }
+        is KeyMapAppBarState.Selecting -> SelectingAppBar(
+            modifier = modifier,
+            state = state,
+            onBackClick = onBackClick,
+            onSelectAllClick = onSelectAllClick,
+        )
+
+        is KeyMapAppBarState.ChildGroup -> {
+            val scope = rememberCoroutineScope()
+            val uniqueErrorText = stringResource(R.string.home_app_bar_group_name_unique_error)
+            var error: String? by rememberSaveable { mutableStateOf(null) }
+            var newName by remember {
+                mutableStateOf(
+                    TextFieldValue(
+                        state.groupName,
+                        selection = TextRange(state.groupName.length),
+                    ),
+                )
+            }
+            var showDeleteGroupDialog by remember { mutableStateOf(false) }
+
+            LaunchedEffect(state.groupName) {
+                showDeleteGroupDialog = false
+                error = null
+                val endPosition = state.groupName.length
+
+                if (state.isEditingGroupName) {
+                    if (state.isNewGroup) {
+                        newName = TextFieldValue()
                     } else {
                         newName =
                             TextFieldValue(state.groupName, selection = TextRange(endPosition))
                     }
+                } else {
+                    newName =
+                        TextFieldValue(state.groupName, selection = TextRange(endPosition))
                 }
+            }
 
-                if (showDeleteGroupDialog) {
-                    DeleteGroupDialog(
-                        groupName = state.groupName,
-                        onDismissRequest = { showDeleteGroupDialog = false },
-                        onDeleteClick = onDeleteGroupClick,
-                    )
-                }
-
-                ChildGroupAppBar(
-                    modifier = modifier,
-                    groupName = if (state.isEditingGroupName) {
-                        newName
-                    } else {
-                        TextFieldValue(state.groupName)
-                    },
-                    placeholder = state.groupName,
-                    error = error,
-                    onValueChange = {
-                        newName = it
-                        error = null
-                    },
-                    onRenameClick = {
-                        scope.launch {
-                            if (!onRenameGroupClick(newName.text)) {
-                                error = uniqueErrorText
-                            }
-                        }
-                    },
-                    onBackClick = onBackClick,
-                    onNewGroupClick = onNewGroupClick,
-                    onEditClick = onEditGroupNameClick,
-                    isEditingGroupName = state.isEditingGroupName,
-                    subGroups = state.subGroups,
-                    parentGroups = state.breadcrumbs,
-                    onGroupClick = onGroupClick,
-                    constraints = state.constraints,
-                    constraintMode = state.constraintMode,
-                    parentConstraintCount = state.parentConstraintCount,
-                    onNewConstraintClick = onNewConstraintClick,
-                    onRemoveConstraintClick = onRemoveConstraintClick,
-                    onConstraintModeChanged = onConstraintModeChanged,
-                    onFixConstraintClick = onFixConstraintClick,
-                    keyMapsEnabled = state.keyMapsEnabled,
-                    onKeyMapsEnabledChange = onKeyMapsEnabledChange,
-                    actions = {
-                        AnimatedVisibility(!state.isEditingGroupName) {
-                            var expandedDropdown by rememberSaveable { mutableStateOf(false) }
-
-                            AppBarActions(
-                                onHelpClick,
-                                onMenuClick = { expandedDropdown = true },
-                                dropdownMenuContent = {
-                                    ChildGroupDropdownMenu(
-                                        expanded = expandedDropdown,
-                                        onSortClick = {
-                                            expandedDropdown = false
-                                            onSortClick()
-                                        },
-                                        onSettingsClick = {
-                                            expandedDropdown = false
-                                            onSettingsClick()
-                                        },
-                                        onAboutClick = {
-                                            expandedDropdown = false
-                                            onAboutClick()
-                                        },
-                                        onDismissRequest = { expandedDropdown = false },
-                                        onDeleteGroupClick = {
-                                            expandedDropdown = false
-                                            showDeleteGroupDialog = true
-                                        },
-                                    )
-                                },
-                            )
-                        }
-                    },
+            if (showDeleteGroupDialog) {
+                DeleteGroupDialog(
+                    groupName = state.groupName,
+                    onDismissRequest = { showDeleteGroupDialog = false },
+                    onDeleteClick = onDeleteGroupClick,
                 )
             }
+
+            ChildGroupAppBar(
+                modifier = modifier,
+                groupName = if (state.isEditingGroupName) {
+                    newName
+                } else {
+                    TextFieldValue(state.groupName)
+                },
+                placeholder = state.groupName,
+                error = error,
+                onValueChange = {
+                    newName = it
+                    error = null
+                },
+                onRenameClick = {
+                    scope.launch {
+                        if (!onRenameGroupClick(newName.text)) {
+                            error = uniqueErrorText
+                        }
+                    }
+                },
+                onBackClick = onBackClick,
+                onEditClick = onEditGroupNameClick,
+                isEditingGroupName = state.isEditingGroupName,
+                actions = {
+                    AnimatedVisibility(!state.isEditingGroupName) {
+                        var expandedDropdown by rememberSaveable { mutableStateOf(false) }
+
+                        AppBarActions(
+                            onHelpClick,
+                            onMenuClick = { expandedDropdown = true },
+                            dropdownMenuContent = {
+                                ChildGroupDropdownMenu(
+                                    expanded = expandedDropdown,
+                                    onSortClick = {
+                                        expandedDropdown = false
+                                        onSortClick()
+                                    },
+                                    onSettingsClick = {
+                                        expandedDropdown = false
+                                        onSettingsClick()
+                                    },
+                                    onAboutClick = {
+                                        expandedDropdown = false
+                                        onAboutClick()
+                                    },
+                                    onDismissRequest = { expandedDropdown = false },
+                                    onDeleteGroupClick = {
+                                        expandedDropdown = false
+                                        showDeleteGroupDialog = true
+                                    },
+                                )
+                            },
+                        )
+                    }
+                },
+            )
         }
     }
 }
@@ -343,72 +297,23 @@ private fun RootGroupAppBar(
     state: KeyMapAppBarState.RootGroup,
     scrollBehavior: TopAppBarScrollBehavior,
     onTogglePausedClick: () -> Unit,
-    onFixWarningClick: (String) -> Unit,
-    onNewGroupClick: () -> Unit,
-    onGroupClick: (String) -> Unit,
     navigationIcon: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit,
 ) {
-    // This is taken from the AppBar color code.
-    val colorTransitionFraction by
-        remember(scrollBehavior) {
-            // derivedStateOf to prevent redundant recompositions when the content scrolls.
-            derivedStateOf {
-                val overlappingFraction = scrollBehavior.state.overlappedFraction
-                if (overlappingFraction > 0.01f) 1f else 0f
-            }
-        }
-
-    val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-
-    val appBarContainerColor by animateColorAsState(
-        targetValue = lerp(
-            appBarColors.containerColor,
-            appBarColors.scrolledContainerColor,
-            FastOutLinearInEasing.transform(colorTransitionFraction),
-        ),
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-    )
-
-    Column(modifier) {
-        CenterAlignedTopAppBar(
-            scrollBehavior = scrollBehavior,
-            title = {
-                AppBarStatus(
-                    isPaused = state.isPaused,
-                    warnings = state.warnings,
-                    onTogglePausedClick = onTogglePausedClick,
-                )
-            },
-            navigationIcon = navigationIcon,
-            actions = actions,
-            colors = appBarColors,
-        )
-
-        AnimatedVisibility(visible = state.warnings.isNotEmpty()) {
-            // Use separate Surfaces so the animation doesn't jump when they both disappear
-            // going into selection mode.
-            Surface(color = appBarContainerColor) {
-                HomeWarningList(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    warnings = state.warnings,
-                    onFixClick = onFixWarningClick,
-                )
-            }
-        }
-
-        Surface(color = appBarContainerColor) {
-            GroupRow(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-                groups = state.subGroups,
-                onNewGroupClick = onNewGroupClick,
-                onGroupClick = onGroupClick,
-                isSubgroups = false,
+    CenterAlignedTopAppBar(
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        title = {
+            AppBarStatus(
+                isPaused = state.isPaused,
+                warnings = state.warnings,
+                onTogglePausedClick = onTogglePausedClick,
             )
-        }
-    }
+        },
+        navigationIcon = navigationIcon,
+        actions = actions,
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -423,161 +328,43 @@ private fun ChildGroupAppBar(
     onEditClick: () -> Unit = {},
     onRenameClick: () -> Unit = {},
     isEditingGroupName: Boolean = false,
-    subGroups: List<GroupListItemModel>,
-    parentGroups: List<GroupListItemModel>,
-    onNewGroupClick: () -> Unit = {},
-    onGroupClick: (String?) -> Unit = {},
-    constraints: List<ComposeChipModel> = emptyList(),
-    constraintMode: ConstraintMode,
-    parentConstraintCount: Int,
-    onNewConstraintClick: () -> Unit = {},
-    onRemoveConstraintClick: (String) -> Unit = {},
-    onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (KMError) -> Unit = {},
-    keyMapsEnabled: SelectedKeyMapsEnabled?,
-    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
-    Column {
-        Surface(
-            modifier = modifier,
-            color = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) {
+        Row(
+            Modifier
+                .windowInsetsPadding(TopAppBarDefaults.windowInsets)
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(vertical = 8.dp)
+                .height(intrinsicSize = IntrinsicSize.Min),
+            verticalAlignment = Alignment.Top,
         ) {
-            Column {
-                Row(
-                    Modifier
-                        .windowInsetsPadding(TopAppBarDefaults.windowInsets)
-                        .fillMaxWidth()
-                        .heightIn(min = 48.dp)
-                        .padding(vertical = 8.dp)
-                        .height(intrinsicSize = IntrinsicSize.Min),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.home_app_bar_pop_group),
-                        )
-                    }
-
-                    GroupNameRow(
-                        modifier = Modifier.weight(1f),
-                        value = groupName,
-                        onValueChange = onValueChange,
-                        placeholder = placeholder,
-                        onRenameClick = onRenameClick,
-                        error = error,
-                        isEditing = isEditingGroupName,
-                        onEditClick = onEditClick,
-                    )
-
-                    AnimatedVisibility(visible = !isEditingGroupName) {
-                        actions()
-                    }
-                }
-
-                GroupConstraintRow(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth(),
-                    constraints = constraints,
-                    mode = constraintMode,
-                    parentConstraintCount = parentConstraintCount,
-                    onFixConstraintClick = onFixConstraintClick,
-                    onNewConstraintClick = onNewConstraintClick,
-                    onRemoveConstraintClick = onRemoveConstraintClick,
-                    enabled = !isEditingGroupName,
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(R.string.home_app_bar_pop_group),
                 )
-
-                Spacer(Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = constraints.size > 1,
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_and),
-                                isSelected = constraintMode == ConstraintMode.AND,
-                                isEnabled = !isEditingGroupName,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.AND)
-                                },
-                            )
-
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_or),
-                                isSelected = constraintMode == ConstraintMode.OR,
-                                isEnabled = !isEditingGroupName,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.OR)
-                                },
-                            )
-
-                            VerticalDivider(
-                                modifier = Modifier.height(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.width(16.dp))
-
-                    val text = when (keyMapsEnabled) {
-                        SelectedKeyMapsEnabled.ALL -> stringResource(
-                            R.string.home_enabled_key_maps_enabled,
-                        )
-
-                        SelectedKeyMapsEnabled.MIXED -> stringResource(
-                            R.string.home_enabled_key_maps_mixed,
-                        )
-
-                        SelectedKeyMapsEnabled.NONE, null -> stringResource(
-                            R.string.home_enabled_key_maps_disabled,
-                        )
-                    }
-
-                    Switch(
-                        checked = keyMapsEnabled == SelectedKeyMapsEnabled.ALL,
-                        onCheckedChange = onKeyMapsEnabledChange,
-                        enabled = keyMapsEnabled != null,
-                    )
-
-                    Spacer(Modifier.width(16.dp))
-
-                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
-
-                    Spacer(Modifier.width(16.dp))
-                }
             }
-        }
 
-        Surface {
-            Column {
-                GroupBreadcrumbRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    groups = parentGroups,
-                    onGroupClick = onGroupClick,
-                )
+            GroupNameRow(
+                modifier = Modifier.weight(1f),
+                value = groupName,
+                onValueChange = onValueChange,
+                placeholder = placeholder,
+                onRenameClick = onRenameClick,
+                error = error,
+                isEditing = isEditingGroupName,
+                onEditClick = onEditClick,
+            )
 
-                GroupRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    groups = subGroups,
-                    onNewGroupClick = onNewGroupClick,
-                    onGroupClick = onGroupClick,
-                    enabled = !isEditingGroupName,
-                    isSubgroups = true,
-                )
+            AnimatedVisibility(visible = !isEditingGroupName) {
+                actions()
             }
         }
     }
@@ -956,52 +743,6 @@ private fun ChildGroupDropdownMenu(
     }
 }
 
-@Composable
-private fun constraintsSampleList(): List<ComposeChipModel> {
-    val ctx = LocalContext.current
-
-    return listOf(
-        ComposeChipModel.Normal(
-            id = "1",
-            text = "Device is locked",
-            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
-        ),
-        ComposeChipModel.Normal(
-            id = "2",
-            text = "Key Mapper is open",
-            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
-        ),
-        ComposeChipModel.Error(
-            id = "2",
-            text = "Key Mapper not found",
-            error = KMError.AppNotFound("io.github.sds100.keymapper"),
-        ),
-    )
-}
-
-@Composable
-private fun groupSampleList(): List<GroupListItemModel> {
-    val ctx = LocalContext.current
-
-    return listOf(
-        GroupListItemModel(
-            uid = "1",
-            name = "Lockscreen",
-            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
-        ),
-        GroupListItemModel(
-            uid = "2",
-            name = "Key Mapper",
-            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
-        ),
-        GroupListItemModel(
-            uid = "3",
-            name = "Key Mapper",
-            icon = null,
-        ),
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -1058,12 +799,6 @@ private fun KeyMapsChildGroupEditingPreview() {
             placeholder = "Untitled group 23",
             error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
-            subGroups = emptyList(),
-            parentGroups = emptyList(),
-            constraints = emptyList(),
-            constraintMode = ConstraintMode.AND,
-            parentConstraintCount = 1,
-            keyMapsEnabled = SelectedKeyMapsEnabled.NONE,
         )
     }
 }
@@ -1112,12 +847,6 @@ private fun KeyMapsChildGroupErrorPreview() {
             placeholder = "Untitled group 23",
             error = stringResource(R.string.home_app_bar_group_name_unique_error),
             isEditingGroupName = true,
-            subGroups = emptyList(),
-            parentGroups = emptyList(),
-            constraints = emptyList(),
-            constraintMode = ConstraintMode.AND,
-            parentConstraintCount = 0,
-            keyMapsEnabled = null,
         )
     }
 }
@@ -1172,32 +901,6 @@ private fun HomeStateWarningsPreview() {
             isPaused = true,
         )
     KeyMapperTheme {
-        KeyMapListAppBar(state = state)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun HomeStateWarningsDarkPreview() {
-    val warnings = listOf(
-        HomeWarningListItem(
-            id = "0",
-            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-        ),
-        HomeWarningListItem(
-            id = "1",
-            text = stringResource(R.string.home_error_is_battery_optimised),
-        ),
-    )
-
-    val state =
-        KeyMapAppBarState.RootGroup(
-            subGroups = emptyList(),
-            warnings = warnings,
-            isPaused = true,
-        )
-    KeyMapperTheme(darkTheme = true) {
         KeyMapListAppBar(state = state)
     }
 }

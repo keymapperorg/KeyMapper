@@ -71,6 +71,7 @@ fun KeyMapList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
     listItems: State<List<KeyMapListItemModel>>,
+    header: (@Composable () -> Unit)? = null,
     footerText: String? = stringResource(R.string.home_key_map_list_footer_text),
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
@@ -80,35 +81,85 @@ fun KeyMapList(
     onTriggerErrorClick: (TriggerError) -> Unit = {},
     bottomListPadding: Dp = 100.dp,
 ) {
-    when (listItems) {
-        is State.Loading -> {
-            Surface(modifier = modifier) {
-                LoadingList(modifier = Modifier.fillMaxSize())
-            }
-        }
+    val haptics = LocalHapticFeedback.current
 
-        is State.Data -> {
-            Surface(modifier = modifier) {
-                if (listItems.data.isEmpty()) {
-                    EmptyKeyMapList(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = bottomListPadding),
-                    )
-                } else {
-                    LoadedKeyMapList(
-                        Modifier.fillMaxSize(),
-                        lazyListState,
-                        listItems.data,
-                        footerText,
-                        isSelectable,
-                        onClickKeyMap,
-                        onLongClickKeyMap,
-                        onSelectedChange,
-                        onFixClick,
-                        onTriggerErrorClick,
-                        bottomListPadding,
-                    )
+    Surface(modifier = modifier) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = lazyListState,
+            contentPadding = PaddingValues(
+                // The header is flush with the app bar because it is the same color as it.
+                top = if (header == null) 8.dp else 0.dp,
+                bottom = 8.dp,
+            ),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            // The header is in the list rather than the app bar so that it scrolls away and
+            // does not take up vertical space on small screens or in landscape.
+            if (header != null) {
+                item(key = "header") {
+                    header()
+                }
+            }
+
+            when (listItems) {
+                is State.Loading -> {
+                    item(key = "loading") {
+                        LoadingList(
+                            Modifier
+                                .fillParentMaxWidth()
+                                .fillParentMaxHeight(),
+                        )
+                    }
+                }
+
+                is State.Data -> {
+                    if (listItems.data.isEmpty()) {
+                        item(key = "empty") {
+                            EmptyKeyMapList(
+                                Modifier
+                                    .fillParentMaxWidth()
+                                    .fillParentMaxHeight(),
+                            )
+                        }
+                    } else {
+                        items(listItems.data, key = { it.uid }) { model ->
+                            KeyMapListItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                isSelectable = isSelectable,
+                                model = model,
+                                onClickKeyMap = { onClickKeyMap(model.content.uid) },
+                                onLongClickKeyMap = {
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onLongClickKeyMap(model.content.uid)
+                                },
+                                onSelectedChange = { onSelectedChange(model.content.uid, it) },
+                                onFixClick = onFixClick,
+                                onTriggerErrorClick = onTriggerErrorClick,
+                            )
+                        }
+
+                        if (footerText != null) {
+                            item(key = "footer") {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
+                                    text = footerText,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+
+                        // Give some space at the end of the list so that the FAB doesn't block
+                        // the items.
+                        item(key = "bottom_padding") {
+                            Spacer(Modifier.height(bottomListPadding))
+                        }
+                    }
                 }
             }
         }
@@ -143,62 +194,6 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
             },
             textAlign = TextAlign.Center,
         )
-    }
-}
-
-@Composable
-private fun LoadedKeyMapList(
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
-    listItems: List<KeyMapListItemModel>,
-    footerText: String?,
-    isSelectable: Boolean,
-    onClickKeyMap: (String) -> Unit,
-    onLongClickKeyMap: (String) -> Unit,
-    onSelectedChange: (String, Boolean) -> Unit,
-    onFixClick: (KMError) -> Unit,
-    onTriggerErrorClick: (TriggerError) -> Unit,
-    bottomListPadding: Dp,
-) {
-    val haptics = LocalHapticFeedback.current
-
-    LazyColumn(
-        modifier = modifier,
-        state = lazyListState,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(listItems, key = { it.uid }) { model ->
-            KeyMapListItem(
-                modifier = Modifier.fillMaxWidth(),
-                isSelectable = isSelectable,
-                model = model,
-                onClickKeyMap = { onClickKeyMap(model.content.uid) },
-                onLongClickKeyMap = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongClickKeyMap(model.content.uid)
-                },
-                onSelectedChange = { onSelectedChange(model.content.uid, it) },
-                onFixClick = onFixClick,
-                onTriggerErrorClick = onTriggerErrorClick,
-            )
-        }
-
-        if (footerText != null) {
-            item {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = footerText,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-
-        // Give some space at the end of the list so that the FAB doesn't block the items.
-        item {
-            Spacer(Modifier.height(bottomListPadding))
-        }
     }
 }
 
