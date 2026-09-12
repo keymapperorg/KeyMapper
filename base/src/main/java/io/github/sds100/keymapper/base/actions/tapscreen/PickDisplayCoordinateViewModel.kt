@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.ScreenshotPickerDelegate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
-import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -55,42 +54,21 @@ class PickDisplayCoordinateViewModel @Inject constructor(
         x >= 0 && y >= 0
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    private val _bitmap = MutableStateFlow<Bitmap?>(null)
-    val bitmap = _bitmap.asStateFlow()
+    private val screenshotDelegate = ScreenshotPickerDelegate(
+        viewModelScope,
+        displayAdapter,
+        resourceProvider,
+        dialogProvider,
+    )
+    val bitmap = screenshotDelegate.bitmap
 
     private val _returnResult = MutableSharedFlow<PickCoordinateResult>()
     val returnResult = _returnResult.asSharedFlow()
 
     private val description: MutableStateFlow<String?> = MutableStateFlow(null)
 
-    /**
-     * The display size that the coordinate is for. See issue #2217. This is the size of the
-     * screenshot if one is chosen because the coordinate is in the screenshot's pixel space,
-     * otherwise the resolution of the action being edited, otherwise the current display size.
-     */
-    private val screenshotResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
-    private val loadedResolution: MutableStateFlow<SizeKM?> = MutableStateFlow(null)
-
     fun selectedScreenshot(newBitmap: Bitmap) {
-        val displaySize = displayAdapter.size
-
-        // check whether the height and width of the bitmap match the display size, even when it is rotated.
-        if ((displaySize.width != newBitmap.width && displaySize.height != newBitmap.height) &&
-            (displaySize.height != newBitmap.width && displaySize.width != newBitmap.height)
-        ) {
-            viewModelScope.launch {
-                val snackBar = DialogModel.SnackBar(
-                    message = getString(R.string.toast_incorrect_screenshot_resolution),
-                )
-
-                showDialog("incorrect_resolution", snackBar)
-            }
-
-            return
-        }
-
-        screenshotResolution.value = SizeKM(newBitmap.width, newBitmap.height)
-        _bitmap.value = newBitmap
+        screenshotDelegate.selectedScreenshot(newBitmap)
     }
 
     fun setX(x: String) {
@@ -130,19 +108,9 @@ class PickDisplayCoordinateViewModel @Inject constructor(
             ) ?: return@launch
 
             _returnResult.emit(
-                PickCoordinateResult(x, y, description, screenResolution()),
+                PickCoordinateResult(x, y, description, screenshotDelegate.screenResolution()),
             )
         }
-    }
-
-    /**
-     * See issue #2217. Prefer the screenshot's resolution because the coordinate is in its pixel
-     * space, then the resolution the action was already saved with so that editing an action on a
-     * device that has since changed resolution does not stamp the wrong one on unchanged
-     * coordinates.
-     */
-    private fun screenResolution(): SizeKM {
-        return screenshotResolution.value ?: loadedResolution.value ?: displayAdapter.size
     }
 
     fun loadResult(result: PickCoordinateResult) {
@@ -150,13 +118,12 @@ class PickDisplayCoordinateViewModel @Inject constructor(
             x.value = result.x
             y.value = result.y
             description.value = result.description
-            loadedResolution.value = result.screenResolution
+            screenshotDelegate.setLoadedResolution(result.screenResolution)
         }
     }
 
     override fun onCleared() {
-        bitmap.value?.recycle()
-        _bitmap.value = null
+        screenshotDelegate.recycle()
 
         super.onCleared()
     }
