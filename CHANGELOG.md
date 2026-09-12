@@ -10,6 +10,7 @@
 - #2223 Add one-finger and two-finger double-tap gestures to the TalkBack gesture action.
 - [#2211](https://github.com/keymapperorg/KeyMapper/issues/2211) Add an "Enabled" field to sort the key map list by whether key maps are enabled or disabled.
 - [#2234](https://github.com/keymapperorg/KeyMapper/issues/2234) Add a "Cycle keyboard language" action to switch between the enabled languages of the current keyboard, requiring the WRITE_SECURE_SETTINGS permission.
+- [#2235](https://github.com/keymapperorg/KeyMapper/issues/2235) Show a tip suggesting a dedicated action when a Key Code action is added for a key that has one, such as volume, power, home, back, screenshot, media, microphone, and more, with a button to replace it immediately.
 
 ## Fixed
 
