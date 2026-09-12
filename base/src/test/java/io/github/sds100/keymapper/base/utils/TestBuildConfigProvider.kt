@@ -10,4 +10,5 @@ class TestBuildConfigProvider(override var sdkInt: Int) : BuildConfigProvider {
     override val packageName: String = BuildConfig.LIBRARY_PACKAGE_NAME
     override val version: String = "1.0.0"
     override val versionCode: Int = 1
+    override val canRequestAllFilesAccess: Boolean = false
 }

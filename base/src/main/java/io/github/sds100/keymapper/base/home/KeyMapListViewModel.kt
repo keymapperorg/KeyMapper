@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
+import io.github.sds100.keymapper.base.backup.BackupFileListItem
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.base.backup.ExportedBackupLocation
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
@@ -658,7 +660,7 @@ class KeyMapListViewModel(
             val selectedIds = selectionState.selectedIds
 
             listKeyMaps.backupKeyMaps(*selectedIds.toTypedArray()).onSuccess {
-                _importExportState.value = ImportExportState.FinishedExport(it)
+                _importExportState.value = it.toImportExportState()
             }.onFailure {
                 _importExportState.value =
                     ImportExportState.Error(it.getFullMessage(this@KeyMapListViewModel))
@@ -745,12 +747,17 @@ class KeyMapListViewModel(
 
             _importExportState.value = ImportExportState.Exporting
             backupRestore.backupEverything().onSuccess {
-                _importExportState.value = ImportExportState.FinishedExport(it)
+                _importExportState.value = it.toImportExportState()
             }.onFailure {
                 _importExportState.value =
                     ImportExportState.Error(it.getFullMessage(this@KeyMapListViewModel))
             }
         }
+    }
+
+    private fun ExportedBackupLocation.toImportExportState(): ImportExportState = when (this) {
+        is ExportedBackupLocation.PublicUri -> ImportExportState.FinishedExport(uri)
+        is ExportedBackupLocation.Downloads -> ImportExportState.FinishedExportToDownloads(fileName)
     }
 
     fun onChooseImportFile(uri: String) {
@@ -762,6 +769,31 @@ class KeyMapListViewModel(
                     ImportExportState.Error(it.getFullMessage(this@KeyMapListViewModel))
             }
         }
+    }
+
+    /**
+     * Show a list of backups found in Downloads to pick from, for a device with no usable
+     * system file picker (Android TV).
+     */
+    fun onImportClick() {
+        coroutineScope.launch {
+            backupRestore.getDownloadedBackups().onSuccess { files ->
+                _importExportState.value = ImportExportState.ChooseImportFileFromDownloads(
+                    files = files.map {
+                        BackupFileListItem(uri = it.uri, name = it.name ?: it.uri)
+                    },
+                    canRequestFullAccess = backupRestore.canRequestFullFileAccess(),
+                )
+            }.onFailure {
+                _importExportState.value =
+                    ImportExportState.Error(it.getFullMessage(this@KeyMapListViewModel))
+            }
+        }
+    }
+
+    fun onRequestFullFileAccessClick() {
+        backupRestore.requestFullFileAccess()
+        setImportExportIdle()
     }
 
     fun onConfirmImport(restoreType: RestoreType) {

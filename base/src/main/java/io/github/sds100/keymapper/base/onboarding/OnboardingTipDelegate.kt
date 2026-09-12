@@ -5,7 +5,10 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionUtils
 import io.github.sds100.keymapper.base.actions.ConfigActionsUseCase
+import io.github.sds100.keymapper.base.actions.keyevent.getDedicatedKeyCodeAction
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl.Companion.KEY_CODE_DEDICATED_ACTION_TIP_ID
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
@@ -56,6 +59,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
         const val SCREEN_PINNING_TIP_ID = "screen_pinning_tip"
         const val IME_DETECTION_TIP_ID = "ime_detection_tip"
         const val RINGER_MODE_TIP_ID = "ringer_mode_tip"
+        const val KEY_CODE_DEDICATED_ACTION_TIP_ID = "key_code_dedicated_action_tip"
     }
 
     override val triggerTip: MutableStateFlow<OnboardingTipModel?> = MutableStateFlow(null)
@@ -100,6 +104,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
         Keys.shownRingerModeTip,
         false,
     )
+
+    /**
+     * The uid and suggested replacement of the action that [KEY_CODE_DEDICATED_ACTION_TIP_ID]
+     * is currently being shown for. This tip is not dismissable so it doesn't need a persisted
+     * "shown" preference like the other tips.
+     */
+    private var keyCodeTipTarget: Pair<String, ActionData>? = null
 
     init {
         viewModelScope.launch {
@@ -151,6 +162,15 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 viewModelScope.launch {
                     navigate("volume_buttons_expert_mode_tip", NavDestination.ExpertMode)
                 }
+            }
+
+            KEY_CODE_DEDICATED_ACTION_TIP_ID -> {
+                val (actionUid, dedicatedAction) = keyCodeTipTarget ?: return
+
+                // Remove the action and add it again. Do not replace the data so any flags
+                // such as repeat not retained from the key event action.
+                configActionsUseCase.removeAction(actionUid)
+                configActionsUseCase.addAction(dedicatedAction)
             }
         }
     }
@@ -338,9 +358,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
             }
         }
 
-        if (hasRingerModeAction &&
-            !shownRingerModeTip
-        ) {
+        if (hasRingerModeAction && !shownRingerModeTip) {
             val tip = OnboardingTipModel(
                 id = RINGER_MODE_TIP_ID,
                 title = getString(R.string.tip_ringer_mode_title),
@@ -355,6 +373,45 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 },
             )
             actionsTip.value = tip
+            return
+        }
+
+        val keyCodeAction = actionList.firstNotNullOfOrNull { action ->
+            val data = action.data
+            if (data is ActionData.InputKeyEvent && data.metaState == 0 && data.device == null) {
+                getDedicatedKeyCodeAction(data.keyCode)?.let { dedicatedAction ->
+                    action.uid to dedicatedAction
+                }
+            } else {
+                null
+            }
+        }
+
+        if (keyCodeAction != null) {
+            keyCodeTipTarget = keyCodeAction
+            val dedicatedActionTitle = getString(ActionUtils.getTitle(keyCodeAction.second.id))
+
+            actionsTip.value = OnboardingTipModel(
+                id = KEY_CODE_DEDICATED_ACTION_TIP_ID,
+                title = getString(R.string.tip_key_code_dedicated_action_title),
+                message = getString(
+                    R.string.tip_key_code_dedicated_action_text,
+                    dedicatedActionTitle,
+                ),
+                isDismissable = false,
+                buttonText = getString(
+                    R.string.tip_key_code_dedicated_action_button,
+                    dedicatedActionTitle,
+                ),
+            )
+        } else {
+            keyCodeTipTarget = null
+
+            // Don't clobber another tip, e.g. the ringer mode one, that's still waiting to be
+            // dismissed by the user.
+            if (actionsTip.value?.id == KEY_CODE_DEDICATED_ACTION_TIP_ID) {
+                actionsTip.value = null
+            }
         }
     }
 }

@@ -568,7 +568,18 @@ abstract class BaseAccessibilityService :
 
         val (action, extras) = performAction(node.toModel()) ?: return Success(Unit)
 
-        node.performAction(action, bundleOf(*extras.toList().toTypedArray()))
+        // The node that matches is often not the node that handles the click, so find
+        // the node that can actually perform it. Only do this for clicks because
+        // performing an action like setting text on a different node would be wrong.
+        val targetNode = if (action == AccessibilityNodeInfo.ACTION_CLICK ||
+            action == AccessibilityNodeInfo.ACTION_LONG_CLICK
+        ) {
+            node.findActionTarget(action) ?: node
+        } else {
+            node
+        }
+
+        targetNode.performAction(action, bundleOf(*extras.toList().toTypedArray()))
         node.recycle()
 
         return Success(Unit)

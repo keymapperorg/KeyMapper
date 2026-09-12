@@ -511,6 +511,7 @@ private fun SortBottomSheetContentPreview() {
         SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
         SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
         SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
+        SortFieldOrder(SortField.ENABLED, SortOrder.NONE),
     )
 
     KeyMapperTheme {
@@ -539,6 +540,7 @@ private fun SortBottomSheetPreview() {
         SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
         SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
         SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
+        SortFieldOrder(SortField.ENABLED, SortOrder.NONE),
     )
 
     var size by remember { mutableIntStateOf(0) }
@@ -573,5 +575,6 @@ private fun sortFieldText(sortField: SortField): String {
         SortField.ACTIONS -> stringResource(R.string.sort_bottom_sheet_actions)
         SortField.CONSTRAINTS -> stringResource(R.string.sort_bottom_sheet_constraints)
         SortField.OPTIONS -> stringResource(R.string.sort_bottom_sheet_options)
+        SortField.ENABLED -> stringResource(R.string.sort_bottom_sheet_enabled)
     }
 }

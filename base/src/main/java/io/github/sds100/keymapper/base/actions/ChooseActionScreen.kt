@@ -60,6 +60,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     ModifySettingActionBottomSheet(delegate)
     CreateNotificationActionBottomSheet(delegate)
     ToastActionBottomSheet(delegate)
+    StepMediaActionBottomSheet(delegate)
     PickTalkBackGestureDialog(delegate)
 }
 

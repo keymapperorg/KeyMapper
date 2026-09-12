@@ -10,9 +10,9 @@ import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.DeviceAdmin
+import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -35,6 +36,7 @@ import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.alertdialog.appcompat.titleResource
 import splitties.alertdialog.material.materialAlertDialog
+import timber.log.Timber
 
 class RequestPermissionDelegate(
     private val activity: AppCompatActivity,
@@ -130,6 +132,56 @@ class RequestPermissionDelegate(
             }
 
             Permission.READ_LOGS -> permissionAdapter.grant(Manifest.permission.READ_LOGS)
+
+            Permission.ACCESS_LOCAL_NETWORK -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.CINNAMON_BUN
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            }
+
+            Permission.MANAGE_EXTERNAL_STORAGE -> requestManageExternalStorage()
+        }
+    }
+
+    private fun requestManageExternalStorage() {
+        if (showDialogs) {
+            activity.materialAlertDialog {
+                titleResource = R.string.dialog_title_manage_external_storage
+                messageResource = R.string.dialog_message_manage_external_storage
+
+                positiveButton(R.string.pos_grant_access) {
+                    showManageExternalStorageSystemSettings()
+                }
+
+                negativeButton(R.string.neg_cancel) { it.cancel() }
+
+                show()
+            }
+        } else {
+            showManageExternalStorageSystemSettings()
+        }
+    }
+
+    private fun showManageExternalStorageSystemSettings() {
+        val intent = Intent(
+            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+            Uri.parse("package:${buildConfigProvider.packageName}"),
+        )
+
+        try {
+            startActivityForResultLauncher.launch(intent)
+        } catch (e: ActivityNotFoundException) {
+            try {
+                startActivityForResultLauncher.launch(
+                    Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION),
+                )
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    activity,
+                    R.string.error_manage_external_storage_activity_not_found,
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
         }
     }
 
@@ -255,7 +307,6 @@ class RequestPermissionDelegate(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestIgnoreBatteryOptimisations() {
         if (showDialogs) {
             activity.materialAlertDialog {
@@ -263,7 +314,7 @@ class RequestPermissionDelegate(
                 messageResource = R.string.dialog_message_disable_battery_optimisation
 
                 positiveButton(R.string.pos_turn_off_stock_battery_optimisation) {
-                    showBatteryOptimisationExemptionSystemDialog()
+                    requestBatteryOptimisationExemption()
                 }
 
                 negativeButton(R.string.neg_cancel) { it.cancel() }
@@ -278,20 +329,70 @@ class RequestPermissionDelegate(
                 show()
             }
         } else {
-            showBatteryOptimisationExemptionSystemDialog()
+            requestBatteryOptimisationExemption()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun showBatteryOptimisationExemptionSystemDialog() {
+    private fun requestBatteryOptimisationExemption() {
+        // Android TV devices fail silently when launching the dialog and activity so launch
+        // the activity with a manual intent.
+        if (LeanbackUtils.isTvDevice(activity)) {
+            val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+
+            try {
+                activity.startActivity(intent)
+
+                Toast.makeText(
+                    activity,
+                    R.string.toast_tv_find_special_app_access,
+                    Toast.LENGTH_LONG,
+                ).show()
+            } catch (e: ActivityNotFoundException) {
+                Timber.e(e, "Launch TV App settings failed")
+
+                Toast.makeText(
+                    activity,
+                    R.string.toast_tv_can_not_find_special_app_access,
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
+        } else {
+            if (!showBatteryOptimisationExemptionSystemDialog()) {
+                launchBatteryOptimisationActivity()
+            }
+        }
+    }
+
+    private fun showBatteryOptimisationExemptionSystemDialog(): Boolean {
         try {
             val intent = Intent(
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:${buildConfigProvider.packageName}"),
+                "package:${buildConfigProvider.packageName}".toUri(),
             )
 
             activity.startActivity(intent)
+
+            return true
         } catch (e: ActivityNotFoundException) {
+            Timber.w(e, "Request battery optimisation exemption dialog failed")
+            return false
+        }
+    }
+
+    private fun launchBatteryOptimisationActivity() {
+        try {
+            activity.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+
+            Toast.makeText(
+                activity,
+                R.string.toast_find_keymapper_in_battery_optimisation_list,
+                Toast.LENGTH_LONG,
+            ).show()
+        } catch (e: ActivityNotFoundException) {
+            Timber.w(e, "Request battery optimisation exemption activity failed")
+
             Toast.makeText(
                 activity,
                 R.string.error_battery_optimisation_activity_not_found,

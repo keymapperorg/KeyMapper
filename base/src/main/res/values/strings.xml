@@ -195,7 +195,7 @@
     <string name="toast_automatic_backup_successful">Automatic back up successful!</string>
     <string name="toast_automatic_backup_failed">Automatic back up failed!</string>
     <string name="toast_screenshot_taken">Screenshot taken</string>
-    <string name="toast_incorrect_screenshot_resolution">Screenshot resolution doesn\'t match this device\'s resolution!</string>
+    <string name="toast_incorrect_screenshot_resolution">Screenshot doesn\'t have the same aspect ratio as this device\'s screen!</string>
     <string name="toast_copied_keymap_uid_to_clipboard">Copied key map UUID to clipboard</string>
     <string name="toast_triggered_keymap">You\'ve triggered a key map</string>
     <string name="toast_copied_log">Copied log</string>
@@ -470,6 +470,9 @@
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimization</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
+    <string name="dialog_title_manage_external_storage">Grant full file access</string>
+    <string name="dialog_message_manage_external_storage">Key Mapper needs "All files access" to show backup files copied here from another device, since Android TV has no built-in file picker. This permission is only requested in the F-Droid build because Google Play restricts it to file-manager apps.</string>
+
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
 
@@ -527,6 +530,7 @@
     <string name="pos_understood">Understood</string>
     <string name="pos_turn_on">Turn on</string>
     <string name="pos_proceed">Proceed</string>
+    <string name="pos_grant_access">Grant access</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
@@ -814,6 +818,7 @@
 
     <string name="error_app_is_disabled_package_name">App %s is disabled!</string>
     <string name="error_action_requires_write_settings_permission">You need to grant Key Mapper permission to modify system settings.</string>
+    <string name="error_action_requires_manage_external_storage_permission">Key Mapper needs "All files access" permission for this.</string>
     <string name="error_requires_root">This requires root permission!</string>
     <string name="error_action_requires_camera_permission">This action requires camera permission!</string>
     <string name="error_sdk_version_too_low">Requires Android %s or newer</string>
@@ -860,6 +865,10 @@
     <string name="error_fix_key_event_action">This action needs setting up</string>
 
     <string name="error_battery_optimisation_activity_not_found">Battery optimization settings not found! If it exists, open it manually.</string>
+    <string name="toast_find_keymapper_in_battery_optimisation_list">Find Key Mapper in the list and disable battery optimization for it</string>
+    <string name="toast_tv_find_special_app_access">Go to Special app access -> Energy Optimization -> Disable Key Mapper</string>
+    <string name="toast_tv_can_not_find_special_app_access">Go to Settings -> Special app access -> Energy Optimization -> Disable Key Mapper</string>
+    <string name="error_manage_external_storage_activity_not_found">Couldn\'t find the "All files access" settings page on this device.</string>
 
     <string name="error_extra_not_found">Extra (%s) not found!</string>
     <string name="error_duplicate_constraint">You can\'t have duplicate constraints!</string>
@@ -868,6 +877,7 @@
     <string name="error_empty_json">Empty JSON file!</string>
     <string name="error_file_access_denied">File access denied! %s</string>
     <string name="error_io_error">Unknown IO error!</string>
+    <string name="error_starter_files_unavailable">Storage is unavailable. Please try again in a moment.</string>
     <string name="error_file_operation_cancelled">Canceled!</string>
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
@@ -899,6 +909,8 @@
     <string name="error_ime_disabled">You need to enable %s!</string>
     <string name="error_failed_to_change_ime">Failed to change input method!</string>
     <string name="error_failed_to_enable_ime">Failed to enable input method!</string>
+    <string name="error_failed_to_cycle_ime_subtype">Failed to cycle keyboard language!</string>
+    <string name="error_not_enough_ime_subtypes">The current keyboard doesn\'t have multiple languages enabled!</string>
     <string name="error_no_camera_app">Your device has no camera app!</string>
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>
@@ -922,6 +934,7 @@
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
     <string name="error_read_logs_permission_denied">Denied permission to read logs!</string>
+    <string name="error_local_network_permission_denied">Denied permission to access the local network!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
     <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
@@ -1034,12 +1047,21 @@
     <string name="action_stop_media_package_formatted">Stop media for %s</string>
 
     <string name="action_step_forward_media">Step media forward</string>
+    <string name="action_step_forward_media_with_duration">Step media forward (%ds)</string>
     <string name="action_step_forward_media_package">Step media forward for an app</string>
     <string name="action_step_forward_media_package_formatted">Step media forward for %s</string>
+    <string name="action_step_forward_media_package_with_duration_formatted">Step media forward for %1$s (%2$ds)</string>
 
     <string name="action_step_backward_media">Step media backward</string>
+    <string name="action_step_backward_media_with_duration">Step media backward (%ds)</string>
     <string name="action_step_backward_media_package">Step media backward for an app</string>
     <string name="action_step_backward_media_package_formatted">Step media backward for %s</string>
+    <string name="action_step_backward_media_package_with_duration_formatted">Step media backward for %1$s (%2$ds)</string>
+
+    <string name="action_step_media_duration_checkbox">Custom seek amount</string>
+    <string name="action_step_media_duration_label">Seek by</string>
+    <string name="action_step_media_duration_value">%d secs</string>
+    <string name="action_step_media_duration_not_supported_text">Not all apps support a custom seek amount. Some apps will use their own fixed skip duration instead.</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
@@ -1112,6 +1134,7 @@
 
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
+    <string name="action_cycle_keyboard_language">Cycle keyboard language</string>
 
     <string name="action_text_cut">Cut</string>
     <string name="action_text_copy">Copy</string>
@@ -1269,6 +1292,7 @@
     <string name="talkback_gesture_section_4_finger">4-finger gestures</string>
 
     <!-- TalkBack gesture action descriptions (what the gesture does) -->
+    <string name="talkback_gesture_action_one_finger_double_tap">Activate the focused item</string>
     <string name="talkback_gesture_action_swipe_up">Move reading control up or backwards</string>
     <string name="talkback_gesture_action_swipe_down">Move reading control down or forwards</string>
     <string name="talkback_gesture_action_swipe_left">Previous item</string>
@@ -1279,6 +1303,7 @@
     <string name="talkback_gesture_action_swipe_right_then_left">Scroll forwards</string>
     <string name="talkback_gesture_action_swipe_right_then_up">Start voice command</string>
     <string name="talkback_gesture_action_two_finger_tap">Pause or resume speech</string>
+    <string name="talkback_gesture_action_two_finger_double_tap">Play or pause media, answer or end calls</string>
     <string name="talkback_gesture_action_two_finger_double_tap_hold">Start or end selection mode</string>
     <string name="talkback_gesture_action_two_finger_triple_tap">Read from focused item</string>
     <string name="talkback_gesture_action_two_finger_triple_tap_hold">Turn speech on or off</string>
@@ -1295,6 +1320,7 @@
     <string name="talkback_gesture_action_four_finger_swipe_right">Next container</string>
 
     <!-- TalkBack gesture names (how to perform the gesture) -->
+    <string name="talkback_gesture_name_one_finger_double_tap">Double-tap</string>
     <string name="talkback_gesture_name_swipe_up">Swipe up</string>
     <string name="talkback_gesture_name_swipe_down">Swipe down</string>
     <string name="talkback_gesture_name_swipe_left">Swipe left</string>
@@ -1305,6 +1331,7 @@
     <string name="talkback_gesture_name_swipe_right_then_left">Swipe right then left</string>
     <string name="talkback_gesture_name_swipe_right_then_up">Swipe right then up</string>
     <string name="talkback_gesture_name_two_finger_tap">Tap with 2 fingers</string>
+    <string name="talkback_gesture_name_two_finger_double_tap">Double-tap with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_double_tap_hold">Double-tap and hold with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_triple_tap">Triple-tap with 2 fingers</string>
     <string name="talkback_gesture_name_two_finger_triple_tap_hold">Triple-tap and hold with 2 fingers</string>
@@ -1609,6 +1636,9 @@
     <string name="tip_ringer_mode_title">Ringer mode actions</string>
     <string name="tip_ringer_mode_text">Consider using Expert Mode for ringer mode actions to avoid conflicts with Do Not Disturb settings.</string>
     <string name="tip_ringer_mode_button">Use Expert Mode</string>
+    <string name="tip_key_code_dedicated_action_title">Use a dedicated action instead</string>
+    <string name="tip_key_code_dedicated_action_text">This will not work as you expect. Use the \"%1$s\" action instead.</string>
+    <string name="tip_key_code_dedicated_action_button">Replace action</string>
     <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
     <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
@@ -1629,6 +1659,7 @@
     <string name="sort_bottom_sheet_actions">Actions</string>
     <string name="sort_bottom_sheet_constraints">Constraints</string>
     <string name="sort_bottom_sheet_options">Options</string>
+    <string name="sort_bottom_sheet_enabled">Enabled</string>
     <string name="home_nav_bar_key_maps">Key maps</string>
     <string name="home_nav_bar_floating_buttons">Floating buttons</string>
     <string name="home_fab_new_key_map">New key map</string>
@@ -1684,6 +1715,10 @@
     <string name="home_importing_finished_snackbar">Importing successful!</string>
     <string name="home_exporting_snackbar">Exporting…</string>
     <string name="home_export_error_snackbar">Failed: %s</string>
+    <string name="home_export_finished_downloads_snackbar">Saved %s to Downloads</string>
+    <string name="home_import_choose_backup_dialog_title">Choose a backup</string>
+    <string name="home_import_no_backups_found_in_downloads">No previous Key Mapper backups found in Downloads. Export a backup on this device first, then it will appear here.</string>
+    <string name="home_import_grant_full_access_button">Grant access to see files from other apps</string>
     <string name="import_dialog_title_loading">Loading file…</string>
     <string name="import_dialog_title_success">Import successful!</string>
     <string name="import_dialog_title_importing">Importing…</string>
@@ -1900,12 +1935,43 @@
     <string name="expert_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
     <string name="expert_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
+    <string name="expert_mode_setup_wizard_local_network_permission_title">Allow local network access</string>
+    <string name="expert_mode_setup_wizard_local_network_permission_description">Key Mapper needs access to the local network to connect to the ADB service on your device.</string>
+    <string name="expert_mode_setup_wizard_local_network_permission_button">Give permission</string>
+
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>
 
     <string name="expert_mode_usb_debugging_security_settings_title">USB debugging security settings disabled</string>
     <string name="expert_mode_usb_debugging_security_settings_description">You need to enable \"USB debugging security settings\" in Developer options for Expert Mode to work properly. This is mainly required on Xiaomi devices.</string>
     <string name="expert_mode_usb_debugging_security_settings_button">Open Developer options</string>
+
+    <string name="expert_mode_xiaomi_optimization_title">Reduce app killing</string>
+    <string name="expert_mode_xiaomi_optimization_description">Xiaomi devices (MIUI/HyperOS) aggressively close background apps. Apply a few settings to keep Expert Mode running.</string>
+
+    <string name="xiaomi_optimization_title">Reduce app killing</string>
+    <string name="xiaomi_optimization_hero_text">Xiaomi devices (MIUI/HyperOS) aggressively close background apps and revoke permissions. These settings help keep Expert Mode running. You may need to re-apply them after a system update.</string>
+    <string name="xiaomi_optimization_not_connected">Start Expert Mode to change this setting.</string>
+    <string name="xiaomi_optimization_apply_error">Something went wrong. Make sure Expert Mode is running and try again.</string>
+    <string name="xiaomi_optimization_open_settings_error">Couldn\'t open the settings screen on this device.</string>
+    <string name="xiaomi_optimization_applied">Applied</string>
+
+    <string name="xiaomi_optimization_auto_apply_title">Battery fixes</string>
+    <string name="xiaomi_optimization_auto_apply_description">Whitelists the app from battery optimisation and allows it to run in the background. These are safe to apply.</string>
+    <string name="xiaomi_optimization_auto_apply_button">Apply battery fixes</string>
+
+    <string name="xiaomi_optimization_advanced_title">MIUI optimization</string>
+    <string name="xiaomi_optimization_advanced_warning">Disabling MIUI optimization is the most effective fix, but it can change the behaviour of some MIUI features.</string>
+    <string name="xiaomi_optimization_advanced_switch">Disable MIUI optimization</string>
+    <string name="xiaomi_optimization_advanced_reboot_note">You may need to restart your device for this to fully take effect. Turn it off again to revert.</string>
+
+    <string name="xiaomi_optimization_open_button">Open</string>
+    <string name="xiaomi_optimization_autostart_title">Enable autostart</string>
+    <string name="xiaomi_optimization_autostart_description">Allow the app to start automatically so it can run after your device restarts.</string>
+    <string name="xiaomi_optimization_battery_saver_title">Battery saver</string>
+    <string name="xiaomi_optimization_battery_saver_description">Set the app\'s battery saver to \"No restrictions\" so it isn\'t closed in the background.</string>
+    <string name="xiaomi_optimization_lock_recents_title">Lock the app in recents</string>
+    <string name="xiaomi_optimization_lock_recents_description">Open the recent apps screen, then swipe down on the app\'s card (or long-press it) and tap the padlock. This stops \"clear all\" from closing it.</string>
 
     <string name="expert_mode_setup_assistant_notification_channel">Setup assistant</string>
 

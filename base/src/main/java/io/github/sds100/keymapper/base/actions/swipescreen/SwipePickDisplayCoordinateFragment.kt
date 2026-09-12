@@ -2,14 +2,12 @@ package io.github.sds100.keymapper.base.actions.swipescreen
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.Point
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -47,12 +45,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
 
             bitmap ?: return@registerForActivityResult
 
-            val displaySize = Point().apply {
-                @Suppress("DEPRECATION")
-                ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
-            }
-
-            viewModel.selectedScreenshot(bitmap, displaySize)
+            viewModel.selectedScreenshot(bitmap)
         }
 
     /**

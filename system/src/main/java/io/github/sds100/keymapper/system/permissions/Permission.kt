@@ -18,4 +18,13 @@ enum class Permission {
     FIND_NEARBY_DEVICES,
     POST_NOTIFICATIONS,
     READ_LOGS,
+    ACCESS_LOCAL_NETWORK,
+
+    /**
+     * Gives access to read all external files. Only requested
+     * on FOSS build because Google Play usually only permit it for
+     * file manager applications. This is needed on Android TV because
+     * it stubs the APIs for creating/reading documents.
+     */
+    MANAGE_EXTERNAL_STORAGE,
 }

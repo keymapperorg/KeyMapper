@@ -17,4 +17,10 @@ interface InputMethodAdapter {
     val chosenIme: StateFlow<ImeInfo?>
 
     fun getChosenIme(): ImeInfo?
+
+    /**
+     * Switches the chosen input method to the next enabled subtype (language), wrapping
+     * around to the first subtype after the last.
+     */
+    fun cycleInputMethodSubtype(): KMResult<Unit>
 }

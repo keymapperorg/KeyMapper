@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.home
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,12 +35,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -71,6 +78,7 @@ fun KeyMapList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
     listItems: State<List<KeyMapListItemModel>>,
+    header: (@Composable () -> Unit)? = null,
     footerText: String? = stringResource(R.string.home_key_map_list_footer_text),
     isSelectable: Boolean = false,
     onClickKeyMap: (String) -> Unit = {},
@@ -80,35 +88,113 @@ fun KeyMapList(
     onTriggerErrorClick: (TriggerError) -> Unit = {},
     bottomListPadding: Dp = 100.dp,
 ) {
-    when (listItems) {
-        is State.Loading -> {
-            Surface(modifier = modifier) {
-                LoadingList(modifier = Modifier.fillMaxSize())
-            }
-        }
+    val haptics = LocalHapticFeedback.current
+    val density = LocalDensity.current
+    val itemSpacing = 8.dp
+    // The header is flush with the app bar because it is the same color as it.
+    val topPadding = if (header == null) 8.dp else 0.dp
+    val bottomPadding = 8.dp
 
-        is State.Data -> {
-            Surface(modifier = modifier) {
-                if (listItems.data.isEmpty()) {
-                    EmptyKeyMapList(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = bottomListPadding),
-                    )
-                } else {
-                    LoadedKeyMapList(
-                        Modifier.fillMaxSize(),
-                        lazyListState,
-                        listItems.data,
-                        footerText,
-                        isSelectable,
-                        onClickKeyMap,
-                        onLongClickKeyMap,
-                        onSelectedChange,
-                        onFixClick,
-                        onTriggerErrorClick,
-                        bottomListPadding,
-                    )
+    // The loading and empty states must fill the space left over by the header, like they would
+    // with a weight of 1f in a Column, so the header is measured.
+    var headerHeight by remember { mutableStateOf(0.dp) }
+
+    Surface(modifier = modifier) {
+        BoxWithConstraints {
+            val remainingHeight = (
+                maxHeight - headerHeight - topPadding - bottomListPadding - bottomPadding -
+                    if (header == null) 0.dp else itemSpacing
+                ).coerceAtLeast(0.dp)
+
+            // Wait for the header to be measured so the loading and empty states are not laid out
+            // a header too tall on the first frame and then jump into place.
+            val isRemainingHeightMeasured = header == null || headerHeight > 0.dp
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState,
+                contentPadding = PaddingValues(top = topPadding, bottom = bottomPadding),
+                verticalArrangement = Arrangement.spacedBy(itemSpacing),
+            ) {
+                // The header is in the list rather than the app bar so that it scrolls away and
+                // does not take up vertical space on small screens or in landscape.
+                if (header != null) {
+                    item(key = "header") {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .onSizeChanged {
+                                    headerHeight = with(density) { it.height.toDp() }
+                                },
+                        ) {
+                            header()
+                        }
+                    }
+                }
+
+                when (listItems) {
+                    is State.Loading -> {
+                        if (isRemainingHeightMeasured) {
+                            item(key = "loading") {
+                                LoadingList(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(remainingHeight),
+                                )
+                            }
+                        }
+                    }
+
+                    is State.Data -> {
+                        if (listItems.data.isEmpty()) {
+                            if (isRemainingHeightMeasured) {
+                                item(key = "empty") {
+                                    EmptyKeyMapList(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(remainingHeight),
+                                    )
+                                }
+                            }
+                        } else {
+                            items(listItems.data, key = { it.uid }) { model ->
+                                KeyMapListItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
+                                    isSelectable = isSelectable,
+                                    model = model,
+                                    onClickKeyMap = { onClickKeyMap(model.content.uid) },
+                                    onLongClickKeyMap = {
+                                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        onLongClickKeyMap(model.content.uid)
+                                    },
+                                    onSelectedChange = { onSelectedChange(model.content.uid, it) },
+                                    onFixClick = onFixClick,
+                                    onTriggerErrorClick = onTriggerErrorClick,
+                                )
+                            }
+
+                            if (footerText != null) {
+                                item(key = "footer") {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                        text = footerText,
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                            }
+
+                            // Give some space at the end of the list so that the FAB doesn't block
+                            // the items.
+                            item(key = "bottom_padding") {
+                                Spacer(Modifier.height(bottomListPadding))
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -143,62 +229,6 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
             },
             textAlign = TextAlign.Center,
         )
-    }
-}
-
-@Composable
-private fun LoadedKeyMapList(
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
-    listItems: List<KeyMapListItemModel>,
-    footerText: String?,
-    isSelectable: Boolean,
-    onClickKeyMap: (String) -> Unit,
-    onLongClickKeyMap: (String) -> Unit,
-    onSelectedChange: (String, Boolean) -> Unit,
-    onFixClick: (KMError) -> Unit,
-    onTriggerErrorClick: (TriggerError) -> Unit,
-    bottomListPadding: Dp,
-) {
-    val haptics = LocalHapticFeedback.current
-
-    LazyColumn(
-        modifier = modifier,
-        state = lazyListState,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(listItems, key = { it.uid }) { model ->
-            KeyMapListItem(
-                modifier = Modifier.fillMaxWidth(),
-                isSelectable = isSelectable,
-                model = model,
-                onClickKeyMap = { onClickKeyMap(model.content.uid) },
-                onLongClickKeyMap = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongClickKeyMap(model.content.uid)
-                },
-                onSelectedChange = { onSelectedChange(model.content.uid, it) },
-                onFixClick = onFixClick,
-                onTriggerErrorClick = onTriggerErrorClick,
-            )
-        }
-
-        if (footerText != null) {
-            item {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = footerText,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-
-        // Give some space at the end of the list so that the FAB doesn't block the items.
-        item {
-            Spacer(Modifier.height(bottomListPadding))
-        }
     }
 }
 
@@ -479,33 +509,43 @@ private fun ActionConstraintChip(model: ComposeChipModel, onFixClick: (KMError) 
 private fun getTriggerErrorMessage(error: TriggerError): String {
     return when (error) {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
+
         TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(
             R.string.trigger_error_cant_detect_in_phone_call,
         )
+
         TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(
             R.string.trigger_error_assistant_not_purchased,
         )
+
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(
             R.string.trigger_error_dpad_ime_not_selected,
         )
+
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(
             R.string.trigger_error_floating_button_deleted,
         )
+
         TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(
             R.string.trigger_error_floating_buttons_not_purchased,
         )
+
         TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(
             R.string.trigger_error_product_verification_failed,
         )
+
         TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> stringResource(
             R.string.trigger_error_system_bridge_unsupported,
         )
+
         TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(
             R.string.trigger_error_system_bridge_disconnected,
         )
+
         TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(
             R.string.trigger_error_evdev_device_not_found,
         )
+
         TriggerError.MIGRATE_SCREEN_OFF_TRIGGER -> stringResource(
             R.string.trigger_error_migrate_screen_off_key_map,
         )
@@ -673,7 +713,11 @@ private fun sampleList(): List<KeyMapListItemModel> {
 @Composable
 private fun ListPreview() {
     KeyMapperTheme {
-        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Data(sampleList()))
+        KeyMapList(
+            modifier = Modifier.fillMaxSize(),
+            listItems = State.Data(sampleList()),
+            bottomListPadding = 100.dp,
+        )
     }
 }
 
@@ -685,6 +729,7 @@ private fun SelectableListPreview() {
             modifier = Modifier.fillMaxSize(),
             listItems = State.Data(sampleList()),
             isSelectable = true,
+            bottomListPadding = 100.dp,
         )
     }
 }
@@ -693,7 +738,11 @@ private fun SelectableListPreview() {
 @Composable
 private fun EmptyPreview() {
     KeyMapperTheme {
-        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Data(emptyList()))
+        KeyMapList(
+            modifier = Modifier.fillMaxSize(),
+            listItems = State.Data(emptyList()),
+            bottomListPadding = 100.dp,
+        )
     }
 }
 
@@ -701,6 +750,10 @@ private fun EmptyPreview() {
 @Composable
 private fun LoadingPreview() {
     KeyMapperTheme {
-        KeyMapList(modifier = Modifier.fillMaxSize(), listItems = State.Loading)
+        KeyMapList(
+            modifier = Modifier.fillMaxSize(),
+            listItems = State.Loading,
+            bottomListPadding = 100.dp,
+        )
     }
 }

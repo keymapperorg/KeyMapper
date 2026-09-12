@@ -75,6 +75,12 @@ data class ActionEntity(
         const val EXTRA_DND_MODE = "extra_do_not_disturb_mode"
         const val EXTRA_ORIENTATIONS = "extra_orientations"
         const val EXTRA_COORDINATE_DESCRIPTION = "extra_coordinate_description"
+
+        /**
+         * The display size that the coordinates of a tap, swipe or pinch screen action were picked
+         * for, stored as a comma separated "width,height". See issue #2217.
+         */
+        const val EXTRA_SCREEN_RESOLUTION = "extra_screen_resolution"
         const val EXTRA_INTENT_TARGET = "extra_intent_target"
         const val EXTRA_INTENT_DESCRIPTION = "extra_intent_description"
         const val EXTRA_SOUND_FILE_DESCRIPTION = "extra_sound_file_description"
@@ -92,6 +98,7 @@ data class ActionEntity(
         const val EXTRA_NOTIFICATION_TITLE = "extra_notification_title"
         const val EXTRA_NOTIFICATION_TIMEOUT = "extra_notification_timeout"
         const val EXTRA_TOAST_DURATION = "extra_toast_duration"
+        const val EXTRA_STEP_MEDIA_DURATION = "extra_step_media_duration"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"

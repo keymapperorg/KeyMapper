@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.Json
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
@@ -31,6 +32,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -261,6 +263,30 @@ class ConfigShellCommandViewModelTest {
             mockExecuteShellCommandUseCase,
             never(),
         ).executeWithStreamingOutput(any(), any(), any())
+    }
+
+    @Test
+    fun `when clicking done replace windows line endings in the command`() = runTest {
+        // Scripts pasted from a computer can have Windows line endings, which a shell fails to
+        // parse. See issue #2209.
+        viewModel.onCommandChanged("if true; then\r\n    echo hello\r\nelse\r\n    echo bye\r\nfi")
+        viewModel.onDescriptionChanged("Test command")
+
+        val result = viewModel.onDoneClick()
+
+        advanceUntilIdle()
+
+        assertThat(result, `is`(true))
+
+        val captor = argumentCaptor<String>()
+        verify(mockNavigationProvider).popBackStackWithResult(captor.capture())
+
+        val action = Json.decodeFromString<ActionData.ShellCommand>(captor.firstValue)
+
+        assertThat(
+            action.command,
+            `is`("if true; then\n    echo hello\nelse\n    echo bye\nfi"),
+        )
     }
 
     @Test

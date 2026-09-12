@@ -31,3 +31,5 @@ object BuildUtils {
         else -> "API $version"
     }
 }
+
+fun isXiaomiDevice(): Boolean = Build.BRAND.lowercase() in setOf("xiaomi", "redmi", "poco")

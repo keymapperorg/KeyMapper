@@ -1,19 +1,54 @@
+## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
+
+#### 12 September 2026
+
+## Added
+
+- #2238 Add a "Reduce app killing" card to Expert Mode on Xiaomi/Redmi/Poco devices with steps to whitelist the app from battery optimisation, disable MIUI optimization, enable autostart, and adjust battery saver settings.
+- Target Android 17 SDK.
+- [#2227](https://github.com/keymapperorg/KeyMapper/issues/2227) Add a step to the Expert Mode setup wizard to grant local network access permission, required for ADB on Android 17+.
+- #2223 Add one-finger and two-finger double-tap gestures to the TalkBack gesture action.
+- [#2211](https://github.com/keymapperorg/KeyMapper/issues/2211) Add an "Enabled" field to sort the key map list by whether key maps are enabled or disabled.
+- [#2234](https://github.com/keymapperorg/KeyMapper/issues/2234) Add a "Cycle keyboard language" action to switch between the enabled languages of the current keyboard, requiring the WRITE_SECURE_SETTINGS permission.
+- [#2235](https://github.com/keymapperorg/KeyMapper/issues/2235) Show a tip suggesting a dedicated action when a Key Code action is added for a key that has one, such as volume, power, home, back, screenshot, media, microphone, and more, with a button to replace it immediately.
+- [#2239](https://github.com/keymapperorg/KeyMapper/issues/2239) Add an option to set a custom seek amount for the Step media forward/backward actions, instead of the fixed 30 seconds.
+
+## Fixed
+
+- #2212 The warnings, group chips, breadcrumbs and group constraints on the home screen now scroll with the key map list instead of being pinned under the app bar, so there is much more room for key maps on small screens and in landscape.
+- [#2231](https://github.com/keymapperorg/KeyMapper/issues/2231) Key Mapper no longer crashes when the system bridge starter files are copied while the device storage is temporarily unavailable, and the system bridge is no longer blocked by the auto start cooldown afterwards.
+- [#2160](https://github.com/keymapperorg/KeyMapper/issues/2160) edits to the activity in a send intent action are no longer discarded when the screen is recreated (for example on a configuration change) before saving.
+- [#2099](https://github.com/keymapperorg/KeyMapper/issues/2099) do not spam notifications that Expert mode failed to start on WiFi disconnection or the ADB pairing is broken.
+- [#2097](https://github.com/keymapperorg/KeyMapper/issues/2097) potentially fix activities from some apps being missing from the Send Intent action's activity picker.
+- [#2220](https://github.com/keymapperorg/KeyMapper/issues/2220) make invisible floating buttons more visible when editing.
+- [#2209](https://github.com/keymapperorg/KeyMapper/issues/2209) multi-line shell command actions no longer fail with a syntax error when the script is pasted with Windows line endings.
+- Expert mode works on 16KB page size systems.
+- Launching Wireless Debugging screen for Expert Mode setup works on Android 17+.
+- [#2219](https://github.com/keymapperorg/KeyMapper/issues/2219) fix: scale floating buttons when screen resolution changes.
+- [#2210](https://github.com/keymapperorg/KeyMapper/issues/2210) Android TV DPAD center button behaves normally when accessibility service enabled.
+- [#2070](https://github.com/keymapperorg/KeyMapper/issues/2070) long pressing a movable floating button now activates its long press key map instead of only being possible to drag.
+- Floating Buttons immediately respond to toggling locked position.
+- [#2232](https://github.com/keymapperorg/KeyMapper/issues/2232) Floating button options to show over keyboard and status bar apply immediately.
+- [#2098](https://github.com/keymapperorg/KeyMapper/issues/2098) [#2233](https://github.com/keymapperorg/KeyMapper/issues/2233) export and import key maps on Android TV, where there is no usable system file picker. Export now saves directly to the Downloads folder, and import lets you choose from backups found there (in the F-Droid build, you can optionally grant "All files access" to see backups copied in from other devices; this is not requested in the Play Store build).
+- [#2199](https://github.com/keymapperorg/KeyMapper/issues/2199) the "Fix" button on the battery optimisation warning no longer fails silently on devices without the per-app exemption screen (such as some Android TV builds). It now falls back to opening the general apps settings list.
+- Actions screen scrolls when empty and tip does not fill up screen on small displays.
+- Request notification listener permission for step media actions.
+- Slider does not jiggle when sliding over the default value.
+- #2217 tap, swipe and pinch screen actions now scale to the current display resolution, including
+
 ## [4.3.1](https://github.com/sds100/KeyMapper/releases/tag/v4.3.1)
 
 #### 11 August 2026
 
 ## Added
 
-- #2207 Restore purchases button on the paywalls and the thank you screen so purchases can be
-  recovered
-  on another device or after reinstalling.
-- #2207 Show the RevenueCat customer ID on the About screen. Tap it to copy it.
-- #2203 Add an Expert Mode setting to turn off the power button emergency stop for people whose
-  faulty power button stops Expert Mode by accident.
+- [#2207](https://github.com/keymapperorg/KeyMapper/issues/2207) Restore purchases button on the paywalls and the thank you screen so purchases can be recovered on another device or after reinstalling.
+- [#2207](https://github.com/keymapperorg/KeyMapper/issues/2207) Show the RevenueCat customer ID on the About screen. Tap it to copy it.
+- [#2203](https://github.com/keymapperorg/KeyMapper/issues/2203) Add an Expert Mode setting to turn off the power button emergency stop for people whose faulty power button stops Expert Mode by accident.
 
 ## Fixed
 
-- #1929 Dismiss all notifications stops working after a while.
+- [#1929](https://github.com/keymapperorg/KeyMapper/issues/1929) Dismiss all notifications stops working after a while.
 
 ## [4.3.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.0)
 
@@ -21,14 +56,13 @@
 
 ## Added
 
-- #2184 Add a display resolution constraint. Pick from the display's supported resolutions or enter a
-  custom width and height.
-- #2163 Add ringer mode constraints (Ring, Vibrate, Silent).
-- #2174 Add "Do not remap by default" preference to the default options settings page.
+- [#2184](https://github.com/keymapperorg/KeyMapper/issues/2184) Add a display resolution constraint. Pick from the display's supported resolutions or enter a custom width and height.
+- [#2163](https://github.com/keymapperorg/KeyMapper/issues/2163) Add ringer mode constraints (Ring, Vibrate, Silent).
+- [#2174](https://github.com/keymapperorg/KeyMapper/issues/2174) Add "Do not remap by default" preference to the default options settings page.
 
 ## Fixed
 
-- #2187 App constraints do not work with floating buttons
+- [#2187](https://github.com/keymapperorg/KeyMapper/issues/2187) App constraints do not work with floating buttons
 
 ## [4.2.1](https://github.com/sds100/KeyMapper/releases/tag/v4.2.1)
 
@@ -36,19 +70,15 @@
 
 ## Added
 
-- #2140 Add monochrome app icon layer for themed icon support on Android 13+.
+- [#2140](https://github.com/keymapperorg/KeyMapper/issues/2140) Add monochrome app icon layer for themed icon support on Android 13+.
 
 ## Fixed
 
-- #2154 The expert mode debug screen is now only accessible after the expert mode warning has been
-  acknowledged.
-- #2156 Do not throw an error when the Talkback application can not be found because there are many
-  different package names out there.
-- #2153 Prevent Direct Boot startup from initializing credential-encrypted app storage before the
-  user unlocks.
-- #2157 The "choose setting" screen now uses `settings list` via the system bridge when expert mode
-  is active, surfacing all device settings instead of only those visible through the
-  ContentProvider.
+- [#2154](https://github.com/keymapperorg/KeyMapper/issues/2154) The expert mode debug screen is now only accessible after the expert mode warning has been acknowledged.
+- [#2156](https://github.com/keymapperorg/KeyMapper/issues/2156) Do not throw an error when the Talkback application can not be found because there are many different package names out there.
+- [#2153](https://github.com/keymapperorg/KeyMapper/issues/2153) Prevent Direct Boot startup from initializing credential-encrypted app storage before the user unlocks.
+- [#2157](https://github.com/keymapperorg/KeyMapper/issues/2157) The "choose setting" screen now uses
+  `settings list` via the system bridge when expert mode is active, surfacing all device settings instead of only those visible through the ContentProvider.
 
 ## [4.2.0](https://github.com/sds100/KeyMapper/releases/tag/v4.2.0)
 
@@ -56,16 +86,13 @@
 
 ## Fixed
 
-- #2074 Scrolling the action or trigger list no longer accidentally moves items; reordering by drag
-  now only activates from the drag handle or via long-press.
+- [#2074](https://github.com/keymapperorg/KeyMapper/issues/2074) Scrolling the action or trigger list no longer accidentally moves items; reordering by drag now only activates from the drag handle or via long-press.
 
 ## Changed
 
-- #1369 Add content descriptions to drag handles and custom "Move up"/"Move down" accessibility
-  actions for trigger and action list items, improving TalkBack support for reordering.
-- #262 Add "TalkBack gesture" action to simulate TalkBack navigation gestures (swipes, multi-finger
-  taps, and multi-directional swipes).
-- #2076 Use "any input device" as the default for triggers.
+- [#1369](https://github.com/keymapperorg/KeyMapper/issues/1369) Add content descriptions to drag handles and custom "Move up"/"Move down" accessibility actions for trigger and action list items, improving TalkBack support for reordering.
+- [#262](https://github.com/keymapperorg/KeyMapper/issues/262) Add "TalkBack gesture" action to simulate TalkBack navigation gestures (swipes, multi-finger taps, and multi-directional swipes).
+- [#2076](https://github.com/keymapperorg/KeyMapper/issues/2076) Use "any input device" as the default for triggers.
 
 ## [4.1.0](https://github.com/sds100/KeyMapper/releases/tag/v4.1.0)
 
@@ -73,15 +100,13 @@
 
 ## Added
 
-- #2067 add action to select all text in the focused field.
-- #2045 add action to input on-screen keyboard enter/send button.
-- #2106 disable the keyboard auto-switching setting when manually switching the keyboard in the Key
-  Mapper homescreen menu.
-- #1029 add action to show a toast message.
-- #2081 add getevent debug screen.
-- #2087 small segmented button text is not readable in dark mode.
-- #2077 rename "This device" and "any device" to "This Android device" and "Any input device" to
-  prevent confusion.
+- [#2067](https://github.com/keymapperorg/KeyMapper/issues/2067) add action to select all text in the focused field.
+- [#2045](https://github.com/keymapperorg/KeyMapper/issues/2045) add action to input on-screen keyboard enter/send button.
+- [#2106](https://github.com/keymapperorg/KeyMapper/issues/2106) disable the keyboard auto-switching setting when manually switching the keyboard in the Key Mapper homescreen menu.
+- [#1029](https://github.com/keymapperorg/KeyMapper/issues/1029) add action to show a toast message.
+- [#2081](https://github.com/keymapperorg/KeyMapper/issues/2081) add getevent debug screen.
+- [#2087](https://github.com/keymapperorg/KeyMapper/issues/2087) small segmented button text is not readable in dark mode.
+- [#2077](https://github.com/keymapperorg/KeyMapper/issues/2077) rename "This device" and "any device" to "This Android device" and "Any input device" to prevent confusion.
 
 ## Changed
 
@@ -89,8 +114,8 @@
 
 ## Fixed
 
-- #2091 show an error on the "open device assistant" action when no device assistant is installed.
-- #2107 clarify the crashed accessibility service dialog text and keep only Cancel/Restart actions.
+- [#2091](https://github.com/keymapperorg/KeyMapper/issues/2091) show an error on the "open device assistant" action when no device assistant is installed.
+- [#2107](https://github.com/keymapperorg/KeyMapper/issues/2107) clarify the crashed accessibility service dialog text and keep only Cancel/Restart actions.
 
 ## [4.0.5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.5)
 
@@ -98,10 +123,10 @@
 
 ## Fixed
 
-- #2047 allow empty text in Text action.
-- #2056 replace old "PRO" in triggers on home screen with "Expert".
-- #2053 reduce latency when a lot of key maps with open app actions.
-- #2054 fix "Fix key event action" bottom sheet done button being hidden on small screens.
+- [#2047](https://github.com/keymapperorg/KeyMapper/issues/2047) allow empty text in Text action.
+- [#2056](https://github.com/keymapperorg/KeyMapper/issues/2056) replace old "PRO" in triggers on home screen with "Expert".
+- [#2053](https://github.com/keymapperorg/KeyMapper/issues/2053) reduce latency when a lot of key maps with open app actions.
+- [#2054](https://github.com/keymapperorg/KeyMapper/issues/2054) fix "Fix key event action" bottom sheet done button being hidden on small screens.
 
 ## [4.0.4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.4)
 
@@ -109,18 +134,17 @@
 
 ## Added
 
-- #2024 support Expert mode on all Android versions supported by Key Mapper (8.0+).
-- #2025 add report bug button to home screen menu.
-- #2027 Make the key map sorting feature easier to understand.
-- #2016 Show a warning when repeating a key code action less than 20 ms with expert mode triggers.
+- [#2024](https://github.com/keymapperorg/KeyMapper/issues/2024) support Expert mode on all Android versions supported by Key Mapper (8.0+).
+- [#2025](https://github.com/keymapperorg/KeyMapper/issues/2025) add report bug button to home screen menu.
+- [#2027](https://github.com/keymapperorg/KeyMapper/issues/2027) Make the key map sorting feature easier to understand.
+- [#2016](https://github.com/keymapperorg/KeyMapper/issues/2016) Show a warning when repeating a key code action less than 20 ms with expert mode triggers.
 - Show dialog if Expert mode fails to start after 60 seconds instead of waiting indefinitely.
 
 ## Fixed
 
-- #2030 do not filter out unknown evdev key events.
-- #2028 work around Shizuku bug on Mediatek devices that prevents Expert mode from starting.
-- #2034 catch errors when injecting events with Expert mode on Xiaomi devices and show warning to
-  fix on home screen.
+- [#2030](https://github.com/keymapperorg/KeyMapper/issues/2030) do not filter out unknown evdev key events.
+- [#2028](https://github.com/keymapperorg/KeyMapper/issues/2028) work around Shizuku bug on Mediatek devices that prevents Expert mode from starting.
+- [#2034](https://github.com/keymapperorg/KeyMapper/issues/2034) catch errors when injecting events with Expert mode on Xiaomi devices and show warning to fix on home screen.
 
 ## [4.0.3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.3)
 
@@ -128,10 +152,8 @@
 
 ## Fixed
 
-- [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006) Actually fixed the bug with crash
-  with Locale switching
-- [#2014](https://github.com/keymapperorg/KeyMapper/issues/2014) Reduce mouse latency when remapped
-  with Expert mode.
+- [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006) Actually fixed the bug with crash with Locale switching
+- [#2014](https://github.com/keymapperorg/KeyMapper/issues/2014) Reduce mouse latency when remapped with Expert mode.
 
 ## [4.0.2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.2)
 
@@ -143,8 +165,7 @@
 
 ## Removed
 
-- [#1973](https://github.com/keymapperorg/KeyMapper/issues/1973) [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006)
-  Removed language switching feature due to crash with no solution.
+- [#1973](https://github.com/keymapperorg/KeyMapper/issues/1973) [#2006](https://github.com/keymapperorg/KeyMapper/issues/2006) Removed language switching feature due to crash with no solution.
 
 ## [4.0.1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.1)
 
@@ -152,13 +173,12 @@
 
 ## Fixed
 
-- #2007 Volume up/down action bottom sheet is cut off on some devices.
-- #2004 Do not crash when launching wireless debugging screen on some devices.
-- #2005 NPE in onSaveInstanceState.
-- #2000 tell the user to tap OS version or build number.
-- #1996 Check if Night Shift is supported on a device before activating to prevent the screen going
-  black when activated.
-- #1999 Use a more reliable method to check whether Shell has GRANT_RUNTIME_PERMISSIONS permission.
+- [#2007](https://github.com/keymapperorg/KeyMapper/issues/2007) Volume up/down action bottom sheet is cut off on some devices.
+- [#2004](https://github.com/keymapperorg/KeyMapper/issues/2004) Do not crash when launching wireless debugging screen on some devices.
+- [#2005](https://github.com/keymapperorg/KeyMapper/issues/2005) NPE in onSaveInstanceState.
+- [#2000](https://github.com/keymapperorg/KeyMapper/issues/2000) tell the user to tap OS version or build number.
+- [#1996](https://github.com/keymapperorg/KeyMapper/issues/1996) Check if Night Shift is supported on a device before activating to prevent the screen going black when activated.
+- [#1999](https://github.com/keymapperorg/KeyMapper/issues/1999) Use a more reliable method to check whether Shell has GRANT_RUNTIME_PERMISSIONS permission.
 
 ## [4.0.0](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0)
 
@@ -172,39 +192,24 @@ See the changes in the previous beta releases for everything new. There is _a lo
 
 ## Added
 
-- [#1970](https://github.com/keymapperorg/KeyMapper/issues/1970) dynamically build the key code list
-  so key codes in new Android releases are automatically
-  included.
-- [#1939](https://github.com/keymapperorg/KeyMapper/issues/1939) show notification when Expert Mode
-  fails to start due to be being disconnected from WiFi.
-- [#1973](https://github.com/keymapperorg/KeyMapper/issues/1973) add setting to change app language
-  on Android 13+.
+- [#1970](https://github.com/keymapperorg/KeyMapper/issues/1970) dynamically build the key code list so key codes in new Android releases are automatically included.
+- [#1939](https://github.com/keymapperorg/KeyMapper/issues/1939) show notification when Expert Mode fails to start due to be being disconnected from WiFi.
+- [#1973](https://github.com/keymapperorg/KeyMapper/issues/1973) add setting to change app language on Android 13+.
 
 ## Fixed
 
-- [#1986](https://github.com/keymapperorg/KeyMapper/issues/1986) trigger screen is usable on
-  slightly rectangular screens with a low DPI.
+- [#1986](https://github.com/keymapperorg/KeyMapper/issues/1986) trigger screen is usable on slightly rectangular screens with a low DPI.
 - [#1972](https://github.com/keymapperorg/KeyMapper/issues/1972) Expert Mode works on Android 10.
-- [#1976](https://github.com/keymapperorg/KeyMapper/issues/1976) Panic in Rust system bridge code on
-  some devices.
-- [#1971](https://github.com/keymapperorg/KeyMapper/issues/1971) Media actions work again in some
-  apps, like YouTube.
-- [#1961](https://github.com/keymapperorg/KeyMapper/issues/1961) Disabling setup assistant shows a
-  notification asking for pairing code immediately.
-- [#1983](https://github.com/keymapperorg/KeyMapper/issues/1983) Inputting a modifier key and
-  another key as actions through Expert mode applies the correct key character map.
-- [#1990](https://github.com/keymapperorg/KeyMapper/issues/1990) Passthrough the device id of the
-  trigger to the key event action if one is not manually specified
-- [#1982](https://github.com/keymapperorg/KeyMapper/issues/1982) Text action does not need Key
-  Mapper input method on Android 13+.
-- [#1989](https://github.com/keymapperorg/KeyMapper/issues/1989) center the "Trigger and actions"
-  and "Constraint and more" tabs.
-- [#1392](https://github.com/keymapperorg/KeyMapper/issues/1392) Add action to enable/disable/toggle
-  night shift.
-- [#1675](https://github.com/keymapperorg/KeyMapper/issues/1675) Option to make floating buttons
-  movable.
-- [#1949](https://github.com/keymapperorg/KeyMapper/issues/1949) Floating buttons are completely
-  invisible when pressed if background and border opacity is set to 0.
+- [#1976](https://github.com/keymapperorg/KeyMapper/issues/1976) Panic in Rust system bridge code on some devices.
+- [#1971](https://github.com/keymapperorg/KeyMapper/issues/1971) Media actions work again in some apps, like YouTube.
+- [#1961](https://github.com/keymapperorg/KeyMapper/issues/1961) Disabling setup assistant shows a notification asking for pairing code immediately.
+- [#1983](https://github.com/keymapperorg/KeyMapper/issues/1983) Inputting a modifier key and another key as actions through Expert mode applies the correct key character map.
+- [#1990](https://github.com/keymapperorg/KeyMapper/issues/1990) Passthrough the device id of the trigger to the key event action if one is not manually specified
+- [#1982](https://github.com/keymapperorg/KeyMapper/issues/1982) Text action does not need Key Mapper input method on Android 13+.
+- [#1989](https://github.com/keymapperorg/KeyMapper/issues/1989) center the "Trigger and actions" and "Constraint and more" tabs.
+- [#1392](https://github.com/keymapperorg/KeyMapper/issues/1392) Add action to enable/disable/toggle night shift.
+- [#1675](https://github.com/keymapperorg/KeyMapper/issues/1675) Option to make floating buttons movable.
+- [#1949](https://github.com/keymapperorg/KeyMapper/issues/1949) Floating buttons are completely invisible when pressed if background and border opacity is set to 0.
 
 ## [4.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.06)
 
@@ -212,19 +217,13 @@ See the changes in the previous beta releases for everything new. There is _a lo
 
 ## Added
 
-- [#1964](https://github.com/keymapperorg/KeyMapper/issues/1964) show the command to start Expert
-  Mode with a shell command.
+- [#1964](https://github.com/keymapperorg/KeyMapper/issues/1964) show the command to start Expert Mode with a shell command.
 
 ## Bug fixes
 
-- [#1968](https://github.com/keymapperorg/KeyMapper/issues/1968) Device controls action no longer
-  works on Android 16+ so it has been disabled on new Android
-  versions.
-- [#1967](https://github.com/keymapperorg/KeyMapper/issues/1967) Still start system bridge if
-  granting WRITE_SECURE_SETTINGS fails.
-- [#1965](https://github.com/keymapperorg/KeyMapper/issues/1965) Better system bridge support on
-  Xiaomi devices and ask to enable "USB debugging security
-  settings" in developer options.
+- [#1968](https://github.com/keymapperorg/KeyMapper/issues/1968) Device controls action no longer works on Android 16+ so it has been disabled on new Android versions.
+- [#1967](https://github.com/keymapperorg/KeyMapper/issues/1967) Still start system bridge if granting WRITE_SECURE_SETTINGS fails.
+- [#1965](https://github.com/keymapperorg/KeyMapper/issues/1965) Better system bridge support on Xiaomi devices and ask to enable "USB debugging security settings" in developer options.
 
 ## [4.0.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.05)
 
@@ -234,15 +233,12 @@ Happy new year!
 
 ## Added
 
-- [#1947](https://github.com/keymapperorg/KeyMapper/issues/1947) show tip to use expert mode where
-  the old option for screen off remapping used to be
+- [#1947](https://github.com/keymapperorg/KeyMapper/issues/1947) show tip to use expert mode where the old option for screen off remapping used to be
 
 ## Bug fixes
 
-- [#1955](https://github.com/keymapperorg/KeyMapper/issues/1955) step forward and step backward
-  media actions support more apps.
-- [#1940](https://github.com/keymapperorg/KeyMapper/issues/1940) improve reliability of clicking
-  pairing code button in Wireless Debugging settings.
+- [#1955](https://github.com/keymapperorg/KeyMapper/issues/1955) step forward and step backward media actions support more apps.
+- [#1940](https://github.com/keymapperorg/KeyMapper/issues/1940) improve reliability of clicking pairing code button in Wireless Debugging settings.
 
 ## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
 
@@ -250,37 +246,24 @@ Happy new year!
 
 Merry Christmas from the Key Mapper team! 🎄
 
-Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is
-free.
+Renamed PRO mode to Expert mode because it sounded like a paid premium feature even though it is free.
 
 ## Added
 
-- [#1915](https://github.com/keymapperorg/KeyMapper/issues/1915) ask user to remove "adb shell" from
-  Shell command.
-- [#1904](https://github.com/keymapperorg/KeyMapper/issues/1904) inform the user how to enable the
-  accessibility service with PRO mode or ADB.
-- [#1911](https://github.com/keymapperorg/KeyMapper/issues/1911) constraint for physical device
-  orientation that ignores auto rotate setting.
-- [#1918](https://github.com/keymapperorg/KeyMapper/issues/1918) improve how key event actions are
-  performed with system bridge.
-- [#1905](https://github.com/keymapperorg/KeyMapper/issues/1905) system bridge log is now visible in
-  Key Mapper log.
-- [#1941](https://github.com/keymapperorg/KeyMapper/issues/1941) show loading indicator when
-  starting system bridge.
+- [#1915](https://github.com/keymapperorg/KeyMapper/issues/1915) ask user to remove "adb shell" from Shell command.
+- [#1904](https://github.com/keymapperorg/KeyMapper/issues/1904) inform the user how to enable the accessibility service with PRO mode or ADB.
+- [#1911](https://github.com/keymapperorg/KeyMapper/issues/1911) constraint for physical device orientation that ignores auto rotate setting.
+- [#1918](https://github.com/keymapperorg/KeyMapper/issues/1918) improve how key event actions are performed with system bridge.
+- [#1905](https://github.com/keymapperorg/KeyMapper/issues/1905) system bridge log is now visible in Key Mapper log.
+- [#1941](https://github.com/keymapperorg/KeyMapper/issues/1941) show loading indicator when starting system bridge.
 
 ## Bug fixes
 
-- [#1913](https://github.com/keymapperorg/KeyMapper/issues/1913) actually save the option to detect
-  with scan code
-- [#1931](https://github.com/keymapperorg/KeyMapper/issues/1931) fix Close and Remove From Recents
-  action on some Android 13 revisions
-- [#1926](https://github.com/keymapperorg/KeyMapper/issues/1926) PRO mode triggers for external
-  devices work when the device reconnects.
-- [#1918](https://github.com/keymapperorg/KeyMapper/issues/1918) PRO mode key maps can input key
-  codes that aren't originally supported by the trigger
-  device.
-- [#1934](https://github.com/keymapperorg/KeyMapper/issues/1934) hold down option for Tap Screen
-  action is added back.
+- [#1913](https://github.com/keymapperorg/KeyMapper/issues/1913) actually save the option to detect with scan code
+- [#1931](https://github.com/keymapperorg/KeyMapper/issues/1931) fix Close and Remove From Recents action on some Android 13 revisions
+- [#1926](https://github.com/keymapperorg/KeyMapper/issues/1926) PRO mode triggers for external devices work when the device reconnects.
+- [#1918](https://github.com/keymapperorg/KeyMapper/issues/1918) PRO mode key maps can input key codes that aren't originally supported by the trigger device.
+- [#1934](https://github.com/keymapperorg/KeyMapper/issues/1934) hold down option for Tap Screen action is added back.
 - Log less verbose.
 
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
@@ -289,28 +272,18 @@ free.
 
 ## Added
 
-- [#1871](https://github.com/keymapperorg/KeyMapper/issues/1871) action to modify any system
-  settings.
-- [#1221](https://github.com/keymapperorg/KeyMapper/issues/1221) action to show a custom
-  notification.
-- [#1491](https://github.com/keymapperorg/KeyMapper/issues/1491) action to toggle/enable/disable
-  hotspot.
-- [#1414](https://github.com/keymapperorg/KeyMapper/issues/1414) constraint for when the keyboard is
-  showing.
-- [#1900](https://github.com/keymapperorg/KeyMapper/issues/1900) log to logcat if extra logging is
-  enabled.
-- [#1902](https://github.com/keymapperorg/KeyMapper/issues/1902) add toggle next to record trigger
-  button to use PRO mode.
-- [#1909](https://github.com/keymapperorg/KeyMapper/issues/1909) categorise constraints similar to
-  actions.
+- [#1871](https://github.com/keymapperorg/KeyMapper/issues/1871) action to modify any system settings.
+- [#1221](https://github.com/keymapperorg/KeyMapper/issues/1221) action to show a custom notification.
+- [#1491](https://github.com/keymapperorg/KeyMapper/issues/1491) action to toggle/enable/disable hotspot.
+- [#1414](https://github.com/keymapperorg/KeyMapper/issues/1414) constraint for when the keyboard is showing.
+- [#1900](https://github.com/keymapperorg/KeyMapper/issues/1900) log to logcat if extra logging is enabled.
+- [#1902](https://github.com/keymapperorg/KeyMapper/issues/1902) add toggle next to record trigger button to use PRO mode.
+- [#1909](https://github.com/keymapperorg/KeyMapper/issues/1909) categorise constraints similar to actions.
 
 ## Bug fixes
 
-- [#1901](https://github.com/keymapperorg/KeyMapper/issues/1901) prompt user to set default USB
-  configuration to 'No data transfer' after starting pro mode.
-- [#1898](https://github.com/keymapperorg/KeyMapper/issues/1898) do not launch directly into the
-  Wireless Debugging activity on Xiaomi devices due to a bug
-  they introduced.
+- [#1901](https://github.com/keymapperorg/KeyMapper/issues/1901) prompt user to set default USB configuration to 'No data transfer' after starting pro mode.
+- [#1898](https://github.com/keymapperorg/KeyMapper/issues/1898) do not launch directly into the Wireless Debugging activity on Xiaomi devices due to a bug they introduced.
 
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
@@ -318,18 +291,13 @@ free.
 
 ## Added
 
-- [#1890](https://github.com/keymapperorg/KeyMapper/issues/1890) add button to save log to file and
-  share it. The clipboard button now cuts off older entries
-  and keeps newest ones.
+- [#1890](https://github.com/keymapperorg/KeyMapper/issues/1890) add button to save log to file and share it. The clipboard button now cuts off older entries and keeps newest ones.
 
 ## Fixed
 
-- Only autostart PRO mode with Shizuku if Shizuku permission is granted. Otherwise fallback to
-  method with Wireless Debugging and WRITE_SECURE_SETTINGS permission.
-- Starting system bridge for the first time would be janky because granting READ_LOGS kills the app
-  process. Only grant for READ_LOGS when sharing logcat from settings.
-- [#1886](https://github.com/keymapperorg/KeyMapper/issues/1886) mobile data actions work in PRO
-  mode.
+- Only autostart PRO mode with Shizuku if Shizuku permission is granted. Otherwise fallback to method with Wireless Debugging and WRITE_SECURE_SETTINGS permission.
+- Starting system bridge for the first time would be janky because granting READ_LOGS kills the app process. Only grant for READ_LOGS when sharing logcat from settings.
+- [#1886](https://github.com/keymapperorg/KeyMapper/issues/1886) mobile data actions work in PRO mode.
 
 ## [4.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.01)
 
@@ -337,63 +305,39 @@ free.
 
 ## Added
 
-- [#761](https://github.com/keymapperorg/KeyMapper/issues/761) Detect keys with scancodes. Key
-  Mapper will do this automatically if the key code is unknown
-  or you record different physical keys from the same device with the same key code.
+- [#761](https://github.com/keymapperorg/KeyMapper/issues/761) Detect keys with scancodes. Key Mapper will do this automatically if the key code is unknown or you record different physical keys from the same device with the same key code.
 - Redesign the Settings screen.
 - Shortcuts on the trigger screen that guide you how to set up different types of buttons.
-- [#1788](https://github.com/keymapperorg/KeyMapper/issues/1788) dismiss lockscreen when launching
-  app action from lockscreen
+- [#1788](https://github.com/keymapperorg/KeyMapper/issues/1788) dismiss lockscreen when launching app action from lockscreen
 - Show tips for parallel and sequence triggers, and constraints in the trigger screen
-- [#397](https://github.com/keymapperorg/KeyMapper/issues/397) enable/disable all key maps in a
-  group
-- [#1773](https://github.com/keymapperorg/KeyMapper/issues/1773) Option to show floating buttons on
-  top of keyboard or notification panel.
-- [#1335](https://github.com/keymapperorg/KeyMapper/issues/1335) Intent API to enable/disable/toggle
-  a key map.
-- [#114](https://github.com/keymapperorg/KeyMapper/issues/114) action to force stop app, and an
-  action to clear an app from recents
-- [#727](https://github.com/keymapperorg/KeyMapper/issues/727) Actions to send SMS messages: "Send
-  SMS" and "Compose SMS"
-- [#1819](https://github.com/keymapperorg/KeyMapper/issues/1819) Explain how to enable the
-  accessibility service restricted setting
+- [#397](https://github.com/keymapperorg/KeyMapper/issues/397) enable/disable all key maps in a group
+- [#1773](https://github.com/keymapperorg/KeyMapper/issues/1773) Option to show floating buttons on top of keyboard or notification panel.
+- [#1335](https://github.com/keymapperorg/KeyMapper/issues/1335) Intent API to enable/disable/toggle a key map.
+- [#114](https://github.com/keymapperorg/KeyMapper/issues/114) action to force stop app, and an action to clear an app from recents
+- [#727](https://github.com/keymapperorg/KeyMapper/issues/727) Actions to send SMS messages: "Send SMS" and "Compose SMS"
+- [#1819](https://github.com/keymapperorg/KeyMapper/issues/1819) Explain how to enable the accessibility service restricted setting
 - [#661](https://github.com/keymapperorg/KeyMapper/issues/661) Action to execute shell commands.
-- [#991](https://github.com/keymapperorg/KeyMapper/issues/991) Consolidated volume and stream
-  actions.
+- [#991](https://github.com/keymapperorg/KeyMapper/issues/991) Consolidated volume and stream actions.
 - [#1066](https://github.com/keymapperorg/KeyMapper/issues/1066) Action to mute/unmute microphone.
-- [#985](https://github.com/keymapperorg/KeyMapper/issues/985) Constraints for foldable hinge being
-  open/closed.
+- [#985](https://github.com/keymapperorg/KeyMapper/issues/985) Constraints for foldable hinge being open/closed.
 
 ## Removed
 
-- The key event relay service is now also used on all Android versions below Android 14. The
-  broadcast receiver method is no longer used.
-- Minimum supported Android version is now 8.0. Less than 1% of users are on older versions than
-  this and dropping support simplifies the codebase and maintenance.
-- Dropped support for showing a keyboard picker notification and automatically showing it when a
-  device connects. This is only supported on Android 8.1 and is extra work to maintain it.
-- Dropped support for rerouting key events on Android 11. This was a workaround for a specific bug
-  in Android 11 which fewer than 10% of users are using and less are probably using that feature.
+- The key event relay service is now also used on all Android versions below Android 14. The broadcast receiver method is no longer used.
+- Minimum supported Android version is now 8.0. Less than 1% of users are on older versions than this and dropping support simplifies the codebase and maintenance.
+- Dropped support for showing a keyboard picker notification and automatically showing it when a device connects. This is only supported on Android 8.1 and is extra work to maintain it.
+- Dropped support for rerouting key events on Android 11. This was a workaround for a specific bug in Android 11 which fewer than 10% of users are using and less are probably using that feature.
 
 ## Fixed
 
 - Restoring subgroups works and does not freeze Key Mapper.
 - Do not show duplicate constraint shortcuts.
 - Make WiFi connected constraints more reliable
-- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) auto switching of the Key Mapper
-  keyboard when typing is more reliable and quicker on
-  Android 13+
-- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) auto switching of the Key Mapper
-  keyboard now requires Android 11+. On older versions it was
-  only possible with WRITE_SECURE_SETTINGS but very few users are on these old Android versions so
-  it is not worth the extra maintenance effort.
-- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) the Key Mapper GUI Keyboard is no
-  longer mentioned in the app. It still works but PRO mode
-  and the auto switching feature are the preferred way to work around the limitations of the Key
-  Mapper keyboard.
+- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) auto switching of the Key Mapper keyboard when typing is more reliable and quicker on Android 13+
+- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) auto switching of the Key Mapper keyboard now requires Android 11+. On older versions it was only possible with WRITE_SECURE_SETTINGS but very few users are on these old Android versions so it is not worth the extra maintenance effort.
+- [#1818](https://github.com/keymapperorg/KeyMapper/issues/1818) the Key Mapper GUI Keyboard is no longer mentioned in the app. It still works but PRO mode and the auto switching feature are the preferred way to work around the limitations of the Key Mapper keyboard.
 - Allow selecting notification and alarm sound and not just ringtones for Sound action.
-- [#1064](https://github.com/keymapperorg/KeyMapper/issues/1064) wait for switch keyboard action to
-  complete before doing next action.
+- [#1064](https://github.com/keymapperorg/KeyMapper/issues/1064) wait for switch keyboard action to complete before doing next action.
 
 ## [3.2.1](https://github.com/sds100/KeyMapper/releases/tag/v3.2.1)
 
@@ -409,46 +353,29 @@ free.
 
 ## Added
 
-- [#1466](https://github.com/keymapperorg/KeyMapper/issues/1466) show onboarding when creating a key
-  map for the first time
+- [#1466](https://github.com/keymapperorg/KeyMapper/issues/1466) show onboarding when creating a key map for the first time
 - [#1729](https://github.com/keymapperorg/KeyMapper/issues/1729) target Android 16.
-- [#1725](https://github.com/keymapperorg/KeyMapper/issues/1725) action to move cursor to
-  previous/next character, word, line, paragraph, or page.
+- [#1725](https://github.com/keymapperorg/KeyMapper/issues/1725) action to move cursor to previous/next character, word, line, paragraph, or page.
 - Names for new key codes introduced in recent Android versions
 
 ## Changed
 
-- [#1711](https://github.com/keymapperorg/KeyMapper/issues/1711) major refactoring of the entire
-  codebase into separate Gradle modules.
-- [#1701](https://github.com/keymapperorg/KeyMapper/issues/1701) improve the order of the actions
-  and categories
+- [#1711](https://github.com/keymapperorg/KeyMapper/issues/1711) major refactoring of the entire codebase into separate Gradle modules.
+- [#1701](https://github.com/keymapperorg/KeyMapper/issues/1701) improve the order of the actions and categories
 - Key Mapper keyboard or Shizuku are no longer required for the action to move the cursor to the end
 
 ## Bug fixes
 
-- [#1686](https://github.com/keymapperorg/KeyMapper/issues/1686) (more fixes) do not show some
-  screens behind system bars on the left/right side of the
-  device.
-- [#1701](https://github.com/keymapperorg/KeyMapper/issues/1701) optimize the trigger screen for
-  smaller screens so elements are less cut off.
-- [#1699](https://github.com/keymapperorg/KeyMapper/issues/1699) Do not highlight a floating button
-  as if it is pressed after triggering a key event action
-  from it.
+- [#1686](https://github.com/keymapperorg/KeyMapper/issues/1686) (more fixes) do not show some screens behind system bars on the left/right side of the device.
+- [#1701](https://github.com/keymapperorg/KeyMapper/issues/1701) optimize the trigger screen for smaller screens so elements are less cut off.
+- [#1699](https://github.com/keymapperorg/KeyMapper/issues/1699) Do not highlight a floating button as if it is pressed after triggering a key event action from it.
 - Button to copy the key map UID to the clipboard is invisible on small screens.
-- [#1709](https://github.com/keymapperorg/KeyMapper/issues/1709) Quick settings tiles were causing
-  crashes on Android 15
-- [#1714](https://github.com/keymapperorg/KeyMapper/issues/1714) Editing "interact with app element"
-  actions works.
-- [#1707](https://github.com/keymapperorg/KeyMapper/issues/1707) do not back up sound files if no
-  key maps are using them
-- [#797](https://github.com/keymapperorg/KeyMapper/issues/797) [#1719](https://github.com/keymapperorg/KeyMapper/issues/1719)
-  execute key maps that can fix themselves. E.g having an action to select the Key Mapper
-  Keyboard before a key code action.
-- [#1735](https://github.com/keymapperorg/KeyMapper/issues/1735) Floating buttons no longer flash on
-  screen when the accessibility service restarts if they
-  are not supposed to be visible.
-- [#1717](https://github.com/keymapperorg/KeyMapper/issues/1717) do not show floating buttons if
-  quick settings is expanded on the lockscreen.
+- [#1709](https://github.com/keymapperorg/KeyMapper/issues/1709) Quick settings tiles were causing crashes on Android 15
+- [#1714](https://github.com/keymapperorg/KeyMapper/issues/1714) Editing "interact with app element" actions works.
+- [#1707](https://github.com/keymapperorg/KeyMapper/issues/1707) do not back up sound files if no key maps are using them
+- [#797](https://github.com/keymapperorg/KeyMapper/issues/797) [#1719](https://github.com/keymapperorg/KeyMapper/issues/1719) execute key maps that can fix themselves. E.g having an action to select the Key Mapper Keyboard before a key code action.
+- [#1735](https://github.com/keymapperorg/KeyMapper/issues/1735) Floating buttons no longer flash on screen when the accessibility service restarts if they are not supposed to be visible.
+- [#1717](https://github.com/keymapperorg/KeyMapper/issues/1717) do not show floating buttons if quick settings is expanded on the lockscreen.
 - Correctly show error that Airplane mode actions require root
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
@@ -457,16 +384,13 @@ free.
 
 ## Added
 
-- [#1637](https://github.com/keymapperorg/KeyMapper/issues/1637) show a home screen error if
-  notification permission is not granted.
-- [#1435](https://github.com/keymapperorg/KeyMapper/issues/1435) Pick system sounds/ringtones for
-  the Sound action.
+- [#1637](https://github.com/keymapperorg/KeyMapper/issues/1637) show a home screen error if notification permission is not granted.
+- [#1435](https://github.com/keymapperorg/KeyMapper/issues/1435) Pick system sounds/ringtones for the Sound action.
 
 ## Bug fixes
 
 - Do not automatically select the key mapper keyboard when the accessibility service starts.
-- [#1686](https://github.com/keymapperorg/KeyMapper/issues/1686) do not show some screens behind
-  system bars on the left/right side of the device.
+- [#1686](https://github.com/keymapperorg/KeyMapper/issues/1686) do not show some screens behind system bars on the left/right side of the device.
 - Use same sized list items when choosing a constraint.
 
 ## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
@@ -476,12 +400,9 @@ free.
 ## Added
 
 - [#699](https://github.com/keymapperorg/KeyMapper/issues/699) Time constraints ⏰
-- [#257](https://github.com/keymapperorg/KeyMapper/issues/257) Action to interact with user
-  interface elements inside other apps.
-- [#1663](https://github.com/keymapperorg/KeyMapper/issues/1663) Actions to stop, step forward, and
-  step backward playing media.
-- [#1682](https://github.com/keymapperorg/KeyMapper/issues/1682) Show "Purchased!" text next to the
-  use button for advanced triggers.
+- [#257](https://github.com/keymapperorg/KeyMapper/issues/257) Action to interact with user interface elements inside other apps.
+- [#1663](https://github.com/keymapperorg/KeyMapper/issues/1663) Actions to stop, step forward, and step backward playing media.
+- [#1682](https://github.com/keymapperorg/KeyMapper/issues/1682) Show "Purchased!" text next to the use button for advanced triggers.
 
 ## Changed
 
@@ -489,14 +410,10 @@ free.
 
 ## Bug fixes
 
-- [#1683](https://github.com/keymapperorg/KeyMapper/issues/1683) key event actions work in Minecraft
-  and other apps again.
+- [#1683](https://github.com/keymapperorg/KeyMapper/issues/1683) key event actions work in Minecraft and other apps again.
 - Export log files as .txt instead of .zip files.
-- [#1684](https://github.com/keymapperorg/KeyMapper/issues/1684) Removed the redundant and broken
-  refresh devices button when configuring a key event action
-  because they are automatically refreshed anyway.
-- [#1687](https://github.com/keymapperorg/KeyMapper/issues/1687) restoring key map groups would
-  sometimes fail.
+- [#1684](https://github.com/keymapperorg/KeyMapper/issues/1684) Removed the redundant and broken refresh devices button when configuring a key event action because they are automatically refreshed anyway.
+- [#1687](https://github.com/keymapperorg/KeyMapper/issues/1687) restoring key map groups would sometimes fail.
 
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
@@ -504,44 +421,27 @@ free.
 
 ## Added
 
-- [#1652](https://github.com/keymapperorg/KeyMapper/issues/1652) Bring back the menu button to show
-  input method picker.
-- [#1657](https://github.com/keymapperorg/KeyMapper/issues/1657) Turn on repeat by default for
-  volume actions.
+- [#1652](https://github.com/keymapperorg/KeyMapper/issues/1652) Bring back the menu button to show input method picker.
+- [#1657](https://github.com/keymapperorg/KeyMapper/issues/1657) Turn on repeat by default for volume actions.
 
 ## Changed
 
-- [#1654](https://github.com/keymapperorg/KeyMapper/issues/1654) The Key Mapper keyboard is now
-  required again for Text actions because the accessibility
-  service API does not work in all situations.
-- [#1653](https://github.com/keymapperorg/KeyMapper/issues/1653) Hide the export/import menu buttons
-  in groups.
-- [#1553](https://github.com/keymapperorg/KeyMapper/issues/1553) Hide double press option for side
-  key and fingerprint gesture triggers because it is
-  misleading. Double activations can be done with sequence triggers instead.
+- [#1654](https://github.com/keymapperorg/KeyMapper/issues/1654) The Key Mapper keyboard is now required again for Text actions because the accessibility service API does not work in all situations.
+- [#1653](https://github.com/keymapperorg/KeyMapper/issues/1653) Hide the export/import menu buttons in groups.
+- [#1553](https://github.com/keymapperorg/KeyMapper/issues/1553) Hide double press option for side key and fingerprint gesture triggers because it is misleading. Double activations can be done with sequence triggers instead.
 - [#1669](https://github.com/keymapperorg/KeyMapper/issues/1669) Change quick settings tile text.
 
 ## Bug fixes
 
-- Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at
-  the same time. And latency when inputting key events has been improved in some apps.
-- [#1646](https://github.com/keymapperorg/KeyMapper/issues/1646) disabling Bluetooth clears the list
-  of connected devices.
-- [#1655](https://github.com/keymapperorg/KeyMapper/issues/1655) do not crash when restoring key map
-  groups.
-- [#1649](https://github.com/keymapperorg/KeyMapper/issues/1649) show purchase verification failed
-  error if no network connection.
-- [#1648](https://github.com/keymapperorg/KeyMapper/issues/1648) caching purchases works so you can
-  use floating buttons and assistant trigger without an
-  internet connection.
-- [#1658](https://github.com/keymapperorg/KeyMapper/issues/1658) floating buttons appear in the
-  wrong place in portrait if saved in landscape.
-- [#1659](https://github.com/keymapperorg/KeyMapper/issues/1659) Use trigger does not work if the
-  screen orientation changes when re-entering the app.
-- [#1668](https://github.com/keymapperorg/KeyMapper/issues/1668) Crashes when floating menu does not
-  fit in the display height.
-- [#1667](https://github.com/keymapperorg/KeyMapper/issues/1667) Hold down mode UI is missing from
-  2.8.
+- Inputting key events with Shizuku does not crash the app if a Key Mapper keyboard is being used at the same time. And latency when inputting key events has been improved in some apps.
+- [#1646](https://github.com/keymapperorg/KeyMapper/issues/1646) disabling Bluetooth clears the list of connected devices.
+- [#1655](https://github.com/keymapperorg/KeyMapper/issues/1655) do not crash when restoring key map groups.
+- [#1649](https://github.com/keymapperorg/KeyMapper/issues/1649) show purchase verification failed error if no network connection.
+- [#1648](https://github.com/keymapperorg/KeyMapper/issues/1648) caching purchases works so you can use floating buttons and assistant trigger without an internet connection.
+- [#1658](https://github.com/keymapperorg/KeyMapper/issues/1658) floating buttons appear in the wrong place in portrait if saved in landscape.
+- [#1659](https://github.com/keymapperorg/KeyMapper/issues/1659) Use trigger does not work if the screen orientation changes when re-entering the app.
+- [#1668](https://github.com/keymapperorg/KeyMapper/issues/1668) Crashes when floating menu does not fit in the display height.
+- [#1667](https://github.com/keymapperorg/KeyMapper/issues/1667) Hold down mode UI is missing from 2.8.
 
 ## [3.0.0](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0)
 
@@ -549,8 +449,7 @@ _See the changes from previous 3.0 Beta releases._
 
 #### 10 April 2025
 
-- [#1635](https://github.com/keymapperorg/KeyMapper/issues/1635) do not crash if the URL for the
-  HTTP action is malformed
+- [#1635](https://github.com/keymapperorg/KeyMapper/issues/1635) do not crash if the URL for the HTTP action is malformed
 
 ## [3.0 Beta 5](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.5)
 
@@ -562,8 +461,7 @@ _See the changes from previous 3.0 Beta releases as well._
 
 ## Bug fixes
 
-- [#1627](https://github.com/keymapperorg/KeyMapper/issues/1627) open camera app action does not
-  work when device is locked
+- [#1627](https://github.com/keymapperorg/KeyMapper/issues/1627) open camera app action does not work when device is locked
 
 ## [3.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.4)
 
@@ -573,11 +471,8 @@ _See the changes from previous 3.0 Beta releases as well._
 
 ## Added
 
-- [#1620](https://github.com/keymapperorg/KeyMapper/issues/1620) enable Key Mapper Basic Input
-  Method without user interaction on Android 13+.
-- [#1619](https://github.com/keymapperorg/KeyMapper/issues/1619) Automatically select the non key
-  mapper keyboard when the device is locked and wanting to
-  type.
+- [#1620](https://github.com/keymapperorg/KeyMapper/issues/1620) enable Key Mapper Basic Input Method without user interaction on Android 13+.
+- [#1619](https://github.com/keymapperorg/KeyMapper/issues/1619) Automatically select the non key mapper keyboard when the device is locked and wanting to type.
 
 ## Changed
 
@@ -585,8 +480,7 @@ _See the changes from previous 3.0 Beta releases as well._
 
 ## Bug fixes
 
-- [#1618](https://github.com/keymapperorg/KeyMapper/issues/1618), [#1532](https://github.com/keymapperorg/KeyMapper/issues/1532), [#1590](https://github.com/keymapperorg/KeyMapper/issues/1590)
-  The Key Mapper keyboard is no longer required for Text actions.
+- [#1618](https://github.com/keymapperorg/KeyMapper/issues/1618), [#1532](https://github.com/keymapperorg/KeyMapper/issues/1532), [#1590](https://github.com/keymapperorg/KeyMapper/issues/1590) The Key Mapper keyboard is no longer required for Text actions.
 - Flashlight action works again on devices that do not support variable brightness
 
 ## [3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.3)
@@ -599,13 +493,9 @@ This is not an April Fool's joke ;)
 
 ## Added
 
-- [#320](https://github.com/keymapperorg/KeyMapper/issues/320) 🗂️ Key map groups! You can now sort
-  key maps into groups and share constraints across all the
-  key maps in the group.
-- [#1586](https://github.com/keymapperorg/KeyMapper/issues/1586) 🎨 Customise floating button border
-  and background opacity.
-- [#1276](https://github.com/keymapperorg/KeyMapper/issues/1276) Use key event scan code as fallback
-  if the key code is unrecognized.
+- [#320](https://github.com/keymapperorg/KeyMapper/issues/320) 🗂️ Key map groups! You can now sort key maps into groups and share constraints across all the key maps in the group.
+- [#1586](https://github.com/keymapperorg/KeyMapper/issues/1586) 🎨 Customise floating button border and background opacity.
+- [#1276](https://github.com/keymapperorg/KeyMapper/issues/1276) Use key event scan code as fallback if the key code is unrecognized.
 - Make it clearer that the instructions need to be read for the assistant trigger.
 
 ## Changed
@@ -615,16 +505,12 @@ This is not an April Fool's joke ;)
 
 ## Bug fixes
 
-- Do not hide floating button when the quick settings are showing if the key map action can collapse
-  the status bar.
+- Do not hide floating button when the quick settings are showing if the key map action can collapse the status bar.
 - Do not show floating buttons on the always-on display or when the display is "off".
 - Prompt to unlock device when tapping "Go back" on the floating menu.
-- [#1596](https://github.com/keymapperorg/KeyMapper/issues/1596) Do not show the option for front
-  flashlight if the device does not have one.
-- [#1598](https://github.com/keymapperorg/KeyMapper/issues/1598) Do not allow changing flashlight
-  brightness on devices that do not support it.
-- Omit "Back" from Back flashlight actions and constraints since most devices only have a back
-  flashlight anyway.
+- [#1596](https://github.com/keymapperorg/KeyMapper/issues/1596) Do not show the option for front flashlight if the device does not have one.
+- [#1598](https://github.com/keymapperorg/KeyMapper/issues/1598) Do not allow changing flashlight brightness on devices that do not support it.
+- Omit "Back" from Back flashlight actions and constraints since most devices only have a back flashlight anyway.
 - Do not ask for which flashlight to use in constraints if the device only has one
 
 ## [3.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.2)
@@ -633,68 +519,43 @@ This is not an April Fool's joke ;)
 
 ## Added
 
-- [#1560](https://github.com/keymapperorg/KeyMapper/issues/1560) Action to change flashlight
-  brightness and also set a custom brightness when enabling the
-  flashlight.
+- [#1560](https://github.com/keymapperorg/KeyMapper/issues/1560) Action to change flashlight brightness and also set a custom brightness when enabling the flashlight.
 - Prompt to unlock device when using a floating button as a trigger from the lock screen
 
 ## Changed
 
-- [#1577](https://github.com/keymapperorg/KeyMapper/issues/1577) Move unsupported actions to the
-  bottom of the list and do not allow selecting root actions
-  if root permission is not granted.
-- [#1593](https://github.com/keymapperorg/KeyMapper/issues/1593) Deprecate the 'Open menu' action by
-  not letting new key maps use it. It is a relic of the
-  past when most apps had a 3-dot menu with a consistent content description making it somewhat easy
-  to identify.
+- [#1577](https://github.com/keymapperorg/KeyMapper/issues/1577) Move unsupported actions to the bottom of the list and do not allow selecting root actions if root permission is not granted.
+- [#1593](https://github.com/keymapperorg/KeyMapper/issues/1593) Deprecate the 'Open menu' action by not letting new key maps use it. It is a relic of the past when most apps had a 3-dot menu with a consistent content description making it somewhat easy to identify.
 
 ## Bug fixes
 
-- [#1585](https://github.com/keymapperorg/KeyMapper/issues/1585) Track changes when editing key maps
-  and only prompt to discard changes if there were indeed
-  changes.
+- [#1585](https://github.com/keymapperorg/KeyMapper/issues/1585) Track changes when editing key maps and only prompt to discard changes if there were indeed changes.
 
 ## [3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.0-beta.1)
 
 #### 26 March 2025
 
-Most of the codebase has been touched and most of the user interface has been rewritten
-in Jetpack Compose, resulting in many improvements to the user experience.
+Most of the codebase has been touched and most of the user interface has been rewritten in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Added
 
-- [#1407](https://github.com/keymapperorg/KeyMapper/issues/1407) New trigger! Add floating buttons
-  on top of other apps to input key maps.
+- [#1407](https://github.com/keymapperorg/KeyMapper/issues/1407) New trigger! Add floating buttons on top of other apps to input key maps.
 - Key maps are much more dense on the home screen.
 - Button to pause/resume key maps at the top of the home screen.
-- [#1502](https://github.com/keymapperorg/KeyMapper/issues/1502) Constraint for lockscreen is (not)
-  showing.
-- [#1203](https://github.com/keymapperorg/KeyMapper/issues/1203) Show a share sheet after exporting
-  key maps rather than asking where to store it. This
-  solves the problem when no apps are installed to select where to back it up. You can still find
-  the file in the Downloads file.
-- [#1531](https://github.com/keymapperorg/KeyMapper/issues/1531) Show shortcuts to quickly add
-  recently used actions and constraints.
-- [#1487](https://github.com/keymapperorg/KeyMapper/issues/1487) Add confirmation dialog when
-  importing key maps and offer the option to replace all the key
-  maps or append to the list.
-- [#1546](https://github.com/keymapperorg/KeyMapper/issues/1546) Add short explanation of what
-  constraints mean on top of the list.
-- [#1548](https://github.com/keymapperorg/KeyMapper/issues/1548) Dynamically change key map enabled
-  switch label.
-- [#1562](https://github.com/keymapperorg/KeyMapper/issues/1562) Import key maps by opening .json
-  and .zip files from other apps and file managers.
+- [#1502](https://github.com/keymapperorg/KeyMapper/issues/1502) Constraint for lockscreen is (not) showing.
+- [#1203](https://github.com/keymapperorg/KeyMapper/issues/1203) Show a share sheet after exporting key maps rather than asking where to store it. This solves the problem when no apps are installed to select where to back it up. You can still find the file in the Downloads file.
+- [#1531](https://github.com/keymapperorg/KeyMapper/issues/1531) Show shortcuts to quickly add recently used actions and constraints.
+- [#1487](https://github.com/keymapperorg/KeyMapper/issues/1487) Add confirmation dialog when importing key maps and offer the option to replace all the key maps or append to the list.
+- [#1546](https://github.com/keymapperorg/KeyMapper/issues/1546) Add short explanation of what constraints mean on top of the list.
+- [#1548](https://github.com/keymapperorg/KeyMapper/issues/1548) Dynamically change key map enabled switch label.
+- [#1562](https://github.com/keymapperorg/KeyMapper/issues/1562) Import key maps by opening .json and .zip files from other apps and file managers.
 
 ## Bug fixes
 
-- [#1518](https://github.com/keymapperorg/KeyMapper/issues/1518) detect more apps that are playing
-  media (fix to previous fix).
-- [#1545](https://github.com/keymapperorg/KeyMapper/issues/1545) support phone call constraints in
-  more apps.
-- [#1536](https://github.com/keymapperorg/KeyMapper/issues/1536) 'Edit action' sometimes does not
-  appear.
-- [#1507](https://github.com/keymapperorg/KeyMapper/issues/1507) only vibrate once when mixing
-  short, long, and double press key maps.
+- [#1518](https://github.com/keymapperorg/KeyMapper/issues/1518) detect more apps that are playing media (fix to previous fix).
+- [#1545](https://github.com/keymapperorg/KeyMapper/issues/1545) support phone call constraints in more apps.
+- [#1536](https://github.com/keymapperorg/KeyMapper/issues/1536) 'Edit action' sometimes does not appear.
+- [#1507](https://github.com/keymapperorg/KeyMapper/issues/1507) only vibrate once when mixing short, long, and double press key maps.
 - Prevent various system errors from crashing the apps.
 
 ## [2.8.3](https://github.com/sds100/KeyMapper/releases/tag/v2.8.3)
@@ -703,15 +564,12 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Changed
 
-- [#1474](https://github.com/keymapperorg/KeyMapper/issues/1474) always allow specifying a name for
-  key map launcher shortcuts.
-- [#1533](https://github.com/keymapperorg/KeyMapper/issues/1533) simplify naming of ringer mode
-  actions.
+- [#1474](https://github.com/keymapperorg/KeyMapper/issues/1474) always allow specifying a name for key map launcher shortcuts.
+- [#1533](https://github.com/keymapperorg/KeyMapper/issues/1533) simplify naming of ringer mode actions.
 
 ## Bug fixes
 
-- [#1535](https://github.com/keymapperorg/KeyMapper/issues/1535) side key/assistant trigger does not
-  trigger from non-assistant buttons.
+- [#1535](https://github.com/keymapperorg/KeyMapper/issues/1535) side key/assistant trigger does not trigger from non-assistant buttons.
 
 ## [2.8.2](https://github.com/sds100/KeyMapper/releases/tag/v2.8.2)
 
@@ -719,16 +577,12 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Changes
 
-- [#1514](https://github.com/keymapperorg/KeyMapper/issues/1514), [#1454](https://github.com/keymapperorg/KeyMapper/issues/1454)
-  Improving naming of assistant trigger to also refer to the side key and do not force
-  the user to select Key Mapper as the assistant.
+- [#1514](https://github.com/keymapperorg/KeyMapper/issues/1514), [#1454](https://github.com/keymapperorg/KeyMapper/issues/1454) Improving naming of assistant trigger to also refer to the side key and do not force the user to select Key Mapper as the assistant.
 
 ## Bug fixes
 
-- [#1461](https://github.com/keymapperorg/KeyMapper/issues/1461) fix: crash on startup due to
-  getting MotionEvent device
-- [#1518](https://github.com/keymapperorg/KeyMapper/issues/1518) fix: detect apps playing media
-  without a notification for media constraints
+- [#1461](https://github.com/keymapperorg/KeyMapper/issues/1461) fix: crash on startup due to getting MotionEvent device
+- [#1518](https://github.com/keymapperorg/KeyMapper/issues/1518) fix: detect apps playing media without a notification for media constraints
 
 ## [2.8.1](https://github.com/sds100/KeyMapper/releases/tag/v2.8.1)
 
@@ -736,21 +590,13 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Bug fixes
 
-- [#1433](https://github.com/keymapperorg/KeyMapper/issues/1433) open Key Mapper by default and not
-  the Assistant Trigger app.
-- [#1386](https://github.com/keymapperorg/KeyMapper/issues/1386) wait for sequence trigger timeout
-  before triggering other overlapping triggers.
-- [#1449](https://github.com/keymapperorg/KeyMapper/issues/1449) improve the key mapper crashed
-  dialog.
-- [#1415](https://github.com/keymapperorg/KeyMapper/issues/1415) make the discard changes dialog
-  less confusing.
-- [#1440](https://github.com/keymapperorg/KeyMapper/issues/1440) do not show the "Button not
-  detected?" bottom sheet every time you open the config key map
-  screen in some cases.
-- [#1447](https://github.com/keymapperorg/KeyMapper/issues/1447) the app bar when configuring an
-  Intent action would extend to the top of the screen.
-- [#1444](https://github.com/keymapperorg/KeyMapper/issues/1444) use the correct icon for screen
-  on/off constraints.
+- [#1433](https://github.com/keymapperorg/KeyMapper/issues/1433) open Key Mapper by default and not the Assistant Trigger app.
+- [#1386](https://github.com/keymapperorg/KeyMapper/issues/1386) wait for sequence trigger timeout before triggering other overlapping triggers.
+- [#1449](https://github.com/keymapperorg/KeyMapper/issues/1449) improve the key mapper crashed dialog.
+- [#1415](https://github.com/keymapperorg/KeyMapper/issues/1415) make the discard changes dialog less confusing.
+- [#1440](https://github.com/keymapperorg/KeyMapper/issues/1440) do not show the "Button not detected?" bottom sheet every time you open the config key map screen in some cases.
+- [#1447](https://github.com/keymapperorg/KeyMapper/issues/1447) the app bar when configuring an Intent action would extend to the top of the screen.
+- [#1444](https://github.com/keymapperorg/KeyMapper/issues/1444) use the correct icon for screen on/off constraints.
 
 ## [2.8.0](https://github.com/sds100/KeyMapper/releases/tag/v2.8.0)
 
@@ -759,42 +605,28 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 ## Added
 
 - [#491](https://github.com/keymapperorg/KeyMapper/issues/491) remap DPAD buttons.
-- [#1223](https://github.com/keymapperorg/KeyMapper/issues/1223) sort key maps by triggers, actions,
-  constraints and options.
-- [#1344](https://github.com/keymapperorg/KeyMapper/issues/1344) target Android 15 and support
-  edge-to-edge display mode.
-- [#1372](https://github.com/keymapperorg/KeyMapper/issues/1372) allow Shizuku features to work with
-  Sui.
-- [#1391](https://github.com/keymapperorg/KeyMapper/issues/1391) button in Settings to reset all
-  settings to their defaults.
+- [#1223](https://github.com/keymapperorg/KeyMapper/issues/1223) sort key maps by triggers, actions, constraints and options.
+- [#1344](https://github.com/keymapperorg/KeyMapper/issues/1344) target Android 15 and support edge-to-edge display mode.
+- [#1372](https://github.com/keymapperorg/KeyMapper/issues/1372) allow Shizuku features to work with Sui.
+- [#1391](https://github.com/keymapperorg/KeyMapper/issues/1391) button in Settings to reset all settings to their defaults.
 
 ## Changed
 
-- [#1412](https://github.com/keymapperorg/KeyMapper/issues/1412) make the record trigger text
-  clearer by saying it is recording.
+- [#1412](https://github.com/keymapperorg/KeyMapper/issues/1412) make the record trigger text clearer by saying it is recording.
 
 ## Removed
 
-- [#1411](https://github.com/keymapperorg/KeyMapper/issues/1411) remove the app intro screen for
-  remapping fingerprint gestures because almost all new phones
-  do not support them anyway.
+- [#1411](https://github.com/keymapperorg/KeyMapper/issues/1411) remove the app intro screen for remapping fingerprint gestures because almost all new phones do not support them anyway.
 
 ## Bug fixes
 
-- [#1426](https://github.com/keymapperorg/KeyMapper/issues/1426), [#1434](https://github.com/keymapperorg/KeyMapper/issues/1434)
-  key map launcher shortcut icons were white.
-- [#1410](https://github.com/keymapperorg/KeyMapper/issues/1410) vibrations not working on Android
-  13+.
-- [#1342](https://github.com/keymapperorg/KeyMapper/issues/1342) add missing Meta modifier options
-  for key event actions.
-- [#1375](https://github.com/keymapperorg/KeyMapper/issues/1375) memory leak when rebinding to the
-  relay service in the Key Mapper GUI Keyboard.
-- [#1376](https://github.com/keymapperorg/KeyMapper/issues/1376) Key Mapper Basic Input Method would
-  not work on Android 14+ in some situations.
-- [#1094](https://github.com/keymapperorg/KeyMapper/issues/1094) wrong repository name in the
-  introduction screen.
-- [#1387](https://github.com/keymapperorg/KeyMapper/issues/1387) some app shortcuts would not open
-  on Android 14+.
+- [#1426](https://github.com/keymapperorg/KeyMapper/issues/1426), [#1434](https://github.com/keymapperorg/KeyMapper/issues/1434) key map launcher shortcut icons were white.
+- [#1410](https://github.com/keymapperorg/KeyMapper/issues/1410) vibrations not working on Android 13+.
+- [#1342](https://github.com/keymapperorg/KeyMapper/issues/1342) add missing Meta modifier options for key event actions.
+- [#1375](https://github.com/keymapperorg/KeyMapper/issues/1375) memory leak when rebinding to the relay service in the Key Mapper GUI Keyboard.
+- [#1376](https://github.com/keymapperorg/KeyMapper/issues/1376) Key Mapper Basic Input Method would not work on Android 14+ in some situations.
+- [#1094](https://github.com/keymapperorg/KeyMapper/issues/1094) wrong repository name in the introduction screen.
+- [#1387](https://github.com/keymapperorg/KeyMapper/issues/1387) some app shortcuts would not open on Android 14+.
 
 ## [2.7.2](https://github.com/sds100/KeyMapper/releases/tag/v2.7.2)
 
@@ -802,20 +634,14 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Added
 
-- [#1298](https://github.com/keymapperorg/KeyMapper/issues/1298) add action to launch the Android
-  device controls screen for managing Home devices.
+- [#1298](https://github.com/keymapperorg/KeyMapper/issues/1298) add action to launch the Android device controls screen for managing Home devices.
 
 ## Bug fixes
 
-- [#1342](https://github.com/keymapperorg/KeyMapper/issues/1342) add Meta modifier keys to the key
-  event action.
-- [#1101](https://github.com/keymapperorg/KeyMapper/issues/1101) deprecate the toggle split screen
-  action on Android 12L and newer.
-- [#1370](https://github.com/keymapperorg/KeyMapper/issues/1370) warn the user that extra
-  permissions are required for the Launch app action on Xiaomi
-  devices
-- [#1371](https://github.com/keymapperorg/KeyMapper/issues/1371) try to fix the app not opening on
-  people's devices
+- [#1342](https://github.com/keymapperorg/KeyMapper/issues/1342) add Meta modifier keys to the key event action.
+- [#1101](https://github.com/keymapperorg/KeyMapper/issues/1101) deprecate the toggle split screen action on Android 12L and newer.
+- [#1370](https://github.com/keymapperorg/KeyMapper/issues/1370) warn the user that extra permissions are required for the Launch app action on Xiaomi devices
+- [#1371](https://github.com/keymapperorg/KeyMapper/issues/1371) try to fix the app not opening on people's devices
 
 ## [2.7.1](https://github.com/sds100/KeyMapper/releases/tag/v2.7.1)
 
@@ -823,12 +649,9 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Bug fixes
 
-- [#1360](https://github.com/keymapperorg/KeyMapper/issues/1360) complete the documentation for
-  advanced triggers at docs.keymapper.club.
-- [#1364](https://github.com/keymapperorg/KeyMapper/issues/1364) key event actions no longer crash
-  when using Shizuku.
-- [#1362](https://github.com/keymapperorg/KeyMapper/issues/1362) backing up and restoring key maps
-  works again.
+- [#1360](https://github.com/keymapperorg/KeyMapper/issues/1360) complete the documentation for advanced triggers at docs.keymapper.club.
+- [#1364](https://github.com/keymapperorg/KeyMapper/issues/1364) key event actions no longer crash when using Shizuku.
+- [#1362](https://github.com/keymapperorg/KeyMapper/issues/1362) backing up and restoring key maps works again.
 
 ## [2.7.0](https://github.com/sds100/KeyMapper/releases/tag/v2.7.0)
 
@@ -836,25 +659,19 @@ in Jetpack Compose, resulting in many improvements to the user experience.
 
 ## Added
 
-- [#1274](https://github.com/keymapperorg/KeyMapper/issues/1274) New trigger! You can now trigger
-  your key maps from any of the ways your phone launches the
-  assistant! This could be the Bixby button, Power button, or a button on your headset.
+- [#1274](https://github.com/keymapperorg/KeyMapper/issues/1274) New trigger! You can now trigger your key maps from any of the ways your phone launches the assistant! This could be the Bixby button, Power button, or a button on your headset.
 - [#1304](https://github.com/keymapperorg/KeyMapper/issues/1304) Vietnamese translations.
 
 ## Bug fixes
 
-- [#1222](https://github.com/keymapperorg/KeyMapper/issues/1222) [#1307](https://github.com/keymapperorg/KeyMapper/issues/1307)
-  Key Mapper doesn't execute the correct app shortcut action if you created multiple
-  from the same app.
-- [#1328](https://github.com/keymapperorg/KeyMapper/issues/1328) Single-character non-ASCII
-  TEXT_BLOCK input crashes the service
+- [#1222](https://github.com/keymapperorg/KeyMapper/issues/1222) [#1307](https://github.com/keymapperorg/KeyMapper/issues/1307) Key Mapper doesn't execute the correct app shortcut action if you created multiple from the same app.
+- [#1328](https://github.com/keymapperorg/KeyMapper/issues/1328) Single-character non-ASCII TEXT_BLOCK input crashes the service
 
 ## [2.6.2](https://github.com/sds100/KeyMapper/releases/tag/v2.6.2)
 
 #### 9 September 2024
 
-- [#1293](https://github.com/keymapperorg/KeyMapper/issues/1293) Checkbox buttons were invisible
-  when configuring some actions.
+- [#1293](https://github.com/keymapperorg/KeyMapper/issues/1293) Checkbox buttons were invisible when configuring some actions.
 
 ## [2.6.1](https://github.com/sds100/KeyMapper/releases/tag/v2.6.1)
 
@@ -864,43 +681,27 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Added
 
-- [#1256](https://github.com/keymapperorg/KeyMapper/issues/1256) Add Russian and Chinese Simplified
-  translations. Update other languages.
-- [#1282](https://github.com/keymapperorg/KeyMapper/issues/1282) Add Assist key code as screen off
-  trigger for Bixby button.
+- [#1256](https://github.com/keymapperorg/KeyMapper/issues/1256) Add Russian and Chinese Simplified translations. Update other languages.
+- [#1282](https://github.com/keymapperorg/KeyMapper/issues/1282) Add Assist key code as screen off trigger for Bixby button.
 
 ### Bug fixes
 
-- [#1218](https://github.com/keymapperorg/KeyMapper/issues/1218), [#1251](https://github.com/keymapperorg/KeyMapper/issues/1251)
-  Key event actions and triggering key maps from an intent were delayed by 1 second on
-  Android 14 due to new broadcast receiver restrictions.
-- [#1175](https://github.com/keymapperorg/KeyMapper/issues/1175) Bypass the do not disturb
-  permission requirement for volume button triggers.
-- [#1234](https://github.com/keymapperorg/KeyMapper/issues/1234) Granting permissions with Shizuku
-  crashes on Android 14.
-- [#1249](https://github.com/keymapperorg/KeyMapper/issues/1249) Crash when opening help page from
-  the home page if no browser app for custom tabs was found.
-- [#1250](https://github.com/keymapperorg/KeyMapper/issues/1250) Random crashes when picking a
-  screenshot for actions.
-- [#1227](https://github.com/keymapperorg/KeyMapper/issues/1227) Deprecate Bluetooth actions on
-  Android 13+ due to new restrictions.
-- [#1252](https://github.com/keymapperorg/KeyMapper/issues/1252) Add another Camera key code as
-  supported for screen off triggers.
-- [#1219](https://github.com/keymapperorg/KeyMapper/issues/1219) Key Mapper notifications could not
-  be enabled on Android 14.
-- [#1194](https://github.com/keymapperorg/KeyMapper/issues/1194) Deprecate closing the status bar on
-  Android 14 due to new restrictions.
-- [#1190](https://github.com/keymapperorg/KeyMapper/issues/1190) Add a 3 second delay after the
-  screenshot action before showing the on-screen message
-  confirming it happened.
+- [#1218](https://github.com/keymapperorg/KeyMapper/issues/1218), [#1251](https://github.com/keymapperorg/KeyMapper/issues/1251) Key event actions and triggering key maps from an intent were delayed by 1 second on Android 14 due to new broadcast receiver restrictions.
+- [#1175](https://github.com/keymapperorg/KeyMapper/issues/1175) Bypass the do not disturb permission requirement for volume button triggers.
+- [#1234](https://github.com/keymapperorg/KeyMapper/issues/1234) Granting permissions with Shizuku crashes on Android 14.
+- [#1249](https://github.com/keymapperorg/KeyMapper/issues/1249) Crash when opening help page from the home page if no browser app for custom tabs was found.
+- [#1250](https://github.com/keymapperorg/KeyMapper/issues/1250) Random crashes when picking a screenshot for actions.
+- [#1227](https://github.com/keymapperorg/KeyMapper/issues/1227) Deprecate Bluetooth actions on Android 13+ due to new restrictions.
+- [#1252](https://github.com/keymapperorg/KeyMapper/issues/1252) Add another Camera key code as supported for screen off triggers.
+- [#1219](https://github.com/keymapperorg/KeyMapper/issues/1219) Key Mapper notifications could not be enabled on Android 14.
+- [#1194](https://github.com/keymapperorg/KeyMapper/issues/1194) Deprecate closing the status bar on Android 14 due to new restrictions.
+- [#1190](https://github.com/keymapperorg/KeyMapper/issues/1190) Add a 3 second delay after the screenshot action before showing the on-screen message confirming it happened.
 
 ## [2.6.0](https://github.com/sds100/KeyMapper/releases/tag/v2.6.0)
 
 #### 7 October 2023
 
-- [#550](https://github.com/keymapperorg/KeyMapper/issues/550) Action for doing pinches and swipes
-  on the screen with 2 or more fingers. Many thanks to
-  Tino (@pixel-shock) for working on this feature. 😊
+- [#550](https://github.com/keymapperorg/KeyMapper/issues/550) Action for doing pinches and swipes on the screen with 2 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
 
 ## [2.5.0](https://github.com/sds100/KeyMapper/releases/tag/v2.5.0)
 
@@ -908,9 +709,7 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Added
 
-- [#1157](https://github.com/keymapperorg/KeyMapper/pull/1157) Action for doing swipe gestures on
-  the screen with 1 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature.
-  😊
+- [#1157](https://github.com/keymapperorg/KeyMapper/pull/1157) Action for doing swipe gestures on the screen with 1 or more fingers. Many thanks to Tino (@pixel-shock) for working on this feature. 😊
 
 ## [2.4.6](https://github.com/sds100/KeyMapper/releases/tag/v2.4.6)
 
@@ -918,8 +717,7 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Changed
 
-- [#1148](https://github.com/keymapperorg/KeyMapper/issues/1148) Fix crash when accessibility
-  service started.
+- [#1148](https://github.com/keymapperorg/KeyMapper/issues/1148) Fix crash when accessibility service started.
 
 ## [2.4.5](https://github.com/sds100/KeyMapper/releases/tag/v2.4.5)
 
@@ -927,8 +725,7 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Changed
 
-- [#1120](https://github.com/keymapperorg/KeyMapper/issues/1120) Do not change the UIDs of key maps
-  when importing them.
+- [#1120](https://github.com/keymapperorg/KeyMapper/issues/1120) Do not change the UIDs of key maps when importing them.
 
 ## [2.4.4](https://github.com/sds100/KeyMapper/releases/tag/v2.4.4)
 
@@ -936,24 +733,14 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Bug fixes
 
-- [#1073](https://github.com/keymapperorg/KeyMapper/issues/1073) The toggle key maps quick settings
-  tile now looks
-  enabled when the key maps are resumed.
-- [#1062](https://github.com/keymapperorg/KeyMapper/issues/1062) The select word at cursor action
-  would select the whole
-  line if the cursor is at the end of the line.
-- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Remove delay when launching app
-  shortcut actions when at
-  the launcher.
+- [#1073](https://github.com/keymapperorg/KeyMapper/issues/1073) The toggle key maps quick settings tile now looks enabled when the key maps are resumed.
+- [#1062](https://github.com/keymapperorg/KeyMapper/issues/1062) The select word at cursor action would select the whole line if the cursor is at the end of the line.
+- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Remove delay when launching app shortcut actions when at the launcher.
 
 ### Added
 
-- [#1054](https://github.com/keymapperorg/KeyMapper/issues/1054) Make it clearer why key map
-  launcher shortcut can't be
-  created automatically.
-- [#1068](https://github.com/keymapperorg/KeyMapper/issues/1068) Make the confirmation dialog when
-  leaving without
-  saving clearer.
+- [#1054](https://github.com/keymapperorg/KeyMapper/issues/1054) Make it clearer why key map launcher shortcut can't be created automatically.
+- [#1068](https://github.com/keymapperorg/KeyMapper/issues/1068) Make the confirmation dialog when leaving without saving clearer.
 
 ## [2.4.3](https://github.com/sds100/KeyMapper/releases/tag/v2.4.3)
 
@@ -961,33 +748,18 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Bug fixes
 
-- [#1052](https://github.com/keymapperorg/KeyMapper/issues/1052) Crash when disabling accessibility
-  service through the
-  Key Mapper notification on Android Lollipop and Marshmallow.
-- [#1049](https://github.com/keymapperorg/KeyMapper/issues/1049) Enabling the accessibility service
-  automatically with
-  WRITE_SECURE_SETTINGS wouldn't work if no other accessibility features were enabled.
-- [#1044](https://github.com/keymapperorg/KeyMapper/issues/1044) On some devices there was a random
-  crash in the
-  notification listener service.
-- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Action to launch app has a 5-10
-  second delay when you're
-  on your device's home screen.
-- [#1047](https://github.com/keymapperorg/KeyMapper/issues/1047) App NOT playing media constraint
-  would be saved as
-  wrong constraint.
-- [#1043](https://github.com/keymapperorg/KeyMapper/issues/1043) Inputting key events with Shizuku
-  didn't actually work
-  on release builds. OOPS. 🤦‍
+- [#1052](https://github.com/keymapperorg/KeyMapper/issues/1052) Crash when disabling accessibility service through the Key Mapper notification on Android Lollipop and Marshmallow.
+- [#1049](https://github.com/keymapperorg/KeyMapper/issues/1049) Enabling the accessibility service automatically with WRITE_SECURE_SETTINGS wouldn't work if no other accessibility features were enabled.
+- [#1044](https://github.com/keymapperorg/KeyMapper/issues/1044) On some devices there was a random crash in the notification listener service.
+- [#999](https://github.com/keymapperorg/KeyMapper/issues/999) Action to launch app has a 5-10 second delay when you're on your device's home screen.
+- [#1047](https://github.com/keymapperorg/KeyMapper/issues/1047) App NOT playing media constraint would be saved as wrong constraint.
+- [#1043](https://github.com/keymapperorg/KeyMapper/issues/1043) Inputting key events with Shizuku didn't actually work on release builds. OOPS. 🤦‍
 
 ### Added
 
 - [#1025](https://github.com/keymapperorg/KeyMapper/issues/1025) Support for Android 12L.
-- [#1016](https://github.com/keymapperorg/KeyMapper/issues/1016) Ability to never show the denied Do
-  Not Disturb
-  permission errors if the device does not support those settings.
-- [#1042](https://github.com/keymapperorg/KeyMapper/issues/1042) Put date in the timestamp in the
-  log.
+- [#1016](https://github.com/keymapperorg/KeyMapper/issues/1016) Ability to never show the denied Do Not Disturb permission errors if the device does not support those settings.
+- [#1042](https://github.com/keymapperorg/KeyMapper/issues/1042) Put date in the timestamp in the log.
 
 ## [2.4.2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.2)
 
@@ -995,9 +767,7 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 ### Bug fixes
 
-- [#1017](https://github.com/keymapperorg/KeyMapper/issues/1017) The app would go in an infinite
-  loop saying "Using root
-  to grant WRITE_SECURE_SETTINGS permission" on screen and then eventually crashing.
+- [#1017](https://github.com/keymapperorg/KeyMapper/issues/1017) The app would go in an infinite loop saying "Using root to grant WRITE_SECURE_SETTINGS permission" on screen and then eventually crashing.
 
 ## [2.4.1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.1)
 
@@ -1011,9 +781,7 @@ This release adds support for Android 14 and fixes some bugs associated with it.
 
 - Crash if trying to grant permission with Shizuku but Key Mapper doesn't have Shizuku permission.
 - [#1009](https://github.com/keymapperorg/KeyMapper/issues/1009) Crash when trying to edit actions.
-- [#1001](https://github.com/keymapperorg/KeyMapper/issues/1001) Crash when granting permission with
-  Shizuku on Android
-  12+.
+- [#1001](https://github.com/keymapperorg/KeyMapper/issues/1001) Crash when granting permission with Shizuku on Android 12+.
 
 ## [2.4.0](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0)
 
@@ -1025,60 +793,34 @@ See beta releases for bug fixes.
 
 #### Important
 
-- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support
-  🎨!
-- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features!
-  You can use this
-  instead of using a Key Mapper keyboard!
+- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support 🎨!
+- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features! You can use this instead of using a Key Mapper keyboard!
 
 #### Actions
 
-- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't
-  have to delete an
-  action and completely reconfigure it.
+- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't have to delete an action and completely reconfigure it.
 - [#851](https://github.com/keymapperorg/KeyMapper/issues/850) Action to answer/end a phone call.
 - [#704](https://github.com/keymapperorg/KeyMapper/issues/704) Action to dismiss notifications.
 
 #### Constraints
 
-- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is
-  ringing and in a phone
-  call.
-- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is
-  locked.
-- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method
-  is chosen.
-- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing
-  or a specific app
-  not playing media.
-- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected
-  constraints.
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is ringing and in a phone call.
+- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is locked.
+- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method is chosen.
+- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing or a specific app not playing media.
+- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected constraints.
 - [#722](https://github.com/keymapperorg/KeyMapper/issues/722) Flashlight on/off constraint.
 
 #### Other
 
-- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is
-  off.
-- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't
-  be found prompt the
-  user to follow an online guide to do it with ADB.
-- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user
-  reports a bug.
-- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different
-  input method on input
-  focus.
-- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a
-  successful backup.
-- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible
-  version of Hacker's
-  Keyboard. Releases can be found
-  here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
-- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and
-  Search button when the
-  screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
-- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND
-  intents because the
-  necessary permission has been added to Key Mapper.
+- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is off.
+- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't be found prompt the user to follow an online guide to do it with ADB.
+- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user reports a bug.
+- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different input method on input focus.
+- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a successful backup.
+- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible version of Hacker's Keyboard. Releases can be found here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
+- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and Search button when the screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
+- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND intents because the necessary permission has been added to Key Mapper.
 
 ## [2.4.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.02)
 
@@ -1086,26 +828,15 @@ See beta releases for bug fixes.
 
 ### Bug fixes
 
-- [#946](https://github.com/keymapperorg/KeyMapper/issues/946) Choosing a Bluetooth device
-  disconnected constraint would
-  save it as a connected constraint.
-- [#981](https://github.com/keymapperorg/KeyMapper/issues/981) Trying to backup/restore would crash
-  the app if no
-  file-picker was installed.
-- [#965](https://github.com/keymapperorg/KeyMapper/issues/965) The app would crash if you had
-  disabled key maps.
-- [#957](https://github.com/keymapperorg/KeyMapper/issues/957) The dialog to choose flags for an
-  Intent action wouldn't
-  show the flags that had already been picked.
+- [#946](https://github.com/keymapperorg/KeyMapper/issues/946) Choosing a Bluetooth device disconnected constraint would save it as a connected constraint.
+- [#981](https://github.com/keymapperorg/KeyMapper/issues/981) Trying to backup/restore would crash the app if no file-picker was installed.
+- [#965](https://github.com/keymapperorg/KeyMapper/issues/965) The app would crash if you had disabled key maps.
+- [#957](https://github.com/keymapperorg/KeyMapper/issues/957) The dialog to choose flags for an Intent action wouldn't show the flags that had already been picked.
 
 ### Added
 
-- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and
-  Search button when the
-  screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
-- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND
-  intents because the
-  necessary permission has been added to Key Mapper.
+- [#955](https://github.com/keymapperorg/KeyMapper/issues/955) You can now detect the Menu and Search button when the screen is off. On some devices the Bixby button is detected by Key Mapper as the Menu button.
+- [#928](https://github.com/keymapperorg/KeyMapper/issues/928) You can now call Termux RUN_COMMAND intents because the necessary permission has been added to Key Mapper.
 
 ## [2.4.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.4.0-beta.01)
 
@@ -1113,80 +844,48 @@ See beta releases for bug fixes.
 
 ### Changes
 
-- [#815](https://github.com/keymapperorg/KeyMapper/issues/815) Always show the button to pick a
-  package when configuring
-  an intent action.
-- [#749](https://github.com/keymapperorg/KeyMapper/issues/749) Remove do not disturb app intro
-  slide.
+- [#815](https://github.com/keymapperorg/KeyMapper/issues/815) Always show the button to pick a package when configuring an intent action.
+- [#749](https://github.com/keymapperorg/KeyMapper/issues/749) Remove do not disturb app intro slide.
 - [#750](https://github.com/keymapperorg/KeyMapper/issues/750) Redesign the About screen.
-- [#747](https://github.com/keymapperorg/KeyMapper/issues/747) Reorganise the Settings screen so it
-  is less cluttered.
+- [#747](https://github.com/keymapperorg/KeyMapper/issues/747) Reorganise the Settings screen so it is less cluttered.
 
 ### Added
 
 #### Important
 
-- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support
-  🎨!
-- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features!
-  You can use this
-  instead of using a Key Mapper keyboard!
+- [#748](https://github.com/keymapperorg/KeyMapper/issues/748) Android 12 and Material You support 🎨!
+- [#746](https://github.com/keymapperorg/KeyMapper/issues/746) Shizuku support for some features! You can use this instead of using a Key Mapper keyboard!
 
 #### Actions
 
-- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't
-  have to delete an
-  action and completely reconfigure it.
+- [#603](https://github.com/keymapperorg/KeyMapper/issues/603) You can now edit actions! You don't have to delete an action and completely reconfigure it.
 - [#851](https://github.com/keymapperorg/KeyMapper/issues/850) Action to answer/end a phone call.
 - [#704](https://github.com/keymapperorg/KeyMapper/issues/704) Action to dismiss notifications.
 
 #### Constraints
 
-- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is
-  ringing and in a phone
-  call.
-- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is
-  locked.
-- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method
-  is chosen.
-- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing
-  or a specific app
-  not playing media.
-- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected
-  constraints.
+- [#851](https://github.com/keymapperorg/KeyMapper/issues/851) Constraints for when the device is ringing and in a phone call.
+- [#811](https://github.com/keymapperorg/KeyMapper/issues/811) Constraint for when the device is locked.
+- [#776](https://github.com/keymapperorg/KeyMapper/issues/776) Constraint for when an input method is chosen.
+- [#598](https://github.com/keymapperorg/KeyMapper/issues/598) Constraint for any app (not) playing or a specific app not playing media.
+- [#702](https://github.com/keymapperorg/KeyMapper/issues/702) WiFi on/off/connected/disconnected constraints.
 - [#722](https://github.com/keymapperorg/KeyMapper/issues/722) Flashlight on/off constraint.
 
 #### Other
 
-- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is
-  off.
-- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't
-  be found prompt the
-  user to follow an online guide to do it with ADB.
-- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user
-  reports a bug.
-- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different
-  input method on input
-  focus.
-- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a
-  successful backup.
-- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible
-  version of Hacker's
-  Keyboard. Releases can be found
-  here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
+- [#911](https://github.com/keymapperorg/KeyMapper/issues/911) Detect camera button when screen is off.
+- [#780](https://github.com/keymapperorg/KeyMapper/issues/780) If the accessibility settings can't be found prompt the user to follow an online guide to do it with ADB.
+- [#773](https://github.com/keymapperorg/KeyMapper/issues/773) Prompt for a message when the user reports a bug.
+- [#686](https://github.com/keymapperorg/KeyMapper/issues/686) Setting to switch to a different input method on input focus.
+- [#715](https://github.com/keymapperorg/KeyMapper/issues/715) Show a share button after a successful backup.
+- [#716](https://github.com/keymapperorg/KeyMapper/issues/716) Support for a Key Mapper compatible version of Hacker's Keyboard. Releases can be found here: https://github.com/keymapperorg/KeyMapperHackersKeyboard/releases
 
 ### Bug Fixes
 
-- [#794](https://github.com/keymapperorg/KeyMapper/issues/794) Only list apps that can be launched
-  when creating an open
-  app action.
-- [#823](https://github.com/keymapperorg/KeyMapper/issues/823) Can't choose an app when creating
-  media action.
-- [#756](https://github.com/keymapperorg/KeyMapper/issues/756) On slighter smaller screens show
-  split layout when
-  configuring a mapping.
-- [#739](https://github.com/keymapperorg/KeyMapper/issues/739) Long press triggers ignore
-  constraints.
+- [#794](https://github.com/keymapperorg/KeyMapper/issues/794) Only list apps that can be launched when creating an open app action.
+- [#823](https://github.com/keymapperorg/KeyMapper/issues/823) Can't choose an app when creating media action.
+- [#756](https://github.com/keymapperorg/KeyMapper/issues/756) On slighter smaller screens show split layout when configuring a mapping.
+- [#739](https://github.com/keymapperorg/KeyMapper/issues/739) Long press triggers ignore constraints.
 
 ## [2.3.3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.3)
 
@@ -1196,8 +895,7 @@ See beta releases for bug fixes.
 
 ### Bug fixes
 
-- [#893](https://github.com/sds100/KeyMapper/issues/893) Creating intent actions with a boolean
-  extra didn't work.
+- [#893](https://github.com/sds100/KeyMapper/issues/893) Creating intent actions with a boolean extra didn't work.
 - [#885](https://github.com/keymapperorg/KeyMapper/issues/885) F-Droid build failed.
 - [#894](https://github.com/keymapperorg/KeyMapper/issues/894) Links to documentation website broke.
 - [#904](https://github.com/keymapperorg/KeyMapper/issues/904) Fix string.
@@ -1208,34 +906,20 @@ See beta releases for bug fixes.
 
 ### Changes
 
-- [#828](https://github.com/sds100/KeyMapper/issues/828) Rename the "Android 11 workaround" setting
-  to be more clear
-  what it does.
-- [#859](https://github.com/sds100/KeyMapper/issues/859) Rename the "trigger from other apps"
-  trigger option to be more
-  clear what it does.
-- [#753](https://github.com/sds100/KeyMapper/issues/753) Automatically add the "do not remap"
-  trigger key option when
-  remapping a modifier key. This will make sure the modifier key can still behave like a normal
-  modifier key.
+- [#828](https://github.com/sds100/KeyMapper/issues/828) Rename the "Android 11 workaround" setting to be more clear what it does.
+- [#859](https://github.com/sds100/KeyMapper/issues/859) Rename the "trigger from other apps" trigger option to be more clear what it does.
+- [#753](https://github.com/sds100/KeyMapper/issues/753) Automatically add the "do not remap" trigger key option when remapping a modifier key. This will make sure the modifier key can still behave like a normal modifier key.
 
 ### Added
 
-- [#814](https://github.com/sds100/KeyMapper/issues/814) Show system dialog to remove Key Mapper
-  from battery
-  optimisation so the user doesn't have to dig through their device sittings.
+- [#814](https://github.com/sds100/KeyMapper/issues/814) Show system dialog to remove Key Mapper from battery optimisation so the user doesn't have to dig through their device sittings.
 
 ### Bug Fixes
 
 - [#810](https://github.com/sds100/KeyMapper/issues/810) Intent actions didn't work
-- [#789](https://github.com/sds100/KeyMapper/issues/789) Try to fix Key Mapper saying that the
-  accessibility service has
-  crashed even if it hasn't.
-- [#829](https://github.com/sds100/KeyMapper/issues/829) Try to fix Key Mapper being listed as
-  incompatible on Google
-  Play for some devices.
-- [#854](https://github.com/sds100/KeyMapper/issues/854) The toggle airplane mode action didn't
-  work.
+- [#789](https://github.com/sds100/KeyMapper/issues/789) Try to fix Key Mapper saying that the accessibility service has crashed even if it hasn't.
+- [#829](https://github.com/sds100/KeyMapper/issues/829) Try to fix Key Mapper being listed as incompatible on Google Play for some devices.
+- [#854](https://github.com/sds100/KeyMapper/issues/854) The toggle airplane mode action didn't work.
 
 ## [2.3.1](https://github.com/sds100/KeyMapper/releases/tag/v2.3.1)
 
@@ -1243,24 +927,17 @@ See beta releases for bug fixes.
 
 ### Changes
 
-- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work
-  automatically in games now. You no longer have to manually set the device of a key event action to
-  be the game controller.
+- [#772](https://github.com/sds100/KeyMapper/issues/772) Remapping game controllers should work automatically in games now. You no longer have to manually set the device of a key event action to be the game controller.
 
 ### Bug Fixes
 
 - Try to fix a lot of random crashes on some devices.
-- [#771](https://github.com/sds100/KeyMapper/issues/771) Don't show a "failed to find accessibility
-  node" toast message when the open menu action fails.
--
-- [#775](https://github.com/sds100/KeyMapper/issues/775) The options for key maps would sometimes
-  sporadically change when navigating the configuration screen.
--
+- [#771](https://github.com/sds100/KeyMapper/issues/771) Don't show a "failed to find accessibility node" toast message when the open menu action fails.
+- [#775](https://github.com/sds100/KeyMapper/issues/775) The options for key maps would sometimes sporadically change when navigating the configuration screen.
 
 ### Removed
 
-- Option to give feedback by emailing the developer. The number of emails was overwhelming and most
-  of them were not constructive at all.
+- Option to give feedback by emailing the developer. The number of emails was overwhelming and most of them were not constructive at all.
 
 ## [2.3.0](https://github.com/sds100/KeyMapper/releases/tag/v2.3.0)
 
@@ -1272,95 +949,57 @@ These are all the changes from 2.2.0.
 
 - 🎉 A new website with a tutorial! 🎉 [docs.keymapper.club](https://docs.keymapper.club)
 
-- Action to broadcast intent, start activity and start
-  service. [#112](https://github.com/keymapperorg/KeyMapper/issues/112)
-- Action to show the input method picker by using the Key Mapper
-  keyboard. [#531](https://github.com/keymapperorg/KeyMapper/issues/531)
-- Action to toggle the notification drawer and the quick settings
-  drawer. [#242](https://github.com/keymapperorg/KeyMapper/issues/242)
+- Action to broadcast intent, start activity and start service. [#112](https://github.com/keymapperorg/KeyMapper/issues/112)
+- Action to show the input method picker by using the Key Mapper keyboard. [#531](https://github.com/keymapperorg/KeyMapper/issues/531)
+- Action to toggle the notification drawer and the quick settings drawer. [#242](https://github.com/keymapperorg/KeyMapper/issues/242)
 - Action to call a phone number. [#516](https://github.com/keymapperorg/KeyMapper/issues/516)
 - Action to play a sound.
 
-- A workaround for the Android 11 bug that sets the language of external keyboards to English-US
-  when an accessibility service is
-  enabled. [#618](https://github.com/keymapperorg/KeyMapper/issues/618) Read the guide
-  here https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around
+- A workaround for the Android 11 bug that sets the language of external keyboards to English-US when an accessibility service is enabled. [#618](https://github.com/keymapperorg/KeyMapper/issues/618) Read the guide here https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around
 
-- Prompt the user to read the quick start guide on the website the first time the app is opened.
-  [#544](https://github.com/keymapperorg/KeyMapper/issues/544)
-- Links to a relevant online guide in each screen in the
-  app. [#539](https://github.com/keymapperorg/KeyMapper/issues/539)
-- Option in key event action to input the key event through the
-  shell. [#559](https://github.com/keymapperorg/KeyMapper/issues/559)
+- Prompt the user to read the quick start guide on the website the first time the app is opened. [#544](https://github.com/keymapperorg/KeyMapper/issues/544)
+- Links to a relevant online guide in each screen in the app. [#539](https://github.com/keymapperorg/KeyMapper/issues/539)
+- Option in key event action to input the key event through the shell. [#559](https://github.com/keymapperorg/KeyMapper/issues/559)
 - Splash screen [#561](https://github.com/keymapperorg/KeyMapper/issues/561)
-- Data migrations when restoring from
-  backups. [#574](https://github.com/keymapperorg/KeyMapper/issues/574)
-- Enable hold down and disable repeat by default for modifier key
-  actions. [#579](https://github.com/keymapperorg/KeyMapper/issues/579)
-- Ability to change the input method with the accessibility service on Android
-  11+. [#619](https://github.com/keymapperorg/KeyMapper/issues/619)
-- Make it clearer that selecting a screenshot to set up a tap coordinate action is
-  optional. [#632](https://github.com/keymapperorg/KeyMapper/issues/632)
-- Show a prompt to install the Key Mapper GUI Keyboard when a key event action is
-  created. [#645](https://github.com/keymapperorg/KeyMapper/issues/645)
-- Back up default key map settings in back
-  ups. [#659](https://github.com/keymapperorg/KeyMapper/issues/659)
-- Warnings when the accessibility service is turned on but isn't actually
-  running. [#643](https://github.com/keymapperorg/KeyMapper/issues/643)
-- Show a message at the top of the home screen when mappings are
-  paused. [#642](https://github.com/keymapperorg/KeyMapper/issues/642)
-- A caution message to avoid locking the user when using screen pinning
-  mode. [#602](https://github.com/keymapperorg/KeyMapper/issues/602)
-- A logging page in the app which can be used instead of bug
-  reports. [#651](https://github.com/keymapperorg/KeyMapper/issues/651)
-- A button in the settings to reset sliders to their
-  default. [#589](https://github.com/keymapperorg/KeyMapper/issues/589)
+- Data migrations when restoring from backups. [#574](https://github.com/keymapperorg/KeyMapper/issues/574)
+- Enable hold down and disable repeat by default for modifier key actions. [#579](https://github.com/keymapperorg/KeyMapper/issues/579)
+- Ability to change the input method with the accessibility service on Android 11+. [#619](https://github.com/keymapperorg/KeyMapper/issues/619)
+- Make it clearer that selecting a screenshot to set up a tap coordinate action is optional. [#632](https://github.com/keymapperorg/KeyMapper/issues/632)
+- Show a prompt to install the Key Mapper GUI Keyboard when a key event action is created. [#645](https://github.com/keymapperorg/KeyMapper/issues/645)
+- Back up default key map settings in back ups. [#659](https://github.com/keymapperorg/KeyMapper/issues/659)
+- Warnings when the accessibility service is turned on but isn't actually running. [#643](https://github.com/keymapperorg/KeyMapper/issues/643)
+- Show a message at the top of the home screen when mappings are paused. [#642](https://github.com/keymapperorg/KeyMapper/issues/642)
+- A caution message to avoid locking the user when using screen pinning mode. [#602](https://github.com/keymapperorg/KeyMapper/issues/602)
+- A logging page in the app which can be used instead of bug reports. [#651](https://github.com/keymapperorg/KeyMapper/issues/651)
+- A button in the settings to reset sliders to their default. [#589](https://github.com/keymapperorg/KeyMapper/issues/589)
 - A repeat limit action option. [#663](https://github.com/keymapperorg/KeyMapper/issues/663)
 - Show a dialog before resetting fingerprint gesture maps.
-- A new Key Mapper keyboard that is designed for Android
-  TV. [#493](https://github.com/keymapperorg/KeyMapper/issues/493)
-- An Intent API to pause/resume key
-  maps. [#668](https://github.com/keymapperorg/KeyMapper/issues/668)
-- Allow Key Mapper to be launched from the Android TV
-  launcher. [#695](https://github.com/keymapperorg/KeyMapper/issues/695)
-- Make it much easier to report bugs and turn off aggressive app
-  killing. [#728](https://github.com/keymapperorg/KeyMapper/issues/728) There is now a button
-  in the home screen menu to send a bug report and the user is now prompted to read
-  dontkillmyapp.com when the accessibility service crashes.
-- Support for repeat until limit reached action option in fingerprint gesture
-  maps. [#710](https://github.com/keymapperorg/KeyMapper/issues/710)
+- A new Key Mapper keyboard that is designed for Android TV. [#493](https://github.com/keymapperorg/KeyMapper/issues/493)
+- An Intent API to pause/resume key maps. [#668](https://github.com/keymapperorg/KeyMapper/issues/668)
+- Allow Key Mapper to be launched from the Android TV launcher. [#695](https://github.com/keymapperorg/KeyMapper/issues/695)
+- Make it much easier to report bugs and turn off aggressive app killing. [#728](https://github.com/keymapperorg/KeyMapper/issues/728) There is now a button in the home screen menu to send a bug report and the user is now prompted to read dontkillmyapp.com when the accessibility service crashes.
+- Support for repeat until limit reached action option in fingerprint gesture maps. [#710](https://github.com/keymapperorg/KeyMapper/issues/710)
 
 - Polish translations.
 - Czech translations.
 
 ### Changed
 
-- Move action option to show a toast message to the same place as the vibrate
-  option. [#565](https://github.com/keymapperorg/KeyMapper/issues/565)
-- Replace setting to choose Bluetooth device in settings with setting to choose any input device.
-  [#620](https://github.com/keymapperorg/KeyMapper/issues/620)
-- Rename 'action count' option to 'how many
-  times'. [#611](https://github.com/keymapperorg/KeyMapper/issues/611)
-- Move option to show the volume ui for an action to when the action is
-  created. [#639](https://github.com/keymapperorg/KeyMapper/issues/639)
-- Tapping the pause/resume key maps notification now opens Key
-  Mapper. [#665](https://github.com/keymapperorg/KeyMapper/issues/665)
-- Make action descriptions more descriptive when repeat is turned
-  on. [#666](https://github.com/keymapperorg/KeyMapper/issues/666)
+- Move action option to show a toast message to the same place as the vibrate option. [#565](https://github.com/keymapperorg/KeyMapper/issues/565)
+- Replace setting to choose Bluetooth device in settings with setting to choose any input device. [#620](https://github.com/keymapperorg/KeyMapper/issues/620)
+- Rename 'action count' option to 'how many times'. [#611](https://github.com/keymapperorg/KeyMapper/issues/611)
+- Move option to show the volume ui for an action to when the action is created. [#639](https://github.com/keymapperorg/KeyMapper/issues/639)
+- Tapping the pause/resume key maps notification now opens Key Mapper. [#665](https://github.com/keymapperorg/KeyMapper/issues/665)
+- Make action descriptions more descriptive when repeat is turned on. [#666](https://github.com/keymapperorg/KeyMapper/issues/666)
 - Alerts at the top of the home screen have been simplified.
 
 ### Removed
 
-- Dex slide in the app intro because it didn't
-  work. [#646](https://github.com/keymapperorg/KeyMapper/issues/646)
-- Buttons to enable all and disable all key maps in the home screen
-  menu. [#647](https://github.com/keymapperorg/KeyMapper/issues/647)
-- Support for Android KitKat 4.4 and
-  older. [#627](https://github.com/keymapperorg/KeyMapper/issues/627)
-- Ability to view changelog, license and privacy policy in an in-app dialog. They now open a link in
-  the browser. [#648](https://github.com/keymapperorg/KeyMapper/issues/648)
-- Alerts at the top of the home screen to enable a Key Mapper keyboard, grant WRITE_SECURE_SETTINGS
-  and grant Do not Disturb mode.
+- Dex slide in the app intro because it didn't work. [#646](https://github.com/keymapperorg/KeyMapper/issues/646)
+- Buttons to enable all and disable all key maps in the home screen menu. [#647](https://github.com/keymapperorg/KeyMapper/issues/647)
+- Support for Android KitKat 4.4 and older. [#627](https://github.com/keymapperorg/KeyMapper/issues/627)
+- Ability to view changelog, license and privacy policy in an in-app dialog. They now open a link in the browser. [#648](https://github.com/keymapperorg/KeyMapper/issues/648)
+- Alerts at the top of the home screen to enable a Key Mapper keyboard, grant WRITE_SECURE_SETTINGS and grant Do not Disturb mode.
 
 ### Bug Fixes
 
@@ -1373,8 +1012,7 @@ See the 2.3.0 Beta releases below.
 ### Changes
 
 - Never show the "key mapper has crashed" dialog automatically since this causes a lot of confusion.
-- Prompt the user to restart the accessibility service rather than report a
-  bug. [#736](https://github.com/keymapperorg/KeyMapper/issues/736)
+- Prompt the user to restart the accessibility service rather than report a bug. [#736](https://github.com/keymapperorg/KeyMapper/issues/736)
 
 ### Added
 
@@ -1393,18 +1031,14 @@ See the 2.3.0 Beta releases below.
 
 ### Changes
 
-- Don't show "key mapper has crashed" dialog the first time the app detects it has been crashed
-  after being opened.
+- Don't show "key mapper has crashed" dialog the first time the app detects it has been crashed after being opened.
 
 ### Bug Fixes
 
-- Write Secure Settings section in settings is enabled even if permission is
-  revoked. [#732](https://github.com/keymapperorg/KeyMapper/issues/732)
-- Many random
-  crashes. [#744](https://github.com/keymapperorg/KeyMapper/issues/744), [#743](https://github.com/keymapperorg/KeyMapper/issues/743), [#742](https://github.com/keymapperorg/KeyMapper/issues/742), [#741](https://github.com/keymapperorg/KeyMapper/issues/741), [#740](https://github.com/keymapperorg/KeyMapper/issues/740), [#738](https://github.com/keymapperorg/KeyMapper/issues/738), [#737](https://github.com/keymapperorg/KeyMapper/issues/737)
+- Write Secure Settings section in settings is enabled even if permission is revoked. [#732](https://github.com/keymapperorg/KeyMapper/issues/732)
+- Many random crashes. [#744](https://github.com/keymapperorg/KeyMapper/issues/744), [#743](https://github.com/keymapperorg/KeyMapper/issues/743), [#742](https://github.com/keymapperorg/KeyMapper/issues/742), [#741](https://github.com/keymapperorg/KeyMapper/issues/741), [#740](https://github.com/keymapperorg/KeyMapper/issues/740), [#738](https://github.com/keymapperorg/KeyMapper/issues/738), [#737](https://github.com/keymapperorg/KeyMapper/issues/737)
 - Don't crash when restoring back ups without a sounds folder in it.
-- Don't restore a back up from a newer version of key mapper to prevent the app crashing when
-  reading the restored data.
+- Don't restore a back up from a newer version of key mapper to prevent the app crashing when reading the restored data.
 
 ## [2.3.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v2.3.0-beta.03)
 
@@ -1412,25 +1046,17 @@ See the 2.3.0 Beta releases below.
 
 ### Added
 
-- Make it much easier to report bugs and turn off aggressive app
-  killing. [#728](https://github.com/keymapperorg/KeyMapper/issues/728) There is now a button
-  in the home screen menu to send a bug report and the user is now prompted to read
-  dontkillmyapp.com when the accessibility service crashes.
+- Make it much easier to report bugs and turn off aggressive app killing. [#728](https://github.com/keymapperorg/KeyMapper/issues/728) There is now a button in the home screen menu to send a bug report and the user is now prompted to read dontkillmyapp.com when the accessibility service crashes.
 - Action to play a sound
 
 ### Bug Fixes
 
-- Close notification drawer after the notification has been
-  pressed. [#719](https://github.com/keymapperorg/KeyMapper/issues/719)
+- Close notification drawer after the notification has been pressed. [#719](https://github.com/keymapperorg/KeyMapper/issues/719)
 - Crash if couldn't find input device. [#730](https://github.com/keymapperorg/KeyMapper/issues/730)
-- Crash if couldn't find chosen input
-  method. [#731](https://github.com/keymapperorg/KeyMapper/issues/731)
-- Crash when failing to get package
-  info. [#721](https://github.com/keymapperorg/KeyMapper/issues/721)
-- Crash if couldn't find Bluetooth
-  device. [#723](https://github.com/keymapperorg/KeyMapper/issues/723)
-- Crash when disabling accessibility
-  service. [#720](https://github.com/keymapperorg/KeyMapper/issues/720)
+- Crash if couldn't find chosen input method. [#731](https://github.com/keymapperorg/KeyMapper/issues/731)
+- Crash when failing to get package info. [#721](https://github.com/keymapperorg/KeyMapper/issues/721)
+- Crash if couldn't find Bluetooth device. [#723](https://github.com/keymapperorg/KeyMapper/issues/723)
+- Crash when disabling accessibility service. [#720](https://github.com/keymapperorg/KeyMapper/issues/720)
 - Reduce memory usage. [#725](https://github.com/keymapperorg/KeyMapper/issues/725)
 - Ensure log doesn't grow forever. [#729](https://github.com/keymapperorg/KeyMapper/issues/729)
 
@@ -1440,139 +1066,87 @@ See the 2.3.0 Beta releases below.
 
 ### Added
 
-- Support for repeat until limit reached action option in fingerprint gesture
-  maps. [#710](https://github.com/keymapperorg/KeyMapper/issues/710)
+- Support for repeat until limit reached action option in fingerprint gesture maps. [#710](https://github.com/keymapperorg/KeyMapper/issues/710)
 
 ### Bug Fixes
 
 - Crash on start up on some devices. [#706](https://github.com/keymapperorg/KeyMapper/issues/706)
-- Notification advertising fingerprint gesture maps is shown on every
-  update [#709](https://github.com/keymapperorg/KeyMapper/issues/709)
-- Key map launcher shortcut repeats indefinitely when triggered if repeat until released is chosen.
-  [#707](https://github.com/keymapperorg/KeyMapper/issues/707)
+- Notification advertising fingerprint gesture maps is shown on every update [#709](https://github.com/keymapperorg/KeyMapper/issues/709)
+- Key map launcher shortcut repeats indefinitely when triggered if repeat until released is chosen. [#707](https://github.com/keymapperorg/KeyMapper/issues/707)
 
 ## [2.3.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v2.3.0-beta.01)
 
 #### 22 June 2021
 
-- A huge rewrite of the code which should make the app more stable and easier to add features in the
-  future.
+- A huge rewrite of the code which should make the app more stable and easier to add features in the future.
 
 ### Added
 
 - 🎉 A new website with a tutorial! 🎉 [docs.keymapper.club](https://docs.keymapper.club)
 
-- Action to broadcast intent, start activity and start
-  service. [#112](https://github.com/keymapperorg/KeyMapper/issues/112)
-- Action to show the input method picker by using the Key Mapper
-  keyboard. [#531](https://github.com/keymapperorg/KeyMapper/issues/531)
-- Action to toggle the notification drawer and the quick settings
-  drawer. [#242](https://github.com/keymapperorg/KeyMapper/issues/242)
+- Action to broadcast intent, start activity and start service. [#112](https://github.com/keymapperorg/KeyMapper/issues/112)
+- Action to show the input method picker by using the Key Mapper keyboard. [#531](https://github.com/keymapperorg/KeyMapper/issues/531)
+- Action to toggle the notification drawer and the quick settings drawer. [#242](https://github.com/keymapperorg/KeyMapper/issues/242)
 - Action to call a phone number. [#516](https://github.com/keymapperorg/KeyMapper/issues/516)
-- A workaround for the Android 11 bug that sets the language of external keyboards to English-US
-  when an accessibility service is
-  enabled. [#618](https://github.com/keymapperorg/KeyMapper/issues/618) Read the guide
-  here https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around
+- A workaround for the Android 11 bug that sets the language of external keyboards to English-US when an accessibility service is enabled. [#618](https://github.com/keymapperorg/KeyMapper/issues/618) Read the guide here https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around
 
-- Prompt the user to read the quick start guide on the website the first time the app is opened.
-  [#544](https://github.com/keymapperorg/KeyMapper/issues/544)
-- Links to a relevant online guide in each screen in the
-  app. [#539](https://github.com/keymapperorg/KeyMapper/issues/539)
-- Option in key event action to input the key event through the
-  shell. [#559](https://github.com/keymapperorg/KeyMapper/issues/559)
+- Prompt the user to read the quick start guide on the website the first time the app is opened. [#544](https://github.com/keymapperorg/KeyMapper/issues/544)
+- Links to a relevant online guide in each screen in the app. [#539](https://github.com/keymapperorg/KeyMapper/issues/539)
+- Option in key event action to input the key event through the shell. [#559](https://github.com/keymapperorg/KeyMapper/issues/559)
 - Splash screen [#561](https://github.com/keymapperorg/KeyMapper/issues/561)
-- Data migrations when restoring from
-  backups. [#574](https://github.com/keymapperorg/KeyMapper/issues/574)
-- Enable hold down and disable repeat by default for modifier key
-  actions. [#579](https://github.com/keymapperorg/KeyMapper/issues/579)
-- Ability to change the input method with the accessibility service on Android
-  11+. [#619](https://github.com/keymapperorg/KeyMapper/issues/619)
-- Make it clearer that selecting a screenshot to set up a tap coordinate action is
-  optional. [#632](https://github.com/keymapperorg/KeyMapper/issues/632)
-- Show a prompt to install the Key Mapper GUI Keyboard when a key event action is
-  created. [#645](https://github.com/keymapperorg/KeyMapper/issues/645)
-- Back up default key map settings in back
-  ups. [#659](https://github.com/keymapperorg/KeyMapper/issues/659)
-- Warnings when the accessibility service is turned on but isn't actually
-  running. [#643](https://github.com/keymapperorg/KeyMapper/issues/643)
-- Show a message at the top of the home screen when mappings are
-  paused. [#642](https://github.com/keymapperorg/KeyMapper/issues/642)
-- A caution message to avoid locking the user when using screen pinning
-  mode. [#602](https://github.com/keymapperorg/KeyMapper/issues/602)
-- A logging page in the app which can be used instead of bug
-  reports. [#651](https://github.com/keymapperorg/KeyMapper/issues/651)
-- A button in the settings to reset sliders to their
-  default. [#589](https://github.com/keymapperorg/KeyMapper/issues/589)
+- Data migrations when restoring from backups. [#574](https://github.com/keymapperorg/KeyMapper/issues/574)
+- Enable hold down and disable repeat by default for modifier key actions. [#579](https://github.com/keymapperorg/KeyMapper/issues/579)
+- Ability to change the input method with the accessibility service on Android 11+. [#619](https://github.com/keymapperorg/KeyMapper/issues/619)
+- Make it clearer that selecting a screenshot to set up a tap coordinate action is optional. [#632](https://github.com/keymapperorg/KeyMapper/issues/632)
+- Show a prompt to install the Key Mapper GUI Keyboard when a key event action is created. [#645](https://github.com/keymapperorg/KeyMapper/issues/645)
+- Back up default key map settings in back ups. [#659](https://github.com/keymapperorg/KeyMapper/issues/659)
+- Warnings when the accessibility service is turned on but isn't actually running. [#643](https://github.com/keymapperorg/KeyMapper/issues/643)
+- Show a message at the top of the home screen when mappings are paused. [#642](https://github.com/keymapperorg/KeyMapper/issues/642)
+- A caution message to avoid locking the user when using screen pinning mode. [#602](https://github.com/keymapperorg/KeyMapper/issues/602)
+- A logging page in the app which can be used instead of bug reports. [#651](https://github.com/keymapperorg/KeyMapper/issues/651)
+- A button in the settings to reset sliders to their default. [#589](https://github.com/keymapperorg/KeyMapper/issues/589)
 - A repeat limit action option. [#663](https://github.com/keymapperorg/KeyMapper/issues/663)
 - Show a dialog before resetting fingerprint gesture maps.
-- A new Key Mapper keyboard that is designed for Android
-  TV. [#493](https://github.com/keymapperorg/KeyMapper/issues/493)
-- An Intent API to pause/resume key
-  maps. [#668](https://github.com/keymapperorg/KeyMapper/issues/668)
-- Allow Key Mapper to be launched from the Android TV
-  launcher. [#695](https://github.com/keymapperorg/KeyMapper/issues/695)
+- A new Key Mapper keyboard that is designed for Android TV. [#493](https://github.com/keymapperorg/KeyMapper/issues/493)
+- An Intent API to pause/resume key maps. [#668](https://github.com/keymapperorg/KeyMapper/issues/668)
+- Allow Key Mapper to be launched from the Android TV launcher. [#695](https://github.com/keymapperorg/KeyMapper/issues/695)
 
 ### Changed
 
-- Move action option to show a toast message to the same place as the vibrate
-  option. [#565](https://github.com/keymapperorg/KeyMapper/issues/565)
-- Replace setting to choose Bluetooth device in settings with setting to choose any input device.
-  [#620](https://github.com/keymapperorg/KeyMapper/issues/620)
-- Rename 'action count' option to 'how many
-  times'. [#611](https://github.com/keymapperorg/KeyMapper/issues/611)
-- Move option to show the volume ui for an action to when the action is
-  created. [#639](https://github.com/keymapperorg/KeyMapper/issues/639)
-- Tapping the pause/resume key maps notification now opens Key
-  Mapper. [#665](https://github.com/keymapperorg/KeyMapper/issues/665)
-- Make action descriptions more descriptive when repeat is turned
-  on. [#666](https://github.com/keymapperorg/KeyMapper/issues/666)
+- Move action option to show a toast message to the same place as the vibrate option. [#565](https://github.com/keymapperorg/KeyMapper/issues/565)
+- Replace setting to choose Bluetooth device in settings with setting to choose any input device. [#620](https://github.com/keymapperorg/KeyMapper/issues/620)
+- Rename 'action count' option to 'how many times'. [#611](https://github.com/keymapperorg/KeyMapper/issues/611)
+- Move option to show the volume ui for an action to when the action is created. [#639](https://github.com/keymapperorg/KeyMapper/issues/639)
+- Tapping the pause/resume key maps notification now opens Key Mapper. [#665](https://github.com/keymapperorg/KeyMapper/issues/665)
+- Make action descriptions more descriptive when repeat is turned on. [#666](https://github.com/keymapperorg/KeyMapper/issues/666)
 - Alerts at the top of the home screen have been simplified.
 
 ### Removed
 
-- Dex slide in the app intro because it didn't
-  work. [#646](https://github.com/keymapperorg/KeyMapper/issues/646)
-- Buttons to enable all and disable all key maps in the home screen
-  menu. [#647](https://github.com/keymapperorg/KeyMapper/issues/647)
-- Support for Android KitKat 4.4 and
-  older. [#627](https://github.com/keymapperorg/KeyMapper/issues/627)
-- Ability to view changelog, license and privacy policy in an in-app dialog. They now open a link in
-  the browser. [#648](https://github.com/keymapperorg/KeyMapper/issues/648)
-- Alerts at the top of the home screen to enable a Key Mapper keyboard, grant WRITE_SECURE_SETTINGS
-  and grant Do not Disturb mode.
+- Dex slide in the app intro because it didn't work. [#646](https://github.com/keymapperorg/KeyMapper/issues/646)
+- Buttons to enable all and disable all key maps in the home screen menu. [#647](https://github.com/keymapperorg/KeyMapper/issues/647)
+- Support for Android KitKat 4.4 and older. [#627](https://github.com/keymapperorg/KeyMapper/issues/627)
+- Ability to view changelog, license and privacy policy in an in-app dialog. They now open a link in the browser. [#648](https://github.com/keymapperorg/KeyMapper/issues/648)
+- Alerts at the top of the home screen to enable a Key Mapper keyboard, grant WRITE_SECURE_SETTINGS and grant Do not Disturb mode.
 
 ### Bug fixes
 
 - Fix jank [#549](https://github.com/keymapperorg/KeyMapper/issues/549)
 - Fix text consistency [#543](https://github.com/keymapperorg/KeyMapper/issues/543)
-- A parallel trigger which contains another parallel trigger after the first key should cancel the
-  other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
-- Actions go off screen for key maps on the home
-  screen. [#613](https://github.com/keymapperorg/KeyMapper/issues/613)
-- Remove uses of Android framework strings for dialog
-  buttons. [#650](https://github.com/keymapperorg/KeyMapper/issues/650)
-- Trigger key click type sometimes resets to short
-  press. [#615](https://github.com/keymapperorg/KeyMapper/issues/615)
-- Wrong device id is used when performing key event actions and there are multiple devices with the
-  same descriptor. [#637](https://github.com/keymapperorg/KeyMapper/issues/637)
-- Trigger key isn't imitated after a failed double
-  press. [#606](https://github.com/keymapperorg/KeyMapper/issues/606)
-- Actions don't start repeating on a failed long press or failed double
-  press. [#626](https://github.com/keymapperorg/KeyMapper/issues/626)
-- Crash when modifying a huge number of key
-  maps. [#641](https://github.com/keymapperorg/KeyMapper/issues/641)
-- Home menu is chopped off on screens with small
-  height. [#582](https://github.com/keymapperorg/KeyMapper/issues/582)
-- Crash when double pressing button to open action or trigger key
-  options. [#600](https://github.com/keymapperorg/KeyMapper/issues/600)
-- Some action options disappear when adding a new trigger
-  key. [#594](https://github.com/keymapperorg/KeyMapper/issues/594)
-- An action can continue to repeat even when the trigger is released if delay until next action is
-  not 0. [#662](https://github.com/keymapperorg/KeyMapper/issues/662)
-- A lot of input latency when using a lot of
-  constraints. [#599](https://github.com/keymapperorg/KeyMapper/issues/599)
-- Trigger button isn't imitated when a short press trigger with multiple keys fails to be triggered.
-  [#664](https://github.com/keymapperorg/KeyMapper/issues/664)
+- A parallel trigger which contains another parallel trigger after the first key should cancel the other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
+- Actions go off screen for key maps on the home screen. [#613](https://github.com/keymapperorg/KeyMapper/issues/613)
+- Remove uses of Android framework strings for dialog buttons. [#650](https://github.com/keymapperorg/KeyMapper/issues/650)
+- Trigger key click type sometimes resets to short press. [#615](https://github.com/keymapperorg/KeyMapper/issues/615)
+- Wrong device id is used when performing key event actions and there are multiple devices with the same descriptor. [#637](https://github.com/keymapperorg/KeyMapper/issues/637)
+- Trigger key isn't imitated after a failed double press. [#606](https://github.com/keymapperorg/KeyMapper/issues/606)
+- Actions don't start repeating on a failed long press or failed double press. [#626](https://github.com/keymapperorg/KeyMapper/issues/626)
+- Crash when modifying a huge number of key maps. [#641](https://github.com/keymapperorg/KeyMapper/issues/641)
+- Home menu is chopped off on screens with small height. [#582](https://github.com/keymapperorg/KeyMapper/issues/582)
+- Crash when double pressing button to open action or trigger key options. [#600](https://github.com/keymapperorg/KeyMapper/issues/600)
+- Some action options disappear when adding a new trigger key. [#594](https://github.com/keymapperorg/KeyMapper/issues/594)
+- An action can continue to repeat even when the trigger is released if delay until next action is not 0. [#662](https://github.com/keymapperorg/KeyMapper/issues/662)
+- A lot of input latency when using a lot of constraints. [#599](https://github.com/keymapperorg/KeyMapper/issues/599)
+- Trigger button isn't imitated when a short press trigger with multiple keys fails to be triggered. [#664](https://github.com/keymapperorg/KeyMapper/issues/664)
 - Overlapping triggers. [#653](https://github.com/keymapperorg/KeyMapper/issues/653)
 
 ## [2.2.0](https://github.com/sds100/KeyMapper/releases/tag/v2.2.0)
@@ -1583,43 +1157,29 @@ This sums up all the changes for 2.2
 
 ### Added
 
-- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android
-  8.0+ and only on devices which support them. Even devices
-  with the setting to swipe down for notifications might not support this! The dev can't do anything
-  about this.
+- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. [#459](https://github.com/keymapperorg/KeyMapper/issues/459)
-- Setting to show the first 5 digits of input devices so devices with the same name can be
-  differentiated in Key Mapper lists. [#470](https://github.com/keymapperorg/KeyMapper/issues/470)
-- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for
-  Key Mapper. [#496](https://github.com/keymapperorg/KeyMapper/issues/496)
-- Action option to hold down until the trigger is pressed
-  again. [#479](https://github.com/keymapperorg/KeyMapper/issues/479)
-- Action option to change the delay before the next action in the
-  list. [#476](https://github.com/keymapperorg/KeyMapper/issues/476)
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. [#470](https://github.com/keymapperorg/KeyMapper/issues/470)
+- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. [#496](https://github.com/keymapperorg/KeyMapper/issues/496)
+- Action option to hold down until the trigger is pressed again. [#479](https://github.com/keymapperorg/KeyMapper/issues/479)
+- Action option to change the delay before the next action in the list. [#476](https://github.com/keymapperorg/KeyMapper/issues/476)
 - Orientation constraint. [#505](https://github.com/keymapperorg/KeyMapper/issues/505)
-- Key Event action option to pretend that the Key Event came from a particular
-  device. [#509](https://github.com/keymapperorg/KeyMapper/issues/509)
-- Use duplicates of the same key in a sequence
-  trigger. [#513](https://github.com/keymapperorg/KeyMapper/issues/513)
-- Show the fingerprint gesture intro slide when updating to
-  2.2 [#545](https://github.com/keymapperorg/KeyMapper/issues/545)
-- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the
-  user updates to 2.2 [#546](https://github.com/keymapperorg/KeyMapper/issues/546)
+- Key Event action option to pretend that the Key Event came from a particular device. [#509](https://github.com/keymapperorg/KeyMapper/issues/509)
+- Use duplicates of the same key in a sequence trigger. [#513](https://github.com/keymapperorg/KeyMapper/issues/513)
+- Show the fingerprint gesture intro slide when updating to 2.2 [#545](https://github.com/keymapperorg/KeyMapper/issues/545)
+- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 [#546](https://github.com/keymapperorg/KeyMapper/issues/546)
 - Trigger key maps from an Intent [#490](https://github.com/keymapperorg/KeyMapper/issues/490)
 - Prompt the user to go to https://dontkillmyapp.com when they first setup the app.
-- Add Fdroid link to the Key Mapper GUI Keyboard
-  ad. [#524](https://github.com/keymapperorg/KeyMapper/issues/524)
+- Add Fdroid link to the Key Mapper GUI Keyboard ad. [#524](https://github.com/keymapperorg/KeyMapper/issues/524)
 
 ### BREAKING CHANGES
 
-- Key Mapper action shortcuts work completely differently.
-  See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
+- Key Mapper action shortcuts work completely differently. See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
 
 ### Changes
 
-- No max limit for sliders (except in
-  settings). [#458](https://github.com/keymapperorg/KeyMapper/issues/458)
+- No max limit for sliders (except in settings). [#458](https://github.com/keymapperorg/KeyMapper/issues/458)
 - The app intro slides will show feedback if the steps have been done correctly.
 
 ### Removed
@@ -1628,22 +1188,14 @@ This sums up all the changes for 2.2
 
 ### Bug Fixes
 
-- Save and restore state for all view
-  models. [#519](https://github.com/keymapperorg/KeyMapper/issues/519)
-- Use View Binding in fragments properly. This should stop random crashes for some
-  users. [#518](https://github.com/keymapperorg/KeyMapper/issues/518)
-- Hold Down action option doesn't work for long press
-  triggers. [#504](https://github.com/keymapperorg/KeyMapper/issues/504)
-- A trigger for a specific device can still be detected if the same buttons on another device are
-  pressed. [#523](https://github.com/keymapperorg/KeyMapper/issues/523)
-- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut
-  off. [#522](https://github.com/keymapperorg/KeyMapper/issues/522)
-- Remapping modifier keys to the same key didn't work as
-  expected. [#563](https://github.com/keymapperorg/KeyMapper/issues/563)
-- Parallel triggers which contained another parallel trigger didn't cancel the
-  other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
-- Don't allow screen on/off constraints for fingerprint
-  gestures [#570](https://github.com/keymapperorg/KeyMapper/issues/570)
+- Save and restore state for all view models. [#519](https://github.com/keymapperorg/KeyMapper/issues/519)
+- Use View Binding in fragments properly. This should stop random crashes for some users. [#518](https://github.com/keymapperorg/KeyMapper/issues/518)
+- Hold Down action option doesn't work for long press triggers. [#504](https://github.com/keymapperorg/KeyMapper/issues/504)
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed. [#523](https://github.com/keymapperorg/KeyMapper/issues/523)
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. [#522](https://github.com/keymapperorg/KeyMapper/issues/522)
+- Remapping modifier keys to the same key didn't work as expected. [#563](https://github.com/keymapperorg/KeyMapper/issues/563)
+- Parallel triggers which contained another parallel trigger didn't cancel the other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
+- Don't allow screen on/off constraints for fingerprint gestures [#570](https://github.com/keymapperorg/KeyMapper/issues/570)
 - Rename Key Mapper CI Keyboard to Key Mapper CI Basic Input Method.
 - Notifications had no icon on Android Lollipop.
 - remove coloured navigation bar on Android Lollipop.
@@ -1651,19 +1203,13 @@ This sums up all the changes for 2.2
 - Detecting whether remapping fingerprint gestures are supported didn't work.
 - The flashlight action would sometimes crash the app.
 - The error message for an app being disabled was the wrong one.
-- Actions to open Android TV apps didn't
-  work [#503](https://github.com/keymapperorg/KeyMapper/issues/503)
-- The app list didn't show Android TV-only
-  apps. [#487](https://github.com/keymapperorg/KeyMapper/issues/487)
-- Settings for repeat rate and delay until repeat didn't match their names when configuring an
-  action.
-- Text would move up/down when sliding between slides in the app
-  intro. [#540](https://github.com/keymapperorg/KeyMapper/issues/540)
-- Icon for "specific app playing media" constraint had the wrong
-  tint. [#535](https://github.com/keymapperorg/KeyMapper/issues/535)
+- Actions to open Android TV apps didn't work [#503](https://github.com/keymapperorg/KeyMapper/issues/503)
+- The app list didn't show Android TV-only apps. [#487](https://github.com/keymapperorg/KeyMapper/issues/487)
+- Settings for repeat rate and delay until repeat didn't match their names when configuring an action.
+- Text would move up/down when sliding between slides in the app intro. [#540](https://github.com/keymapperorg/KeyMapper/issues/540)
+- Icon for "specific app playing media" constraint had the wrong tint. [#535](https://github.com/keymapperorg/KeyMapper/issues/535)
 - Limit Media actions to Android 4.4 KitKat+ because they don't work on older versions.
-- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether
-  the trigger was released. [#533](https://github.com/keymapperorg/KeyMapper/issues/533)
+- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether the trigger was released. [#533](https://github.com/keymapperorg/KeyMapper/issues/533)
 - Testing actions didn't work.
 - Scroll position was lost when reloading the key map list.
 - Try to fix random crashes when navigating.
@@ -1675,23 +1221,16 @@ This sums up all the changes for 2.2
 
 ### Added
 
-- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android
-  8.0+ and only on devices which support them. Even devices
-  with the setting to swipe down for notifications might not support this! The dev can't do anything
-  about this.
-- Show the fingerprint gesture intro slide when updating to
-  2.2 [#545](https://github.com/keymapperorg/KeyMapper/issues/545)
-- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the
-  user updates to 2.2 [#546](https://github.com/keymapperorg/KeyMapper/issues/546)
+- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
+- Show the fingerprint gesture intro slide when updating to 2.2 [#545](https://github.com/keymapperorg/KeyMapper/issues/545)
+- Show a silent notification, which advertises the remapping fingerprint gesture feature, when the user updates to 2.2 [#546](https://github.com/keymapperorg/KeyMapper/issues/546)
 - Trigger key maps from an Intent [#490](https://github.com/keymapperorg/KeyMapper/issues/490)
 - Prompt the user to go to https://dontkillmyapp.com when they first setup the app.
-- Add Fdroid link to the Key Mapper GUI Keyboard
-  ad. [#524](https://github.com/keymapperorg/KeyMapper/issues/524)
+- Add Fdroid link to the Key Mapper GUI Keyboard ad. [#524](https://github.com/keymapperorg/KeyMapper/issues/524)
 
 ### BREAKING CHANGES
 
-- Key Mapper action shortcuts work completely differently.
-  See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
+- Key Mapper action shortcuts work completely differently. See https://docs.keymapper.club/user-guide/triggers/#trigger-from-other-apps-230
 
 ### Changes
 
@@ -1703,12 +1242,9 @@ This sums up all the changes for 2.2
 
 ### Bug Fixes
 
-- Remapping modifier keys to the same key didn't work as
-  expected. [#563](https://github.com/keymapperorg/KeyMapper/issues/563)
-- Parallel triggers which contained another parallel trigger didn't cancel the
-  other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
-- Don't allow screen on/off constraints for fingerprint
-  gestures [#570](https://github.com/keymapperorg/KeyMapper/issues/570)
+- Remapping modifier keys to the same key didn't work as expected. [#563](https://github.com/keymapperorg/KeyMapper/issues/563)
+- Parallel triggers which contained another parallel trigger didn't cancel the other. [#571](https://github.com/keymapperorg/KeyMapper/issues/571)
+- Don't allow screen on/off constraints for fingerprint gestures [#570](https://github.com/keymapperorg/KeyMapper/issues/570)
 - Rename Key Mapper CI Keyboard to Key Mapper CI Basic Input Method.
 - Notifications had no icon on Android Lollipop.
 - remove coloured navigation bar on Android Lollipop.
@@ -1716,19 +1252,13 @@ This sums up all the changes for 2.2
 - Detecting whether remapping fingerprint gestures are supported didn't work.
 - The flashlight action would sometimes crash the app.
 - The error message for an app being disabled was the wrong one.
-- Actions to open Android TV apps didn't
-  work [#503](https://github.com/keymapperorg/KeyMapper/issues/503)
-- The app list didn't show Android TV-only
-  apps. [#487](https://github.com/keymapperorg/KeyMapper/issues/487)
-- Settings for repeat rate and delay until repeat didn't match their names when configuring an
-  action.
-- Text would move up/down when sliding between slides in the app
-  intro. [#540](https://github.com/keymapperorg/KeyMapper/issues/540)
-- Icon for "specific app playing media" constraint had the wrong
-  tint. [#535](https://github.com/keymapperorg/KeyMapper/issues/535)
+- Actions to open Android TV apps didn't work [#503](https://github.com/keymapperorg/KeyMapper/issues/503)
+- The app list didn't show Android TV-only apps. [#487](https://github.com/keymapperorg/KeyMapper/issues/487)
+- Settings for repeat rate and delay until repeat didn't match their names when configuring an action.
+- Text would move up/down when sliding between slides in the app intro. [#540](https://github.com/keymapperorg/KeyMapper/issues/540)
+- Icon for "specific app playing media" constraint had the wrong tint. [#535](https://github.com/keymapperorg/KeyMapper/issues/535)
 - Limit Media actions to Android 4.4 KitKat+ because they don't work on older versions.
-- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether
-  the trigger was released. [#533](https://github.com/keymapperorg/KeyMapper/issues/533)
+- Up Key Event was sent from all keymaps with the "hold down" action option regardless of whether the trigger was released. [#533](https://github.com/keymapperorg/KeyMapper/issues/533)
 - Testing actions didn't work.
 - Scroll position was lost when reloading the key map list.
 - Try to fix random crashes when navigating.
@@ -1740,47 +1270,30 @@ This sums up all the changes for 2.2
 
 ### Added
 
-- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android
-  8.0+ and only on devices which support them. Even devices
-  with the setting to swipe down for notifications might not support this! The dev can't do anything
-  about this.
+- Remap fingerprint gestures! [#378](https://github.com/keymapperorg/KeyMapper/issues/378) Android 8.0+ and only on devices which support them. Even devices with the setting to swipe down for notifications might not support this! The dev can't do anything about this.
 
 - Widget/shortcut to launch actions. [#459](https://github.com/keymapperorg/KeyMapper/issues/459)
-- Setting to show the first 5 digits of input devices so devices with the same name can be
-  differentiated in Key Mapper lists. [#470](https://github.com/keymapperorg/KeyMapper/issues/470)
-- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for
-  Key Mapper. [#496](https://github.com/keymapperorg/KeyMapper/issues/496)
-- Action option to hold down until the trigger is pressed
-  again. [#479](https://github.com/keymapperorg/KeyMapper/issues/479)
-- Action option to change the delay before the next action in the
-  list. [#476](https://github.com/keymapperorg/KeyMapper/issues/476)
+- Setting to show the first 5 digits of input devices so devices with the same name can be differentiated in Key Mapper lists. [#470](https://github.com/keymapperorg/KeyMapper/issues/470)
+- Show a warning at the top of the homescreen if the user hasn't disabled battery optimisation for Key Mapper. [#496](https://github.com/keymapperorg/KeyMapper/issues/496)
+- Action option to hold down until the trigger is pressed again. [#479](https://github.com/keymapperorg/KeyMapper/issues/479)
+- Action option to change the delay before the next action in the list. [#476](https://github.com/keymapperorg/KeyMapper/issues/476)
 - Orientation constraint. [#505](https://github.com/keymapperorg/KeyMapper/issues/505)
-- Constraint for when a specific app is playing
-  media. [#508](https://github.com/keymapperorg/KeyMapper/issues/508)
-- Key Event action option to pretend that the Key Event came from a particular
-  device. [#509](https://github.com/keymapperorg/KeyMapper/issues/509)
-- Use duplicates of the same key in a sequence
-  trigger. [#513](https://github.com/keymapperorg/KeyMapper/issues/513)
-- Hold down repeatedly if repeat and hold down are
-  enabled. [#500](https://github.com/keymapperorg/KeyMapper/issues/500)
+- Constraint for when a specific app is playing media. [#508](https://github.com/keymapperorg/KeyMapper/issues/508)
+- Key Event action option to pretend that the Key Event came from a particular device. [#509](https://github.com/keymapperorg/KeyMapper/issues/509)
+- Use duplicates of the same key in a sequence trigger. [#513](https://github.com/keymapperorg/KeyMapper/issues/513)
+- Hold down repeatedly if repeat and hold down are enabled. [#500](https://github.com/keymapperorg/KeyMapper/issues/500)
 
 ### Changes
 
-- No max limit for sliders (except in
-  settings). [#458](https://github.com/keymapperorg/KeyMapper/issues/458)
+- No max limit for sliders (except in settings). [#458](https://github.com/keymapperorg/KeyMapper/issues/458)
 
 ### Bug Fixes
 
-- Save and restore state for all view
-  models. [#519](https://github.com/keymapperorg/KeyMapper/issues/519)
-- Use View Binding in fragments properly. This should stop random crashes for some
-  users. [#518](https://github.com/keymapperorg/KeyMapper/issues/518)
-- Hold Down action option doesn't work for long press
-  triggers. [#504](https://github.com/keymapperorg/KeyMapper/issues/504)
-- A trigger for a specific device can still be detected if the same buttons on another device are
-  pressed. [#523](https://github.com/keymapperorg/KeyMapper/issues/523)
-- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut
-  off. [#522](https://github.com/keymapperorg/KeyMapper/issues/522)
+- Save and restore state for all view models. [#519](https://github.com/keymapperorg/KeyMapper/issues/519)
+- Use View Binding in fragments properly. This should stop random crashes for some users. [#518](https://github.com/keymapperorg/KeyMapper/issues/518)
+- Hold Down action option doesn't work for long press triggers. [#504](https://github.com/keymapperorg/KeyMapper/issues/504)
+- A trigger for a specific device can still be detected if the same buttons on another device are pressed. [#523](https://github.com/keymapperorg/KeyMapper/issues/523)
+- Fix layout of the trigger fragment on some screen sizes so that some things aren't cut off. [#522](https://github.com/keymapperorg/KeyMapper/issues/522)
 
 ## [2.1.0](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0)
 
@@ -1797,15 +1310,11 @@ This summarises the changes since 2.0.2.
 - Action to create Key Event with optional modifiers.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
-- Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the
-  same time. This is a
-  limitation in Android.
+- Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a limitation in Android.
 - Action to double press recents to go to last app.
-- Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the
-  app is opened.
+- Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
-- Keymaps can have multiple of the same action. There is now a slider in the action options called "
-  Action Count".
+- Keymaps can have multiple of the same action. There is now a slider in the action options called " Action Count".
 - Can detect the headset button when the screen is off.
 - Prompt the user to reboot their device if they fail to record a trigger 2 times in a row.
 - Show a toast after using the Screenshot (ROOT) action.
@@ -1824,8 +1333,7 @@ This summarises the changes since 2.0.2.
 - The Menu (ROOT) action was slow
 - show a toast if there is an IOException when detecting buttons when the screen is off.
 - Remapping modifier keys to modifier keys doesn't work as expected.
-- the Screenshot (ROOT) action didn't create the Pictures and Screenshots directories. Therefore, it
-  didn't save the screenshot.
+- the Screenshot (ROOT) action didn't create the Pictures and Screenshots directories. Therefore, it didn't save the screenshot.
 - Hold Down action option didn't work for long-press triggers.
 - Opening a keymap with a long-press parallel trigger would set it to short press.
 - Crash if a modifier key trigger is not mapped to a Key Event action.
@@ -1833,8 +1341,7 @@ This summarises the changes since 2.0.2.
 - Attempt to fix the problem of the accessibility service being enabled but broken on some devices.
 - Typo in the dialog message prompting the user to reboot.
 - The dialog prompting the user to reboot would show at the wrong time.
-- Switch to a new App Intro library. Hopefully it is more stable because the old library was
-  crashing for many users.
+- Switch to a new App Intro library. Hopefully it is more stable because the old library was crashing for many users.
 
 ## [2.1.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.4)
 
@@ -1857,8 +1364,7 @@ This summarises the changes since 2.0.2.
 - Attempt to fix the problem of the accessibility service being enabled but broken on some devices.
 - Typo in the dialog message prompting the user to reboot.
 - The dialog prompting the user to reboot would show at the wrong time.
-- Switch to a new App Intro library. Hopefully it is more stable because the old library was
-  crashing for many users.
+- Switch to a new App Intro library. Hopefully it is more stable because the old library was crashing for many users.
 
 ## [2.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.1.0-beta.2)
 
@@ -1874,16 +1380,13 @@ This summarises the changes since 2.0.2.
 - Dragging trigger keys by the remove button would cause a crash
 - stop recording if the user leaves the Trigger fragment
 - The Menu (ROOT) action was slow
-- Entering an invalid integer into the keycode box when creating a Key Event action would cause a
-  crash.
+- Entering an invalid integer into the keycode box when creating a Key Event action would cause a crash.
 - show a toast if there is an IOException when detecting buttons when the screen is off.
 - Remapping modifier keys to modifier keys doesn't work as expected.
-- the Screenshot (ROOT) action didn't create the Pictures and Screenshots directories. Therefore, it
-  didn't save the screenshot.
+- the Screenshot (ROOT) action didn't create the Pictures and Screenshots directories. Therefore, it didn't save the screenshot.
 - Hold Down action option didn't work for long-press triggers.
 - Opening a keymap with a long-press parallel trigger would set it to short press.
-- JSON files are sometimes greyed out when picking a file to restore. All file types are now shown
-  because Android doens't have a mimetype for JSON files.
+- JSON files are sometimes greyed out when picking a file to restore. All file types are now shown because Android doens't have a mimetype for JSON files.
 - Crash if a modifier key trigger is not mapped to a Key Event action.
 - Potential crash when showing keymaps on the homescreen.
 
@@ -1901,15 +1404,11 @@ This summarises the changes since 2.0.2.
 - Action to create Key Event with optional modifiers.
 - Action to select word at cursor.
 - Action to toggle the screen on and off.
-- Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the
-  same time. This is a
-  limitation in Android.
+- Action to tap a coordinate on the screen. The user and the app can NOT touch the screen at the same time. This is a limitation in Android.
 - Action to double press recents to go to last app.
-- Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the
-  app is opened.
+- Dismiss button to the notification that pauses/resumes keymaps. It will be shown again when the app is opened.
 - Show a warning dialog when leaving the screen to configure a keymap without saving.
-- Keymaps can have multiple of the same action. There is now a slider in the action options called "
-  Action Count".
+- Keymaps can have multiple of the same action. There is now a slider in the action options called " Action Count".
 - Can detect the headset button when the screen is off.
 - Option to not override the default behavior of the trigger.
 
@@ -1932,8 +1431,7 @@ This summarises the changes since 2.0.2.
 
 ### Changes
 
-- Make the functionality to fix actions by pressing on them more discoverable. The top of the keymap
-  on the homescreen will show "Tap actions to fix!" and the broken actions have a red tint.
+- Make the functionality to fix actions by pressing on them more discoverable. The top of the keymap on the homescreen will show "Tap actions to fix!" and the broken actions have a red tint.
 
 ## [2.0.1](https://github.com/sds100/KeyMapper/releases/tag/v2.0.1)
 
@@ -1942,8 +1440,7 @@ This summarises the changes since 2.0.2.
 ### Bug Fixes
 
 - Choosing app shortcut actions didn't work
-- Remapping the Home and Recents buttons wouldn't stop them from doing their default Home/Recents
-  actions.
+- Remapping the Home and Recents buttons wouldn't stop them from doing their default Home/Recents actions.
 - All titles for flashlight actions are the same.
 - Actions didn't work on Android 11.
 - Screen off triggers didn't pause.
@@ -1962,11 +1459,9 @@ This summarises the changes since 2.0.2.
 - A keymap can have multiple actions.
 - Triggers
     - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
-    - Keys can be limited to a specific external device, any device or the device the app is
-      installed on.
+    - Keys can be limited to a specific external device, any device or the device the app is installed on.
     - Double press support.
-- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be
-  mixed in OR mode or AND mode.
+- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
     - App in foreground
     - App not in foreground
     - Bluetooth device connected
@@ -1985,8 +1480,7 @@ This summarises the changes since 2.0.2.
 - Renamed "Repeat Delay" to "Repeat Rate".
 - Renamed "Hold Down Delay" to "Repeat Delay"
 - Modifier keys now affect Key and Keycode actions.
-- Option to vibrate twice for long press actions. Once when initially pressing the keys and again
-  when the action is performed.
+- Option to vibrate twice for long press actions. Once when initially pressing the keys and again when the action is performed.
 - Option for keymaps with volume key triggers to be detected when the screen is off (ROOT only).
 - Option to stop repeating an action when the trigger is pressed again.
 - Button in the homescreen menu to resume/pause keymaps and enable the accessibility service.
@@ -1997,8 +1491,7 @@ This summarises the changes since 2.0.2.
 - Screen to configure keymaps is more optimised for very large screens.
 - Preference to switch to and from the Key Mapper keyboard when pausing/resuming keymaps.
 - The option to show the "performing action" toast has been moved to a toggle in each keymap.
-- The long press delay, double press timeout, sequence trigger timeout, action repeat delay,
-  hold-down delay until actions are repeated and vibrate delay can be changed per keymap.
+- The long press delay, double press timeout, sequence trigger timeout, action repeat delay, hold-down delay until actions are repeated and vibrate delay can be changed per keymap.
 - Keymaps which have modifier key actions now affect other keymaps and keys which aren't mapped.
 - Link to the Discord server in About.
 
@@ -2009,8 +1502,7 @@ This summarises the changes since 2.0.2.
 
 ### Changes
 
-- Keymaps can only have one trigger. Any keymaps with multiple triggers will be split up into
-  multiple keymaps.
+- Keymaps can only have one trigger. Any keymaps with multiple triggers will be split up into multiple keymaps.
 
 ### Removed
 
@@ -2060,13 +1552,11 @@ Significantly improved the input latency.
 ### Changes
 
 - Persist whether keymaps are paused.
-- The "Switch Keyboard" action now works when the app has WRITE_SECURE_SETTINGS permission rather
-  than just rooted devices.
+- The "Switch Keyboard" action now works when the app has WRITE_SECURE_SETTINGS permission rather than just rooted devices.
 
 ### Removed
 
-- Setting to show a toast message when an action fails. Removing this made improving the input
-  latency much easier.
+- Setting to show a toast message when an action fails. Removing this made improving the input latency much easier.
 
 ## [2.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v2.0.0-beta.2)
 
@@ -2080,8 +1570,7 @@ Significantly improved the input latency.
 - Action to launch the device assistant rather than the voice assistant.
 - Notification to toggle the Key Mapper keyboard.
 - Quick Settings to toggle the Key Mapper keyboard and pause/resume keymaps.
-- Keymap option to vibrate twice for long press actions. Once when initially pressing the keys and
-  again when the action is performed.
+- Keymap option to vibrate twice for long press actions. Once when initially pressing the keys and again when the action is performed.
 - Duplicate keymaps.
 - Screen to configure keymaps is more optimised for very large screens.
 - Preference to switch to and from the Key Mapper keyboard when pausing/resuming keymaps.
@@ -2095,8 +1584,7 @@ Significantly improved the input latency.
 - Don't consume keyevents when actions for parallel triggers fail.
 - Short press and long press triggers don't cross over.
 - Short press and double press triggers don't cross over.
-- Wifi actions didn't work on Android Pie. Android doesn't allow apps to control WiFi anymore so
-  these actions have been restricted to rooted devices on Android 9.0+ .
+- Wifi actions didn't work on Android Pie. Android doesn't allow apps to control WiFi anymore so these actions have been restricted to rooted devices on Android 9.0+ .
 - Crash when sometimes changing keymap options with a slider.
 - Sequence trigger timeout option was shown for a single key double press trigger.
 - Crash when launching the app for the first time in landscape.
@@ -2112,18 +1600,15 @@ Significantly improved the input latency.
 - A keymap can have multiple actions.
 - Triggers
     - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
-    - Keys can be limited to a specific external device, any device or the device the app is
-      installed on.
+    - Keys can be limited to a specific external device, any device or the device the app is installed on.
     - Double press support.
-- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be
-  mixed in OR mode or AND mode.
+- Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be mixed in OR mode or AND mode.
     - App in foreground
     - App not in foreground
     - Bluetooth device connected
     - Bluetooth device not connected
 - The option to show the "performing action" toast has been moved to a toggle in each keymap.
-- The long press delay, double press timeout, sequence trigger timeout, action repeat delay,
-  hold-down delay until actions are repeated and vibrate delay can be changed per keymap.
+- The long press delay, double press timeout, sequence trigger timeout, action repeat delay, hold-down delay until actions are repeated and vibrate delay can be changed per keymap.
 - Modifier keys now affect Key and Keycode actions.
 - Keymaps which have modifier key actions now affect other keymaps and keys which aren't mapped.
 - Show the keycode number when picking a Keycode action.
@@ -2137,8 +1622,7 @@ Significantly improved the input latency.
 
 ### Changes
 
-- Keymaps can only have one trigger. Any keymaps with multiple triggers will be split up into
-  multiple keymaps.
+- Keymaps can only have one trigger. Any keymaps with multiple triggers will be split up into multiple keymaps.
 
 ### Removed
 
@@ -2155,10 +1639,8 @@ Significantly improved the input latency.
 - crashed when the battery optimisation settings couldn't be found.
 - some trigger keys have no name.
 - unable to uncheck the "show volume dialog" flag.
-- on some devices (e.g Oxygen OS 10), the volume buttons up keyevents need to be consumed to stop
-  them from changing the volume when performing an action.
-- couldn't necessarily press the back button to get back to Key Mapper when opening the
-  accessibility settings.
+- on some devices (e.g Oxygen OS 10), the volume buttons up keyevents need to be consumed to stop them from changing the volume when performing an action.
+- couldn't necessarily press the back button to get back to Key Mapper when opening the accessibility settings.
 
 ### Added
 
@@ -2193,8 +1675,7 @@ This is the first release to be released on F-Droid.
 
 ### Bug Fix
 
-- KEYCODE_BACK appeared twice in the keycode action
-  list. [#247](https://github.com/keymapperorg/KeyMapper/issues/247)
+- KEYCODE_BACK appeared twice in the keycode action list. [#247](https://github.com/keymapperorg/KeyMapper/issues/247)
 
 ## [1.1.4](https://github.com/sds100/KeyMapper/releases/tag/v1.1.4)
 
@@ -2218,8 +1699,7 @@ This is the first release to be released on F-Droid.
 
 ### Bug Fixes
 
-- Make all slides in the intro activity scrollable so the content can be displayed on smaller
-  devices
+- Make all slides in the intro activity scrollable so the content can be displayed on smaller devices
 - Remapping the recents button would still open recents
 - Crash when the app was rotated in the "choose action" activity
 - Triggers are ignored when another trigger is being detected.
@@ -2227,8 +1707,7 @@ This is the first release to be released on F-Droid.
 ### Added
 
 - Action to show the keyboard picker
-- Guide the user to grant WRITE_SECURE_SETTINGS for the app so features previously restricted to
-  rooted devices can be used on all devices.
+- Guide the user to grant WRITE_SECURE_SETTINGS for the app so features previously restricted to rooted devices can be used on all devices.
 - Slide to enable Do Not Disturb in the intro activity.
 
 ### Changed
@@ -2240,8 +1719,7 @@ This is the first release to be released on F-Droid.
 
 #### 27 July 2019
 
-Exact same as 1.1.0 besides the version code and name. I messed up the versioning on Google play so
-had to increment the version code.
+Exact same as 1.1.0 besides the version code and name. I messed up the versioning on Google play so had to increment the version code.
 
 ## [1.1.0](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0)
 
@@ -2272,8 +1750,7 @@ Changes from 1.1.0 Beta 8:
 ### Added
 
 - Show an error on the homescreen and if an action needs the Key Mapper keyboard to be enabled.
-- Show an error when trying to use an action which requires the Key Mapper keyboard and it is
-  disabled.
+- Show an error when trying to use an action which requires the Key Mapper keyboard and it is disabled.
 - Action to move the cursor to the end of a file
 - Actions to toggle, show and hide the keyboard
 - Button to change the keyboard in the homescreen menu
@@ -2283,8 +1760,7 @@ Changes from 1.1.0 Beta 8:
 - labels for the KEYCODE_BUTTON_START and KEYCODE_BUTTON_SELECT keycodes
 - An introduction activity the first time the app is opened
 - Logger: log when recording a trigger has started and stopped
-- Show a dialog the first time the Key Mapper keyboard is chosen explaining why another keyboard
-  can't be used.
+- Show a dialog the first time the Key Mapper keyboard is chosen explaining why another keyboard can't be used.
 - ChooseActionActivity: A tab to which lists all the actions which aren't supported and why.
 - Show a "requires root" message for actions which need it
 
@@ -2331,8 +1807,7 @@ Changes from 1.1.0 Beta 8:
 
 ### Changes
 
-- Add the trigger after the 5 seconds rather than having to press the button so the app can work
-  with devices which only have remotes as input.
+- Add the trigger after the 5 seconds rather than having to press the button so the app can work with devices which only have remotes as input.
 - Cleanup Settings strings.
 - Use slightly darker homescreen background.
 - Don't show the "Key mapper is performing an action" toast message by default.
@@ -2362,8 +1837,7 @@ Changes from 1.1.0 Beta 8:
 - Could potentially crash when trying to switch to the Key Mapper input method
 - Could potentially crash when removing a trigger from the list
 - Would crash if it couldn't find the input method settings page
-- Would crash when trying to change a specific volume stream while the device is in a Do Not Disturb
-  state
+- Would crash when trying to change a specific volume stream while the device is in a Do Not Disturb state
 - Would crash when using an app shortcut without the correct permissions.
 
 ## [1.1.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.3)
@@ -2378,21 +1852,16 @@ Changes from 1.1.0 Beta 8:
 
 - Flag to vibrate and an option to force vibrate for all actions
 - Action which just consumes the keyevent and does nothing
-- Action to lock the device (ROOT only for now) and an option to lock the device securely (without
-  root).
+- Action to lock the device (ROOT only for now) and an option to lock the device securely (without root).
 
 ### Bug fixes
 
 - The bottom app bar on the homescreen would overlap the list items
-- The app would potentially crash when trying to perform a flashlight action whilst the camera is in
-  use in another app.
-- Short press actions with the same trigger as a long press action would be performed with the long
-  press action
-- A keymap would still have the "Show volume dialog" flag if the action is changed to a non volume
-  related action
+- The app would potentially crash when trying to perform a flashlight action whilst the camera is in use in another app.
+- Short press actions with the same trigger as a long press action would be performed with the long press action
+- A keymap would still have the "Show volume dialog" flag if the action is changed to a non volume related action
 - The app would crash if trying to show the menu on the homescreen if it is already showing.
-- The accessibility service status on the homescreen wouldn't change when the service is
-  started/stopped.
+- The accessibility service status on the homescreen wouldn't change when the service is started/stopped.
 
 ## [1.1.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v1.1.0-beta.2)
 
@@ -2412,18 +1881,14 @@ Changes from 1.1.0 Beta 8:
 ### Added
 
 - Setting to change the long-press delay.
-- Persistent notification which can pause/resume your remaps. It can also open the accessibility
-  settings on the device to enable/disable the service. Rooted devices can start/stop the
-  accessibility service without going into settings and just tap the notification.
+- Persistent notification which can pause/resume your remaps. It can also open the accessibility settings on the device to enable/disable the service. Rooted devices can start/stop the accessibility service without going into settings and just tap the notification.
 - Use Material Design 2 for homescreen.
 
 ### Bug fixes
 
 - Persistent notifications wouldn't show on boot
-- The app would crash if using the "open google assistant" action if the Google app wasn't
-  installed.
-- Prevent the accessibility service from stopping if there is a fatal exception and show a toast
-  when it happens.
+- The app would crash if using the "open google assistant" action if the Google app wasn't installed.
+- Prevent the accessibility service from stopping if there is a fatal exception and show a toast when it happens.
 
 ## [1.0.0 Beta 6](https://github.com/sds100/KeyMapper/releases/tag/v1.0.0-beta.6)
 
@@ -2451,16 +1916,14 @@ Changes from 1.1.0 Beta 8:
 - Added more labels for keys.
 - Added a link to the app in the device's Accessibility settings.
 - Updated the Gradle version to 3.3.2
-- When the long-press flag is chosen, show a warning saying it will only work properly for volume
-  and navigation buttons.
+- When the long-press flag is chosen, show a warning saying it will only work properly for volume and navigation buttons.
 - Enable the show-volume-ui flag by default.
 
 #### Bug fixes
 
 - App would crash when choosing flags for a keymap without an action.
 - Buttons being repeatedly pressed.
-- Enabling the long-press flag would stop the button from working when it is pressed without a long
-  press.
+- Enabling the long-press flag would stop the button from working when it is pressed without a long press.
 
 ## Accidentally skipped Beta 3 release. Oops.
 
@@ -2476,16 +1939,13 @@ Changes from 1.1.0 Beta 8:
 #### 2 Mar 2019
 
 - Initial release!
-- Option to automatically change the input method and/or show the input method picker when a chosen
-  Bluetooth device is connected and switch back to the old one when disconnected
-- Option to show a notification, which when clicked on, will show the input method picker. Android
-  8.1+ needs root.
+- Option to automatically change the input method and/or show the input method picker when a chosen Bluetooth device is connected and switch back to the old one when disconnected
+- Option to show a notification, which when clicked on, will show the input method picker. Android 8.1+ needs root.
 - Option to show a toast message whenever an action is performed.
 - A Help activity
 - An About activity
 - No limit on the amount of triggers for a keymap and how many keys can be used to create a trigger.
-- Optional flags for each keymap so it can only be triggered on a long press and whether to show the
-  volume dialog for volume related actions.
+- Optional flags for each keymap so it can only be triggered on a long press and whether to show the volume dialog for volume related actions.
 - Ability to enable/disable specific/all keymaps.
 
 #### Added these actions

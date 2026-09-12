@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.isXiaomiDevice
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -199,6 +200,12 @@ class ExpertModeViewModel @Inject constructor(
         }
     }
 
+    fun onXiaomiOptimizationClick() {
+        viewModelScope.launch {
+            navigate("open_xiaomi_optimization", NavDestination.XiaomiOptimization)
+        }
+    }
+
     private fun stoppedStateFlow(): Flow<ExpertModeState.Stopped> = combine(
         useCase.isRootGranted,
         useCase.shizukuSetupState,
@@ -239,6 +246,7 @@ class ExpertModeViewModel @Inject constructor(
             autoStartBootChecked = autoStartBootChecked,
             autoStartBootEnabled = autoStartBootEnabled,
             showXiaomiAdbInputSecurityWarning = !xiaomiAdbSecuritySettingsEnabled,
+            showXiaomiOptimizationCard = isXiaomiDevice(),
             emergencyStopChecked = emergencyStopChecked,
         )
     }
@@ -264,6 +272,7 @@ sealed class ExpertModeState {
         val autoStartBootChecked: Boolean,
         val autoStartBootEnabled: Boolean,
         val showXiaomiAdbInputSecurityWarning: Boolean,
+        val showXiaomiOptimizationCard: Boolean,
         val emergencyStopChecked: Boolean,
     ) : ExpertModeState()
 }

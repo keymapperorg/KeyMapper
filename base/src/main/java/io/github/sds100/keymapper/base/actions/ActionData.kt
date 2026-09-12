@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -246,6 +247,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object CycleKeyboardLanguage : ActionData() {
+        override val id = ActionId.CYCLE_KEYBOARD_LANGUAGE
+    }
+
+    @Serializable
     sealed class DoNotDisturb : ActionData() {
 
         @Serializable
@@ -378,12 +384,18 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class StepForward(override val packageName: String) : ControlMediaForApp() {
+        data class StepForward(
+            override val packageName: String,
+            val stepDurationMs: Long? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_FORWARD_PACKAGE
         }
 
         @Serializable
-        data class StepBackward(override val packageName: String) : ControlMediaForApp() {
+        data class StepBackward(
+            override val packageName: String,
+            val stepDurationMs: Long? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_BACKWARD_PACKAGE
         }
     }
@@ -431,12 +443,12 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data object StepForward : ControlMedia() {
+        data class StepForward(val stepDurationMs: Long? = null) : ControlMedia() {
             override val id = ActionId.STEP_FORWARD
         }
 
         @Serializable
-        data object StepBackward : ControlMedia() {
+        data class StepBackward(val stepDurationMs: Long? = null) : ControlMedia() {
             override val id = ActionId.STEP_BACKWARD
         }
     }
@@ -457,7 +469,16 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class TapScreen(val x: Int, val y: Int, val description: String?) : ActionData() {
+    data class TapScreen(
+        val x: Int,
+        val y: Int,
+        val description: String?,
+        /**
+         * The display size that the coordinates were picked for. See issue #2217. This is null for
+         * actions that were created before the resolution was saved and those are never scaled.
+         */
+        val screenResolution: SizeKM? = null,
+    ) : ActionData() {
         override val id = ActionId.TAP_SCREEN
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -482,6 +503,11 @@ sealed class ActionData : Comparable<ActionData> {
         val fingerCount: Int,
         val duration: Int,
         val description: String?,
+        /**
+         * The display size that the coordinates were picked for. See issue #2217. This is null for
+         * actions that were created before the resolution was saved and those are never scaled.
+         */
+        val screenResolution: SizeKM? = null,
     ) : ActionData() {
         override val id = ActionId.SWIPE_SCREEN
 
@@ -511,6 +537,12 @@ sealed class ActionData : Comparable<ActionData> {
         val fingerCount: Int,
         val duration: Int,
         val description: String?,
+        /**
+         * The display size that the coordinates and distance were picked for. See issue #2217. This
+         * is null for actions that were created before the resolution was saved and those are never
+         * scaled.
+         */
+        val screenResolution: SizeKM? = null,
     ) : ActionData() {
         override val id = ActionId.PINCH_SCREEN
 

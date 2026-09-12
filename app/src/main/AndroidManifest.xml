@@ -10,6 +10,20 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <!--
+        Requested only in this FOSS build. Android TV has no usable file picker
+        (system SAF/share intents resolve to fake stub activities that always
+        fail — see HomeKeyMapListScreen.kt's import/export handling), so
+        importing a backup requires browsing Downloads directly. Google Play
+        restricts MANAGE_EXTERNAL_STORAGE to file-manager apps, but Android TV
+        users overwhelmingly sideload this FOSS build rather than installing
+        from Play, so it's safe to request here. Do not add this to the Play
+        Store (app/) manifest.
+    -->
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
     <!--  This is required because sysbridge has a min sdk of 29 since it depends
       on the binder-ndk library. Building will fail without this because the min sdk
       of the app is 26.-->

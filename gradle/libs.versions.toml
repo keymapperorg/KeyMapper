@@ -1,10 +1,10 @@
 [versions]
-compile-sdk = "36"
+compile-sdk = "37"
 min-sdk = "26"
-build-tools = "36.1.0"
-target-sdk = "36"
+build-tools = "37.0.0"
+target-sdk = "37"
 
-android-gradle-plugin = "8.13.2"
+android-gradle-plugin = "9.2.1"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
@@ -20,11 +20,11 @@ androidx-lifecycle = "2.9.0"
 androidx-lifecycle-extensions = "2.2.0" # Note: lifecycle-extensions is deprecated
 androidx-multidex = "2.0.1"
 androidx-navigation = "2.9.6" # App level nav_version
-androidx-navigation-safeargs-gradle-plugin = "2.6.0" # Project level nav_version
+androidx-navigation-safeargs-gradle-plugin = "2.9.6" # Project level nav_version
 androidx-preference-ktx = "1.2.1"
 androidx-recyclerview = "1.4.0"
 androidx-room = "2.7.1" # room_version for dependencies
-androidx-room-gradle-plugin = "2.6.1" # For plugin
+androidx-room-gradle-plugin = "2.7.2" # For plugin
 androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
 
@@ -40,19 +40,20 @@ flexbox = "3.0.0"
 google-accompanist-drawablepainter = "0.35.0-alpha"
 hiddenapibypass = "4.3"
 introshowcaseview = "2.0.2"
-conscrypt-android = "2.5.3"
+# Needs to be 2.6 for 16KB alignment
+conscrypt-android = "2.6.3"
 boringssl-ndk = "20250114"
 bouncycastle-bcpkix = "1.70"
 rikkax-core = "1.4.1"
 junit = "4.13.2"
 junit-params = "1.1.1"
 
-kotlin = "2.1.0"
+kotlin = "2.2.10"
 kotlin-serialization-json = "1.8.0"
 coroutines = "1.9.0"
 
 kotson = "2.5.0"
-ksp-gradle-plugin = "2.1.0-1.0.28"
+ksp-gradle-plugin = "2.3.2"
 ktlint-gradle = "13.1.0"
 #leakcanary = "2.6" # Commented out in original file
 lingala-zip4j = "2.8.0"
@@ -65,7 +66,8 @@ mockito-inline = "5.2.0"
 mockito-kotlin = "4.0.0"
 
 okhttp = "4.12.0"
-robolectric = "4.14.1"
+# Need the beta for SDK 37 support
+robolectric = "4.17-beta-4"
 shizuku = "13.1.5"
 splitties = "3.0.0"
 storage-anggrayudi = "0.8.1"
@@ -77,7 +79,7 @@ ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 libsu-core = "6.0.0"
 rikka-hidden = "4.4.0"
 
-rust-android-gradle = "0.9.6"
+rust-android-gradle = "0.10.0"
 
 [libraries]
 # Kotlin

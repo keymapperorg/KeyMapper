@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.PinchScreenType
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.getKey
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -129,7 +130,12 @@ object ActionDataEntityMapper {
                 val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
                     .valueOrNull()
 
-                ActionData.TapScreen(x = x, y = y, description = description)
+                ActionData.TapScreen(
+                    x = x,
+                    y = y,
+                    description = description,
+                    screenResolution = getScreenResolution(entity),
+                )
             }
 
             ActionId.SWIPE_SCREEN -> {
@@ -176,6 +182,7 @@ object ActionDataEntityMapper {
                     fingerCount = fingerCount,
                     duration = duration,
                     description = description,
+                    screenResolution = getScreenResolution(entity),
                 )
             }
 
@@ -230,6 +237,7 @@ object ActionDataEntityMapper {
                     fingerCount = fingerCount,
                     duration = duration,
                     description = description,
+                    screenResolution = getScreenResolution(entity),
                 )
             }
 
@@ -436,6 +444,10 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
 
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
+
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Pause(packageName)
@@ -462,10 +474,10 @@ object ActionDataEntityMapper {
                         ActionData.ControlMediaForApp.Stop(packageName)
 
                     ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName)
+                        ActionData.ControlMediaForApp.StepForward(packageName, stepDurationMs)
 
                     ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName)
+                        ActionData.ControlMediaForApp.StepBackward(packageName, stepDurationMs)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -587,9 +599,21 @@ object ActionDataEntityMapper {
 
             ActionId.STOP_MEDIA -> ActionData.ControlMedia.Stop
 
-            ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward
+            ActionId.STEP_FORWARD -> {
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
 
-            ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward
+                ActionData.ControlMedia.StepForward(stepDurationMs)
+            }
+
+            ActionId.STEP_BACKWARD -> {
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
+
+                ActionData.ControlMedia.StepBackward(stepDurationMs)
+            }
 
             ActionId.GO_BACK -> ActionData.GoBack
 
@@ -618,6 +642,8 @@ object ActionDataEntityMapper {
             ActionId.SHOW_KEYBOARD_PICKER -> ActionData.ShowKeyboardPicker
 
             ActionId.PERFORM_IME_ACTION -> ActionData.PerformImeAction
+
+            ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionData.CycleKeyboardLanguage
 
             ActionId.TEXT_CUT -> ActionData.CutText
 
@@ -918,6 +944,38 @@ object ActionDataEntityMapper {
         KMError.Exception(e)
     }
 
+    /**
+     * The display size that the coordinates of a tap, swipe or pinch screen action were picked for.
+     * See issue #2217. This is null for actions created before the resolution was saved, and for
+     * anything that can not be parsed, so that a broken value never stops the action loading.
+     */
+    private fun getScreenResolution(entity: ActionEntity): SizeKM? {
+        val extraValue = entity.extras.getData(ActionEntity.EXTRA_SCREEN_RESOLUTION).valueOrNull()
+            ?: return null
+
+        val split = extraValue.split(',')
+
+        if (split.size != 2) {
+            return null
+        }
+
+        val width = split[0].trim().toIntOrNull() ?: return null
+        val height = split[1].trim().toIntOrNull() ?: return null
+
+        if (width <= 0 || height <= 0) {
+            return null
+        }
+
+        return SizeKM(width = width, height = height)
+    }
+
+    private fun createScreenResolutionExtra(screenResolution: SizeKM): EntityExtra {
+        return EntityExtra(
+            ActionEntity.EXTRA_SCREEN_RESOLUTION,
+            "${screenResolution.width},${screenResolution.height}",
+        )
+    }
+
     fun toEntity(data: ActionData): ActionEntity {
         val type = when (data) {
             is ActionData.Intent -> ActionEntity.Type.INTENT
@@ -1105,9 +1163,35 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
         )
 
+        is ActionData.ControlMediaForApp.StepForward -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName))
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
+        is ActionData.ControlMediaForApp.StepBackward -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName))
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
         is ActionData.ControlMediaForApp -> listOf(
             EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
         )
+
+        is ActionData.ControlMedia.StepForward -> buildList {
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
+        is ActionData.ControlMedia.StepBackward -> buildList {
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
 
         is ActionData.Rotation.CycleRotations -> listOf(
             EntityExtra(
@@ -1202,17 +1286,29 @@ object ActionDataEntityMapper {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
+            }
         }.toList()
 
         is ActionData.SwipeScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
             }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
+            }
         }.toList()
 
         is ActionData.PinchScreen -> sequence {
             if (!data.description.isNullOrBlank()) {
                 yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+            }
+
+            if (data.screenResolution != null) {
+                yield(createScreenResolutionExtra(data.screenResolution))
             }
         }.toList()
 
@@ -1503,6 +1599,7 @@ object ActionDataEntityMapper {
         ActionId.SELECT_ALL_TEXT to "select_all_text",
 
         ActionId.SWITCH_KEYBOARD to "switch_keyboard",
+        ActionId.CYCLE_KEYBOARD_LANGUAGE to "cycle_keyboard_language",
 
         ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
         ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",

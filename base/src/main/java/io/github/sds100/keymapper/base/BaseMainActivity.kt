@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base
 
+import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,6 +9,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
@@ -276,9 +278,27 @@ abstract class BaseMainActivity : AppCompatActivity() {
         val fileUri =
             IntentCompat.getParcelableExtra(intent, EXTRA_FILE_URI, Uri::class.java) ?: return
 
+        saveFileToUserChosenLocation(fileUri)
+    }
+
+    /**
+     * Let the user pick a location to save [fileUri] to using the system document picker.
+     * This is used as a fallback for exporting when there is no app installed that can
+     * receive a shared file, for example on Android TV.
+     */
+    fun saveFileToUserChosenLocation(fileUri: Uri) {
         val fileName = fileUri.toDocumentFile(this@BaseMainActivity)?.name ?: return
 
         originalFileUri = fileUri
-        saveFileLauncher.launch(fileName)
+
+        try {
+            saveFileLauncher.launch(fileName)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(
+                this,
+                R.string.dialog_message_no_app_found_to_create_file,
+                Toast.LENGTH_LONG,
+            ).show()
+        }
     }
 }

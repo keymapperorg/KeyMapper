@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.backup.ImportExportState
@@ -75,6 +76,7 @@ import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +94,7 @@ fun HomeKeyMapListScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val importFileLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             uri ?: return@rememberLauncherForActivityResult
 
             viewModel.onChooseImportFile(uri.toString())
@@ -105,6 +107,8 @@ fun HomeKeyMapListScreen(
         snackbarState = snackbarState,
         setIdleState = viewModel::setImportExportIdle,
         onConfirmImport = viewModel::onConfirmImport,
+        onChooseImportFile = viewModel::onChooseImportFile,
+        onRequestFullFileAccessClick = viewModel::onRequestFullFileAccessClick,
     )
 
     if (viewModel.showSortBottomSheet) {
@@ -161,6 +165,7 @@ fun HomeKeyMapListScreen(
     val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
+    val lazyListState = rememberLazyListState()
 
     HomeKeyMapListScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -185,8 +190,22 @@ fun HomeKeyMapListScreen(
         listContent = {
             KeyMapList(
                 modifier = Modifier.animateContentSize(),
-                lazyListState = rememberLazyListState(),
+                lazyListState = lazyListState,
                 listItems = state.listItems,
+                header = {
+                    KeyMapListHeader(
+                        state = state.appBarState,
+                        scrollBehavior = scrollBehavior,
+                        onFixWarningClick = viewModel::onFixWarningClick,
+                        onNewGroupClick = viewModel::onNewGroupClick,
+                        onGroupClick = viewModel::onGroupClick,
+                        onNewConstraintClick = viewModel::onNewGroupConstraintClick,
+                        onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                        onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
+                        onFixConstraintClick = viewModel::onFixClick,
+                        onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
+                    )
+                },
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
                 isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
                 onClickKeyMap = viewModel::onKeyMapCardClick,
@@ -206,26 +225,24 @@ fun HomeKeyMapListScreen(
                 onSortClick = { viewModel.showSortBottomSheet = true },
                 onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 onExportClick = viewModel::onExportClick,
-                onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                onImportClick = {
+                    if (LeanbackUtils.isTvDevice(ctx)) {
+                        viewModel.onImportClick()
+                    } else {
+                        importFileLauncher.launch(arrayOf(FileUtils.MIME_TYPE_ALL))
+                    }
+                },
                 onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
-                onFixWarningClick = viewModel::onFixWarningClick,
                 onBackClick = {
                     if (!viewModel.onBackClick()) {
                         finishActivity()
                     }
                 },
                 onSelectAllClick = viewModel::onSelectAllClick,
-                onNewGroupClick = viewModel::onNewGroupClick,
                 onRenameGroupClick = viewModel::onRenameGroupClick,
                 onEditGroupNameClick = viewModel::onEditGroupNameClick,
-                onGroupClick = viewModel::onGroupClick,
                 onDeleteGroupClick = viewModel::onDeleteGroupClick,
-                onNewConstraintClick = viewModel::onNewGroupConstraintClick,
-                onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
-                onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
-                onFixConstraintClick = viewModel::onFixClick,
-                onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                 onReportBugClick = {
                     showBugReportDialog = true
                 },
@@ -249,8 +266,8 @@ fun HomeKeyMapListScreen(
 
                 SelectionBottomSheet(
                     modifier = Modifier.onSizeChanged { size ->
-                        keyMapListBottomPadding =
-                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+//                        keyMapListBottomPadding =
+//                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
                     },
                     enabled = selectionState.selectionCount > 0,
                     groups = selectionState.groups,
@@ -300,6 +317,8 @@ fun HandleImportExportState(
     snackbarState: SnackbarHostState,
     setIdleState: () -> Unit,
     onConfirmImport: (RestoreType) -> Unit,
+    onChooseImportFile: (String) -> Unit = {},
+    onRequestFullFileAccessClick: () -> Unit = {},
 ) {
     when (val state = state) {
         is ImportExportState.Error -> {
@@ -327,14 +346,43 @@ fun HandleImportExportState(
 
         is ImportExportState.FinishedExport -> {
             snackbarState.currentSnackbarData?.dismiss()
-            LocalActivity.current?.let {
-                ShareUtils.shareFile(
-                    it,
+            LocalActivity.current?.let { activity ->
+                val shared = ShareUtils.shareFile(
+                    activity,
                     state.uri.toUri(),
                     packageName = LocalContext.current.packageName,
                 )
+
+                // Fall back to a direct file picker if there is no app installed that
+                // can receive a shared file, for example on Android TV.
+                if (!shared) {
+                    (activity as? BaseMainActivity)?.saveFileToUserChosenLocation(
+                        state.uri.toUri(),
+                    )
+                }
             }
             setIdleState()
+        }
+
+        is ImportExportState.FinishedExportToDownloads -> {
+            val text =
+                stringResource(R.string.home_export_finished_downloads_snackbar, state.fileName)
+            LaunchedEffect(state) {
+                snackbarState.currentSnackbarData?.dismiss()
+                snackbarState.showSnackbar(text, duration = SnackbarDuration.Short)
+                setIdleState()
+            }
+        }
+
+        is ImportExportState.ChooseImportFileFromDownloads -> {
+            snackbarState.currentSnackbarData?.dismiss()
+            BackupFilePickerDialog(
+                files = state.files,
+                canRequestFullAccess = state.canRequestFullAccess,
+                onFileClick = onChooseImportFile,
+                onRequestFullAccessClick = onRequestFullFileAccessClick,
+                onDismissRequest = setIdleState,
+            )
         }
 
         is ImportExportState.FinishedImport -> {
@@ -578,6 +626,7 @@ private fun PreviewSelectingKeyMaps() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 4),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = true,
                 )
@@ -621,6 +670,7 @@ private fun PreviewKeyMapsRunning() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -657,6 +707,7 @@ private fun PreviewKeyMapsPaused() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -712,6 +763,7 @@ private fun PreviewKeyMapsWarnings() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -759,6 +811,45 @@ private fun PreviewKeyMapsWarningsEmpty() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = false,
+
+                )
+            },
+            appBarContent = {
+                KeyMapListAppBar(state = appBarState)
+            },
+            selectionBottomSheet = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(device = Devices.PIXEL)
+@Composable
+private fun PreviewKeyMapsLoading() {
+    val appBarState = KeyMapAppBarState.RootGroup(
+        subGroups = emptyList(),
+        warnings = emptyList(),
+        isPaused = true,
+    )
+
+    val listState = State.Loading
+
+    KeyMapperTheme {
+        HomeKeyMapListScreen(
+            floatingActionButton = {
+                CollapsableFloatingActionButton(
+                    showText = true,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                )
+            },
+            listContent = {
+                KeyMapList(
+                    lazyListState = rememberLazyListState(),
+                    listItems = listState,
+                    header = { KeyMapListHeader(state = appBarState) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )

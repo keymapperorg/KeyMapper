@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.expertmode
 
 import android.app.ActivityManager
-import android.graphics.Rect
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -12,14 +11,15 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupAssistantController.Companion.PAIRING_CODE_BUTTON_STRING_RES_NAMES
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
+import io.github.sds100.keymapper.base.system.accessibility.findActionTarget
 import io.github.sds100.keymapper.base.system.accessibility.findNodeRecursively
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
-import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.data.Keys
@@ -75,6 +75,22 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
             )
 
+        private const val SETTINGS_PACKAGE = "com.android.settings"
+
+        /**
+         * The names of the string resources in the Settings app for the button that
+         * starts pairing with a code. Reading them from the Settings app means this
+         * works in every language.
+         */
+        private val PAIRING_CODE_BUTTON_STRING_RES_NAMES = arrayOf(
+            "adb_pair_method_code_title",
+            "adb_pair_method_code_summary",
+        )
+
+        /**
+         * A fallback for when the Settings app on this device doesn't have the
+         * resources in [PAIRING_CODE_BUTTON_STRING_RES_NAMES].
+         */
         private val PAIRING_CODE_BUTTON_TEXT_FILTER = arrayOf(
             "six-digit code", // English
             "six digit code", // English
@@ -113,6 +129,15 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     // Store the pairing code so only one request to pair is sent per pairing code.
     private var foundPairingCode: String? = null
+
+    /**
+     * The text on the button that starts pairing with a code. Read the strings from the
+     * Settings app itself so this works in every language, and fall back to a hardcoded
+     * list of translations if this device doesn't have those resources.
+     */
+    private val pairingCodeButtonTextFilter: List<String> by lazy {
+        getPairingCodeButtonStrings()
+    }
 
     fun onServiceConnected() {
         coroutineScope.launch {
@@ -163,7 +188,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             val step = interactionStep ?: return
             val rootNode = accessibilityService.rootInActiveWindow ?: return
 
-            if (rootNode.packageName != "com.android.settings") {
+            if (rootNode.packageName != SETTINGS_PACKAGE) {
                 return
             }
 
@@ -250,21 +275,25 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
-        // This works more maintainable/adaptable then traversing the tree
-        // and trying to find the clickable node. This can change subtly between
-        // Android devices and ROMs.
         val textNode = rootNode.findNodeRecursively { node ->
-            PAIRING_CODE_BUTTON_TEXT_FILTER.any { text -> node.text?.contains(text) == true }
+            pairingCodeButtonTextFilter.any { text -> node.text?.contains(text) == true }
         } ?: return
 
-        val bounds = Rect()
-        textNode.getBoundsInScreen(bounds)
+        // The node with the text is almost never the node that handles the click. It is
+        // usually a child of the row that handles it, and on some ROMs the clickable node
+        // is a sibling covering the same place on screen. Resolving the node by its
+        // position is more maintainable than assuming where it is in the tree because
+        // that can change subtly between Android devices and ROMs.
+        val targetNode =
+            textNode.findActionTarget(action = AccessibilityNodeInfo.ACTION_CLICK)
 
-        accessibilityService.tapScreen(
-            bounds.centerX(),
-            bounds.centerY(),
-            InputEventAction.DOWN_UP,
-        )
+        if (targetNode == null) {
+            Timber.w("Found the pair with code text but no node that can click it.")
+            return
+        }
+
+        val success = targetNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        Timber.i("Clicked the pair with code button: $success")
     }
 
     private fun showNotification(
@@ -392,10 +421,34 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
             ?.firstOrNull {
-                it.taskInfo.topActivity?.className ==
+                it.taskInfo?.topActivity?.className ==
                     keyMapperClassProvider.getMainActivity().name
             }
 
         return task
+    }
+
+    private fun getPairingCodeButtonStrings(): List<String> {
+        val stringsFromSettings = try {
+            val resources = accessibilityService.packageManager
+                .getResourcesForApplication(SETTINGS_PACKAGE)
+
+            PAIRING_CODE_BUTTON_STRING_RES_NAMES.mapNotNull { name ->
+                val id = resources.getIdentifier(name, "string", SETTINGS_PACKAGE)
+
+                if (id == 0) {
+                    null
+                } else {
+                    resources.getString(id).takeIf { it.isNotBlank() }
+                }
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to read the pairing strings from $SETTINGS_PACKAGE")
+            emptyList()
+        }
+
+        Timber.d("Pairing button strings from Settings: $stringsFromSettings")
+
+        return stringsFromSettings + PAIRING_CODE_BUTTON_TEXT_FILTER
     }
 }

@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.groups
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.Add
@@ -31,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,103 +53,99 @@ fun GroupConstraintRow(
     onFixConstraintClick: (KMError) -> Unit = {},
     enabled: Boolean = true,
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val maxChipWidth = LocalDensity.current.run {
-            (this@BoxWithConstraints.constraints.maxWidth / 2).toDp()
-        }
+    val maxChipWidth = 300.dp
 
-        FlowRow(
-            Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            itemVerticalAlignment = Alignment.CenterVertically,
-        ) {
-            for ((index, constraint) in constraints.withIndex()) {
-                when (constraint) {
-                    is ComposeChipModel.Normal ->
-                        CompositionLocalProvider(
-                            LocalContentColor provides MaterialTheme.colorScheme.onSurface,
-                        ) {
-                            ConstraintButton(
-                                modifier = Modifier.widthIn(max = maxChipWidth),
-                                text = constraint.text,
-                                onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                                // Only allow clicking on error chips
-                                enabled = enabled,
-                                icon = {
-                                    if (constraint.icon is ComposeIconInfo.Vector) {
-                                        Icon(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .padding(end = 8.dp),
-                                            imageVector = constraint.icon.imageVector,
-                                            contentDescription = null,
-                                        )
-                                    } else if (constraint.icon is ComposeIconInfo.Drawable) {
-                                        Icon(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .padding(end = 8.dp),
-                                            painter = rememberDrawablePainter(
-                                                constraint.icon.drawable,
-                                            ),
-                                            contentDescription = null,
-                                            tint = Color.Unspecified,
-                                        )
-                                    }
-                                },
-                            )
-                        }
-
-                    is ComposeChipModel.Error ->
-                        CompositionLocalProvider(
-                            LocalContentColor provides MaterialTheme.colorScheme.onErrorContainer,
-                        ) {
-                            ConstraintErrorButton(
-                                modifier = Modifier.widthIn(max = maxChipWidth),
-                                text = constraint.text,
-                                onClick = { onFixConstraintClick(constraint.error) },
-                                onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                                // Only allow clicking on error chips
-                                enabled = enabled,
-                            )
-                        }
-                }
-
-                if (index < constraints.lastIndex) {
-                    when (mode) {
-                        ConstraintMode.AND -> Text(
-                            text = stringResource(R.string.constraint_mode_and),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-
-                        ConstraintMode.OR -> Text(
-                            text = stringResource(R.string.constraint_mode_or),
-                            style = MaterialTheme.typography.labelMedium,
+    FlowRow(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
+    ) {
+        for ((index, constraint) in constraints.withIndex()) {
+            when (constraint) {
+                is ComposeChipModel.Normal ->
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+                    ) {
+                        ConstraintButton(
+                            modifier = Modifier.widthIn(max = maxChipWidth),
+                            text = constraint.text,
+                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            // Only allow clicking on error chips
+                            enabled = enabled,
+                            icon = {
+                                if (constraint.icon is ComposeIconInfo.Vector) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp),
+                                        imageVector = constraint.icon.imageVector,
+                                        contentDescription = null,
+                                    )
+                                } else if (constraint.icon is ComposeIconInfo.Drawable) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp),
+                                        painter = rememberDrawablePainter(
+                                            constraint.icon.drawable,
+                                        ),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified,
+                                    )
+                                }
+                            },
                         )
                     }
+
+                is ComposeChipModel.Error ->
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onErrorContainer,
+                    ) {
+                        ConstraintErrorButton(
+                            modifier = Modifier.widthIn(max = maxChipWidth),
+                            text = constraint.text,
+                            onClick = { onFixConstraintClick(constraint.error) },
+                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            // Only allow clicking on error chips
+                            enabled = enabled,
+                        )
+                    }
+            }
+
+            if (index < constraints.lastIndex) {
+                when (mode) {
+                    ConstraintMode.AND -> Text(
+                        text = stringResource(R.string.constraint_mode_and),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+
+                    ConstraintMode.OR -> Text(
+                        text = stringResource(R.string.constraint_mode_or),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
                 }
             }
+        }
 
-            if (parentConstraintCount > 0) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp),
-                    text = pluralStringResource(
-                        R.plurals.home_groups_inherited_constraints,
-                        parentConstraintCount,
-                        parentConstraintCount,
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-
-            NewConstraintButton(
-                onClick = onNewConstraintClick,
-                showText = constraints.isEmpty(),
-                enabled = enabled,
+        if (parentConstraintCount > 0) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp),
+                text = pluralStringResource(
+                    R.plurals.home_groups_inherited_constraints,
+                    parentConstraintCount,
+                    parentConstraintCount,
+                ),
+                style = MaterialTheme.typography.labelMedium,
             )
         }
+
+        NewConstraintButton(
+            onClick = onNewConstraintClick,
+            showText = constraints.isEmpty(),
+            enabled = enabled,
+        )
     }
 }
 
