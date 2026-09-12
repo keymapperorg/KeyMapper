@@ -32,8 +32,8 @@ fun getDedicatedKeyCodeAction(keyCode: Int): ActionData? = when (keyCode) {
     KeyEvent.KEYCODE_MEDIA_STOP -> ActionData.ControlMedia.Stop
     KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> ActionData.ControlMedia.FastForward
     KeyEvent.KEYCODE_MEDIA_REWIND -> ActionData.ControlMedia.Rewind
-    KeyEvent.KEYCODE_MEDIA_STEP_FORWARD -> ActionData.ControlMedia.StepForward
-    KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD -> ActionData.ControlMedia.StepBackward
+    KeyEvent.KEYCODE_MEDIA_STEP_FORWARD -> ActionData.ControlMedia.StepForward()
+    KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD -> ActionData.ControlMedia.StepBackward()
     KeyEvent.KEYCODE_BRIGHTNESS_UP -> ActionData.Brightness.Increase
     KeyEvent.KEYCODE_BRIGHTNESS_DOWN -> ActionData.Brightness.Decrease
     KeyEvent.KEYCODE_VOICE_ASSIST -> ActionData.VoiceAssistant

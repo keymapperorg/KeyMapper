@@ -1047,12 +1047,21 @@
     <string name="action_stop_media_package_formatted">Stop media for %s</string>
 
     <string name="action_step_forward_media">Step media forward</string>
+    <string name="action_step_forward_media_with_duration">Step media forward (%ds)</string>
     <string name="action_step_forward_media_package">Step media forward for an app</string>
     <string name="action_step_forward_media_package_formatted">Step media forward for %s</string>
+    <string name="action_step_forward_media_package_with_duration_formatted">Step media forward for %1$s (%2$ds)</string>
 
     <string name="action_step_backward_media">Step media backward</string>
+    <string name="action_step_backward_media_with_duration">Step media backward (%ds)</string>
     <string name="action_step_backward_media_package">Step media backward for an app</string>
     <string name="action_step_backward_media_package_formatted">Step media backward for %s</string>
+    <string name="action_step_backward_media_package_with_duration_formatted">Step media backward for %1$s (%2$ds)</string>
+
+    <string name="action_step_media_duration_checkbox">Custom seek amount</string>
+    <string name="action_step_media_duration_label">Seek by</string>
+    <string name="action_step_media_duration_value">%d secs</string>
+    <string name="action_step_media_duration_not_supported_text">Not all apps support a custom seek amount. Some apps will use their own fixed skip duration instead.</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>

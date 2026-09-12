@@ -436,6 +436,10 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
 
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
+
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Pause(packageName)
@@ -462,10 +466,10 @@ object ActionDataEntityMapper {
                         ActionData.ControlMediaForApp.Stop(packageName)
 
                     ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName)
+                        ActionData.ControlMediaForApp.StepForward(packageName, stepDurationMs)
 
                     ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName)
+                        ActionData.ControlMediaForApp.StepBackward(packageName, stepDurationMs)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -587,9 +591,21 @@ object ActionDataEntityMapper {
 
             ActionId.STOP_MEDIA -> ActionData.ControlMedia.Stop
 
-            ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward
+            ActionId.STEP_FORWARD -> {
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
 
-            ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward
+                ActionData.ControlMedia.StepForward(stepDurationMs)
+            }
+
+            ActionId.STEP_BACKWARD -> {
+                val stepDurationMs = entity.extras.getData(
+                    ActionEntity.EXTRA_STEP_MEDIA_DURATION,
+                ).valueOrNull()?.toLongOrNull()
+
+                ActionData.ControlMedia.StepBackward(stepDurationMs)
+            }
 
             ActionId.GO_BACK -> ActionData.GoBack
 
@@ -1107,9 +1123,35 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
         )
 
+        is ActionData.ControlMediaForApp.StepForward -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName))
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
+        is ActionData.ControlMediaForApp.StepBackward -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName))
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
         is ActionData.ControlMediaForApp -> listOf(
             EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
         )
+
+        is ActionData.ControlMedia.StepForward -> buildList {
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
+        is ActionData.ControlMedia.StepBackward -> buildList {
+            data.stepDurationMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
 
         is ActionData.Rotation.CycleRotations -> listOf(
             EntityExtra(

@@ -207,39 +207,55 @@ class ActionUiHelper(
         is ActionData.ControlMediaForApp ->
             getAppName(action.packageName).handle(
                 onSuccess = { appName ->
-                    val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play ->
-                            R.string.action_play_media_package_formatted
+                    if (action is ActionData.ControlMediaForApp.StepForward &&
+                        action.stepDurationMs != null
+                    ) {
+                        getString(
+                            R.string.action_step_forward_media_package_with_duration_formatted,
+                            arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
+                        )
+                    } else if (action is ActionData.ControlMediaForApp.StepBackward &&
+                        action.stepDurationMs != null
+                    ) {
+                        getString(
+                            R.string.action_step_backward_media_package_with_duration_formatted,
+                            arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
+                        )
+                    } else {
+                        val resId = when (action) {
+                            is ActionData.ControlMediaForApp.Play ->
+                                R.string.action_play_media_package_formatted
 
-                        is ActionData.ControlMediaForApp.FastForward ->
-                            R.string.action_fast_forward_package_formatted
+                            is ActionData.ControlMediaForApp.FastForward ->
+                                R.string.action_fast_forward_package_formatted
 
-                        is ActionData.ControlMediaForApp.NextTrack ->
-                            R.string.action_next_track_package_formatted
+                            is ActionData.ControlMediaForApp.NextTrack ->
+                                R.string.action_next_track_package_formatted
 
-                        is ActionData.ControlMediaForApp.Pause ->
-                            R.string.action_pause_media_package_formatted
+                            is ActionData.ControlMediaForApp.Pause ->
+                                R.string.action_pause_media_package_formatted
 
-                        is ActionData.ControlMediaForApp.PlayPause ->
-                            R.string.action_play_pause_media_package_formatted
+                            is ActionData.ControlMediaForApp.PlayPause ->
+                                R.string.action_play_pause_media_package_formatted
 
-                        is ActionData.ControlMediaForApp.PreviousTrack ->
-                            R.string.action_previous_track_package_formatted
+                            is ActionData.ControlMediaForApp.PreviousTrack ->
+                                R.string.action_previous_track_package_formatted
 
-                        is ActionData.ControlMediaForApp.Rewind ->
-                            R.string.action_rewind_package_formatted
+                            is ActionData.ControlMediaForApp.Rewind ->
+                                R.string.action_rewind_package_formatted
 
-                        is ActionData.ControlMediaForApp.Stop ->
-                            R.string.action_stop_media_package_formatted
+                            is ActionData.ControlMediaForApp.Stop ->
+                                R.string.action_stop_media_package_formatted
 
-                        is ActionData.ControlMediaForApp.StepForward ->
-                            R.string.action_step_forward_media_package_formatted
+                            is ActionData.ControlMediaForApp.StepForward ->
+                                R.string.action_step_forward_media_package_formatted
 
-                        is ActionData.ControlMediaForApp.StepBackward ->
-                            R.string.action_step_backward_media_package_formatted
+                            is ActionData.ControlMediaForApp.StepBackward ->
+                                R.string.action_step_backward_media_package_formatted
+                        }
+
+                        getString(resId, appName)
                     }
-
-                    getString(resId, appName)
                 },
                 onError = {
                     val resId = when (action) {
@@ -528,9 +544,25 @@ class ActionUiHelper(
 
         ActionData.ControlMedia.Stop -> getString(R.string.action_stop_media)
 
-        ActionData.ControlMedia.StepForward -> getString(R.string.action_step_forward_media)
+        is ActionData.ControlMedia.StepForward ->
+            if (action.stepDurationMs != null) {
+                getString(
+                    R.string.action_step_forward_media_with_duration,
+                    (action.stepDurationMs / 1000).toInt(),
+                )
+            } else {
+                getString(R.string.action_step_forward_media)
+            }
 
-        ActionData.ControlMedia.StepBackward -> getString(R.string.action_step_backward_media)
+        is ActionData.ControlMedia.StepBackward ->
+            if (action.stepDurationMs != null) {
+                getString(
+                    R.string.action_step_backward_media_with_duration,
+                    (action.stepDurationMs / 1000).toInt(),
+                )
+            } else {
+                getString(R.string.action_step_backward_media)
+            }
 
         ActionData.CopyText -> getString(R.string.action_text_copy)
 

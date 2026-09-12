@@ -69,6 +69,7 @@ class CreateActionDelegate(
     var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
         by mutableStateOf(null)
     var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
+    var stepMediaActionBottomSheetState: StepMediaActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -388,6 +389,39 @@ class CreateActionDelegate(
         actionResult.update { action }
     }
 
+    fun onStepMediaDurationEnabledChange(enabled: Boolean) {
+        stepMediaActionBottomSheetState =
+            stepMediaActionBottomSheetState?.copy(durationEnabled = enabled)
+    }
+
+    fun onStepMediaDurationChange(durationSeconds: Int) {
+        stepMediaActionBottomSheetState =
+            stepMediaActionBottomSheetState?.copy(durationSeconds = durationSeconds)
+    }
+
+    fun onDoneStepMediaClick() {
+        val state = stepMediaActionBottomSheetState ?: return
+
+        val durationMs = if (state.durationEnabled) {
+            state.durationSeconds * 1000L
+        } else {
+            null
+        }
+
+        val action = when (state.actionId) {
+            ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward(durationMs)
+            ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward(durationMs)
+            ActionId.STEP_FORWARD_PACKAGE ->
+                ActionData.ControlMediaForApp.StepForward(state.packageName!!, durationMs)
+            ActionId.STEP_BACKWARD_PACKAGE ->
+                ActionData.ControlMediaForApp.StepBackward(state.packageName!!, durationMs)
+            else -> throw Exception("don't know how to create action for ${state.actionId}")
+        }
+
+        stepMediaActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
     fun onRequestNotificationPermissionClick() {
         useCase.requestPermission(Permission.POST_NOTIFICATIONS)
     }
@@ -431,8 +465,6 @@ class CreateActionDelegate(
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
-            ActionId.STEP_FORWARD_PACKAGE,
-            ActionId.STEP_BACKWARD_PACKAGE,
                 -> {
                 val packageName =
                     navigate(
@@ -465,16 +497,35 @@ class CreateActionDelegate(
                     ActionId.STOP_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Stop(packageName)
 
-                    ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName)
-
-                    ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName)
-
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
 
                 return action
+            }
+
+            ActionId.STEP_FORWARD_PACKAGE,
+            ActionId.STEP_BACKWARD_PACKAGE,
+                -> {
+                val packageName =
+                    navigate(
+                        "choose_app_for_media_action",
+                        NavDestination.ChooseApp(allowHiddenApps = true),
+                    ) ?: return null
+
+                val oldStepDurationMs = when (oldData) {
+                    is ActionData.ControlMediaForApp.StepForward -> oldData.stepDurationMs
+                    is ActionData.ControlMediaForApp.StepBackward -> oldData.stepDurationMs
+                    else -> null
+                }
+
+                stepMediaActionBottomSheetState = StepMediaActionBottomSheetState(
+                    actionId = actionId,
+                    packageName = packageName,
+                    durationEnabled = oldStepDurationMs != null,
+                    durationSeconds = ((oldStepDurationMs ?: 30000L) / 1000).toInt(),
+                )
+
+                return null
             }
 
             ActionId.VOLUME_UP -> {
@@ -1067,9 +1118,23 @@ class CreateActionDelegate(
 
             ActionId.STOP_MEDIA -> return ActionData.ControlMedia.Stop
 
-            ActionId.STEP_FORWARD -> return ActionData.ControlMedia.StepForward
+            ActionId.STEP_FORWARD,
+            ActionId.STEP_BACKWARD,
+                -> {
+                val oldStepDurationMs = when (oldData) {
+                    is ActionData.ControlMedia.StepForward -> oldData.stepDurationMs
+                    is ActionData.ControlMedia.StepBackward -> oldData.stepDurationMs
+                    else -> null
+                }
 
-            ActionId.STEP_BACKWARD -> return ActionData.ControlMedia.StepBackward
+                stepMediaActionBottomSheetState = StepMediaActionBottomSheetState(
+                    actionId = actionId,
+                    durationEnabled = oldStepDurationMs != null,
+                    durationSeconds = ((oldStepDurationMs ?: 30000L) / 1000).toInt(),
+                )
+
+                return null
+            }
 
             ActionId.GO_BACK -> return ActionData.GoBack
 

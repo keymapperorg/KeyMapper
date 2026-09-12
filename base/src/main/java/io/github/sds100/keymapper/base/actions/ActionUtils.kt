@@ -33,11 +33,12 @@ import androidx.compose.material.icons.outlined.FastForward
 import androidx.compose.material.icons.outlined.FastRewind
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
-import androidx.compose.material.icons.outlined.Forward30
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Lock
@@ -52,7 +53,6 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
-import androidx.compose.material.icons.outlined.Replay30
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.SelectAll
@@ -1032,10 +1032,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> Icons.Outlined.FastRewind
         ActionId.STOP_MEDIA -> Icons.Outlined.StopCircle
         ActionId.STOP_MEDIA_PACKAGE -> Icons.Outlined.StopCircle
-        ActionId.STEP_FORWARD -> Icons.Outlined.Forward30
-        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.Forward30
-        ActionId.STEP_BACKWARD -> Icons.Outlined.Replay30
-        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.Replay30
+        ActionId.STEP_FORWARD -> Icons.Outlined.KeyboardDoubleArrowRight
+        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.KeyboardDoubleArrowRight
+        ActionId.STEP_BACKWARD -> Icons.Outlined.KeyboardDoubleArrowLeft
+        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.KeyboardDoubleArrowLeft
         ActionId.GO_BACK -> Icons.AutoMirrored.Outlined.ArrowBack
         ActionId.GO_HOME -> Icons.Outlined.Home
         ActionId.OPEN_RECENTS -> Icons.Outlined.ViewArray
@@ -1129,6 +1129,8 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Sound,
     is ActionData.SwitchKeyboard,
     is ActionData.ControlMediaForApp,
+    is ActionData.ControlMedia.StepForward,
+    is ActionData.ControlMedia.StepBackward,
     is ActionData.Volume.Up,
     is ActionData.Volume.Down,
     is ActionData.Volume.Mute,
