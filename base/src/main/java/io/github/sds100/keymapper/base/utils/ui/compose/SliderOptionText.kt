@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.utils.ui.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -86,6 +87,9 @@ fun SliderOptionText(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             val interactionSource = remember { MutableInteractionSource() }
+
+            val isDragged: Boolean by interactionSource.collectIsDraggedAsState()
+
             Slider(
                 modifier = Modifier.weight(1f),
                 value = value,
@@ -104,7 +108,8 @@ fun SliderOptionText(
             Spacer(modifier = Modifier.width(8.dp))
 
             ElevatedButton(onClick = { showDialog = true }) {
-                val text = if (value == defaultValue) {
+                // Do not show the text when dragging because it popping in/out moves the slider
+                val text = if (value == defaultValue && !isDragged) {
                     stringResource(R.string.slider_default_button, valueText(value))
                 } else {
                     valueText(value)
@@ -113,7 +118,9 @@ fun SliderOptionText(
                 Text(text)
             }
 
-            AnimatedVisibility(visible = value != defaultValue) {
+            // Always show the reset button because it popping in/out when dragging over
+            // the default value causes the slider to change size and jiggle.
+            AnimatedVisibility(visible = value != defaultValue || isDragged) {
                 IconButton(onClick = { onValueChange(defaultValue) }) {
                     Icon(
                         Icons.Rounded.RestartAlt,
