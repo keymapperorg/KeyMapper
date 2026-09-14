@@ -715,7 +715,7 @@ private fun ListPreview() {
     KeyMapperTheme {
         KeyMapList(
             modifier = Modifier.fillMaxSize(),
-            listItems = State.Data(sampleList()),
+            listItems = State.Data(sameKeyMapListItems()),
             bottomListPadding = 100.dp,
         )
     }
@@ -727,7 +727,7 @@ private fun SelectableListPreview() {
     KeyMapperTheme {
         KeyMapList(
             modifier = Modifier.fillMaxSize(),
-            listItems = State.Data(sampleList()),
+            listItems = State.Data(sameKeyMapListItems()),
             isSelectable = true,
             bottomListPadding = 100.dp,
         )

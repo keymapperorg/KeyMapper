@@ -59,6 +59,7 @@ fun KeyMapListHeader(
     modifier: Modifier = Modifier,
     state: KeyMapAppBarState,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+    extraContent: @Composable () -> Unit,
     onFixWarningClick: (String) -> Unit = {},
     onNewGroupClick: () -> Unit = {},
     onGroupClick: (String?) -> Unit = {},
@@ -94,6 +95,7 @@ fun KeyMapListHeader(
         is KeyMapAppBarState.RootGroup -> RootGroupHeader(
             modifier = modifier.fillMaxWidth(),
             state = state,
+            extraContent = extraContent,
             containerColor = appBarContainerColor,
             onFixWarningClick = onFixWarningClick,
             onNewGroupClick = onNewGroupClick,
@@ -122,24 +124,25 @@ private fun RootGroupHeader(
     modifier: Modifier = Modifier,
     state: KeyMapAppBarState.RootGroup,
     containerColor: Color,
+    extraContent: @Composable () -> Unit,
     onFixWarningClick: (String) -> Unit,
     onNewGroupClick: () -> Unit,
     onGroupClick: (String) -> Unit,
 ) {
-    Column(modifier) {
-        AnimatedVisibility(visible = state.warnings.isNotEmpty()) {
-            // Use separate Surfaces so the animation doesn't jump when they both disappear
-            // going into selection mode.
-            Surface(color = containerColor) {
+    Surface(modifier = modifier, color = containerColor) {
+        Column {
+            AnimatedVisibility(visible = state.warnings.isNotEmpty()) {
+                // Use separate Surfaces so the animation doesn't jump when they both disappear
+                // going into selection mode.
                 HomeWarningList(
                     modifier = Modifier.padding(bottom = 8.dp),
                     warnings = state.warnings,
                     onFixClick = onFixWarningClick,
                 )
             }
-        }
 
-        Surface(color = containerColor) {
+            extraContent()
+
             GroupRow(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -348,7 +351,7 @@ private fun RootGroupHeaderPreview() {
 
     KeyMapperTheme {
         Surface {
-            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state)
+            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state, extraContent = {})
         }
     }
 }
@@ -365,7 +368,7 @@ private fun RootGroupHeaderNoWarningsPreview() {
 
     KeyMapperTheme(darkTheme = true) {
         Surface {
-            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state)
+            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state, extraContent = {})
         }
     }
 }
@@ -388,7 +391,7 @@ private fun ChildGroupHeaderPreview() {
 
     KeyMapperTheme {
         Surface {
-            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state)
+            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state, extraContent = {})
         }
     }
 }
@@ -411,7 +414,7 @@ private fun ChildGroupHeaderDarkPreview() {
 
     KeyMapperTheme(darkTheme = true) {
         Surface {
-            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state)
+            KeyMapListHeader(modifier = Modifier.fillMaxWidth(), state = state, extraContent = {})
         }
     }
 }

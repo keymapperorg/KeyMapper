@@ -168,4 +168,6 @@ object Keys {
 
     val handledMigrateScreenOffKeyMapsNotification =
         booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")
+
+    val dismissedGamingModePromo = booleanPreferencesKey("pref_dismissed_gaming_mode_promo")
 }
