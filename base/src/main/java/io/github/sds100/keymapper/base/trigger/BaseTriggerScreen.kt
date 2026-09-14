@@ -229,12 +229,8 @@ private fun TriggerScreenVertical(
 
             when (configState) {
                 is ConfigTriggerState.Empty -> {
-                    Column {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp),
-                        ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(modifier = Modifier.weight(1f)) {
                             discoverScreenContent()
                         }
 
@@ -250,8 +246,6 @@ private fun TriggerScreenVertical(
                 }
 
                 is ConfigTriggerState.Loaded -> {
-                    Spacer(Modifier.height(8.dp))
-
                     tipContent()
 
                     TriggerList(

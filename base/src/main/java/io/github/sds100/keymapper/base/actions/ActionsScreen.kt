@@ -155,7 +155,6 @@ private fun ActionsScreen(
 
         is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
             Column {
-                Spacer(Modifier.height(8.dp))
                 ActionList(
                     modifier = Modifier.weight(1f),
                     state = state.data,
