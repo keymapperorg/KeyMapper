@@ -152,6 +152,7 @@ class MainFragment : Fragment() {
                     requireActivity().finish()
                 },
                 fabBottomPadding = 0.dp,
+                headerExtraContent = {},
             )
         }
 
