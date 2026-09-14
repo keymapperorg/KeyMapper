@@ -26,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
@@ -51,6 +50,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpertModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.filledTonalButtonColorsError
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +69,7 @@ fun FixKeyEventActionBottomSheet(
     onDoneClick: () -> Unit = {},
     onAutoSwitchImeCheckedChange: (Boolean) -> Unit = {},
 ) {
-    ModalBottomSheet(
+    KeyMapperModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
