@@ -449,4 +449,12 @@ class AndroidPackageManagerAdapter @Inject constructor(
     override fun getInstallSourcePackageName(): String? {
         return packageManager.getInstallSourceInfo(ctx.packageName).installingPackageName
     }
+
+    override fun getInstallTime(packageName: String): Long {
+        return packageManager.getPackageInfo(packageName, 0).firstInstallTime
+    }
+
+    override fun getLastUpdateTime(packageName: String): Long {
+        return packageManager.getPackageInfo(packageName, 0).lastUpdateTime
+    }
 }

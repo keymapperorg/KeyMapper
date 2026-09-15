@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -27,6 +28,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val keyMapRepository: KeyMapRepository,
+    private val packageManager: PackageManagerAdapter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
@@ -40,9 +42,10 @@ class OnboardingUseCaseImpl @Inject constructor(
         set(Keys.lastInstalledVersionCodeHomeScreen, buildConfigProvider.versionCode)
     }
 
-    // A fresh install has never dismissed the What's New dialog so the key is null.
-    override val isFirstInstall: Flow<Boolean> =
-        get(Keys.lastInstalledVersionCodeHomeScreen).map { it == null }
+    override fun isFreshInstall(): Boolean {
+        return packageManager.getInstallTime(buildConfigProvider.packageName) ==
+            packageManager.getLastUpdateTime(buildConfigProvider.packageName)
+    }
 
     override val appVersionName: String
         get() = buildConfigProvider.version
@@ -126,8 +129,9 @@ interface OnboardingUseCase {
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()
-    val isFirstInstall: Flow<Boolean>
     val appVersionName: String
+
+    fun isFreshInstall(): Boolean
 
     fun getWhatsNewNotes(): WhatsNewNotes
 
