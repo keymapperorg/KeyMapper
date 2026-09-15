@@ -83,11 +83,13 @@ fun CustomDialogContent(
             Box(Modifier.weight(1f, fill = false), content = content)
 //                HorizontalDivider()
 
+            Spacer(Modifier.height(8.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End)
-                    .padding(16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.End),
             ) {
                 if (dismissButton != null) {

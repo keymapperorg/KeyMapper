@@ -40,10 +40,17 @@ class OnboardingUseCaseImpl @Inject constructor(
         set(Keys.lastInstalledVersionCodeHomeScreen, buildConfigProvider.versionCode)
     }
 
-    override fun getWhatsNewText(): String =
-        with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
-            readText()
-        }
+    // A fresh install has never dismissed the What's New dialog so the key is null.
+    override val isFirstInstall: Flow<Boolean> =
+        get(Keys.lastInstalledVersionCodeHomeScreen).map { it == null }
+
+    override val appVersionName: String
+        get() = buildConfigProvider.version
+
+    override fun getWhatsNewNotes(): WhatsNewNotes {
+        val text = fileAdapter.openAsset("whats-new-app.txt").bufferedReader().use { it.readText() }
+        return WhatsNewParser.parse(text)
+    }
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         settingsRepository.get(Keys.shownShizukuPermissionPrompt),
@@ -51,10 +58,10 @@ class OnboardingUseCaseImpl @Inject constructor(
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
     ) {
             shownPromptBefore,
-            isShizkuInstalled,
+            isShizukuInstalled,
             isShizukuPermissionGranted,
         ->
-        shownPromptBefore != true && isShizkuInstalled && !isShizukuPermissionGranted
+        shownPromptBefore != true && isShizukuInstalled && !isShizukuPermissionGranted
     }
 
     override val showShizukuAppIntroSlide: Boolean
@@ -119,7 +126,10 @@ interface OnboardingUseCase {
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()
-    fun getWhatsNewText(): String
+    val isFirstInstall: Flow<Boolean>
+    val appVersionName: String
+
+    fun getWhatsNewNotes(): WhatsNewNotes
 
     val promptForShizukuPermission: Flow<Boolean>
 

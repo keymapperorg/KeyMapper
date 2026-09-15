@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -20,6 +21,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -34,6 +36,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.base.constraints.ConstraintsScreen
 import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
+import io.github.sds100.keymapper.base.home.WhatsNewDialog
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapOptionsScreen
@@ -142,12 +145,19 @@ class MainFragment : Fragment() {
 
             val viewModel: HomeViewModel = hiltViewModel()
 
+            val whatsNewState by viewModel.whatsNewState.collectAsStateWithLifecycle()
+
+            whatsNewState?.let { state ->
+                WhatsNewDialog(state = state, onDismissRequest = viewModel::onDismissWhatsNew)
+            }
+
             HomeKeyMapListScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel.keyMapListViewModel,
                 snackbarState = snackbarState,
                 onSettingsClick = viewModel::launchSettings,
                 onAboutClick = viewModel::launchAbout,
+                onWhatsNewClick = viewModel::onWhatsNewClick,
                 finishActivity = {
                     requireActivity().finish()
                 },

@@ -50,6 +50,13 @@
     <string name="clip_key_mapper_log">Key Mapper log</string>
 
     <string name="whats_new">What\'s New</string>
+    <string name="whats_new_version_badge">Version %1$s</string>
+    <string name="whats_new_section_new">New</string>
+    <string name="whats_new_section_improved">Improved</string>
+    <string name="whats_new_section_fixed">Fixed</string>
+    <string name="whats_new_view_changelog_button">View full changelog</string>
+    <string name="whats_new_support_prompt">Feeling generous? Support development of more free features below\u00A0❤️</string>
+    <string name="whats_new_support_thank_you">Thank you for supporting Key\u00A0Mapper\u00A0❤️</string>
     <string name="caption_action_type_sound">You can either use a system ringtone or select a custom sound file.\n\nThe custom sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be included in backups with your key maps in the zip file.
     You can delete saved sound files in the settings.</string>
 
@@ -1694,6 +1701,7 @@
     <string name="home_app_bar_sort">Sort</string>
     <string name="home_app_bar_more">More</string>
     <string name="home_app_bar_help">Help</string>
+    <string name="home_app_bar_whats_new">What\'s New</string>
     <string name="home_app_bar_select_all">Select all</string>
     <string name="home_app_bar_deselect_all">Deselect all</string>
     <string name="home_app_bar_cancel_selecting">Stop selecting</string>
