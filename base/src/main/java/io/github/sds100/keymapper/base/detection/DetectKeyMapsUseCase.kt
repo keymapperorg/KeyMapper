@@ -81,7 +81,10 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                     if (groupUid == null) {
                         add(
                             DetectKeyMapModel(
-                                keyMap = keyMap,
+                                // Disabled actions must never be performed.
+                                keyMap = keyMap.copy(
+                                    actionList = keyMap.actionList.filter { it.isEnabled },
+                                ),
                                 groupConstraintStates = constraintStates,
                             ),
                         )

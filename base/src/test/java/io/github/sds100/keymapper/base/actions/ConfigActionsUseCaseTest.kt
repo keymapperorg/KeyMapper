@@ -6,6 +6,8 @@ import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -72,6 +75,83 @@ class ConfigActionsUseCaseTest {
             assertThat(actionList[0].holdDown, `is`(true))
             assertThat(actionList[0].repeat, `is`(false))
         }
+
+    @Test
+    fun `add key event action with assistant trigger, do not enable repeat`() =
+        runTest(testDispatcher) {
+            configKeyMapState.setKeyMap(
+                KeyMap(
+                    trigger = singleKeyTrigger(
+                        AssistantTriggerKey(
+                            type = AssistantTriggerType.ANY,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                ),
+            )
+
+            useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
+
+            val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
+            assertThat(actionList[0].repeat, `is`(false))
+        }
+
+    @Test
+    fun `add key event action with key event trigger, repeat until released`() =
+        runTest(testDispatcher) {
+            configKeyMapState.setKeyMap(
+                KeyMap(
+                    trigger = singleKeyTrigger(
+                        KeyEventTriggerKey(
+                            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                            device = KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                ),
+            )
+
+            useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
+
+            val action = useCase.keyMap.value.dataOrNull()!!.actionList[0]
+            assertThat(action.repeat, `is`(true))
+            assertThat(action.repeatMode, `is`(RepeatMode.TRIGGER_RELEASED))
+        }
+
+    @Test
+    fun `set custom name, trim the name and remove it when blank`() = runTest(testDispatcher) {
+        configKeyMapState.setKeyMap(KeyMap())
+        useCase.addAction(ActionData.ConsumeKeyEvent)
+
+        val uid = useCase.keyMap.value.dataOrNull()!!.actionList[0].uid
+
+        useCase.setActionCustomName(uid, "  My action ")
+        assertThat(
+            useCase.keyMap.value.dataOrNull()!!.actionList[0].customName,
+            `is`("My action"),
+        )
+
+        useCase.setActionCustomName(uid, " ")
+        assertThat(useCase.keyMap.value.dataOrNull()!!.actionList[0].customName, nullValue())
+    }
+
+    @Test
+    fun `disable an action, only that action is disabled`() = runTest(testDispatcher) {
+        configKeyMapState.setKeyMap(KeyMap())
+        useCase.addAction(ActionData.ConsumeKeyEvent)
+        useCase.addAction(ActionData.GoHome)
+
+        val uid = useCase.keyMap.value.dataOrNull()!!.actionList[0].uid
+
+        useCase.setActionEnabled(uid, false)
+
+        val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
+        assertThat(actionList[0].isEnabled, `is`(false))
+        assertThat(actionList[1].isEnabled, `is`(true))
+
+        useCase.setActionEnabled(uid, true)
+        assertThat(useCase.keyMap.value.dataOrNull()!!.actionList[0].isEnabled, `is`(true))
+    }
 
     /**
      * Issue #852. Add a phone ringing constraint when you add an action

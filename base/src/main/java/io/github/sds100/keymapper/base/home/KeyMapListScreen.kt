@@ -473,20 +473,26 @@ private fun OptionsDescription(modifier: Modifier = Modifier, options: List<Stri
 private fun ActionConstraintChip(model: ComposeChipModel, onFixClick: (KMError) -> Unit) {
     when (model) {
         is ComposeChipModel.Normal -> {
+            // Grey out disabled chips using the Material 3 alpha for disabled content.
+            val contentAlpha = if (model.isEnabled) 1f else 0.38f
+
             CompactChip(
                 text = model.text,
+                contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha),
                 icon = model.icon?.let { icon ->
                     {
                         when (icon) {
                             is ComposeIconInfo.Drawable -> Icon(
-                                modifier = Modifier.fillMaxHeight(),
+                                modifier = Modifier
+                                    .fillMaxHeight(),
                                 painter = rememberDrawablePainter(icon.drawable),
                                 contentDescription = null,
                                 tint = Color.Unspecified,
                             )
 
                             is ComposeIconInfo.Vector -> Icon(
-                                modifier = Modifier.fillMaxHeight(),
+                                modifier = Modifier
+                                    .fillMaxHeight(),
                                 imageVector = icon.imageVector,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
@@ -653,6 +659,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Open Key Mapper",
+                        isEnabled = false,
                     ),
                 ),
                 constraintMode = ConstraintMode.AND,

@@ -125,14 +125,9 @@ class KeyMapListItemCreator(
 
         for (action in keyMap.actionList) {
             val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${
-                    actionUiHelper.getTitle(
-                        action.data,
-                        showDeviceDescriptors,
-                    )
-                }"
+                "${action.multiplier}x ${actionUiHelper.getTitle(action, showDeviceDescriptors)}"
             } else {
-                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
+                actionUiHelper.getTitle(action, showDeviceDescriptors)
             }
 
             val chipText = buildString {
@@ -153,7 +148,7 @@ class KeyMapListItemCreator(
 
                     append(
                         getString(
-                            R.string.action_title_wait,
+                            R.string.action_title_wait_ms,
                             action.delayBeforeNextAction,
                         ),
                     )
@@ -163,8 +158,14 @@ class KeyMapListItemCreator(
             val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
             val error: KMError? = actionErrors[action.data]
 
-            val chip = if (error == null) {
-                ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
+            // Disabled actions are never performed so do not show their errors.
+            val chip = if (error == null || !action.isEnabled) {
+                ComposeChipModel.Normal(
+                    id = action.uid,
+                    text = chipText,
+                    icon = icon,
+                    isEnabled = action.isEnabled,
+                )
             } else {
                 ComposeChipModel.Error(action.uid, chipText, error, isFixable = error.isFixable)
             }

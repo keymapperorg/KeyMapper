@@ -70,7 +70,8 @@
     <string name="reset">Reset</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>
 
-    <string name="action_title_wait">Wait %sms</string>
+    <string name="action_title_wait_ms">Wait %sms</string>
+    <string name="action_title_wait_secs">Wait %ss</string>
 
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
@@ -1802,6 +1803,16 @@
     <string name="action_list_item_remove">Remove</string>
     <string name="action_list_item_edit">Edit</string>
     <string name="action_list_item_test">Test</string>
+    <string name="action_list_item_expand">Expand</string>
+    <string name="action_list_item_collapse">Collapse</string>
+    <string name="action_list_item_rename">Rename</string>
+    <string name="action_list_add_delay">Add delay</string>
+    <string name="action_list_delay_remove">Remove</string>
+    <string name="action_list_no_repeat">No repeat</string>
+    <string name="action_list_no_burst">No burst</string>
+    <string name="action_list_burst">Burst %dx</string>
+    <string name="action_list_no_hold_down">No hold down</string>
+    <string name="action_list_hold_down_duration">Hold down for %dms</string>
     <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
     <string name="recently_used_actions">Recently used actions</string>
     <string name="action_options_title">Action options</string>
@@ -1816,6 +1827,32 @@
     <string name="action_list_delete_cancel">Cancel</string>
     <string name="action_list_explanation_header">Run these actions when you trigger the key map:</string>
     <string name="action_repeat_rate_warning">Repeating under 20 ms can lag! Adjust for your device and game.</string>
+    <string name="action_options_custom_name_dialog_title">Action name</string>
+    <string name="action_options_type_header">%s options</string>
+    <string name="action_options_customize">Customize</string>
+    <string name="action_options_swap">Swap action</string>
+    <string name="action_options_repeat_header">Repeat options</string>
+    <string name="action_options_repeat_description">This action can be set to repeat multiple times for one trigger.</string>
+    <string name="action_options_dont_repeat">Don\'t repeat</string>
+    <string name="action_options_repeat_limit_reached">Repeat a fixed number of times</string>
+    <string name="action_options_repeat_until_released">Repeat continuously until the trigger is released</string>
+    <string name="action_options_repeat_until_released_unavailable">Not available for side key, assistant or fingerprint gesture triggers!</string>
+    <string name="action_options_repeat_until_pressed_again">Repeat continuously until the trigger is pressed again</string>
+    <string name="action_options_repeat_delay">Before repeating, wait…</string>
+    <string name="action_options_repeat_rate">Then repeat this action every…</string>
+    <string name="action_options_repeat_limit">Maximum repeat limit</string>
+    <string name="action_options_burst_header">Burst options</string>
+    <string name="action_options_burst_description">The action can be performed multiple times in a row in a rapid-fire burst.</string>
+    <string name="action_options_burst_description_repeat">Every time the action repeats, it can be performed multiple times in a row in a rapid-fire burst.</string>
+    <string name="action_options_burst_size">Burst size</string>
+    <string name="action_options_hold_down_header">Hold down options</string>
+    <string name="action_options_hold_down_description">This action can be held down instead of being pressed and released immediately.</string>
+    <string name="action_options_hold_down_description_repeat">This action can be set to be held down for a period of time, regardless of how long you press the trigger.</string>
+    <string name="action_options_dont_hold_down">Don\'t hold down</string>
+    <string name="action_options_hold_down_period">Hold down for a period of time</string>
+    <string name="action_options_hold_down_until_released">Hold down until the trigger is released</string>
+    <string name="action_options_hold_down_until_pressed_again">Hold down until the trigger is pressed again</string>
+    <string name="action_options_delay_header">Delay options</string>
 
     <string name="action_config_flashlight_choose_side">Choose side</string>
     <string name="action_config_flashlight_brightness">Brightness</string>

@@ -183,6 +183,16 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun setActionCustomName(uid: String, customName: String?) {
+        setActionOption(uid) { action ->
+            action.copy(customName = customName?.trim()?.takeIf { it.isNotEmpty() })
+        }
+    }
+
+    override fun setActionEnabled(uid: String, enabled: Boolean) {
+        setActionOption(uid) { action -> action.copy(isEnabled = enabled) }
+    }
+
     private suspend fun getActionShortcuts(json: String?): List<ActionData> {
         if (json == null) {
             return emptyList()
@@ -220,6 +230,12 @@ class ConfigActionsUseCaseImpl @Inject constructor(
 
         if (data is ActionData.Volume.Down || data is ActionData.Volume.Up) {
             repeat = true
+        }
+
+        // Actions repeat until the trigger is released by default so do not repeat if
+        // the release of the trigger can not be detected.
+        if (!keyMap.isRepeatUntilReleasedAllowed()) {
+            repeat = false
         }
 
         if (data is ActionData.AnswerCall) {
@@ -269,6 +285,8 @@ interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setActionData(uid: String, data: ActionData)
     fun setActionMultiplier(uid: String, multiplier: Int)
     fun setDelayBeforeNextAction(uid: String, delay: Int)
+    fun setActionCustomName(uid: String, customName: String?)
+    fun setActionEnabled(uid: String, enabled: Boolean)
     fun setActionRepeatRate(uid: String, repeatRate: Int)
     fun setActionRepeatLimit(uid: String, repeatLimit: Int)
     fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)

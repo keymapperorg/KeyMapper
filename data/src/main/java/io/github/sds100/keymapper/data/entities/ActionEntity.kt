@@ -142,6 +142,12 @@ data class ActionEntity(
         const val ACTION_FLAG_SHELL_COMMAND_USE_ROOT = 16
         const val ACTION_FLAG_SHELL_COMMAND_USE_ADB = 32
 
+        /**
+         * Stored as disabled rather than enabled so actions saved before this flag existed
+         * are enabled by default.
+         */
+        const val ACTION_FLAG_DISABLED = 64
+
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
@@ -150,6 +156,7 @@ data class ActionEntity(
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
+        const val EXTRA_CUSTOM_NAME = "extra_custom_name"
         const val EXTRA_SETTING_VALUE = "extra_setting_value"
         const val EXTRA_SETTING_TYPE = "extra_setting_type"
 

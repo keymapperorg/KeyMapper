@@ -42,6 +42,7 @@ fun CompactChip(
             Surface(
                 modifier = modifier.height(chipHeight),
                 color = containerColor,
+                contentColor = contentColor,
                 border = borderStroke,
                 shape = AssistChipDefaults.shape,
             ) {
@@ -51,6 +52,7 @@ fun CompactChip(
             Surface(
                 modifier = modifier.height(chipHeight),
                 color = containerColor,
+                contentColor = contentColor,
                 border = borderStroke,
                 shape = AssistChipDefaults.shape,
                 onClick = onClick,

@@ -9,6 +9,8 @@ import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
@@ -56,6 +58,13 @@ data class KeyMap(
 
     fun isChangingRepeatLimitAllowed(action: Action): Boolean =
         action.repeat && isRepeatingActionsAllowed()
+
+    /**
+     * The release of assistant and fingerprint gesture triggers can not be detected.
+     */
+    fun isRepeatUntilReleasedAllowed(): Boolean = trigger.keys.none {
+        it is AssistantTriggerKey || it is FingerprintTriggerKey
+    }
 
     fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean =
         action.holdDown && !action.repeat && isHoldingDownActionAllowed(action)

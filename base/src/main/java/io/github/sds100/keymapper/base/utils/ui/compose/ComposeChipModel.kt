@@ -8,6 +8,10 @@ sealed class ComposeChipModel {
         override val id: String,
         val icon: ComposeIconInfo?,
         override val text: String,
+        /**
+         * Disabled chips are greyed out.
+         */
+        val isEnabled: Boolean = true,
     ) : ComposeChipModel()
 
     data class Error(

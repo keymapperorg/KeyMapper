@@ -286,8 +286,10 @@ private fun SortDraggableList(
     onSortFieldClick: (SortField) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
+    val sortFields = remember(sortFieldOrderList) { sortFieldOrderList.map { it.field } }
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
+        keys = sortFields,
         onMove = onMove,
     )
 
@@ -296,13 +298,13 @@ private fun SortDraggableList(
         state = lazyListState,
     ) {
         itemsIndexed(
-            items = sortFieldOrderList,
+            items = dragDropState.ordered(sortFieldOrderList) { it.field },
             key = { _, item -> item.field },
         ) { index, item ->
 
             DraggableItem(
                 dragDropState = dragDropState,
-                index = index,
+                key = item.field,
             ) { isDragging ->
                 SortFieldListItem(
                     index = index + 1,
@@ -311,17 +313,7 @@ private fun SortDraggableList(
                     onToggle = { onSortFieldClick(item.field) },
                     isDragging = isDragging,
                     onDrag = { dragDropState.onDrag(it) },
-                    onDragStarted = { offset ->
-                        // Calculate the offset of the item in the list
-                        val lazyItem = lazyListState.layoutInfo.visibleItemsInfo
-                            .firstOrNull { it.index == index } ?: return@SortFieldListItem
-
-                        val initialOffset = lazyItem.offset
-
-                        val finalOffset = offset + Offset(0f, initialOffset.toFloat())
-
-                        dragDropState.onDragStart(finalOffset)
-                    },
+                    onDragStarted = { dragDropState.onDragStart(item.field) },
                     onDragStopped = { dragDropState.onDragInterrupted() },
                 )
             }
