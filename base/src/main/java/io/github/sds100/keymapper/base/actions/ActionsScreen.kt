@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -259,22 +260,15 @@ private fun ActionList(
     // A list rather than a set so it can be saved in a Bundle.
     var expandedIds by rememberSaveable { mutableStateOf(listOf<String>()) }
 
-    val dragDropState = if (state is ConfigActionsState.Loaded) {
-        rememberDragDropState(
-            lazyListState = lazyListState,
-            onMove = callback::onMove,
-            // Do not drag and drop the row of shortcuts
-            ignoreLastItems = if (state.shortcuts.isEmpty()) {
-                0
-            } else {
-                1
-            },
-            // Collapse all the items so they are a similar height while dragging.
-            onStart = { expandedIds = emptyList() },
-        )
-    } else {
-        null
-    }
+    val actions = (state as? ConfigActionsState.Loaded)?.actions.orEmpty()
+    val actionIds = remember(actions) { actions.map { it.id } }
+
+    // Only the actions can be dragged. Not the tip or the row of shortcuts.
+    val dragDropState = rememberDragDropState(
+        lazyListState = lazyListState,
+        keys = actionIds,
+        onMove = callback::onMove,
+    )
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -320,8 +314,10 @@ private fun ActionList(
             }
 
             is ConfigActionsState.Loaded -> {
+                val orderedActions = dragDropState.ordered(state.actions) { it.id }
+
                 itemsIndexed(
-                    state.actions,
+                    orderedActions,
                     key = { _, item -> item.id },
                     contentType = { _, _ -> "action" },
                 ) { index, model ->
@@ -333,8 +329,8 @@ private fun ActionList(
                     }
 
                     DraggableItem(
-                        dragDropState = dragDropState!!,
-                        index = index,
+                        dragDropState = dragDropState,
+                        key = model.id,
                     ) { isDragging ->
                         Column {
                             ActionListItem(
@@ -342,7 +338,7 @@ private fun ActionList(
                                 model = model,
                                 index = index,
                                 isExpanded = model.id in expandedIds,
-                                isDraggingEnabled = state.actions.size > 1,
+                                isDraggingEnabled = orderedActions.size > 1,
                                 isDragging = isDragging,
                                 isReorderingEnabled = state.isReorderingEnabled,
                                 dragDropState = dragDropState,
@@ -365,7 +361,7 @@ private fun ActionList(
                                     null
                                 },
                                 onMoveDown = if (state.isReorderingEnabled &&
-                                    index < state.actions.size - 1
+                                    index < orderedActions.size - 1
                                 ) {
                                     { callback.onMove(index, index + 1) }
                                 } else {

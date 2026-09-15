@@ -26,6 +26,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -437,16 +438,15 @@ private fun TriggerList(
     onAddMoreClick: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
+    val triggerKeyIds = remember(triggerList) { triggerList.map { it.id } }
+
+    // Only the trigger keys can be dragged. Not the "add more" button.
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
+        keys = triggerKeyIds,
         onMove = onMove,
-        // Do not drag and drop the "add more" button
-        ignoreLastItems = if (triggerList.isEmpty()) {
-            0
-        } else {
-            1
-        },
     )
+    val orderedTriggerList = dragDropState.ordered(triggerList) { it.id }
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -457,19 +457,19 @@ private fun TriggerList(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         itemsIndexed(
-            triggerList,
+            orderedTriggerList,
             key = { _, item -> item.id },
             contentType = { _, _ -> "key" },
         ) { index, model ->
             DraggableItem(
                 dragDropState = dragDropState,
-                index = index,
+                key = model.id,
             ) { isDragging ->
                 TriggerKeyListItem(
                     modifier = Modifier.fillMaxWidth(),
                     model = model,
                     index = index,
-                    isDraggingEnabled = triggerList.size > 1,
+                    isDraggingEnabled = orderedTriggerList.size > 1,
                     isDragging = isDragging,
                     isReorderingEnabled = isReorderingEnabled,
                     dragDropState = dragDropState,
@@ -481,7 +481,7 @@ private fun TriggerList(
                     } else {
                         null
                     },
-                    onMoveDown = if (isReorderingEnabled && index < triggerList.size - 1) {
+                    onMoveDown = if (isReorderingEnabled && index < orderedTriggerList.size - 1) {
                         { onMove(index, index + 1) }
                     } else {
                         null

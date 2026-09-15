@@ -183,8 +183,8 @@ fun ActionListItem(
                                 enabled = isDraggingEnabled,
                                 orientation = Orientation.Vertical,
                                 startDragImmediately = true,
-                                onDragStarted = { offset ->
-                                    dragDropState?.onDragStart(index, offset)
+                                onDragStarted = {
+                                    dragDropState?.onDragStart(model.id)
                                 },
                                 onDragStopped = { dragDropState?.onDragInterrupted() },
                             ),

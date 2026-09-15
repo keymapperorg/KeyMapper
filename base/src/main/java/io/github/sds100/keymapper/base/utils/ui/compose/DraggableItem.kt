@@ -11,18 +11,21 @@ import androidx.compose.ui.zIndex
 @Composable
 fun LazyItemScope.DraggableItem(
     dragDropState: DragDropState,
-    index: Int,
+    /**
+     * The same key that is used for this item in the lazy list.
+     */
+    key: Any,
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.(isDragging: Boolean) -> Unit,
 ) {
-    val dragging = index == dragDropState.draggingItemIndex
+    val dragging = key == dragDropState.draggingItemKey
     val draggingModifier = if (dragging) {
         Modifier
             .zIndex(1f)
             .graphicsLayer {
                 translationY = dragDropState.draggingItemOffset
             }
-    } else if (index == dragDropState.previousIndexOfDraggedItem) {
+    } else if (key == dragDropState.previousKeyOfDraggedItem) {
         Modifier
             .zIndex(1f)
             .graphicsLayer {
