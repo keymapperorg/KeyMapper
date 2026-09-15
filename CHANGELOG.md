@@ -7,7 +7,15 @@
 - #701 new action options bottom sheet design.
 - #701 you can now give custom names to actions, to make it easier to identify key maps.
 
-## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
+## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
+
+#### TO BE RELEASED
+
+## Added
+
+- #2243 Redesigned What's New dialog.
+
+## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.4.0)
 
 #### 12 September 2026
 

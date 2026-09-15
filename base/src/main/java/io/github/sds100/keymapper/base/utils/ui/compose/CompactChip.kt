@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.utils.ui.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,6 +31,7 @@ fun CompactChip(
     icon: (@Composable () -> Unit)? = null,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    borderStroke: BorderStroke? = null,
     onClick: (() -> Unit)? = null,
     enabled: Boolean = false,
 ) {
@@ -40,6 +42,7 @@ fun CompactChip(
             Surface(
                 modifier = modifier.height(chipHeight),
                 color = containerColor,
+                border = borderStroke,
                 shape = AssistChipDefaults.shape,
             ) {
                 CompactChipContent(icon, text, contentColor)
@@ -48,6 +51,7 @@ fun CompactChip(
             Surface(
                 modifier = modifier.height(chipHeight),
                 color = containerColor,
+                border = borderStroke,
                 shape = AssistChipDefaults.shape,
                 onClick = onClick,
             ) {

@@ -87,6 +87,7 @@ fun HomeKeyMapListScreen(
     headerExtraContent: @Composable () -> Unit,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onWhatsNewClick: () -> Unit,
     finishActivity: () -> Unit,
     fabBottomPadding: Dp,
 ) {
@@ -161,9 +162,7 @@ fun HomeKeyMapListScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val uriHandler = LocalUriHandler.current
     val ctx = LocalContext.current
-    val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
     val lazyListState = rememberLazyListState()
@@ -225,7 +224,7 @@ fun HomeKeyMapListScreen(
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
-                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+                onWhatsNewClick = onWhatsNewClick,
                 onExportClick = viewModel::onExportClick,
                 onImportClick = {
                     if (LeanbackUtils.isTvDevice(ctx)) {

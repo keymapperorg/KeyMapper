@@ -138,10 +138,10 @@ fun TextFieldDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDialog(
-    title: String,
+    title: String? = null,
     text: String? = null,
     confirmButton: @Composable () -> Unit = {},
-    dismissButton: @Composable () -> Unit,
+    dismissButton: (@Composable () -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -154,10 +154,10 @@ fun CustomDialog(
 
 @Composable
 fun CustomDialogContent(
-    title: String,
+    title: String?,
     text: String? = null,
     confirmButton: @Composable () -> Unit,
-    dismissButton: @Composable () -> Unit = {},
+    dismissButton: (@Composable () -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit),
 ) {
     Surface(
@@ -166,16 +166,20 @@ fun CustomDialogContent(
         tonalElevation = AlertDialogDefaults.TonalElevation,
     ) {
         Column {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp),
-                text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                color = AlertDialogDefaults.titleContentColor,
-            )
+            if (title != null) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp),
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = AlertDialogDefaults.titleContentColor,
+                )
+            }
+
             if (text != null) {
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -189,20 +193,23 @@ fun CustomDialogContent(
                     color = AlertDialogDefaults.textContentColor,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+
 //                HorizontalDivider()
             Box(Modifier.weight(1f, fill = false), content = content)
 //                HorizontalDivider()
+
+            Spacer(Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End)
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.End,
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.End),
             ) {
-                dismissButton()
-                Spacer(modifier = Modifier.width(16.dp))
+                if (dismissButton != null) {
+                    dismissButton()
+                }
                 confirmButton()
             }
         }
