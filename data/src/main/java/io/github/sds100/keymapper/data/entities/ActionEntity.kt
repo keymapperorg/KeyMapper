@@ -150,6 +150,7 @@ data class ActionEntity(
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
+        const val EXTRA_CUSTOM_NAME = "extra_custom_name"
         const val EXTRA_SETTING_VALUE = "extra_setting_value"
         const val EXTRA_SETTING_TYPE = "extra_setting_type"
 

@@ -125,14 +125,9 @@ class KeyMapListItemCreator(
 
         for (action in keyMap.actionList) {
             val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${
-                    actionUiHelper.getTitle(
-                        action.data,
-                        showDeviceDescriptors,
-                    )
-                }"
+                "${action.multiplier}x ${actionUiHelper.getTitle(action, showDeviceDescriptors)}"
             } else {
-                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
+                actionUiHelper.getTitle(action, showDeviceDescriptors)
             }
 
             val chipText = buildString {

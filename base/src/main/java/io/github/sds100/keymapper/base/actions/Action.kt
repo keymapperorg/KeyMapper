@@ -29,6 +29,11 @@ data class Action(
 
     val multiplier: Int? = null,
     val delayBeforeNextAction: Int? = null,
+
+    /**
+     * A name set by the user that is shown instead of the generated title.
+     */
+    val customName: String? = null,
 )
 
 object ActionEntityMapper {
@@ -85,6 +90,11 @@ object ActionEntityMapper {
             .valueOrNull()
             ?.toIntOrNull()
 
+        val customName = entity.extras
+            .getData(ActionEntity.EXTRA_CUSTOM_NAME)
+            .valueOrNull()
+            ?.takeIf { it.isNotBlank() }
+
         return Action(
             uid = entity.uid,
             data = data,
@@ -98,6 +108,7 @@ object ActionEntityMapper {
             holdDownDuration = holdDownDuration,
             delayBeforeNextAction = delayBeforeNextAction,
             multiplier = multiplier,
+            customName = customName,
         )
     }
 
@@ -116,6 +127,10 @@ object ActionEntityMapper {
 
             if (action.multiplier != null) {
                 add(EntityExtra(ActionEntity.EXTRA_MULTIPLIER, action.multiplier.toString()))
+            }
+
+            if (!action.customName.isNullOrBlank()) {
+                add(EntityExtra(ActionEntity.EXTRA_CUSTOM_NAME, action.customName))
             }
 
             if (keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) &&

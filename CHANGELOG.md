@@ -1,9 +1,19 @@
+## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
+
+#### TO BE RELEASED
+
+## Added
+
+- #701 new action options bottom sheet design.
+- #701 you can now give custom names to actions, to make it easier to identify key maps.
+
 ## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
 
 #### 12 September 2026
 
 ## Added
 
+- Redesigned the action options with grouped repeat, burst, hold down and delay sections, and actions can now be given a custom name.
 - #2238 Add a "Reduce app killing" card to Expert Mode on Xiaomi/Redmi/Poco devices with steps to whitelist the app from battery optimisation, disable MIUI optimization, enable autostart, and adjust battery saver settings.
 - Target Android 17 SDK.
 - [#2227](https://github.com/keymapperorg/KeyMapper/issues/2227) Add a step to the Expert Mode setup wizard to grant local network access permission, required for ADB on Android 17+.

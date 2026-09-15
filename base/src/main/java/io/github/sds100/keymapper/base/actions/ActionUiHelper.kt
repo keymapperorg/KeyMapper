@@ -31,6 +31,14 @@ class ActionUiHelper(
 ) : ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
+    /**
+     * @return the custom name of the action if it has one, otherwise the generated title.
+     */
+    fun getTitle(action: Action, showDeviceDescriptors: Boolean): String {
+        return action.customName?.takeIf { it.isNotBlank() }
+            ?: getTitle(action.data, showDeviceDescriptors)
+    }
+
     fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String = when (action) {
         is ActionData.App ->
             getAppName(action.packageName).handle(
@@ -712,13 +720,17 @@ class ActionUiHelper(
             R.string.action_expand_notification_drawer,
         )
 
-        ActionData.StatusBar.ExpandQuickSettings -> getString(R.string.action_expand_quick_settings)
+        ActionData.StatusBar.ExpandQuickSettings -> getString(
+            R.string.action_expand_quick_settings,
+        )
 
         ActionData.StatusBar.ToggleNotifications -> getString(
             R.string.action_toggle_notification_drawer,
         )
 
-        ActionData.StatusBar.ToggleQuickSettings -> getString(R.string.action_toggle_quick_settings)
+        ActionData.StatusBar.ToggleQuickSettings -> getString(
+            R.string.action_toggle_quick_settings,
+        )
 
         ActionData.ToggleKeyboard -> getString(R.string.action_toggle_keyboard)
 
@@ -734,7 +746,9 @@ class ActionUiHelper(
 
         ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
 
-        ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
+        ActionData.DismissAllNotifications -> getString(
+            R.string.action_dismiss_all_notifications,
+        )
 
         ActionData.DismissLastNotification -> getString(
             R.string.action_dismiss_most_recent_notification,

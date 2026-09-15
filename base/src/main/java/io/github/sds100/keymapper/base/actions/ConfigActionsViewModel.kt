@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -213,10 +214,6 @@ class ConfigActionsViewModel @Inject constructor(
         }
     }
 
-    override fun onRepeatCheckedChange(checked: Boolean) {
-        actionOptionsUid.value?.let { uid -> config.setActionRepeatEnabled(uid, checked) }
-    }
-
     override fun onRepeatLimitChanged(limit: Int) {
         actionOptionsUid.value?.let { uid -> config.setActionRepeatLimit(uid, limit) }
     }
@@ -229,21 +226,23 @@ class ConfigActionsViewModel @Inject constructor(
         actionOptionsUid.value?.let { uid -> config.setActionRepeatDelay(uid, delay) }
     }
 
-    override fun onHoldDownCheckedChange(checked: Boolean) {
-        actionOptionsUid.value?.let { uid -> config.setActionHoldDownEnabled(uid, checked) }
-    }
-
     override fun onHoldDownDurationChanged(duration: Int) {
         actionOptionsUid.value?.let { uid -> config.setActionHoldDownDuration(uid, duration) }
     }
 
-    override fun onSelectHoldDownMode(holdDownMode: HoldDownMode) {
-        actionOptionsUid.value?.let { uid ->
-            config.setActionStopHoldingDownWhenTriggerPressedAgain(
-                uid,
-                holdDownMode == HoldDownMode.TRIGGER_PRESSED_AGAIN,
-            )
+    override fun onSelectHoldDownMode(holdDownMode: HoldDownMode?) {
+        val uid = actionOptionsUid.value ?: return
+
+        if (holdDownMode == null) {
+            config.setActionHoldDownEnabled(uid, false)
+            return
         }
+
+        config.setActionHoldDownEnabled(uid, true)
+        config.setActionStopHoldingDownWhenTriggerPressedAgain(
+            uid,
+            holdDownMode == HoldDownMode.TRIGGER_PRESSED_AGAIN,
+        )
     }
 
     override fun onDelayBeforeNextActionChanged(delay: Int) {
@@ -254,18 +253,37 @@ class ConfigActionsViewModel @Inject constructor(
         actionOptionsUid.value?.let { uid -> config.setActionMultiplier(uid, multiplier) }
     }
 
-    override fun onSelectRepeatMode(repeatMode: RepeatMode) {
-        actionOptionsUid.value?.let { uid ->
-            when (repeatMode) {
-                RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(
-                    uid,
-                )
+    override fun onSelectRepeatMode(repeatMode: RepeatMode?) {
+        val uid = actionOptionsUid.value ?: return
 
-                RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
+        if (repeatMode == null) {
+            config.setActionRepeatEnabled(uid, false)
+            return
+        }
 
-                RepeatMode.TRIGGER_PRESSED_AGAIN ->
-                    config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
-            }
+        config.setActionRepeatEnabled(uid, true)
+
+        when (repeatMode) {
+            RepeatMode.TRIGGER_RELEASED -> config.setActionStopRepeatingWhenTriggerReleased(uid)
+
+            RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
+
+            RepeatMode.TRIGGER_PRESSED_AGAIN ->
+                config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
+        }
+    }
+
+    override fun onCustomNameChanged(name: String) {
+        val uid = actionOptionsUid.value ?: return
+
+        viewModelScope.launch {
+            val actionData = getActionData(uid) ?: return@launch
+            val showDeviceDescriptors = displayAction.showDeviceDescriptors.first()
+            val generatedTitle = uiHelper.getTitle(actionData, showDeviceDescriptors)
+
+            // Submitting the generated title removes the custom name.
+            val customName = name.trim().takeIf { it.isNotEmpty() && it != generatedTitle }
+            config.setActionCustomName(uid, customName)
         }
     }
 
@@ -318,7 +336,7 @@ class ConfigActionsViewModel @Inject constructor(
                 val multiplier = action.multiplier
                 "${multiplier}x ${uiHelper.getTitle(action.data, showDeviceDescriptors)}"
             } else {
-                uiHelper.getTitle(action.data, showDeviceDescriptors)
+                uiHelper.getTitle(action, showDeviceDescriptors)
             }
 
             val icon: ComposeIconInfo = uiHelper.getIcon(action.data)
@@ -382,11 +400,16 @@ class ConfigActionsViewModel @Inject constructor(
 
         val allowedRepeatModes = mutableSetOf<RepeatMode>()
 
-        if (keyMap.isChangingRepeatModeAllowed(action)) {
-            allowedRepeatModes.add(RepeatMode.TRIGGER_RELEASED)
+        if (keyMap.isRepeatingActionsAllowed()) {
+            if (keyMap.isRepeatUntilReleasedAllowed()) {
+                allowedRepeatModes.add(RepeatMode.TRIGGER_RELEASED)
+            }
+
             allowedRepeatModes.add(RepeatMode.TRIGGER_PRESSED_AGAIN)
             allowedRepeatModes.add(RepeatMode.LIMIT_REACHED)
         }
+
+        val showDeviceDescriptors = displayAction.showDeviceDescriptors.first()
 
         val defaultRepeatRate = config.defaultRepeatRate.first()
         val defaultRepeatDelay = config.defaultRepeatDelay.first()
@@ -404,6 +427,10 @@ class ConfigActionsViewModel @Inject constructor(
                 keyMap.trigger.keys.any { it is EvdevTriggerKey }
 
         return ActionOptionsState(
+            title = uiHelper.getTitle(action, showDeviceDescriptors),
+            actionTypeTitle = getString(ActionUtils.getTitle(action.data.id)),
+            actionTypeIcon = ActionUtils.getComposeIcon(action.data.id),
+
             showEditButton = action.data.isEditable(),
 
             showRepeat = keyMap.isRepeatingActionsAllowed(),
@@ -432,9 +459,6 @@ class ConfigActionsViewModel @Inject constructor(
             holdDownDuration = action.holdDownDuration ?: defaultHoldDownDuration,
             defaultHoldDownDuration = defaultHoldDownDuration,
 
-            showHoldDownMode = keyMap.isStopHoldingDownActionWhenTriggerPressedAgainAllowed(
-                action,
-            ),
             holdDownMode = if (action.stopHoldDownWhenTriggerPressedAgain) {
                 HoldDownMode.TRIGGER_PRESSED_AGAIN
             } else {
@@ -475,6 +499,10 @@ data class ActionListItemModel(
 )
 
 data class ActionOptionsState(
+    val title: String,
+    val actionTypeTitle: String,
+    val actionTypeIcon: ImageVector,
+
     val showEditButton: Boolean,
 
     val showRepeat: Boolean,
@@ -503,7 +531,6 @@ data class ActionOptionsState(
     val holdDownDuration: Int,
     val defaultHoldDownDuration: Int,
 
-    val showHoldDownMode: Boolean,
     val holdDownMode: HoldDownMode,
 
     val showDelayBeforeNextAction: Boolean,
