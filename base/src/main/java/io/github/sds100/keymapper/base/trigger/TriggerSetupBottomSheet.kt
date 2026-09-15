@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -909,7 +910,7 @@ fun TriggerSetupBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PowerButtonPreview() {
     KeyMapperTheme {
@@ -917,6 +918,7 @@ private fun PowerButtonPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         PowerTriggerSetupBottomSheet(
@@ -933,7 +935,7 @@ private fun PowerButtonPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PowerButtonDisabledPreview() {
     KeyMapperTheme {
@@ -941,6 +943,7 @@ private fun PowerButtonDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         PowerTriggerSetupBottomSheet(
@@ -957,7 +960,7 @@ private fun PowerButtonDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun VolumeButtonPreview() {
     KeyMapperTheme {
@@ -965,6 +968,7 @@ private fun VolumeButtonPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         VolumeTriggerSetupBottomSheet(
@@ -982,7 +986,7 @@ private fun VolumeButtonPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun VolumeButtonDisabledPreview() {
     KeyMapperTheme {
@@ -990,6 +994,7 @@ private fun VolumeButtonDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         VolumeTriggerSetupBottomSheet(
@@ -1007,7 +1012,7 @@ private fun VolumeButtonDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun FingerprintGestureRequirementsMetPreview() {
     KeyMapperTheme {
@@ -1015,6 +1020,7 @@ private fun FingerprintGestureRequirementsMetPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         FingerprintGestureSetupBottomSheet(
@@ -1029,7 +1035,7 @@ private fun FingerprintGestureRequirementsMetPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun FingerprintGestureRequirementsNotMetPreview() {
     KeyMapperTheme {
@@ -1037,6 +1043,7 @@ private fun FingerprintGestureRequirementsNotMetPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         FingerprintGestureSetupBottomSheet(
@@ -1051,7 +1058,7 @@ private fun FingerprintGestureRequirementsNotMetPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun KeyboardButtonEnabledPreview() {
     KeyMapperTheme {
@@ -1059,6 +1066,7 @@ private fun KeyboardButtonEnabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         KeyboardTriggerSetupBottomSheet(
@@ -1076,7 +1084,7 @@ private fun KeyboardButtonEnabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun KeyboardButtonDisabledPreview() {
     KeyMapperTheme {
@@ -1084,6 +1092,7 @@ private fun KeyboardButtonDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         KeyboardTriggerSetupBottomSheet(
@@ -1101,7 +1110,7 @@ private fun KeyboardButtonDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun MouseButtonPreview() {
     KeyMapperTheme {
@@ -1109,6 +1118,7 @@ private fun MouseButtonPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         MouseTriggerSetupBottomSheet(
@@ -1125,7 +1135,7 @@ private fun MouseButtonPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun MouseButtonDisabledPreview() {
     KeyMapperTheme {
@@ -1133,6 +1143,7 @@ private fun MouseButtonDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         MouseTriggerSetupBottomSheet(
@@ -1149,7 +1160,7 @@ private fun MouseButtonDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun OtherButtonPreview() {
     KeyMapperTheme {
@@ -1157,6 +1168,7 @@ private fun OtherButtonPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         OtherTriggerSetupBottomSheet(
@@ -1174,7 +1186,7 @@ private fun OtherButtonPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun OtherButtonDisabledPreview() {
     KeyMapperTheme {
@@ -1182,6 +1194,7 @@ private fun OtherButtonDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         OtherTriggerSetupBottomSheet(
@@ -1199,7 +1212,7 @@ private fun OtherButtonDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun GamepadDpadPreview() {
     KeyMapperTheme {
@@ -1207,6 +1220,7 @@ private fun GamepadDpadPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1224,7 +1238,7 @@ private fun GamepadDpadPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun GamepadDpadDisabledPreview() {
     KeyMapperTheme {
@@ -1232,6 +1246,7 @@ private fun GamepadDpadDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1249,7 +1264,7 @@ private fun GamepadDpadDisabledPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun GamepadSimpleButtonsPreview() {
     KeyMapperTheme {
@@ -1257,6 +1272,7 @@ private fun GamepadSimpleButtonsPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1274,7 +1290,7 @@ private fun GamepadSimpleButtonsPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun GamepadSimpleButtonsDisabledPreview() {
     KeyMapperTheme {
@@ -1282,6 +1298,7 @@ private fun GamepadSimpleButtonsDisabledPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         GamepadTriggerSetupBottomSheet(

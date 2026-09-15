@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -453,7 +454,7 @@ data class ChangeFlashlightStrengthActionState(
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewBothLenses() {
     KeyMapperTheme {
@@ -461,6 +462,7 @@ private fun PreviewBothLenses() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         EnableFlashlightActionBottomSheet(
@@ -489,7 +491,7 @@ private fun PreviewBothLenses() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewOnlyBackLens() {
     KeyMapperTheme {
@@ -497,6 +499,7 @@ private fun PreviewOnlyBackLens() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         EnableFlashlightActionBottomSheet(
@@ -520,7 +523,7 @@ private fun PreviewOnlyBackLens() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewOnlyBackLensChangeStrength() {
     KeyMapperTheme {
@@ -528,6 +531,7 @@ private fun PreviewOnlyBackLensChangeStrength() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ChangeFlashlightStrengthActionBottomSheet(
@@ -549,7 +553,7 @@ private fun PreviewOnlyBackLensChangeStrength() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(apiLevel = Build.VERSION_CODES.R)
+@Preview(apiLevel = Build.VERSION_CODES.R, showSystemUi = true)
 @Composable
 private fun PreviewUnsupportedAndroidVersion() {
     KeyMapperTheme {
@@ -557,6 +561,7 @@ private fun PreviewUnsupportedAndroidVersion() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         EnableFlashlightActionBottomSheet(

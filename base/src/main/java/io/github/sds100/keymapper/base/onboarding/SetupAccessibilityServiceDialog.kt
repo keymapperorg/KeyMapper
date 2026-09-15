@@ -192,7 +192,7 @@ private fun RestrictedSettingText(modifier: Modifier = Modifier) {
     )
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun EnableAccessibilityServiceDialogPreview() {
     KeyMapperTheme {
@@ -204,7 +204,7 @@ private fun EnableAccessibilityServiceDialogPreview() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun EnableAccessibilityServiceDialogRestrictedPreview() {
     KeyMapperTheme {
@@ -216,7 +216,7 @@ private fun EnableAccessibilityServiceDialogRestrictedPreview() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun RestartAccessibilityServiceDialogPreview() {
     KeyMapperTheme {
@@ -227,7 +227,7 @@ private fun RestartAccessibilityServiceDialogPreview() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun CantFindAccessibilitySettingsDialogPreview() {
     KeyMapperTheme {

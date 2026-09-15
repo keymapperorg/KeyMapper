@@ -30,6 +30,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -296,7 +297,7 @@ private fun FixKeyEventActionOptionCard(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun InputMethodPreview() {
     KeyMapperTheme {
@@ -304,6 +305,7 @@ private fun InputMethodPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         FixKeyEventActionBottomSheet(
@@ -321,7 +323,7 @@ private fun InputMethodPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ExpertModePreview() {
     KeyMapperTheme {
@@ -329,6 +331,7 @@ private fun ExpertModePreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         FixKeyEventActionBottomSheet(
@@ -342,7 +345,7 @@ private fun ExpertModePreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ExpertModeUnsupportedPreview() {
     KeyMapperTheme {
@@ -350,6 +353,7 @@ private fun ExpertModeUnsupportedPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         FixKeyEventActionBottomSheet(

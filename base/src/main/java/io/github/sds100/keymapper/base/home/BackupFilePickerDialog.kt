@@ -95,7 +95,7 @@ private fun BackupFileListRow(modifier: Modifier = Modifier, name: String, onCli
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewBackupFilePickerDialog() {
     KeyMapperTheme {
@@ -112,7 +112,7 @@ private fun PreviewBackupFilePickerDialog() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewBackupFilePickerDialogEmpty() {
     KeyMapperTheme {

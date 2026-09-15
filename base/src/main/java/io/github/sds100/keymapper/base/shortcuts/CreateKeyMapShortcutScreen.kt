@@ -438,7 +438,7 @@ private fun PreviewEmpty() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ShortcutNameDialogPreview() {
     KeyMapperTheme {

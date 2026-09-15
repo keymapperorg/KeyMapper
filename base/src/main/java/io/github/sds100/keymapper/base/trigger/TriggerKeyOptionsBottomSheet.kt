@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -403,7 +404,7 @@ private fun isVerticalCompactLayout(): Boolean {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewKeyEvent() {
     KeyMapperTheme {
@@ -411,6 +412,7 @@ private fun PreviewKeyEvent() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TriggerKeyOptionsBottomSheet(
@@ -441,7 +443,7 @@ private fun PreviewKeyEvent() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(heightDp = 400, widthDp = 300)
+@Preview(heightDp = 400, widthDp = 300, showSystemUi = true)
 @Composable
 private fun PreviewKeyEventTiny() {
     KeyMapperTheme {
@@ -449,6 +451,7 @@ private fun PreviewKeyEventTiny() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TriggerKeyOptionsBottomSheet(
@@ -479,7 +482,7 @@ private fun PreviewKeyEventTiny() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewEvdev() {
     KeyMapperTheme {
@@ -487,6 +490,7 @@ private fun PreviewEvdev() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TriggerKeyOptionsBottomSheet(
@@ -505,7 +509,7 @@ private fun PreviewEvdev() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun AssistantPreview() {
     KeyMapperTheme {
@@ -513,6 +517,7 @@ private fun AssistantPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TriggerKeyOptionsBottomSheet(
@@ -526,7 +531,7 @@ private fun AssistantPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun FloatingButtonPreview() {
     KeyMapperTheme {
@@ -534,6 +539,7 @@ private fun FloatingButtonPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TriggerKeyOptionsBottomSheet(

@@ -18,6 +18,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -308,7 +309,7 @@ private fun ModifySettingActionBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     KeyMapperTheme {
@@ -316,6 +317,7 @@ private fun Preview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
@@ -330,7 +332,7 @@ private fun Preview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
@@ -338,6 +340,7 @@ private fun PreviewEmpty() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
@@ -352,7 +355,7 @@ private fun PreviewEmpty() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewPermissionNotGranted() {
     KeyMapperTheme {
@@ -360,6 +363,7 @@ private fun PreviewPermissionNotGranted() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
@@ -375,7 +379,7 @@ private fun PreviewPermissionNotGranted() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewTestLoading() {
     KeyMapperTheme {
@@ -383,6 +387,7 @@ private fun PreviewTestLoading() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
@@ -398,7 +403,7 @@ private fun PreviewTestLoading() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewTestSuccess() {
     KeyMapperTheme {
@@ -406,6 +411,7 @@ private fun PreviewTestSuccess() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
@@ -421,7 +427,7 @@ private fun PreviewTestSuccess() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewTestError() {
     KeyMapperTheme {
@@ -429,6 +435,7 @@ private fun PreviewTestError() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         ModifySettingActionBottomSheet(
