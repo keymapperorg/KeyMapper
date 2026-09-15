@@ -9,6 +9,7 @@
 - #701 redesigned the action list with expandable action cards that show each option and error.
 - #1465 actions can be turned off individually without deleting them.
 - #701 the delay before the next action is now set with a button between actions instead of in the action options.
+- Redesigned the action options with grouped repeat, burst, hold down and delay sections.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 
@@ -24,7 +25,6 @@
 
 ## Added
 
-- Redesigned the action options with grouped repeat, burst, hold down and delay sections, and actions can now be given a custom name.
 - #2238 Add a "Reduce app killing" card to Expert Mode on Xiaomi/Redmi/Poco devices with steps to whitelist the app from battery optimisation, disable MIUI optimization, enable autostart, and adjust battery saver settings.
 - Target Android 17 SDK.
 - [#2227](https://github.com/keymapperorg/KeyMapper/issues/2227) Add a step to the Expert Mode setup wizard to grant local network access permission, required for ADB on Android 17+.
