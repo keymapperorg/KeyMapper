@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -171,7 +172,7 @@ private fun ToastActionBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ToastActionBottomSheetPreview() {
     KeyMapperTheme {
@@ -179,6 +180,7 @@ private fun ToastActionBottomSheetPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
         ToastActionBottomSheet(
             sheetState = sheetState,
@@ -191,7 +193,7 @@ private fun ToastActionBottomSheetPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun ToastActionBottomSheetEmptyPreview() {
     KeyMapperTheme {
@@ -199,6 +201,7 @@ private fun ToastActionBottomSheetEmptyPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
         ToastActionBottomSheet(
             sheetState = sheetState,

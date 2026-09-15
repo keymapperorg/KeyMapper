@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -200,7 +201,7 @@ private fun VolumeActionBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(heightDp = 400)
+@Preview(heightDp = 400, showSystemUi = true)
 @Composable
 private fun PreviewVolumeActionBottomSheet() {
     KeyMapperTheme {
@@ -208,6 +209,7 @@ private fun PreviewVolumeActionBottomSheet() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         var state by remember {
@@ -232,7 +234,7 @@ private fun PreviewVolumeActionBottomSheet() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewVolumeActionBottomSheetDefaultStream() {
     KeyMapperTheme {
@@ -240,6 +242,7 @@ private fun PreviewVolumeActionBottomSheetDefaultStream() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         var state by remember {

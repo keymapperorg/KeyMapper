@@ -238,7 +238,7 @@ private fun PreviewDefault() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewDialog() {
     KeyMapperTheme {

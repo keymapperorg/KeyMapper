@@ -18,6 +18,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -285,7 +286,7 @@ private fun CreateNotificationActionBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun CreateNotificationActionBottomSheetPreview() {
     KeyMapperTheme {
@@ -293,6 +294,7 @@ private fun CreateNotificationActionBottomSheetPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         CreateNotificationActionBottomSheet(
@@ -309,7 +311,7 @@ private fun CreateNotificationActionBottomSheetPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun CreateNotificationActionBottomSheetEmptyPreview() {
     KeyMapperTheme {
@@ -317,6 +319,7 @@ private fun CreateNotificationActionBottomSheetEmptyPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         CreateNotificationActionBottomSheet(
