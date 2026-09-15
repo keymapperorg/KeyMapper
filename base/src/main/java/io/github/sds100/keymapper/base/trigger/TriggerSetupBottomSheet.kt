@@ -29,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
@@ -58,7 +59,6 @@ import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpertModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
@@ -838,7 +838,7 @@ fun TriggerSetupBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
 
-    KeyMapperModalBottomSheet(
+    ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,

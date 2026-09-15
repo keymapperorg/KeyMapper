@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -90,7 +90,7 @@ private fun StepMediaActionBottomSheet(
         else -> R.string.action_step_forward_media
     }
 
-    KeyMapperModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,

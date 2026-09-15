@@ -28,6 +28,7 @@ import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
@@ -45,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSliderThumb
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
@@ -348,7 +348,7 @@ private fun FlashlightActionBottomSheet(
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
-    KeyMapperModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,

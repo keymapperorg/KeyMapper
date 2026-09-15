@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
@@ -30,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.common.utils.SizeKM
 import kotlinx.coroutines.launch
 
@@ -66,7 +66,7 @@ private fun DisplayResolutionConstraintBottomSheet(
 ) {
     val scope = rememberCoroutineScope()
 
-    KeyMapperModalBottomSheet(
+    ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,

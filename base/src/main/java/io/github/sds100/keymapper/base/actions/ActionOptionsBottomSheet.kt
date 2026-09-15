@@ -22,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -41,7 +42,6 @@ import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
 import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperModalBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
@@ -56,7 +56,7 @@ fun ActionOptionsBottomSheet(
     onDismissRequest: () -> Unit = {},
     callback: ActionOptionsBottomSheetCallback,
 ) {
-    KeyMapperModalBottomSheet(
+    ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
