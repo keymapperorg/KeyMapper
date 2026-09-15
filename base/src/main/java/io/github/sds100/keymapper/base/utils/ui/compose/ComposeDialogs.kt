@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,10 +23,10 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDialog(
-    title: String,
+    title: String? = null,
     text: String? = null,
     confirmButton: @Composable () -> Unit = {},
-    dismissButton: @Composable () -> Unit,
+    dismissButton: (@Composable () -> Unit)? = null,
     onDismissRequest: () -> Unit,
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -40,10 +39,10 @@ fun CustomDialog(
 
 @Composable
 fun CustomDialogContent(
-    title: String,
+    title: String?,
     text: String? = null,
     confirmButton: @Composable () -> Unit,
-    dismissButton: @Composable () -> Unit = {},
+    dismissButton: (@Composable () -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit),
 ) {
     Surface(
@@ -52,16 +51,20 @@ fun CustomDialogContent(
         tonalElevation = AlertDialogDefaults.TonalElevation,
     ) {
         Column {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp),
-                text = title,
-                style = MaterialTheme.typography.headlineSmall,
-                color = AlertDialogDefaults.titleContentColor,
-            )
+            if (title != null) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp),
+                    text = title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = AlertDialogDefaults.titleContentColor,
+                )
+            }
+
             if (text != null) {
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -75,7 +78,7 @@ fun CustomDialogContent(
                     color = AlertDialogDefaults.textContentColor,
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+
 //                HorizontalDivider()
             Box(Modifier.weight(1f, fill = false), content = content)
 //                HorizontalDivider()
@@ -85,10 +88,11 @@ fun CustomDialogContent(
                     .fillMaxWidth()
                     .align(Alignment.End)
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.End),
             ) {
-                dismissButton()
-                Spacer(modifier = Modifier.width(16.dp))
+                if (dismissButton != null) {
+                    dismissButton()
+                }
                 confirmButton()
             }
         }
