@@ -7,7 +7,7 @@
 - #701 new action options bottom sheet design.
 - #701 you can now give custom names to actions, to make it easier to identify key maps.
 - #701 redesigned the action list with expandable action cards that show each option and error.
-- #701 actions can be turned off individually without deleting them.
+- #1465 actions can be turned off individually without deleting them.
 - #701 the delay before the next action is now set with a button between actions instead of in the action options.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
