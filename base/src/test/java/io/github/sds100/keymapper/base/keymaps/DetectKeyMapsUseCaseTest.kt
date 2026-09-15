@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.base.keymaps
 
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
@@ -209,6 +211,33 @@ class DetectKeyMapsUseCaseTest {
         )
 
         assertThat(models, Matchers.empty())
+    }
+
+    @Test
+    fun `Key map has disabled actions then remove the disabled actions`() {
+        val enabledAction = Action(data = ActionData.GoHome)
+        val disabledAction = Action(data = ActionData.ConsumeKeyEvent, isEnabled = false)
+        val keyMap = KeyMap(actionList = listOf(enabledAction, disabledAction))
+
+        val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
+            keyMaps = listOf(keyMap),
+            groups = emptyList(),
+        )
+
+        assertThat(models.single().keyMap.actionList, Matchers.contains(enabledAction))
+    }
+
+    @Test
+    fun `Key map has only disabled actions then action list is empty`() {
+        val disabledAction = Action(data = ActionData.ConsumeKeyEvent, isEnabled = false)
+        val keyMap = KeyMap(actionList = listOf(disabledAction))
+
+        val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
+            keyMaps = listOf(keyMap),
+            groups = emptyList(),
+        )
+
+        assertThat(models.single().keyMap.actionList, Matchers.empty())
     }
 
     @Test

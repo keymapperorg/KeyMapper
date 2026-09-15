@@ -905,63 +905,7 @@ class ActionUiHelper(
     }
 
     fun getOptionLabels(keyMap: KeyMap, action: Action) = buildList {
-        if (keyMap.isRepeatingActionsAllowed() && action.repeat) {
-            val repeatDescription = buildString {
-                append(getString(R.string.flag_repeat_build_description_start))
-
-                val repeatLimit = when {
-                    action.repeatLimit != null -> action.repeatLimit
-
-                    action.repeatMode == RepeatMode.LIMIT_REACHED -> 1
-
-                    // and is null
-                    else -> null
-                }
-
-                if (repeatLimit != null) {
-                    append(" ")
-                    append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
-                }
-
-                if (action.repeatRate != null) {
-                    append(" ")
-                    append(
-                        getString(
-                            R.string.flag_repeat_build_description_repeat_rate,
-                            action.repeatRate,
-                        ),
-                    )
-                }
-
-                if (action.repeatDelay != null) {
-                    append(" ")
-                    append(
-                        getString(
-                            R.string.flag_repeat_build_description_repeat_delay,
-                            action.repeatDelay,
-                        ),
-                    )
-                }
-
-                append(" ")
-
-                when (action.repeatMode) {
-                    RepeatMode.TRIGGER_RELEASED -> {
-                        append(getString(R.string.flag_repeat_build_description_until_released))
-                    }
-
-                    RepeatMode.TRIGGER_PRESSED_AGAIN -> {
-                        append(
-                            getString(R.string.flag_repeat_build_description_until_pressed_again),
-                        )
-                    }
-
-                    else -> Unit
-                }
-            }
-
-            add(repeatDescription)
-        }
+        getRepeatDescription(keyMap, action)?.let { add(it) }
 
         if (keyMap.isHoldingDownActionAllowed(action) &&
             action.holdDown &&
@@ -975,6 +919,102 @@ class ActionUiHelper(
             action.stopHoldDownWhenTriggerPressedAgain
         ) {
             add(getString(R.string.flag_hold_down_until_pressed_again))
+        }
+    }
+
+    /**
+     * @return null if the action does not repeat.
+     */
+    fun getRepeatDescription(keyMap: KeyMap, action: Action): String? {
+        if (!keyMap.isRepeatingActionsAllowed() || !action.repeat) {
+            return null
+        }
+
+        return buildString {
+            append(getString(R.string.flag_repeat_build_description_start))
+
+            val repeatLimit = when {
+                action.repeatLimit != null -> action.repeatLimit
+
+                action.repeatMode == RepeatMode.LIMIT_REACHED -> 1
+
+                // and is null
+                else -> null
+            }
+
+            if (repeatLimit != null) {
+                append(" ")
+                append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
+            }
+
+            if (action.repeatRate != null) {
+                append(" ")
+                append(
+                    getString(
+                        R.string.flag_repeat_build_description_repeat_rate,
+                        action.repeatRate,
+                    ),
+                )
+            }
+
+            if (action.repeatDelay != null) {
+                append(" ")
+                append(
+                    getString(
+                        R.string.flag_repeat_build_description_repeat_delay,
+                        action.repeatDelay,
+                    ),
+                )
+            }
+
+            append(" ")
+
+            when (action.repeatMode) {
+                RepeatMode.TRIGGER_RELEASED -> {
+                    append(getString(R.string.flag_repeat_build_description_until_released))
+                }
+
+                RepeatMode.TRIGGER_PRESSED_AGAIN -> {
+                    append(
+                        getString(R.string.flag_repeat_build_description_until_pressed_again),
+                    )
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    /**
+     * @return null if the action is not performed in a burst.
+     */
+    fun getBurstDescription(action: Action): String? {
+        val multiplier = action.multiplier ?: return null
+
+        if (multiplier <= 1) {
+            return null
+        }
+
+        return getString(R.string.action_list_burst, multiplier)
+    }
+
+    /**
+     * @return null if the action is not held down.
+     */
+    fun getHoldDownDescription(keyMap: KeyMap, action: Action): String? {
+        if (!keyMap.isHoldingDownActionAllowed(action) || !action.holdDown) {
+            return null
+        }
+
+        return when {
+            keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) &&
+                action.holdDownDuration != null ->
+                getString(R.string.action_list_hold_down_duration, action.holdDownDuration)
+
+            action.stopHoldDownWhenTriggerPressedAgain ->
+                getString(R.string.flag_hold_down_until_pressed_again)
+
+            else -> getString(R.string.flag_hold_down)
         }
     }
 }

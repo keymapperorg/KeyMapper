@@ -18,7 +18,6 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.HourglassEmpty
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.TouchApp
@@ -176,11 +175,6 @@ fun ActionOptionsBottomSheet(
             if (state.showHoldDown) {
                 Spacer(modifier = Modifier.height(16.dp))
                 HoldDownOptions(state = state, callback = callback)
-            }
-
-            if (state.showDelayBeforeNextAction) {
-                Spacer(modifier = Modifier.height(16.dp))
-                DelayOptions(state = state, callback = callback)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -502,34 +496,6 @@ private fun HoldDownOptions(state: ActionOptionsState, callback: ActionOptionsBo
     }
 }
 
-@Composable
-private fun DelayOptions(state: ActionOptionsState, callback: ActionOptionsBottomSheetCallback) {
-    Column {
-        OptionsHeaderRow(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            icon = Icons.Rounded.HourglassEmpty,
-            text = stringResource(R.string.action_options_delay_header),
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        val delayMin = SliderMinimums.DELAY_BEFORE_NEXT_ACTION.toFloat()
-        val delayMax = SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat()
-        SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            title = stringResource(R.string.extra_label_delay_before_next_action),
-            defaultValue = state.defaultDelayBeforeNextAction.toFloat(),
-            value = state.delayBeforeNextAction.toFloat(),
-            valueText = { "${it.toInt()} ms" },
-            onValueChange = { callback.onDelayBeforeNextActionChanged(it.toInt()) },
-            valueRange = delayMin..delayMax,
-            stepSize = SliderStepSizes.DELAY_BEFORE_NEXT_ACTION,
-        )
-    }
-}
-
 interface ActionOptionsBottomSheetCallback {
     fun onEditClick() = run { }
     fun onReplaceClick() = run { }
@@ -548,7 +514,6 @@ interface ActionOptionsBottomSheetCallback {
      */
     fun onSelectHoldDownMode(holdDownMode: HoldDownMode?) = run { }
     fun onHoldDownDurationChanged(duration: Int) = run { }
-    fun onDelayBeforeNextActionChanged(delay: Int) = run { }
     fun onMultiplierChanged(multiplier: Int) = run { }
 }
 
@@ -589,10 +554,6 @@ private val previewState = ActionOptionsState(
     defaultHoldDownDuration = 400,
 
     holdDownMode = HoldDownMode.TRIGGER_RELEASED,
-
-    showDelayBeforeNextAction = true,
-    delayBeforeNextAction = 10000,
-    defaultDelayBeforeNextAction = 5000,
 
     multiplier = 4,
     defaultMultiplier = 1,

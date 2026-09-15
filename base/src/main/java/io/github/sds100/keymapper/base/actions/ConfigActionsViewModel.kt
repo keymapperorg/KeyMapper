@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.actions
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +18,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -54,12 +52,13 @@ class ConfigActionsViewModel @Inject constructor(
     private val onboardingUseCase: OnboardingUseCase,
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
-    onboardingTipDelegate: OnboardingTipDelegate,
+    private val onboardingTipDelegate: OnboardingTipDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
     ActionOptionsBottomSheetCallback,
+    ActionListCallback,
     SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
@@ -114,13 +113,13 @@ class ConfigActionsViewModel @Inject constructor(
         return config.keyMap.first().dataOrNull()?.actionList?.singleOrNull { it.uid == uid }?.data
     }
 
-    fun onClickShortcut(action: ActionData) {
+    override fun onClickShortcut(action: ActionData) {
         viewModelScope.launch {
             config.addAction(action)
         }
     }
 
-    fun onFixError(actionUid: String) {
+    override fun onFixErrorClick(actionUid: String) {
         viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             val error =
@@ -168,7 +167,7 @@ class ConfigActionsViewModel @Inject constructor(
         }
     }
 
-    fun onMoveAction(fromIndex: Int, toIndex: Int) {
+    override fun onMove(fromIndex: Int, toIndex: Int) {
         config.moveAction(fromIndex, toIndex)
     }
 
@@ -176,11 +175,11 @@ class ConfigActionsViewModel @Inject constructor(
         config.removeAction(actionUid)
     }
 
-    fun onEditClick(actionUid: String) {
+    override fun onEditClick(actionUid: String) {
         actionOptionsUid.value = actionUid
     }
 
-    fun onTestClick(actionUid: String) {
+    override fun onTestClick(actionUid: String) {
         viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             attemptTestAction(actionData)
@@ -245,8 +244,20 @@ class ConfigActionsViewModel @Inject constructor(
         )
     }
 
-    override fun onDelayBeforeNextActionChanged(delay: Int) {
-        actionOptionsUid.value?.let { uid -> config.setDelayBeforeNextAction(uid, delay) }
+    fun onDelayChanged(actionUid: String, delay: Int) {
+        config.setDelayBeforeNextAction(actionUid, delay)
+    }
+
+    override fun onEnabledChange(actionUid: String, enabled: Boolean) {
+        config.setActionEnabled(actionUid, enabled)
+    }
+
+    override fun onActionTipDismiss() {
+        onActionTipDismissClick()
+    }
+
+    override fun onTipButtonClick(id: String) {
+        onboardingTipDelegate.onTipButtonClick(id)
     }
 
     override fun onMultiplierChanged(multiplier: Int) {
@@ -275,7 +286,10 @@ class ConfigActionsViewModel @Inject constructor(
 
     override fun onCustomNameChanged(name: String) {
         val uid = actionOptionsUid.value ?: return
+        onRenameAction(uid, name)
+    }
 
+    fun onRenameAction(uid: String, name: String) {
         viewModelScope.launch {
             val actionData = getActionData(uid) ?: return@launch
             val showDeviceDescriptors = displayAction.showDeviceDescriptors.first()
@@ -330,60 +344,36 @@ class ConfigActionsViewModel @Inject constructor(
     ): List<ActionListItemModel> {
         val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
 
+        val midDot = getString(R.string.middot)
+
         return keyMap.actionList.mapIndexed { index, action ->
-
-            val title: String = if (action.multiplier != null && action.multiplier > 1) {
-                val multiplier = action.multiplier
-                "${multiplier}x ${uiHelper.getTitle(action.data, showDeviceDescriptors)}"
-            } else {
-                uiHelper.getTitle(action, showDeviceDescriptors)
-            }
-
             val icon: ComposeIconInfo = uiHelper.getIcon(action.data)
             val error: KMError? = actionErrors[action.data]
 
-            val extraInfo = buildString {
-                val midDot = getString(R.string.middot)
+            val repeatText = uiHelper.getRepeatDescription(keyMap, action)
+            val burstText = uiHelper.getBurstDescription(action)
+            val holdDownText = uiHelper.getHoldDownDescription(keyMap, action)
 
-                uiHelper.getOptionLabels(keyMap, action).forEachIndexed { index, label ->
-                    if (index != 0) {
-                        append(" $midDot ")
-                    }
-
-                    append(label)
-                }
-
-                action.delayBeforeNextAction.apply {
-                    if (keyMap.isDelayBeforeNextActionAllowed() &&
-                        action.delayBeforeNextAction != null
-                    ) {
-                        if (this@buildString.isNotBlank()) {
-                            append(" $midDot ")
-                        }
-
-                        append(
-                            getString(
-                                R.string.action_title_wait,
-                                action.delayBeforeNextAction,
-                            ),
-                        )
-                    }
-                }
-            }.takeIf { it.isNotBlank() }
-
-            val linkType = when {
-                index < keyMap.actionList.lastIndex -> LinkType.ARROW
-                else -> LinkType.HIDDEN
-            }
+            val summary = listOfNotNull(repeatText, burstText, holdDownText)
+                .joinToString(" $midDot ")
+                .takeIf { it.isNotBlank() }
 
             ActionListItemModel(
                 id = action.uid,
                 icon = icon,
-                text = title,
-                secondaryText = extraInfo,
+                title = uiHelper.getTitle(action, showDeviceDescriptors),
+                isCustomName = !action.customName.isNullOrBlank(),
+                isEnabled = action.isEnabled,
+                summary = summary,
                 error = error?.getFullMessage(this),
                 isErrorFixable = error?.isFixable ?: true,
-                linkType = linkType,
+                showRepeat = keyMap.isRepeatingActionsAllowed(),
+                repeatText = repeatText,
+                burstText = burstText,
+                showHoldDown = keyMap.isHoldingDownActionAllowed(action),
+                holdDownText = holdDownText,
+                showDelayChip = index < keyMap.actionList.lastIndex,
+                delayBeforeNextAction = action.delayBeforeNextAction,
             )
         }
     }
@@ -465,10 +455,6 @@ class ConfigActionsViewModel @Inject constructor(
                 HoldDownMode.TRIGGER_RELEASED
             },
 
-            showDelayBeforeNextAction = keyMap.isDelayBeforeNextActionAllowed(),
-            delayBeforeNextAction = action.delayBeforeNextAction ?: 0,
-            defaultDelayBeforeNextAction = 0,
-
             multiplier = action.multiplier ?: 1,
             defaultMultiplier = 1,
         )
@@ -487,56 +473,3 @@ sealed class ConfigActionsState {
         override val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
     ) : ConfigActionsState()
 }
-
-data class ActionListItemModel(
-    val id: String,
-    val icon: ComposeIconInfo,
-    val text: String,
-    val secondaryText: String?,
-    val error: String? = null,
-    val isErrorFixable: Boolean = true,
-    val linkType: LinkType = LinkType.HIDDEN,
-)
-
-data class ActionOptionsState(
-    val title: String,
-    val actionTypeTitle: String,
-    val actionTypeIcon: ImageVector,
-
-    val showEditButton: Boolean,
-
-    val showRepeat: Boolean,
-    val isRepeatChecked: Boolean,
-
-    val showRepeatRate: Boolean,
-    val showRepeatRateWarning: Boolean,
-    val repeatRate: Int,
-    val defaultRepeatRate: Int,
-
-    val showRepeatDelay: Boolean,
-    val repeatDelay: Int,
-    val defaultRepeatDelay: Int,
-
-    val showRepeatLimit: Boolean,
-    val repeatLimit: Int,
-    val defaultRepeatLimit: Int,
-
-    val allowedRepeatModes: Set<RepeatMode>,
-    val repeatMode: RepeatMode,
-
-    val showHoldDown: Boolean,
-    val isHoldDownChecked: Boolean,
-
-    val showHoldDownDuration: Boolean,
-    val holdDownDuration: Int,
-    val defaultHoldDownDuration: Int,
-
-    val holdDownMode: HoldDownMode,
-
-    val showDelayBeforeNextAction: Boolean,
-    val delayBeforeNextAction: Int,
-    val defaultDelayBeforeNextAction: Int,
-
-    val multiplier: Int,
-    val defaultMultiplier: Int,
-)

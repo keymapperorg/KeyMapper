@@ -70,7 +70,8 @@
     <string name="reset">Reset</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>
 
-    <string name="action_title_wait">Wait %sms</string>
+    <string name="action_title_wait_ms">Wait %sms</string>
+    <string name="action_title_wait_secs">Wait %ss</string>
 
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>
@@ -1802,6 +1803,16 @@
     <string name="action_list_item_remove">Remove</string>
     <string name="action_list_item_edit">Edit</string>
     <string name="action_list_item_test">Test</string>
+    <string name="action_list_item_expand">Expand</string>
+    <string name="action_list_item_collapse">Collapse</string>
+    <string name="action_list_item_rename">Rename</string>
+    <string name="action_list_add_delay">Add delay</string>
+    <string name="action_list_delay_remove">Remove</string>
+    <string name="action_list_no_repeat">No repeat</string>
+    <string name="action_list_no_burst">No burst</string>
+    <string name="action_list_burst">Burst %dx</string>
+    <string name="action_list_no_hold_down">No hold down</string>
+    <string name="action_list_hold_down_duration">Hold down for %dms</string>
     <string name="actions_recyclerview_placeholder">Add actions to set what the key map should do once triggered.</string>
     <string name="recently_used_actions">Recently used actions</string>
     <string name="action_options_title">Action options</string>

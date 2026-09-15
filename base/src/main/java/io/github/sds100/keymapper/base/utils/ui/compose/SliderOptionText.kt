@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SliderOptionText(
     modifier: Modifier = Modifier,
-    title: String,
+    title: String?,
     value: Float,
     defaultValue: Float,
     valueText: (Float) -> String,
@@ -77,13 +77,15 @@ fun SliderOptionText(
     }
 
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier,
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (title != null) {
+            Text(
+                modifier = Modifier,
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             val interactionSource = remember { MutableInteractionSource() }
@@ -138,7 +140,7 @@ fun SliderOptionText(
 private fun ValueDialog(
     initialValue: Int?,
     placeholderValue: String?,
-    title: String,
+    title: String?,
     onDismissRequest: () -> Unit,
     onSaveClick: (Int?) -> Unit,
 ) {
@@ -206,6 +208,26 @@ private fun Preview() {
             SliderOptionText(
                 modifier = Modifier.width(400.dp),
                 title = "Repeat delay",
+                value = 50f,
+                defaultValue = 500f,
+                valueText = { "${it.roundToInt()} ms" },
+                isEnabled = true,
+                onValueChange = {},
+                valueRange = 0f..1000f,
+                stepSize = 50,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewNoTitle() {
+    KeyMapperTheme {
+        Surface {
+            SliderOptionText(
+                modifier = Modifier.width(400.dp),
+                title = null,
                 value = 50f,
                 defaultValue = 500f,
                 valueText = { "${it.roundToInt()} ms" },

@@ -34,6 +34,11 @@ data class Action(
      * A name set by the user that is shown instead of the generated title.
      */
     val customName: String? = null,
+
+    /**
+     * Disabled actions are not performed when the key map is triggered.
+     */
+    val isEnabled: Boolean = true,
 )
 
 object ActionEntityMapper {
@@ -109,6 +114,7 @@ object ActionEntityMapper {
             delayBeforeNextAction = delayBeforeNextAction,
             multiplier = multiplier,
             customName = customName,
+            isEnabled = !entity.flags.hasFlag(ActionEntity.ACTION_FLAG_DISABLED),
         )
     }
 
@@ -198,6 +204,10 @@ object ActionEntityMapper {
 
         if (keyMap.isHoldingDownActionAllowed(action) && action.holdDown) {
             flags = flags.withFlag(ActionEntity.ACTION_FLAG_HOLD_DOWN)
+        }
+
+        if (!action.isEnabled) {
+            flags = flags.withFlag(ActionEntity.ACTION_FLAG_DISABLED)
         }
 
         return@map ActionEntity(

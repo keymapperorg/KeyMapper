@@ -189,6 +189,10 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun setActionEnabled(uid: String, enabled: Boolean) {
+        setActionOption(uid) { action -> action.copy(isEnabled = enabled) }
+    }
+
     private suspend fun getActionShortcuts(json: String?): List<ActionData> {
         if (json == null) {
             return emptyList()
@@ -282,6 +286,7 @@ interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setActionMultiplier(uid: String, multiplier: Int)
     fun setDelayBeforeNextAction(uid: String, delay: Int)
     fun setActionCustomName(uid: String, customName: String?)
+    fun setActionEnabled(uid: String, enabled: Boolean)
     fun setActionRepeatRate(uid: String, repeatRate: Int)
     fun setActionRepeatLimit(uid: String, repeatLimit: Int)
     fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)

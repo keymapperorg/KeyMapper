@@ -135,6 +135,24 @@ class ConfigActionsUseCaseTest {
         assertThat(useCase.keyMap.value.dataOrNull()!!.actionList[0].customName, nullValue())
     }
 
+    @Test
+    fun `disable an action, only that action is disabled`() = runTest(testDispatcher) {
+        configKeyMapState.setKeyMap(KeyMap())
+        useCase.addAction(ActionData.ConsumeKeyEvent)
+        useCase.addAction(ActionData.GoHome)
+
+        val uid = useCase.keyMap.value.dataOrNull()!!.actionList[0].uid
+
+        useCase.setActionEnabled(uid, false)
+
+        val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
+        assertThat(actionList[0].isEnabled, `is`(false))
+        assertThat(actionList[1].isEnabled, `is`(true))
+
+        useCase.setActionEnabled(uid, true)
+        assertThat(useCase.keyMap.value.dataOrNull()!!.actionList[0].isEnabled, `is`(true))
+    }
+
     /**
      * Issue #852. Add a phone ringing constraint when you add an action
      * to answer a phone call.
