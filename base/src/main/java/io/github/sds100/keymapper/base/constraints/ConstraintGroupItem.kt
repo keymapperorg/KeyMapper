@@ -5,13 +5,17 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,17 +23,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -55,6 +63,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
 import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
+import io.github.sds100.keymapper.base.utils.ui.compose.horizontalFadingEdges
 
 /**
  * The description and error fade out in the first half of the animation so they are invisible
@@ -78,6 +87,23 @@ private val summaryExitTransition: ExitTransition =
         shrinkVertically(
             animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
             shrinkTowards = Alignment.Top,
+        )
+
+/**
+ * Animate both width and height so the title row does not jump when the rename button appears.
+ */
+private val renameButtonEnterTransition: EnterTransition =
+    fadeIn(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
+        expandIn(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            expandFrom = Alignment.CenterStart,
+        )
+
+private val renameButtonExitTransition: ExitTransition =
+    fadeOut(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
+        shrinkOut(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            shrinkTowards = Alignment.CenterStart,
         )
 
 @Composable
@@ -138,19 +164,16 @@ fun ConstraintGroupItem(
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 8.dp),
-                title = title,
+                title = if (isExpanded) {
+                    model.name ?: countBasedTitle
+                } else {
+                    model.name
+                        ?: model.description
+                },
                 model = model,
                 isExpanded = expanded,
+                onRenameClick = onRenameClick,
             )
-
-            IconButton(onClick = onRenameClick) {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(R.string.constraint_group_rename),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
         },
         expandedContent = {
             ExpandedContent(
@@ -179,36 +202,49 @@ private fun HeaderText(
     title: String,
     model: ConstraintGroupListItemModel,
     isExpanded: Boolean,
+    onRenameClick: () -> Unit,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier
+                    .weight(1f, fill = false),
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = renameButtonEnterTransition,
+                exit = renameButtonExitTransition,
+            ) {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                ) {
+                    IconButton(onClick = onRenameClick) {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = Icons.Rounded.Edit,
+                            contentDescription = stringResource(R.string.action_list_item_rename),
+                        )
+                    }
+                }
+            }
+        }
 
         AnimatedVisibility(
             visible = !isExpanded,
             enter = summaryEnterTransition,
             exit = summaryExitTransition,
         ) {
-            Column {
+            if (model.error != null) {
                 Text(
-                    text = model.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+                    text = model.error,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
                 )
-
-                if (model.error != null) {
-                    Text(
-                        text = model.error,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
             }
         }
     }
@@ -269,20 +305,42 @@ private fun ExpandedContent(
 
             Spacer(Modifier.weight(1f))
 
-            IconButton(onClick = onAddConstraintClick) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = stringResource(R.string.constraint_group_add_constraint),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            val scrollState = rememberScrollState()
+
+            // Scroll to the end initially so the delete button is always visible without
+            // needing to scroll.
+            LaunchedEffect(Unit) {
+                scrollState.scrollTo(scrollState.maxValue)
             }
 
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(R.string.constraint_group_delete),
-                    tint = MaterialTheme.colorScheme.error,
-                )
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalFadingEdges(scrollState)
+                    .horizontalScroll(scrollState),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                ) {
+                    IconButton(onClick = onAddConstraintClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = stringResource(
+                                R.string.constraint_group_add_constraint,
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.constraint_group_delete),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
             }
         }
     }
