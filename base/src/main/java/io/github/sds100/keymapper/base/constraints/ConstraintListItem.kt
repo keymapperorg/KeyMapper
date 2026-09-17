@@ -17,11 +17,13 @@ import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -190,7 +192,7 @@ private fun ConstraintListItemSmall(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (model.error != null && model.isErrorFixable) {
@@ -325,19 +327,28 @@ private fun ConstraintListItemMedium(
             overflow = TextOverflow.Ellipsis,
         )
 
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            NotToggle(isNot = model.isNot, onClick = onNotClick)
-
-            if (model.error != null && model.isErrorFixable) {
-                CompactErrorButton(onClick = onFixClick) {
-                    Text(stringResource(R.string.button_fix))
-                }
-            }
-        }
-
         CompositionLocalProvider(
             LocalMinimumInteractiveComponentSize provides 16.dp,
         ) {
+            if (model.error != null && model.isErrorFixable) {
+                IconButton(
+                    modifier = Modifier.size(24.dp),
+                    onClick = onFixClick,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Error,
+                        contentDescription = stringResource(R.string.button_fix),
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            NotToggle(isNot = model.isNot, onClick = onNotClick)
+
             IconButton(onClick = onRemoveClick) {
                 Icon(
                     modifier = Modifier.size(24.dp),
