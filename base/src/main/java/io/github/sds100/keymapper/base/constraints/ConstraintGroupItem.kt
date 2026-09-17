@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper.base.constraints
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -10,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,11 +16,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,14 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,12 +44,14 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
 
 @Composable
 fun ConstraintGroupItem(
     modifier: Modifier = Modifier,
     model: ConstraintGroupListItemModel,
     isExpanded: Boolean,
+    isDraggingEnabled: Boolean = false,
     isDragging: Boolean = false,
     isReorderingEnabled: Boolean = false,
     dragDropState: DragDropState? = null,
@@ -78,13 +67,6 @@ fun ConstraintGroupItem(
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
 ) {
-    val draggableState = rememberDraggableState {
-        dragDropState?.onDrag(Offset(0f, it))
-    }
-
-    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
-    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
-
     val countBasedTitle = when {
         model.constraints.size == 1 -> stringResource(R.string.constraint_group_title_single)
 
@@ -103,126 +85,58 @@ fun ConstraintGroupItem(
 
     val title = model.name ?: countBasedTitle
 
-    ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .semantics {
-                if (isReorderingEnabled) {
-                    customActions = buildList {
-                        onMoveUp?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveUpLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                        onMoveDown?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveDownLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                    }
-                }
-            },
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (isDragging) {
-                MaterialTheme.colorScheme.surfaceContainerHighest
-            } else {
-                MaterialTheme.colorScheme.surfaceContainer
-            },
-        ),
-    ) {
-        Column(modifier = Modifier.animateContentSize()) {
-            Row(
+    ExpandableDraggableCard(
+        modifier = modifier,
+        key = model.uid,
+        isExpanded = isExpanded,
+        isDragging = isDragging,
+        isReorderingEnabled = isReorderingEnabled,
+        isDraggingEnabled = isDraggingEnabled,
+        dragDropState = dragDropState,
+        dragHandleContentDescription = stringResource(R.string.drag_handle_for, title),
+        expandContentDescription = stringResource(R.string.constraint_group_expand),
+        collapseContentDescription = stringResource(R.string.constraint_group_collapse),
+        onExpandedChange = onExpandedChange,
+        onMoveUp = onMoveUp,
+        onMoveDown = onMoveDown,
+        headerContent = { expanded ->
+            HeaderText(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 56.dp)
-                    .clickable { onExpandedChange(!isExpanded) }
+                    .weight(1f)
                     .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Spacer(Modifier.width(8.dp))
+                title = title,
+                model = model,
+                isExpanded = expanded,
+            )
 
-                if (isReorderingEnabled) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .draggable(
-                                state = draggableState,
-                                orientation = Orientation.Vertical,
-                                startDragImmediately = true,
-                                onDragStarted = {
-                                    dragDropState?.onDragStart(model.uid)
-                                },
-                                onDragStopped = { dragDropState?.onDragInterrupted() },
-                            ),
-                        imageVector = Icons.Rounded.DragHandle,
-                        contentDescription = stringResource(R.string.drag_handle_for, title),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-
-                Spacer(Modifier.width(8.dp))
-
-                HeaderText(
-                    modifier = Modifier.weight(1f),
-                    title = title,
-                    model = model,
-                    isExpanded = isExpanded,
-                )
-
-                IconButton(onClick = onRenameClick) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.constraint_group_rename),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-
-                IconButton(onClick = { onExpandedChange(!isExpanded) }) {
-                    Icon(
-                        imageVector = if (isExpanded) {
-                            Icons.Rounded.KeyboardArrowUp
-                        } else {
-                            Icons.Rounded.KeyboardArrowDown
-                        },
-                        contentDescription = if (isExpanded) {
-                            stringResource(R.string.constraint_group_collapse)
-                        } else {
-                            stringResource(R.string.constraint_group_expand)
-                        },
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-
-                Spacer(Modifier.width(4.dp))
-            }
-
-            AnimatedVisibility(visible = isExpanded) {
-                ExpandedContent(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 8.dp,
-                        bottom = 8.dp,
-                        top = 8.dp,
-                    ),
-                    model = model,
-                    onSelectMode = onSelectMode,
-                    onAddConstraintClick = onAddConstraintClick,
-                    onDeleteClick = onDeleteClick,
-                    onRemoveConstraintClick = onRemoveConstraintClick,
-                    onFixConstraintClick = onFixConstraintClick,
-                    onNotClick = onNotClick,
-                    onMoveConstraint = onMoveConstraint,
+            IconButton(onClick = onRenameClick) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = stringResource(R.string.constraint_group_rename),
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
-        }
-    }
+        },
+        expandedContent = {
+            ExpandedContent(
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    end = 8.dp,
+                    bottom = 8.dp,
+                    top = 8.dp,
+                ),
+                model = model,
+                onSelectMode = onSelectMode,
+                onAddConstraintClick = onAddConstraintClick,
+                onDeleteClick = onDeleteClick,
+                onRemoveConstraintClick = onRemoveConstraintClick,
+                onFixConstraintClick = onFixConstraintClick,
+                onNotClick = onNotClick,
+                onMoveConstraint = onMoveConstraint,
+            )
+        },
+    )
 }
 
 @Composable

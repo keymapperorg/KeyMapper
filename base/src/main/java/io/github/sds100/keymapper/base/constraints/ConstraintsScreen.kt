@@ -304,7 +304,7 @@ private fun ConstraintGroupList(
     val groupUids = state.groups.map { it.uid }
 
     // Lists rather than sets so they can be saved in a Bundle.
-    var expandedUids by rememberSaveable { mutableStateOf(groupUids) }
+    var expandedUids by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var knownGroupUids by rememberSaveable { mutableStateOf(groupUids) }
 
     // Expand groups that are added so the user can see the new constraint.
@@ -323,8 +323,6 @@ private fun ConstraintGroupList(
         lazyListState = lazyListState,
         keys = groupUids,
         onMove = onMoveGroup,
-        // Collapse all the groups so they are a similar height while dragging.
-        onStart = { expandedUids = emptyList() },
     )
 
     val orderedGroups = dragDropState.ordered(state.groups) { it.uid }
@@ -368,9 +366,12 @@ private fun ConstraintGroupList(
             ) { isDragging ->
                 Column {
                     ConstraintGroupItem(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         model = group,
                         isExpanded = group.uid in expandedUids,
+                        isDraggingEnabled = orderedGroups.size > 1,
                         isDragging = isDragging,
                         isReorderingEnabled = state.groups.size > 1,
                         dragDropState = dragDropState,

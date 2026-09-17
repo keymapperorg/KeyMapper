@@ -14,10 +14,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,15 +27,10 @@ import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.TouchApp
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -51,15 +42,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,32 +56,14 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
+import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
 /**
  * The Material 3 alpha for disabled content.
  */
 private const val DISABLED_ALPHA = 0.38f
-
-private const val EXPAND_ANIMATION_DURATION = 300
-
-/**
- * The fade and size change share the same duration and easing so the content does not disappear
- * before the card has finished changing shape.
- */
-private val expandTransition: EnterTransition =
-    fadeIn(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
-        expandVertically(
-            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
-            expandFrom = Alignment.Top,
-        )
-
-private val collapseTransition: ExitTransition =
-    fadeOut(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
-        shrinkVertically(
-            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
-            shrinkTowards = Alignment.Top,
-        )
 
 /**
  * The summary fades out in the first half of the animation so it is invisible before the shrink
@@ -161,155 +129,65 @@ fun ActionListItem(
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
 ) {
-    val draggableState = rememberDraggableState {
-        dragDropState?.onDrag(Offset(0f, it))
-    }
-
-    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
-    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
-
     // Only grey out a disabled action when it is collapsed so the expanded options stay readable.
     val contentAlpha by animateFloatAsState(
         targetValue = if (model.isEnabled || isExpanded) 1f else DISABLED_ALPHA,
         animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
     )
 
-    val cardColors = CardDefaults.elevatedCardColors(
-        containerColor = if (isDragging) {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        } else {
-            MaterialTheme.colorScheme.surfaceContainer
-        },
+    ExpandableDraggableCard(
+        modifier = modifier,
+        key = model.id,
+        isExpanded = isExpanded,
+        isDragging = isDragging,
+        isReorderingEnabled = isReorderingEnabled,
+        isDraggingEnabled = isDraggingEnabled,
+        dragDropState = dragDropState,
+        dragHandleContentDescription = stringResource(R.string.drag_handle_for, model.title),
+        expandContentDescription = stringResource(R.string.action_list_item_expand),
+        collapseContentDescription = stringResource(R.string.action_list_item_collapse),
         contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha),
+        onExpandedChange = onExpandedChange,
+        onMoveUp = onMoveUp,
+        onMoveDown = onMoveDown,
+        headerContent = { expanded ->
+            ActionIcon(modifier = Modifier.size(20.dp), icon = model.icon)
+
+            Spacer(Modifier.width(8.dp))
+
+            // The summary shrinks while the rename button grows, so the header's natural
+            // height dips before reaching its final height. Animate straight to the final
+            // size instead so the drag handle, icon and chevron do not bounce.
+            HeaderText(
+                modifier = Modifier
+                    .weight(1f)
+                    .animateBounds(
+                        lookaheadScope = this,
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        boundsTransform = headerBoundsTransform,
+                    ),
+                model = model,
+                isExpanded = expanded,
+                onRenameClick = onRenameClick,
+            )
+        },
+        expandedContent = {
+            ExpandedContent(
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    end = 8.dp,
+                    bottom = 8.dp,
+                    top = 8.dp,
+                ),
+                model = model,
+                onEditClick = onEditClick,
+                onRemoveClick = onRemoveClick,
+                onFixClick = onFixClick,
+                onTestClick = onTestClick,
+                onEnabledChange = onEnabledChange,
+            )
+        },
     )
-
-    ElevatedCard(
-        modifier = modifier
-            .semantics {
-                if (isReorderingEnabled) {
-                    customActions = buildList {
-                        onMoveUp?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveUpLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                        onMoveDown?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveDownLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                    }
-                }
-            },
-        colors = cardColors,
-    ) {
-        LookaheadScope {
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onExpandedChange(!isExpanded) },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(Modifier.width(8.dp))
-
-                    if (isReorderingEnabled) {
-                        Icon(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .draggable(
-                                    state = draggableState,
-                                    enabled = isDraggingEnabled,
-                                    orientation = Orientation.Vertical,
-                                    startDragImmediately = true,
-                                    onDragStarted = {
-                                        dragDropState?.onDragStart(model.id)
-                                    },
-                                    onDragStopped = { dragDropState?.onDragInterrupted() },
-                                ),
-                            imageVector = Icons.Rounded.DragHandle,
-                            contentDescription = stringResource(
-                                R.string.drag_handle_for,
-                                model.title,
-                            ),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-
-                    Spacer(Modifier.width(8.dp))
-
-                    ActionIcon(modifier = Modifier.size(20.dp), icon = model.icon)
-
-                    Spacer(Modifier.width(8.dp))
-
-                    // The summary shrinks while the rename button grows, so the header's natural
-                    // height dips before reaching its final height. Animate straight to the final
-                    // size instead so the drag handle, icon and chevron do not bounce.
-                    HeaderText(
-                        modifier = Modifier
-                            .weight(1f)
-                            .animateBounds(
-                                lookaheadScope = this@LookaheadScope,
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                boundsTransform = headerBoundsTransform,
-                            ),
-                        model = model,
-                        isExpanded = isExpanded,
-                        onRenameClick = onRenameClick,
-                    )
-
-                    CompositionLocalProvider(
-                        LocalMinimumInteractiveComponentSize provides 16.dp,
-                    ) {
-                        IconButton(onClick = { onExpandedChange(!isExpanded) }) {
-                            Icon(
-                                imageVector = if (isExpanded) {
-                                    Icons.Rounded.KeyboardArrowUp
-                                } else {
-                                    Icons.Rounded.KeyboardArrowDown
-                                },
-                                contentDescription = if (isExpanded) {
-                                    stringResource(R.string.action_list_item_collapse)
-                                } else {
-                                    stringResource(R.string.action_list_item_expand)
-                                },
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.width(4.dp))
-                }
-
-                AnimatedVisibility(
-                    visible = isExpanded,
-                    enter = expandTransition,
-                    exit = collapseTransition,
-                ) {
-                    ExpandedContent(
-                        modifier = Modifier.padding(
-                            start = 16.dp,
-                            end = 8.dp,
-                            bottom = 8.dp,
-                            top = 8.dp,
-                        ),
-                        model = model,
-                        onEditClick = onEditClick,
-                        onRemoveClick = onRemoveClick,
-                        onFixClick = onFixClick,
-                        onTestClick = onTestClick,
-                        onEnabledChange = onEnabledChange,
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Composable
