@@ -27,7 +27,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
 
     override fun isSupported(constraint: ConstraintId): KMError? {
         when (constraint) {
-            ConstraintId.FLASHLIGHT_ON, ConstraintId.FLASHLIGHT_OFF -> {
+            ConstraintId.FLASHLIGHT_ON -> {
                 if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
                     cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
                 ) {

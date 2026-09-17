@@ -23,6 +23,7 @@ import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
@@ -168,7 +169,9 @@ class ConfigActionsUseCaseTest {
             useCase.addAction(action)
 
             // THEN
-            verify(mockConfigConstraintsUseCase).addConstraint(any<ConstraintData.PhoneRinging>())
+            verify(
+                mockConfigConstraintsUseCase,
+            ).addConstraint(anyOrNull(), any<ConstraintData.PhoneRinging>())
         }
 
     /**
@@ -186,7 +189,9 @@ class ConfigActionsUseCaseTest {
             useCase.addAction(action)
 
             // THEN
-            verify(mockConfigConstraintsUseCase).addConstraint(any<ConstraintData.InPhoneCall>())
+            verify(
+                mockConfigConstraintsUseCase,
+            ).addConstraint(anyOrNull(), any<ConstraintData.InPhoneCall>())
         }
 
     /**

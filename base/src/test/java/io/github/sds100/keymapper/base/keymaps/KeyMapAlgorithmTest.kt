@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
+import io.github.sds100.keymapper.base.constraints.ConstraintGroup
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
@@ -768,27 +769,44 @@ class KeyMapAlgorithmTest {
                     trigger = trigger,
                     actionList = listOf(TEST_ACTION),
                     constraintState = ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.WifiOn),
-                            Constraint(data = ConstraintData.DeviceIsLocked),
+                        groups = listOf(
+                            ConstraintGroup(
+                                constraints = listOf(
+                                    Constraint(data = ConstraintData.WifiOn),
+                                    Constraint(data = ConstraintData.DeviceIsLocked),
+                                ),
+                                mode = ConstraintMode.OR,
+                            ),
                         ),
-                        mode = ConstraintMode.OR,
                     ),
                 ),
                 groupConstraintStates = listOf(
                     ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.LockScreenNotShowing),
-                            Constraint(data = ConstraintData.DeviceIsLocked),
+                        groups = listOf(
+                            ConstraintGroup(
+                                constraints = listOf(
+                                    Constraint(
+                                        data = ConstraintData.LockScreenShowing,
+                                        isNot = true,
+                                    ),
+                                    Constraint(data = ConstraintData.DeviceIsLocked),
+                                ),
+                                mode = ConstraintMode.AND,
+                            ),
                         ),
-                        mode = ConstraintMode.AND,
                     ),
                     ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
-                            Constraint(data = ConstraintData.DeviceIsUnlocked),
+                        groups = listOf(
+                            ConstraintGroup(
+                                constraints = listOf(
+                                    Constraint(
+                                        data = ConstraintData.AppInForeground(packageName = "app"),
+                                    ),
+                                    Constraint(data = ConstraintData.DeviceIsLocked, isNot = true),
+                                ),
+                                mode = ConstraintMode.OR,
+                            ),
                         ),
-                        mode = ConstraintMode.OR,
                     ),
                 ),
             ),
@@ -819,29 +837,49 @@ class KeyMapAlgorithmTest {
                         trigger = trigger,
                         actionList = listOf(TEST_ACTION),
                         constraintState = ConstraintState(
-                            constraints = setOf(
-                                Constraint(data = ConstraintData.WifiOn),
-                                Constraint(data = ConstraintData.DeviceIsLocked),
+                            groups = listOf(
+                                ConstraintGroup(
+                                    constraints = listOf(
+                                        Constraint(data = ConstraintData.WifiOn),
+                                        Constraint(data = ConstraintData.DeviceIsLocked),
+                                    ),
+                                    mode = ConstraintMode.OR,
+                                ),
                             ),
-                            mode = ConstraintMode.OR,
                         ),
                     ),
                     groupConstraintStates = listOf(
                         ConstraintState(
-                            constraints = setOf(
-                                Constraint(data = ConstraintData.LockScreenNotShowing),
-                                Constraint(data = ConstraintData.DeviceIsLocked),
+                            groups = listOf(
+                                ConstraintGroup(
+                                    constraints = listOf(
+                                        Constraint(
+                                            data = ConstraintData.LockScreenShowing,
+                                            isNot = true,
+                                        ),
+                                        Constraint(data = ConstraintData.DeviceIsLocked),
+                                    ),
+                                    mode = ConstraintMode.AND,
+                                ),
                             ),
-                            mode = ConstraintMode.AND,
                         ),
                         ConstraintState(
-                            constraints = setOf(
-                                Constraint(
-                                    data = ConstraintData.AppInForeground(packageName = "app"),
+                            groups = listOf(
+                                ConstraintGroup(
+                                    constraints = listOf(
+                                        Constraint(
+                                            data = ConstraintData.AppInForeground(
+                                                packageName = "app",
+                                            ),
+                                        ),
+                                        Constraint(
+                                            data = ConstraintData.DeviceIsLocked,
+                                            isNot = true,
+                                        ),
+                                    ),
+                                    mode = ConstraintMode.OR,
                                 ),
-                                Constraint(data = ConstraintData.DeviceIsUnlocked),
                             ),
-                            mode = ConstraintMode.OR,
                         ),
                     ),
                 ),
@@ -1713,14 +1751,24 @@ class KeyMapAlgorithmTest {
             val shortPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
             )
-            val shortPressConstraints =
-                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
+            val shortPressConstraints = ConstraintState(
+                groups = listOf(
+                    ConstraintGroup(constraints = listOf(Constraint(data = ConstraintData.WifiOn))),
+                ),
+            )
 
             val longPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             )
-            val doublePressConstraints =
-                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
+            val doublePressConstraints = ConstraintState(
+                groups = listOf(
+                    ConstraintGroup(
+                        constraints = listOf(
+                            Constraint(data = ConstraintData.WifiOn, isNot = true),
+                        ),
+                    ),
+                ),
+            )
 
             loadKeyMaps(
                 KeyMap(
@@ -1762,14 +1810,24 @@ class KeyMapAlgorithmTest {
             val shortPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
             )
-            val shortPressConstraints =
-                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
+            val shortPressConstraints = ConstraintState(
+                groups = listOf(
+                    ConstraintGroup(constraints = listOf(Constraint(data = ConstraintData.WifiOn))),
+                ),
+            )
 
             val doublePressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
             )
-            val doublePressConstraints =
-                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
+            val doublePressConstraints = ConstraintState(
+                groups = listOf(
+                    ConstraintGroup(
+                        constraints = listOf(
+                            Constraint(data = ConstraintData.WifiOn, isNot = true),
+                        ),
+                    ),
+                ),
+            )
 
             loadKeyMaps(
                 KeyMap(
@@ -1913,8 +1971,14 @@ class KeyMapAlgorithmTest {
                 ),
                 actionList = listOf(Action(data = actionData)),
                 constraintState = ConstraintState(
-                    constraints = setOf(
-                        Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK)),
+                    groups = listOf(
+                        ConstraintGroup(
+                            constraints = listOf(
+                                Constraint(
+                                    data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             )

@@ -1,0 +1,540 @@
+package io.github.sds100.keymapper.base.constraints
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.DragHandle
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+
+@Composable
+fun ConstraintGroupItem(
+    modifier: Modifier = Modifier,
+    model: ConstraintGroupListItemModel,
+    isExpanded: Boolean,
+    isDragging: Boolean = false,
+    isReorderingEnabled: Boolean = false,
+    dragDropState: DragDropState? = null,
+    onExpandedChange: (Boolean) -> Unit = {},
+    onSelectMode: (ConstraintMode) -> Unit = {},
+    onAddConstraintClick: () -> Unit = {},
+    onRenameClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
+    onRemoveConstraintClick: (String) -> Unit = {},
+    onFixConstraintClick: (String) -> Unit = {},
+    onNotClick: (String) -> Unit = {},
+    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    onMoveUp: (() -> Unit)? = null,
+    onMoveDown: (() -> Unit)? = null,
+) {
+    val draggableState = rememberDraggableState {
+        dragDropState?.onDrag(Offset(0f, it))
+    }
+
+    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
+    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
+
+    val countBasedTitle = when {
+        model.constraints.size == 1 -> stringResource(R.string.constraint_group_title_single)
+
+        model.mode == ConstraintMode.AND -> pluralStringResource(
+            R.plurals.constraint_group_title_and,
+            model.constraints.size,
+            model.constraints.size,
+        )
+
+        else -> pluralStringResource(
+            R.plurals.constraint_group_title_or,
+            model.constraints.size,
+            model.constraints.size,
+        )
+    }
+
+    val title = model.name ?: countBasedTitle
+
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .semantics {
+                if (isReorderingEnabled) {
+                    customActions = buildList {
+                        onMoveUp?.let { action ->
+                            add(
+                                CustomAccessibilityAction(moveUpLabel) {
+                                    action()
+                                    true
+                                },
+                            )
+                        }
+                        onMoveDown?.let { action ->
+                            add(
+                                CustomAccessibilityAction(moveDownLabel) {
+                                    action()
+                                    true
+                                },
+                            )
+                        }
+                    }
+                }
+            },
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = if (isDragging) {
+                MaterialTheme.colorScheme.surfaceContainerHighest
+            } else {
+                MaterialTheme.colorScheme.surfaceContainer
+            },
+        ),
+    ) {
+        Column(modifier = Modifier.animateContentSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 56.dp)
+                    .clickable { onExpandedChange(!isExpanded) }
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(Modifier.width(8.dp))
+
+                if (isReorderingEnabled) {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .draggable(
+                                state = draggableState,
+                                orientation = Orientation.Vertical,
+                                startDragImmediately = true,
+                                onDragStarted = {
+                                    dragDropState?.onDragStart(model.uid)
+                                },
+                                onDragStopped = { dragDropState?.onDragInterrupted() },
+                            ),
+                        imageVector = Icons.Rounded.DragHandle,
+                        contentDescription = stringResource(R.string.drag_handle_for, title),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                HeaderText(
+                    modifier = Modifier.weight(1f),
+                    title = title,
+                    model = model,
+                    isExpanded = isExpanded,
+                )
+
+                IconButton(onClick = onRenameClick) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = stringResource(R.string.constraint_group_rename),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+
+                IconButton(onClick = { onExpandedChange(!isExpanded) }) {
+                    Icon(
+                        imageVector = if (isExpanded) {
+                            Icons.Rounded.KeyboardArrowUp
+                        } else {
+                            Icons.Rounded.KeyboardArrowDown
+                        },
+                        contentDescription = if (isExpanded) {
+                            stringResource(R.string.constraint_group_collapse)
+                        } else {
+                            stringResource(R.string.constraint_group_expand)
+                        },
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+
+                Spacer(Modifier.width(4.dp))
+            }
+
+            AnimatedVisibility(visible = isExpanded) {
+                ExpandedContent(
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 8.dp,
+                        bottom = 8.dp,
+                        top = 8.dp,
+                    ),
+                    model = model,
+                    onSelectMode = onSelectMode,
+                    onAddConstraintClick = onAddConstraintClick,
+                    onDeleteClick = onDeleteClick,
+                    onRemoveConstraintClick = onRemoveConstraintClick,
+                    onFixConstraintClick = onFixConstraintClick,
+                    onNotClick = onNotClick,
+                    onMoveConstraint = onMoveConstraint,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeaderText(
+    modifier: Modifier = Modifier,
+    title: String,
+    model: ConstraintGroupListItemModel,
+    isExpanded: Boolean,
+) {
+    Column(modifier = modifier) {
+        if (isExpanded) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        } else {
+            Text(
+                text = model.name ?: model.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            if (model.error != null) {
+                Text(
+                    text = model.error,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExpandedContent(
+    modifier: Modifier = Modifier,
+    model: ConstraintGroupListItemModel,
+    onSelectMode: (ConstraintMode) -> Unit,
+    onAddConstraintClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onRemoveConstraintClick: (String) -> Unit,
+    onFixConstraintClick: (String) -> Unit,
+    onNotClick: (String) -> Unit,
+    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit,
+) {
+    Column(modifier) {
+        Text(
+            modifier = Modifier.padding(end = 8.dp),
+            text = when {
+                model.constraints.size == 1 ->
+                    stringResource(R.string.constraint_group_explanation_single)
+
+                model.mode == ConstraintMode.AND ->
+                    stringResource(R.string.constraint_group_explanation_and)
+
+                else -> stringResource(R.string.constraint_group_explanation_or)
+            },
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Spacer(Modifier.size(8.dp))
+
+        GroupConstraintList(
+            modifier = Modifier.padding(end = 8.dp),
+            constraints = model.constraints,
+            mode = model.mode,
+            onRemoveConstraintClick = onRemoveConstraintClick,
+            onFixConstraintClick = onFixConstraintClick,
+            onNotClick = onNotClick,
+            onMoveConstraint = onMoveConstraint,
+        )
+
+        Spacer(Modifier.size(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ConstraintModeButtons(
+                modifier = Modifier.width(160.dp),
+                mode = model.mode,
+                onSelectMode = onSelectMode,
+                isEnabled = model.constraints.size > 1,
+            )
+
+            Spacer(Modifier.weight(1f))
+
+            IconButton(onClick = onAddConstraintClick) {
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    contentDescription = stringResource(R.string.constraint_group_add_constraint),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = stringResource(R.string.constraint_group_delete),
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * The constraints in a group. These are not in a lazy list so they are reordered by swapping
+ * the dragged constraint with its neighbour once it has been dragged over half of its height.
+ */
+@Composable
+private fun GroupConstraintList(
+    modifier: Modifier = Modifier,
+    constraints: List<ConstraintListItemModel>,
+    mode: ConstraintMode,
+    onRemoveConstraintClick: (String) -> Unit,
+    onFixConstraintClick: (String) -> Unit,
+    onNotClick: (String) -> Unit,
+    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit,
+) {
+    var draggingIndex by remember { mutableStateOf<Int?>(null) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
+    val itemHeights = remember { mutableStateMapOf<String, Int>() }
+
+    val linkText = when (mode) {
+        ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
+        ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
+    }
+
+    Column(modifier = modifier) {
+        constraints.forEachIndexed { index, constraint ->
+            key(constraint.id) {
+                val isDragging = draggingIndex == index
+
+                val draggableState = rememberDraggableState { delta ->
+                    val currentIndex = draggingIndex ?: return@rememberDraggableState
+                    val itemHeight = constraints.getOrNull(currentIndex)
+                        ?.let { itemHeights[it.id] }
+                        ?: return@rememberDraggableState
+
+                    dragOffset += delta
+
+                    if (dragOffset > itemHeight / 2f && currentIndex < constraints.lastIndex) {
+                        onMoveConstraint(currentIndex, currentIndex + 1)
+                        draggingIndex = currentIndex + 1
+                        dragOffset -= itemHeight
+                    } else if (dragOffset < -itemHeight / 2f && currentIndex > 0) {
+                        onMoveConstraint(currentIndex, currentIndex - 1)
+                        draggingIndex = currentIndex - 1
+                        dragOffset += itemHeight
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .onSizeChanged { itemHeights[constraint.id] = it.height }
+                        .zIndex(if (isDragging) 1f else 0f)
+                        .graphicsLayer { translationY = if (isDragging) dragOffset else 0f },
+                ) {
+                    ConstraintListItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        model = constraint,
+                        isReorderingEnabled = constraints.size > 1,
+                        isDragging = isDragging,
+                        dragHandleModifier = Modifier.draggable(
+                            state = draggableState,
+                            orientation = Orientation.Vertical,
+                            startDragImmediately = true,
+                            onDragStarted = {
+                                draggingIndex = index
+                                dragOffset = 0f
+                            },
+                            onDragStopped = {
+                                draggingIndex = null
+                                dragOffset = 0f
+                            },
+                        ),
+                        onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                        onFixClick = { onFixConstraintClick(constraint.id) },
+                        onNotClick = { onNotClick(constraint.id) },
+                        onMoveUp = if (index > 0) {
+                            { onMoveConstraint(index, index - 1) }
+                        } else {
+                            null
+                        },
+                        onMoveDown = if (index < constraints.lastIndex) {
+                            { onMoveConstraint(index, index + 1) }
+                        } else {
+                            null
+                        },
+                    )
+
+                    if (index < constraints.lastIndex) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            text = linkText,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val previewConstraints = listOf(
+    ConstraintListItemModel(
+        id = "1",
+        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+        text = "Flashlight is on",
+        isNot = true,
+        error = "Flashlight not found",
+        isErrorFixable = true,
+    ),
+    ConstraintListItemModel(
+        id = "2",
+        icon = ComposeIconInfo.Vector(Icons.Outlined.Wifi),
+        text = "Wi-Fi is on",
+    ),
+)
+
+@PreviewLightDark
+@Preview(widthDp = 300)
+@Composable
+private fun AndExpandedPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                mode = ConstraintMode.AND,
+                constraints = previewConstraints,
+                description = "Flashlight is not on AND Wi-Fi is on",
+            ),
+            isExpanded = true,
+            isReorderingEnabled = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun OrExpandedPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                mode = ConstraintMode.OR,
+                constraints = previewConstraints.map { it.copy(error = null, isNot = false) },
+                description = "Flashlight is on OR Wi-Fi is on",
+            ),
+            isExpanded = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SingleExpandedPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                mode = ConstraintMode.AND,
+                constraints = listOf(previewConstraints[1]),
+                description = "Wi-Fi is on",
+            ),
+            isExpanded = true,
+        )
+    }
+}
+
+@PreviewLightDark
+@Preview(widthDp = 300)
+@Composable
+private fun CollapsedPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                mode = ConstraintMode.AND,
+                constraints = previewConstraints,
+                description = "Flashlight is not on AND Wi-Fi is on",
+            ),
+            isExpanded = false,
+            isReorderingEnabled = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CollapsedErrorPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                mode = ConstraintMode.AND,
+                constraints = previewConstraints,
+                description = "Flashlight is not on AND Wi-Fi is on",
+            ),
+            isExpanded = false,
+            isReorderingEnabled = true,
+        )
+    }
+}

@@ -240,6 +240,7 @@
     <string name="constraint_app_not_foreground_description">%s is not in foreground</string>
     <string name="constraint_app_playing_media_description">%s is playing media</string>
     <string name="constraint_app_not_playing_media_description">%s is not playing media</string>
+    <string name="constraint_media_playing_not_description">Media is not playing</string>
     <string name="constraint_bt_device_connected_description">%s is connected</string>
     <string name="constraint_bt_device_disconnected_description">%s is disconnected</string>
     <string name="constraint_screen_on_description">Screen is on</string>
@@ -264,14 +265,25 @@
     <string name="constraint_choose_orientation_270">Landscape (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
+    <string name="constraint_not_orientation_0">Not portrait (0°)</string>
+    <string name="constraint_not_orientation_90">Not landscape (90°)</string>
+    <string name="constraint_not_orientation_180">Not portrait (180°)</string>
+    <string name="constraint_not_orientation_270">Not landscape (270°)</string>
+    <string name="constraint_not_orientation_portrait">Not portrait (any)</string>
+    <string name="constraint_not_orientation_landscape">Not landscape (any)</string>
     <string name="constraint_choose_screen_orientation">Screen orientation</string>
     <string name="constraint_choose_physical_orientation">Physical orientation</string>
     <string name="constraint_choose_physical_orientation_portrait">Physical: Portrait</string>
     <string name="constraint_choose_physical_orientation_landscape">Physical: Landscape</string>
     <string name="constraint_choose_physical_orientation_portrait_inverted">Physical: Portrait (upside down)</string>
     <string name="constraint_choose_physical_orientation_landscape_inverted">Physical: Landscape (inverted)</string>
+    <string name="constraint_not_physical_orientation_portrait">Physical: Not portrait</string>
+    <string name="constraint_not_physical_orientation_landscape">Physical: Not landscape</string>
+    <string name="constraint_not_physical_orientation_portrait_inverted">Physical: Not portrait (upside down)</string>
+    <string name="constraint_not_physical_orientation_landscape_inverted">Physical: Not landscape (inverted)</string>
     <string name="constraint_choose_display_resolution">Display resolution</string>
     <string name="constraint_display_resolution_description">Resolution is %1$d × %2$d</string>
+    <string name="constraint_display_resolution_not_description">Resolution is not %1$d × %2$d</string>
     <string name="constraint_display_resolution_bottom_sheet_title">Display resolution</string>
     <string name="constraint_display_resolution_custom_chip">Custom</string>
     <string name="constraint_display_resolution_width">Width</string>
@@ -311,9 +323,13 @@
     <string name="constraint_in_phone_call">In phone call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
     <string name="constraint_phone_ringing">Phone ringing</string>
+    <string name="constraint_phone_not_ringing">Phone not ringing</string>
     <string name="constraint_ringer_mode_normal">Ringer mode: Ring</string>
     <string name="constraint_ringer_mode_vibrate">Ringer mode: Vibrate</string>
     <string name="constraint_ringer_mode_silent">Ringer mode: Silent</string>
+    <string name="constraint_ringer_mode_not_normal">Ringer mode is not: Ring</string>
+    <string name="constraint_ringer_mode_not_vibrate">Ringer mode is not: Vibrate</string>
+    <string name="constraint_ringer_mode_not_silent">Ringer mode is not: Silent</string>
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
@@ -321,6 +337,8 @@
     <string name="constraint_hinge_open">Hinge open</string>
     <string name="constraint_hinge_closed_description">Hinge is closed</string>
     <string name="constraint_hinge_open_description">Hinge is open</string>
+    <string name="constraint_hinge_not_closed_description">Hinge is not closed</string>
+    <string name="constraint_hinge_not_open_description">Hinge is not open</string>
 
     <string name="constraint_notification_panel_showing">Notification panel is showing</string>
     <string name="constraint_notification_panel_not_showing">Notification panel is not showing</string>
@@ -332,6 +350,7 @@
 
     <string name="constraint_time">Time</string>
     <string name="constraint_time_formatted">Time between %s and %s</string>
+    <string name="constraint_time_not_formatted">Time not between %s and %s</string>
     <string name="constraint_time_bottom_sheet_title">Time constraint</string>
     <string name="constraint_time_bottom_sheet_start_time">Start time</string>
     <string name="constraint_time_bottom_sheet_edit_start_time">Edit start time</string>
@@ -843,7 +862,7 @@
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut</string>
     <string name="error_action_notification_policy_permission">The app needs permission to change the Do Not Disturb state!</string>
-    <string name="error_action_requires_read_phone_state_permission">This action needs permission to read the phone state!</string>
+    <string name="error_action_requires_read_phone_state_permission">Permission needed to read the phone state!</string>
     <string name="error_cant_find_write_settings_page">Can\'t find the WRITE_SETTINGS permission page!</string>
     <string name="error_opening_app_shortcut">Error opening this app shortcut</string>
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
@@ -1879,9 +1898,32 @@
     <string name="constraint_list_delete_dialog_text">Are you sure you want to delete this constraint?</string>
     <string name="constraint_list_delete_yes">Yes, delete</string>
     <string name="constraint_list_delete_cancel">Cancel</string>
-    <string name="constraint_mode_title">Logic mode</string>
+    <string name="constraint_list_explanation">This key map will only run\nif these constraints are met.</string>
+    <string name="constraint_not">NOT</string>
+    <string name="constraint_not_title">NOT %s</string>
+    <string name="constraint_list_item_not">Invert constraint with NOT</string>
+    <string name="constraint_group_title_single">Single constraint</string>
+    <plurals name="constraint_group_title_and">
+        <item quantity="one">%d AND constraint</item>
+        <item quantity="other">%d AND constraints</item>
+    </plurals>
+    <plurals name="constraint_group_title_or">
+        <item quantity="one">%d OR constraint</item>
+        <item quantity="other">%d OR constraints</item>
+    </plurals>
+    <string name="constraint_group_explanation_single">This constraint must be met:</string>
+    <string name="constraint_group_explanation_and">All of these constraints must be met at the same time:</string>
+    <string name="constraint_group_explanation_or">At least one of these constraints must be met:</string>
+    <string name="constraint_group_expand">Expand constraint group</string>
+    <string name="constraint_group_collapse">Collapse constraint group</string>
+    <string name="constraint_group_add_constraint">Add constraint to group</string>
+    <string name="constraint_group_delete">Delete constraint group</string>
+    <string name="constraint_group_delete_dialog_title">Delete constraint group</string>
+    <string name="constraint_group_delete_dialog_text">Are you sure you want to delete this group and all of its constraints?</string>
+    <string name="constraint_group_rename_hint">Group name</string>
+    <string name="constraint_group_rename">Rename constraint group</string>
+    <string name="constraint_groups_mode_title">Combine groups with</string>
     <string name="choose_constraint_title">Choose a constraint</string>
-    <string name="constraint_list_explanation_header">This key map will only run if:</string>
 
     <!--  Groups  -->
     <string name="default_group_name">Untitled group</string>

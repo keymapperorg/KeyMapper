@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.utils.ui.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ fun CompactOutlinedButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    border: BorderStroke = ButtonDefaults.outlinedButtonBorder(),
     content: @Composable RowScope.() -> Unit,
 ) {
     OutlinedButton(
@@ -38,6 +40,7 @@ fun CompactOutlinedButton(
         shape = MaterialTheme.shapes.small,
         colors = colors,
         contentPadding = compactButtonContentPadding,
+        border = border,
         content = content,
     )
 }

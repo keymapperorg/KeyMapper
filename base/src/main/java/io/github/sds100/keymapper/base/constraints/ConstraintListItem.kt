@@ -1,23 +1,23 @@
 package io.github.sds100.keymapper.base.constraints
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
+import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -30,180 +30,251 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactFilledTonalButton
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactOutlinedButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
+// TODO create a compact version with FIX, NOT below the text, and no icon, no error text. Just show fix button.
 @Composable
 fun ConstraintListItem(
     modifier: Modifier = Modifier,
     model: ConstraintListItemModel,
+    isReorderingEnabled: Boolean = false,
+    isDragging: Boolean = false,
+    /**
+     * The modifier that makes the drag handle draggable.
+     */
+    dragHandleModifier: Modifier = Modifier,
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
+    onNotClick: () -> Unit = {},
+    onMoveUp: (() -> Unit)? = null,
+    onMoveDown: (() -> Unit)? = null,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        ElevatedCard(
+    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
+    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
+
+    ElevatedCard(
+        modifier = modifier
+            .semantics {
+                if (isReorderingEnabled) {
+                    customActions = buildList {
+                        onMoveUp?.let { action ->
+                            add(
+                                CustomAccessibilityAction(moveUpLabel) {
+                                    action()
+                                    true
+                                },
+                            )
+                        }
+                        onMoveDown?.let { action ->
+                            add(
+                                CustomAccessibilityAction(moveDownLabel) {
+                                    action()
+                                    true
+                                },
+                            )
+                        }
+                    }
+                }
+            },
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
+        elevation = if (isDragging) {
+            CardDefaults.elevatedCardElevation(defaultElevation = 6.dp)
+        } else {
+            CardDefaults.elevatedCardElevation()
+        },
+    ) {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
-                .height(IntrinsicSize.Min)
-                .padding(start = 16.dp, end = 16.dp),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            ),
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(8.dp))
 
-                if (model.error == null) {
-                    when (model.icon) {
-                        is ComposeIconInfo.Vector -> Icon(
-                            modifier = Modifier.size(24.dp),
-                            imageVector = model.icon.imageVector,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-
-                        is ComposeIconInfo.Drawable -> {
-                            val painter = rememberDrawablePainter(model.icon.drawable)
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                painter = painter,
-                                contentDescription = null,
-                                tint = Color.Unspecified,
-                            )
-                        }
-                    }
-                }
-
-                val primaryText = model.text
-
-                Spacer(Modifier.width(8.dp))
-
-                TextColumn(
+            if (isReorderingEnabled) {
+                Icon(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 8.dp),
-                    primaryText = primaryText,
-                    errorText = model.error,
+                        .size(24.dp)
+                        .then(dragHandleModifier),
+                    imageVector = Icons.Rounded.DragHandle,
+                    contentDescription = stringResource(R.string.drag_handle_for, model.text),
                 )
 
-                CompositionLocalProvider(
-                    LocalMinimumInteractiveComponentSize provides 16.dp,
-                ) {
-                    if (model.error != null && model.isErrorFixable) {
-                        FilledTonalButton(
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                            onClick = onFixClick,
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
-                        ) {
-                            Text(
-                                text = stringResource(R.string.button_fix),
-                            )
-                        }
-                    }
+                Spacer(Modifier.width(8.dp))
+            }
 
-                    IconButton(onClick = onRemoveClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.Clear,
-                            contentDescription = stringResource(
-                                R.string.constraint_list_item_remove,
-                            ),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(24.dp),
-                        )
+            // TODO only show if sufficient horizontal space
+            ConstraintIcon(icon = model.icon)
+
+            Spacer(Modifier.width(8.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = model.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                if (model.error != null) {
+                    Text(
+                        text = model.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                        maxLines = 2,
+                    )
+                }
+            }
+
+            CompositionLocalProvider(
+                LocalMinimumInteractiveComponentSize provides 16.dp,
+            ) {
+                if (model.error != null && model.isErrorFixable) {
+                    Spacer(Modifier.width(8.dp))
+
+                    CompactErrorButton(onClick = onFixClick) {
+                        Text(stringResource(R.string.button_fix))
                     }
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                NotToggle(isNot = model.isNot, onClick = onNotClick)
+
+                IconButton(onClick = onRemoveClick) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = Icons.Rounded.Clear,
+                        contentDescription = stringResource(R.string.constraint_list_item_remove),
+                    )
                 }
             }
         }
+    }
+}
 
-        if (model.constraintModeLink == null) {
-            // Important! Show an empty spacer so the height of the card remains constant
-            // while dragging. If the height changes while dragging it can lead to janky
-            // behavior.
-            Spacer(Modifier.height(32.dp))
-        } else {
-            Spacer(Modifier.height(4.dp))
+@Composable
+private fun NotToggle(modifier: Modifier = Modifier, isNot: Boolean, onClick: () -> Unit) {
+    val contentDescription = stringResource(R.string.constraint_list_item_not)
 
-            val text = when (model.constraintModeLink) {
-                ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
-                ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
-            }
+    val modifier = modifier
+        .toggleable(value = isNot, role = Role.Checkbox, onValueChange = { onClick() })
+        .semantics { this.contentDescription = contentDescription }
 
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = text,
-            )
-
-            Spacer(Modifier.height(4.dp))
+    if (isNot) {
+        CompactFilledTonalButton(
+            modifier = modifier,
+            onClick = onClick,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = MaterialTheme.colorScheme.inversePrimary,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ),
+        ) {
+            Text(text = stringResource(R.string.constraint_not), fontWeight = FontWeight.Black)
+        }
+    } else {
+        CompactOutlinedButton(
+            modifier = modifier,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f),
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.inversePrimary),
+            onClick = onClick,
+        ) {
+            Text(text = stringResource(R.string.constraint_not))
         }
     }
 }
 
 @Composable
-private fun TextColumn(
-    modifier: Modifier = Modifier,
-    primaryText: String,
-    errorText: String? = null,
-) {
-    Column(
-        modifier = modifier,
-    ) {
-        Text(
-            text = primaryText,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
+private fun ConstraintIcon(modifier: Modifier = Modifier, icon: ComposeIconInfo) {
+    when (icon) {
+        is ComposeIconInfo.Vector -> Icon(
+            modifier = modifier.size(24.dp),
+            imageVector = icon.imageVector,
+            contentDescription = null,
         )
-        if (errorText != null) {
-            Text(
-                text = errorText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error,
+
+        is ComposeIconInfo.Drawable -> {
+            val painter = rememberDrawablePainter(icon.drawable)
+            Icon(
+                modifier = modifier.size(24.dp),
+                painter = painter,
+                contentDescription = null,
+                tint = Color.Unspecified,
             )
         }
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun VectorPreview() {
-    ConstraintListItem(
-        model = ConstraintListItemModel(
-            id = "id",
-            icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
-            constraintModeLink = ConstraintMode.AND,
-            text = "Clear all",
-            error = null,
-            isErrorFixable = true,
-        ),
-    )
+    KeyMapperTheme {
+        ConstraintListItem(
+            model = ConstraintListItemModel(
+                id = "id",
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+                text = "Clear all",
+            ),
+            isReorderingEnabled = true,
+        )
+    }
 }
 
-@Preview
+@PreviewLightDark
+@Preview(widthDp = 200)
+@Composable
+private fun NotErrorPreview() {
+    KeyMapperTheme {
+        ConstraintListItem(
+            model = ConstraintListItemModel(
+                id = "id",
+                icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                text = "Flashlight is on",
+                isNot = true,
+                error = "Flashlight not found",
+                isErrorFixable = true,
+            ),
+            isReorderingEnabled = true,
+        )
+    }
+}
+
+@PreviewLightDark
 @Composable
 private fun DrawablePreview() {
     val drawable = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
-    ConstraintListItem(
-        model = ConstraintListItemModel(
-            id = "id",
-            text = "Dismiss most recent notification",
-            error = null,
-            isErrorFixable = true,
-            icon = ComposeIconInfo.Drawable(drawable),
-            constraintModeLink = ConstraintMode.OR,
-        ),
-    )
+    KeyMapperTheme {
+        ConstraintListItem(
+            model = ConstraintListItemModel(
+                id = "id",
+                text = "Key Mapper is in foreground",
+                icon = ComposeIconInfo.Drawable(drawable),
+            ),
+            isReorderingEnabled = true,
+        )
+    }
 }

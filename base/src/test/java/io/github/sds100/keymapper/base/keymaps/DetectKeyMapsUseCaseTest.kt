@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
+import io.github.sds100.keymapper.base.constraints.ConstraintGroup
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.detection.DetectKeyMapModel
@@ -25,8 +26,8 @@ class DetectKeyMapsUseCaseTest {
                     "child",
                     parentUid = "parent",
                     mode = ConstraintMode.OR,
-                    Constraint(data = ConstraintData.LockScreenNotShowing),
-                    Constraint(data = ConstraintData.Discharging),
+                    Constraint(data = ConstraintData.LockScreenShowing, isNot = true),
+                    Constraint(data = ConstraintData.Charging, isNot = true),
                 ),
                 group(
                     "parent",
@@ -46,8 +47,8 @@ class DetectKeyMapsUseCaseTest {
         val keyMap = KeyMap(groupUid = "child")
 
         val constraints1 = arrayOf(
-            Constraint(data = ConstraintData.LockScreenNotShowing),
-            Constraint(data = ConstraintData.Discharging),
+            Constraint(data = ConstraintData.LockScreenShowing, isNot = true),
+            Constraint(data = ConstraintData.Charging, isNot = true),
         )
 
         val constraints2 = arrayOf(
@@ -76,14 +77,8 @@ class DetectKeyMapsUseCaseTest {
         val expected = DetectKeyMapModel(
             keyMap,
             groupConstraintStates = listOf(
-                ConstraintState(
-                    constraints = constraints1.toSet(),
-                    mode = ConstraintMode.OR,
-                ),
-                ConstraintState(
-                    constraints = constraints2.toSet(),
-                    mode = ConstraintMode.AND,
-                ),
+                constraintState(ConstraintMode.OR, *constraints1),
+                constraintState(ConstraintMode.AND, *constraints2),
             ),
         )
         assertThat(models, Matchers.contains(expected))
@@ -93,8 +88,8 @@ class DetectKeyMapsUseCaseTest {
     fun `Key map in grandchild group and child only has constraints`() {
         val keyMap = KeyMap(groupUid = "child")
         val constraints1 = arrayOf(
-            Constraint(data = ConstraintData.LockScreenNotShowing),
-            Constraint(data = ConstraintData.Discharging),
+            Constraint(data = ConstraintData.LockScreenShowing, isNot = true),
+            Constraint(data = ConstraintData.Charging, isNot = true),
         )
         val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
             keyMaps = listOf(keyMap),
@@ -115,10 +110,7 @@ class DetectKeyMapsUseCaseTest {
         val expected = DetectKeyMapModel(
             keyMap,
             groupConstraintStates = listOf(
-                ConstraintState(
-                    constraints = constraints1.toSet(),
-                    mode = ConstraintMode.OR,
-                ),
+                constraintState(ConstraintMode.OR, *constraints1),
             ),
         )
         assertThat(models, Matchers.contains(expected))
@@ -128,8 +120,8 @@ class DetectKeyMapsUseCaseTest {
     fun `Key map in grandchild group and parent only has constraints`() {
         val keyMap = KeyMap(groupUid = "child")
         val constraints1 = arrayOf(
-            Constraint(data = ConstraintData.LockScreenNotShowing),
-            Constraint(data = ConstraintData.Discharging),
+            Constraint(data = ConstraintData.LockScreenShowing, isNot = true),
+            Constraint(data = ConstraintData.Charging, isNot = true),
         )
 
         val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
@@ -148,10 +140,7 @@ class DetectKeyMapsUseCaseTest {
         val expected = DetectKeyMapModel(
             keyMap,
             groupConstraintStates = listOf(
-                ConstraintState(
-                    constraints = constraints1.toSet(),
-                    mode = ConstraintMode.OR,
-                ),
+                constraintState(ConstraintMode.OR, *constraints1),
             ),
         )
         assertThat(models, Matchers.contains(expected))
@@ -315,12 +304,24 @@ class DetectKeyMapsUseCaseTest {
         return Group(
             uid = uid,
             name = uid,
-            constraintState = ConstraintState(
-                constraints = constraint.toSet(),
-                mode = mode,
-            ),
+            constraintState = constraintState(mode, *constraint),
             parentUid = parentUid,
             lastOpenedDate = 0,
         )
+    }
+
+    private fun constraintState(
+        mode: ConstraintMode,
+        vararg constraints: Constraint,
+    ): ConstraintState {
+        val groups = if (constraints.isEmpty()) {
+            emptyList()
+        } else {
+            listOf(
+                ConstraintGroup(uid = "group", constraints = constraints.toList(), mode = mode),
+            )
+        }
+
+        return ConstraintState(groups = groups, mode = mode)
     }
 }
