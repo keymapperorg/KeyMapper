@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Settings
@@ -124,6 +125,7 @@ fun ActionListItem(
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
     onTestClick: () -> Unit = {},
+    onDuplicateClick: () -> Unit = {},
     onRenameClick: () -> Unit = {},
     onEnabledChange: (Boolean) -> Unit = {},
     onMoveUp: (() -> Unit)? = null,
@@ -184,6 +186,7 @@ fun ActionListItem(
                 onRemoveClick = onRemoveClick,
                 onFixClick = onFixClick,
                 onTestClick = onTestClick,
+                onDuplicateClick = onDuplicateClick,
                 onEnabledChange = onEnabledChange,
             )
         },
@@ -284,6 +287,7 @@ private fun ExpandedContent(
     onRemoveClick: () -> Unit,
     onFixClick: () -> Unit,
     onTestClick: () -> Unit,
+    onDuplicateClick: () -> Unit,
     onEnabledChange: (Boolean) -> Unit,
 ) {
     Column(
@@ -355,6 +359,14 @@ private fun ExpandedContent(
             Switch(checked = model.isEnabled, onCheckedChange = onEnabledChange)
 
             Spacer(Modifier.weight(1f))
+
+            IconButton(onClick = onDuplicateClick) {
+                Icon(
+                    imageVector = Icons.Outlined.ContentCopy,
+                    contentDescription = stringResource(R.string.action_list_item_duplicate),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
 
             IconButton(onClick = onTestClick) {
                 Icon(

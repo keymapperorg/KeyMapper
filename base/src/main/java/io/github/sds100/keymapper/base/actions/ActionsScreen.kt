@@ -240,6 +240,7 @@ interface ActionListCallback {
     fun onMove(fromIndex: Int, toIndex: Int) = run { }
     fun onClickShortcut(data: ActionData) = run { }
     fun onTestClick(id: String) = run { }
+    fun onDuplicateClick(id: String) = run { }
     fun onActionTipDismiss() = run { }
     fun onTipButtonClick(id: String) = run { }
     fun onEnabledChange(id: String, enabled: Boolean) = run { }
@@ -355,6 +356,7 @@ private fun ActionList(
                                 onRemoveClick = { onRemoveClick(model.id) },
                                 onFixClick = { callback.onFixErrorClick(model.id) },
                                 onTestClick = { callback.onTestClick(model.id) },
+                                onDuplicateClick = { callback.onDuplicateClick(model.id) },
                                 onRenameClick = { onRenameClick(model.id) },
                                 onEnabledChange = { callback.onEnabledChange(model.id, it) },
                                 onMoveUp = if (state.isReorderingEnabled && index > 0) {

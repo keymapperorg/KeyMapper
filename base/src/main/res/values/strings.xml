@@ -1825,6 +1825,7 @@
     <string name="action_list_item_expand">Expand</string>
     <string name="action_list_item_collapse">Collapse</string>
     <string name="action_list_item_rename">Rename</string>
+    <string name="action_list_item_duplicate">Duplicate</string>
     <string name="action_list_add_delay">Add delay</string>
     <string name="action_list_delay_remove">Remove</string>
     <string name="action_list_no_repeat">No repeat</string>

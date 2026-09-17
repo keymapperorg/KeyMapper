@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import java.util.LinkedList
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -80,6 +81,20 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             actionList.toMutableList().apply {
                 removeAll { it.uid == uid }
             }
+        }
+    }
+
+    override fun duplicateAction(uid: String) {
+        updateActionList { actionList ->
+            val index = actionList.indexOfFirst { it.uid == uid }
+
+            if (index == -1) {
+                return@updateActionList actionList
+            }
+
+            val duplicate = actionList[index].copy(uid = UUID.randomUUID().toString())
+
+            actionList.toMutableList().apply { add(index + 1, duplicate) }
         }
     }
 
@@ -280,6 +295,7 @@ interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     fun addAction(data: ActionData)
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
+    fun duplicateAction(uid: String)
 
     val recentlyUsedActions: Flow<List<ActionData>>
     fun setActionData(uid: String, data: ActionData)

@@ -8,6 +8,7 @@
 - #701 you can now give custom names to actions, to make it easier to identify key maps.
 - #701 redesigned the action list with expandable action cards that show each option and error.
 - #1465 actions can be turned off individually without deleting them.
+- #1479 you can now duplicate an action from the action list.
 - #701 the delay before the next action is now set with a button between actions instead of in the action options.
 - Redesigned the action options with grouped repeat, burst, hold down and delay sections.
 - #752 Constraints can be organised into groups that each have their own AND/OR mode, and the groups are combined with AND or OR.

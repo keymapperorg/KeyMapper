@@ -186,6 +186,10 @@ class ConfigActionsViewModel @Inject constructor(
         }
     }
 
+    override fun onDuplicateClick(actionUid: String) {
+        config.duplicateAction(actionUid)
+    }
+
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {

@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
@@ -153,6 +154,25 @@ class ConfigActionsUseCaseTest {
         useCase.setActionEnabled(uid, true)
         assertThat(useCase.keyMap.value.dataOrNull()!!.actionList[0].isEnabled, `is`(true))
     }
+
+    @Test
+    fun `duplicate an action, insert a copy with a new uid directly after the original`() =
+        runTest(testDispatcher) {
+            configKeyMapState.setKeyMap(KeyMap())
+            useCase.addAction(ActionData.ConsumeKeyEvent)
+            useCase.addAction(ActionData.GoHome)
+
+            val originalUid = useCase.keyMap.value.dataOrNull()!!.actionList[0].uid
+
+            useCase.duplicateAction(originalUid)
+
+            val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
+            assertThat(actionList.size, `is`(3))
+            assertThat(actionList[0].uid, `is`(originalUid))
+            assertThat(actionList[1].data, `is`(ActionData.ConsumeKeyEvent))
+            assertThat(actionList[1].uid, `is`(not(originalUid)))
+            assertThat(actionList[2].data, `is`(ActionData.GoHome))
+        }
 
     /**
      * Issue #852. Add a phone ringing constraint when you add an action
