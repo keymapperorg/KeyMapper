@@ -5,9 +5,8 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ActionEntityMapper
 import io.github.sds100.keymapper.base.actions.canBeHeldDown
-import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
-import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
+import io.github.sds100.keymapper.base.constraints.ConstraintStateEntityMapper
 import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
@@ -125,17 +124,18 @@ object KeyMapEntityMapper {
             .filterNotNull()
             .mapNotNull { ActionEntityMapper.fromEntity(it) }
 
-        val constraintList =
-            entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()
-
-        val constraintMode = ConstraintModeEntityMapper.fromEntity(entity.constraintMode)
+        val constraintState = ConstraintStateEntityMapper.fromEntityWithGroups(
+            entity.constraintList,
+            entity.constraintGroups,
+            entity.constraintMode,
+        )
 
         return KeyMap(
             dbId = entity.id,
             uid = entity.uid,
             trigger = TriggerEntityMapper.fromEntity(entity.trigger, floatingButtons),
             actionList = actionList,
-            constraintState = ConstraintState(constraintList, constraintMode),
+            constraintState = constraintState,
             isEnabled = entity.isEnabled,
             groupUid = entity.groupUid,
         )
@@ -143,17 +143,16 @@ object KeyMapEntityMapper {
 
     fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
         val actionEntityList = ActionEntityMapper.toEntity(keyMap)
+        val (constraintList, constraintGroups, constraintMode) =
+            ConstraintStateEntityMapper.toEntityWithGroups(keyMap.constraintState)
 
         return KeyMapEntity(
             id = dbId,
             trigger = TriggerEntityMapper.toEntity(keyMap.trigger),
             actionList = actionEntityList,
-            constraintList = keyMap.constraintState.constraints.map {
-                ConstraintEntityMapper.toEntity(
-                    it,
-                )
-            },
-            constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
+            constraintList = constraintList,
+            constraintGroups = constraintGroups,
+            constraintMode = constraintMode,
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,
             groupUid = keyMap.groupUid,

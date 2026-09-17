@@ -289,12 +289,18 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
             val groupEntity = groupRepository.getGroup(groupUid) ?: return
             var group = GroupEntityMapper.fromEntity(groupEntity)
 
-            val constraints = group.constraintState.constraints
-                .filterNot { it.uid == constraintUid }
-                .toSet()
+            val constraintGroups = group.constraintState.groups
+                .map { constraintGroup ->
+                    constraintGroup.copy(
+                        constraints = constraintGroup.constraints.filterNot {
+                            it.uid == constraintUid
+                        },
+                    )
+                }
+                .filter { it.constraints.isNotEmpty() }
 
             group =
-                group.copy(constraintState = group.constraintState.copy(constraints = constraints))
+                group.copy(constraintState = group.constraintState.copy(groups = constraintGroups))
 
             try {
                 groupRepository.update(GroupEntityMapper.toEntity(group))

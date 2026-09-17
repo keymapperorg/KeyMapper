@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -42,10 +44,18 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
+import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
+import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
+
+/**
+ * The height of the row between group cards. The last card has a spacer of the same height so
+ * the height of the items stays constant while dragging.
+ */
+private val linkRowHeight = 40.dp
 
 @Composable
 fun ConstraintsScreen(
@@ -67,11 +77,18 @@ fun ConstraintsScreen(
     ConstraintsScreen(
         modifier = modifier,
         state = state,
+        onAddClick = { viewModel.addConstraint(groupUid = null) },
+        onAddToGroupClick = viewModel::addConstraint,
         onRemoveClick = viewModel::onRemoveClick,
+        onRemoveGroupClick = viewModel::onRemoveGroupClick,
+        onNotClick = viewModel::onNotClick,
         onFixErrorClick = viewModel::onFixError,
         onClickShortcut = viewModel::onClickShortcut,
-        onAddClick = viewModel::addConstraint,
         onSelectMode = viewModel::onSelectMode,
+        onSelectGroupMode = viewModel::onSelectGroupMode,
+        onRenameGroup = viewModel::onRenameGroup,
+        onMoveGroup = viewModel::onMoveGroup,
+        onMoveConstraint = viewModel::onMoveConstraint,
     )
 }
 
@@ -80,39 +97,93 @@ private fun ConstraintsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigConstraintsState>,
     onAddClick: () -> Unit = {},
+    onAddToGroupClick: (String) -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
+    onRemoveGroupClick: (String) -> Unit = {},
+    onNotClick: (String) -> Unit = {},
     onFixErrorClick: (String) -> Unit = {},
     onClickShortcut: (ConstraintData) -> Unit = {},
     onSelectMode: (ConstraintMode) -> Unit = {},
+    onSelectGroupMode: (String, ConstraintMode) -> Unit = { _, _ -> },
+    onRenameGroup: (groupUid: String, name: String) -> Unit = { _, _ -> },
+    onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
+    onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit = { _, _, _ -> },
 ) {
-    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     var constraintToDelete by rememberSaveable { mutableStateOf<String?>(null) }
+    var groupToDelete by rememberSaveable { mutableStateOf<String?>(null) }
+    var groupToRename by rememberSaveable { mutableStateOf<String?>(null) }
 
-    if (showDeleteDialog && constraintToDelete != null) {
+    if (constraintToDelete != null) {
         AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
+            onDismissRequest = { constraintToDelete = null },
             title = {
                 Text(stringResource(R.string.constraint_list_delete_dialog_title))
             },
             text = { Text(stringResource(R.string.constraint_list_delete_dialog_text)) },
             confirmButton = {
-                TextButton(onClick = {
-                    onRemoveClick(constraintToDelete!!)
-                    showDeleteDialog = false
-                }) {
+                TextButton(
+                    onClick = {
+                        onRemoveClick(constraintToDelete!!)
+                        constraintToDelete = null
+                    },
+                ) {
                     Text(stringResource(R.string.constraint_list_delete_yes))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
+                TextButton(onClick = { constraintToDelete = null }) {
                     Text(stringResource(R.string.constraint_list_delete_cancel))
                 }
             },
         )
     }
 
-    when (val state = state) {
+    if (groupToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { groupToDelete = null },
+            title = {
+                Text(stringResource(R.string.constraint_group_delete_dialog_title))
+            },
+            text = { Text(stringResource(R.string.constraint_group_delete_dialog_text)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onRemoveGroupClick(groupToDelete!!)
+                        groupToDelete = null
+                    },
+                ) {
+                    Text(stringResource(R.string.constraint_list_delete_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { groupToDelete = null }) {
+                    Text(stringResource(R.string.constraint_list_delete_cancel))
+                }
+            },
+        )
+    }
+
+    val groups = ((state as? State.Data)?.data as? ConfigConstraintsState.Loaded)
+        ?.groups
+        .orEmpty()
+    val renameModel = groups.find { it.uid == groupToRename }
+
+    if (renameModel != null) {
+        TextFieldDialog(
+            title = stringResource(R.string.constraint_group_rename_hint),
+            submitButtonText = stringResource(R.string.pos_save),
+            initialText = renameModel.name.orEmpty(),
+            onSubmitClick = { newText ->
+                onRenameGroup(renameModel.uid, newText)
+                null
+            },
+            onDismissRequest = { groupToRename = null },
+        )
+    }
+
+    when (state) {
         State.Loading -> Loading()
+
         is State.Data<ConfigConstraintsState> -> Surface(modifier = modifier) {
             Column {
                 when (val data = state.data) {
@@ -152,40 +223,40 @@ private fun ConstraintsScreen(
                     }
 
                     is ConfigConstraintsState.Loaded -> {
-                        Spacer(Modifier.height(8.dp))
-
-                        if (data.constraintList.isNotEmpty()) {
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(R.string.constraint_list_explanation_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        ConstraintList(
+                        ConstraintGroupList(
                             modifier = Modifier.weight(1f),
-                            constraintList = data.constraintList,
-                            shortcuts = data.shortcuts,
-                            onRemoveClick = {
-                                constraintToDelete = it
-                                showDeleteDialog = true
-                            },
+                            state = data,
+                            onAddToGroupClick = onAddToGroupClick,
+                            onRemoveClick = { constraintToDelete = it },
+                            onRemoveGroupClick = { groupToDelete = it },
+                            onNotClick = onNotClick,
                             onFixErrorClick = onFixErrorClick,
                             onClickShortcut = onClickShortcut,
+                            onSelectGroupMode = onSelectGroupMode,
+                            onRenameGroupClick = { groupToRename = it },
+                            onMoveGroup = onMoveGroup,
+                            onMoveConstraint = onMoveConstraint,
                         )
 
-                        if (data.constraintList.size > 1) {
-                            ConstraintModeRow(
+                        if (data.groups.size > 1) {
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                mode = data.selectedMode,
-                                onSelectMode = onSelectMode,
-                            )
+                                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    text = stringResource(R.string.constraint_groups_mode_title),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+
+                                ConstraintModeButtons(
+                                    modifier = Modifier.width(160.dp),
+                                    mode = data.mode,
+                                    onSelectMode = onSelectMode,
+                                )
+                            }
                         }
                     }
                 }
@@ -208,37 +279,6 @@ private fun ConstraintsScreen(
 }
 
 @Composable
-private fun ConstraintModeRow(
-    modifier: Modifier = Modifier,
-    mode: ConstraintMode,
-    onSelectMode: (ConstraintMode) -> Unit,
-) {
-    Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            text = stringResource(R.string.constraint_mode_title),
-            style = MaterialTheme.typography.labelLarge,
-        )
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode == ConstraintMode.AND,
-                text = stringResource(R.string.constraint_mode_and),
-                onSelected = { onSelectMode(ConstraintMode.AND) },
-            )
-
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode == ConstraintMode.OR,
-                text = stringResource(R.string.constraint_mode_or),
-                onSelected = { onSelectMode(ConstraintMode.OR) },
-            )
-        }
-    }
-}
-
-@Composable
 private fun Loading(modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
@@ -246,50 +286,161 @@ private fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ConstraintList(
+private fun ConstraintGroupList(
     modifier: Modifier = Modifier,
-    constraintList: List<ConstraintListItemModel>,
-    shortcuts: Set<ShortcutModel<ConstraintData>>,
+    state: ConfigConstraintsState.Loaded,
+    onAddToGroupClick: (String) -> Unit,
     onRemoveClick: (String) -> Unit,
+    onRemoveGroupClick: (String) -> Unit,
+    onNotClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
     onClickShortcut: (ConstraintData) -> Unit,
+    onSelectGroupMode: (String, ConstraintMode) -> Unit,
+    onRenameGroupClick: (groupUid: String) -> Unit,
+    onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit,
+    onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
+    val groupUids = state.groups.map { it.uid }
 
-    // Use dragContainer rather than .draggable() modifier because that causes
-    // dragging the first item to be always be dropped in the next position.
+    // Lists rather than sets so they can be saved in a Bundle.
+    var expandedUids by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    var knownGroupUids by rememberSaveable { mutableStateOf(groupUids) }
+
+    // Expand groups that are added so the user can see the new constraint.
+    LaunchedEffect(groupUids) {
+        val newGroupUids = groupUids.filterNot { it in knownGroupUids }
+
+        if (newGroupUids.isNotEmpty()) {
+            expandedUids = expandedUids + newGroupUids
+        }
+
+        knownGroupUids = groupUids
+    }
+
+    // Only the groups can be dragged. Not the row of shortcuts.
+    val dragDropState = rememberDragDropState(
+        lazyListState = lazyListState,
+        keys = groupUids,
+        onMove = onMoveGroup,
+    )
+
+    val orderedGroups = dragDropState.ordered(state.groups) { it.uid }
+
+    val linkText = when (state.mode) {
+        ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
+        ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
+    }
+
     LazyColumn(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-        items(
-            constraintList,
-            key = { item -> item.id },
-            contentType = { _ -> "constraint" },
-        ) { model ->
-            ConstraintListItem(
-                modifier = Modifier.fillMaxWidth(),
-                model = model,
-                onRemoveClick = { onRemoveClick(model.id) },
-                onFixClick = { onFixErrorClick(model.id) },
+        item(key = "header") {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                text = stringResource(R.string.constraint_list_explanation),
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
             )
         }
 
-        if (shortcuts.isNotEmpty()) {
+        itemsIndexed(
+            orderedGroups,
+            key = { _, group -> group.uid },
+            contentType = { _, _ -> "constraint_group" },
+        ) { index, group ->
+            // Automatically expand the group when an error appears so the user can fix it.
+            LaunchedEffect(group.uid, group.error) {
+                if (group.error != null && group.uid !in expandedUids) {
+                    expandedUids = expandedUids + group.uid
+                }
+            }
+
+            DraggableItem(
+                dragDropState = dragDropState,
+                key = group.uid,
+            ) { isDragging ->
+                Column {
+                    ConstraintGroupItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        model = group,
+                        isExpanded = group.uid in expandedUids,
+                        isDraggingEnabled = orderedGroups.size > 1,
+                        isDragging = isDragging,
+                        isReorderingEnabled = state.groups.size > 1,
+                        dragDropState = dragDropState,
+                        onExpandedChange = { expanded ->
+                            expandedUids = if (expanded) {
+                                expandedUids + group.uid
+                            } else {
+                                expandedUids - group.uid
+                            }
+                        },
+                        onSelectMode = { onSelectGroupMode(group.uid, it) },
+                        onAddConstraintClick = { onAddToGroupClick(group.uid) },
+                        onRenameClick = { onRenameGroupClick(group.uid) },
+                        onDeleteClick = { onRemoveGroupClick(group.uid) },
+                        onRemoveConstraintClick = onRemoveClick,
+                        onFixConstraintClick = onFixErrorClick,
+                        onNotClick = onNotClick,
+                        onMoveConstraint = { fromIndex, toIndex ->
+                            onMoveConstraint(group.uid, fromIndex, toIndex)
+                        },
+                        onMoveUp = if (index > 0) {
+                            { onMoveGroup(index, index - 1) }
+                        } else {
+                            null
+                        },
+                        onMoveDown = if (index < orderedGroups.lastIndex) {
+                            { onMoveGroup(index, index + 1) }
+                        } else {
+                            null
+                        },
+                    )
+
+                    if (index < orderedGroups.lastIndex) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(linkRowHeight),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = linkText,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    } else {
+                        // Important! Keep the height of the item constant while dragging.
+                        // If the height changes while dragging it can lead to janky behavior.
+                        Spacer(Modifier.height(linkRowHeight))
+                    }
+                }
+            }
+        }
+
+        if (state.shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = stringResource(R.string.recently_used_constraints),
                         style = MaterialTheme.typography.titleSmall,
                     )
+
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 32.dp),
-                        shortcuts = shortcuts,
+                        shortcuts = state.shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
                 }
@@ -318,35 +469,58 @@ private fun EmptyPreview() {
     }
 }
 
-@Preview
+@Preview(heightDp = 1200)
 @Composable
 private fun LoadedPreview() {
     KeyMapperTheme {
         val ctx = LocalContext.current
 
+        val flashlightConstraint = ConstraintListItemModel(
+            id = "1",
+            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+            text = "Flashlight is on",
+            isNot = true,
+            error = "Flashlight not found",
+            isErrorFixable = true,
+        )
+
+        val appConstraint = ConstraintListItemModel(
+            id = "2",
+            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+            text = "Key Mapper is in foreground",
+        )
+
+        val wifiConstraint = ConstraintListItemModel(
+            id = "3",
+            icon = ComposeIconInfo.Vector(Icons.Outlined.Wifi),
+            text = "Wi-Fi is on",
+        )
+
         ConstraintsScreen(
             state = State.Data(
                 ConfigConstraintsState.Loaded(
-                    constraintList = listOf(
-                        ConstraintListItemModel(
-                            id = "1",
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            constraintModeLink = ConstraintMode.AND,
-                            text = "Flashlight is on",
-                            error = "Flashlight not found",
-                            isErrorFixable = true,
+                    groups = listOf(
+                        ConstraintGroupListItemModel(
+                            uid = "group1",
+                            mode = ConstraintMode.AND,
+                            constraints = listOf(flashlightConstraint, appConstraint),
+                            description = "Flashlight is not on AND Key Mapper is in foreground",
                         ),
-                        ConstraintListItemModel(
-                            id = "2",
-                            icon = ComposeIconInfo.Drawable(
-                                ctx.drawable(R.mipmap.ic_launcher_round),
-                            ),
-                            constraintModeLink = null,
-                            text = "Key Mapper in foreground",
-                            error = null,
-                            isErrorFixable = true,
+                        ConstraintGroupListItemModel(
+                            uid = "group2",
+                            name = "Foreground or wifi",
+                            mode = ConstraintMode.OR,
+                            constraints = listOf(appConstraint, wifiConstraint),
+                            description = "Key Mapper is in foreground OR Wi-Fi is on",
+                        ),
+                        ConstraintGroupListItemModel(
+                            uid = "group3",
+                            mode = ConstraintMode.AND,
+                            constraints = listOf(wifiConstraint),
+                            description = "Wi-Fi is on",
                         ),
                     ),
+                    mode = ConstraintMode.OR,
                     shortcuts = setOf(
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
@@ -354,7 +528,6 @@ private fun LoadedPreview() {
                             data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
-                    selectedMode = ConstraintMode.AND,
                 ),
             ),
         )

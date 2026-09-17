@@ -116,6 +116,8 @@ fun BaseTriggerScreen(
         is State.Data -> {
             val tipContent: @Composable () -> Unit = {
                 tipModel?.let { tip ->
+                    Spacer(Modifier.height(8.dp))
+
                     TipCard(
                         modifier = Modifier
                             .fillMaxWidth()

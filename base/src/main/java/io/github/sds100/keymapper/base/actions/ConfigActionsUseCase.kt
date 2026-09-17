@@ -239,11 +239,11 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
 
         if (data is ActionData.AnswerCall) {
-            configConstraints.addConstraint(ConstraintData.PhoneRinging)
+            configConstraints.addConstraint(groupUid = null, ConstraintData.PhoneRinging)
         }
 
         if (data is ActionData.EndCall) {
-            configConstraints.addConstraint(ConstraintData.InPhoneCall)
+            configConstraints.addConstraint(groupUid = null, ConstraintData.InPhoneCall)
         }
 
         return Action(

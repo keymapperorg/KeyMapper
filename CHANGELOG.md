@@ -10,6 +10,10 @@
 - #1465 actions can be turned off individually without deleting them.
 - #701 the delay before the next action is now set with a button between actions instead of in the action options.
 - Redesigned the action options with grouped repeat, burst, hold down and delay sections.
+- #752 Constraints can be organised into groups that each have their own AND/OR mode, and the groups are combined with AND or OR.
+- #752 Constraint groups can be given a custom name.
+- #752 Any constraint can be inverted.
+- #752 Redesigned the constraints screen with expandable constraint group cards.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 

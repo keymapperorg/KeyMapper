@@ -193,6 +193,7 @@ fun CustomDialogContent(
                 )
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
 //                HorizontalDivider()
             Box(Modifier.weight(1f, fill = false), content = content)
 //                HorizontalDivider()

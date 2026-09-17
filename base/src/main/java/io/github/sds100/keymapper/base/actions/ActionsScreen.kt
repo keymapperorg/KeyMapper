@@ -296,7 +296,7 @@ private fun ActionList(
                     onButtonClick = { callback.onTipButtonClick(tip.id) },
                 )
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
             }
         }
 

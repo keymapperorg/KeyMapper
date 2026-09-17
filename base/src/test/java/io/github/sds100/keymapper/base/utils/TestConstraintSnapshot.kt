@@ -43,21 +43,12 @@ class TestConstraintSnapshot(
     override fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (val data = constraint.data) {
             is ConstraintData.AppInForeground -> appInForeground == data.packageName
-            is ConstraintData.AppNotInForeground -> appInForeground != data.packageName
             is ConstraintData.AppPlayingMedia ->
                 appsPlayingMedia.contains(data.packageName)
 
-            is ConstraintData.AppNotPlayingMedia ->
-                appsPlayingMedia.none { it == data.packageName }
-
             is ConstraintData.MediaPlaying -> appsPlayingMedia.isNotEmpty()
-            is ConstraintData.NoMediaPlaying -> appsPlayingMedia.isEmpty()
             is ConstraintData.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == data.bluetoothAddress }
-            }
-
-            is ConstraintData.BtDeviceDisconnected -> {
-                connectedBluetoothDevices.none { it.address == data.bluetoothAddress }
             }
 
             is ConstraintData.OrientationCustom -> orientation == data.orientation
@@ -72,15 +63,10 @@ class TestConstraintSnapshot(
             is ConstraintData.PhysicalOrientation ->
                 physicalOrientation == data.physicalOrientation
 
-            is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn
             is ConstraintData.DisplayResolution ->
                 (displaySize.width == data.width && displaySize.height == data.height) ||
                     (displaySize.width == data.height && displaySize.height == data.width)
-            is ConstraintData.FlashlightOff -> when (data.lens) {
-                CameraLens.BACK -> !isBackFlashlightOn
-                CameraLens.FRONT -> !isFrontFlashlightOn
-            }
 
             is ConstraintData.FlashlightOn -> when (data.lens) {
                 CameraLens.BACK -> isBackFlashlightOn
@@ -96,30 +82,16 @@ class TestConstraintSnapshot(
                 }
             }
 
-            is ConstraintData.WifiDisconnected ->
-                if (data.ssid == null) {
-                    // connected to no network
-                    connectedWifiSSID == null
-                } else {
-                    connectedWifiSSID != data.ssid
-                }
-
-            is ConstraintData.WifiOff -> !isWifiEnabled
             is ConstraintData.WifiOn -> isWifiEnabled
             is ConstraintData.ImeChosen -> chosenImeId == data.imeId
-            is ConstraintData.ImeNotChosen -> chosenImeId != data.imeId
             is ConstraintData.KeyboardShowing -> isKeyboardShowing
-            is ConstraintData.KeyboardNotShowing -> !isKeyboardShowing
             is ConstraintData.DeviceIsLocked -> isLocked
-            is ConstraintData.DeviceIsUnlocked -> !isLocked
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
             is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
             is ConstraintData.PhoneRinging -> callState == CallState.RINGING
             is ConstraintData.RingerMode -> ringerMode == data.ringerMode
             is ConstraintData.Charging -> isCharging
-            is ConstraintData.Discharging -> !isCharging
             is ConstraintData.LockScreenShowing -> isLockscreenShowing
-            is ConstraintData.LockScreenNotShowing -> !isLockscreenShowing
             is ConstraintData.Time -> {
                 val startTime = data.startTime
                 val endTime = data.endTime
@@ -136,8 +108,7 @@ class TestConstraintSnapshot(
             ConstraintData.HingeOpen ->
                 hingeState is HingeState.Available && hingeState.isOpen()
             ConstraintData.NotificationPanelShowing -> isNotificationPanelShowing
-            ConstraintData.NotificationPanelNotShowing -> !isNotificationPanelShowing
-        }
+        } != constraint.isNot
 
         if (isSatisfied) {
             Timber.d("Constraint satisfied: $constraint")

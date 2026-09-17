@@ -95,31 +95,14 @@ class LazyConstraintSnapshot(
     override fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (constraint.data) {
             is ConstraintData.AppInForeground -> appInForeground == constraint.data.packageName
-            is ConstraintData.AppNotInForeground -> appInForeground != constraint.data.packageName
-            is ConstraintData.AppPlayingMedia -> {
-                if (appsPlayingMedia.contains(constraint.data.packageName)) {
-                    return true
-                } else if (appInForeground == constraint.data.packageName && isMediaPlaying()) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-
-            is ConstraintData.AppNotPlayingMedia ->
-                appsPlayingMedia.none { it == constraint.data.packageName } &&
-                    !(appInForeground == constraint.data.packageName && isMediaPlaying())
+            is ConstraintData.AppPlayingMedia ->
+                appsPlayingMedia.contains(constraint.data.packageName) ||
+                    (appInForeground == constraint.data.packageName && isMediaPlaying())
 
             is ConstraintData.MediaPlaying -> isMediaPlaying()
 
-            is ConstraintData.NoMediaPlaying -> !isMediaPlaying()
-
             is ConstraintData.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == constraint.data.bluetoothAddress }
-            }
-
-            is ConstraintData.BtDeviceDisconnected -> {
-                connectedBluetoothDevices.none { it.address == constraint.data.bluetoothAddress }
             }
 
             is ConstraintData.OrientationCustom -> orientation == constraint.data.orientation
@@ -134,7 +117,6 @@ class LazyConstraintSnapshot(
             is ConstraintData.PhysicalOrientation ->
                 physicalOrientation == constraint.data.physicalOrientation
 
-            is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn
 
             // Compare the resolution regardless of orientation so that the constraint
@@ -149,7 +131,6 @@ class LazyConstraintSnapshot(
                             displaySize.height == constraint.data.width
                         )
 
-            is ConstraintData.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.data.lens)
             is ConstraintData.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.data.lens)
             is ConstraintData.WifiConnected -> {
                 if (constraint.data.ssid == null) {
@@ -160,22 +141,10 @@ class LazyConstraintSnapshot(
                 }
             }
 
-            is ConstraintData.WifiDisconnected ->
-                if (constraint.data.ssid == null) {
-                    // connected to no network
-                    connectedWifiSSID == null
-                } else {
-                    connectedWifiSSID != constraint.data.ssid
-                }
-
-            is ConstraintData.WifiOff -> !isWifiEnabled
             is ConstraintData.WifiOn -> isWifiEnabled
             is ConstraintData.ImeChosen -> chosenImeId == constraint.data.imeId
-            is ConstraintData.ImeNotChosen -> chosenImeId != constraint.data.imeId
             is ConstraintData.KeyboardShowing -> isKeyboardShowing
-            is ConstraintData.KeyboardNotShowing -> !isKeyboardShowing
             is ConstraintData.DeviceIsLocked -> isLocked
-            is ConstraintData.DeviceIsUnlocked -> !isLocked
             is ConstraintData.InPhoneCall ->
                 callState == CallState.IN_PHONE_CALL ||
                     audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
@@ -191,7 +160,6 @@ class LazyConstraintSnapshot(
             is ConstraintData.RingerMode -> ringerMode == constraint.data.ringerMode
 
             is ConstraintData.Charging -> isCharging
-            is ConstraintData.Discharging -> !isCharging
 
             is ConstraintData.HingeClosed -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -220,12 +188,8 @@ class LazyConstraintSnapshot(
             is ConstraintData.LockScreenShowing ->
                 isLockscreenShowing &&
                     appInForeground == "com.android.systemui"
-            is ConstraintData.LockScreenNotShowing ->
-                !isLockscreenShowing ||
-                    appInForeground != "com.android.systemui"
 
             is ConstraintData.NotificationPanelShowing -> isNotificationShadeExpanded
-            is ConstraintData.NotificationPanelNotShowing -> !isNotificationShadeExpanded
 
             is ConstraintData.Time ->
                 if (constraint.data.startTime.isAfter(constraint.data.endTime)) {
@@ -237,11 +201,14 @@ class LazyConstraintSnapshot(
                 }
         }
 
-        return isSatisfied
+        return isSatisfied != constraint.isNot
     }
 }
 
 interface ConstraintSnapshot {
+    /**
+     * Whether the constraint is satisfied, taking into account whether it is inverted.
+     */
     fun isSatisfied(constraint: Constraint): Boolean
 }
 
@@ -251,36 +218,31 @@ interface ConstraintSnapshot {
  */
 fun ConstraintSnapshot.isSatisfied(vararg constraintState: ConstraintState): Boolean {
     for (state in constraintState) {
-        when (state.mode) {
-            ConstraintMode.AND -> {
-                for (constraint in state.constraints) {
-                    if (!isSatisfied(constraint)) {
-                        return false
-                    }
-                }
-            }
-
-            ConstraintMode.OR -> {
-                // If no constraints then still satisfied
-                if (state.constraints.isEmpty()) {
-                    continue
-                }
-
-                var anySatisfied = false
-
-                for (constraint in state.constraints) {
-                    if (isSatisfied(constraint)) {
-                        anySatisfied = true
-                        break
-                    }
-                }
-
-                if (!anySatisfied) {
-                    return false
-                }
-            }
+        if (!isStateSatisfied(state)) {
+            return false
         }
     }
 
     return true
+}
+
+private fun ConstraintSnapshot.isStateSatisfied(state: ConstraintState): Boolean {
+    // Empty groups are ignored and if there are no constraints then it is still satisfied.
+    val groups = state.groups.filter { it.constraints.isNotEmpty() }
+
+    if (groups.isEmpty()) {
+        return true
+    }
+
+    return when (state.mode) {
+        ConstraintMode.AND -> groups.all { isGroupSatisfied(it) }
+        ConstraintMode.OR -> groups.any { isGroupSatisfied(it) }
+    }
+}
+
+private fun ConstraintSnapshot.isGroupSatisfied(group: ConstraintGroup): Boolean {
+    return when (group.mode) {
+        ConstraintMode.AND -> group.constraints.all { isSatisfied(it) }
+        ConstraintMode.OR -> group.constraints.any { isSatisfied(it) }
+    }
 }
