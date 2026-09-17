@@ -120,7 +120,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
             }
         }
 
-        val subGroupListItems = keyMapGroup.subGroups.map { group ->
+        val subGroupListItems = keyMapGroup.subGroups.map { (group, _, _) ->
             var icon: ComposeIconInfo? = null
 
             val constraint = group.constraintState.constraints.firstOrNull()

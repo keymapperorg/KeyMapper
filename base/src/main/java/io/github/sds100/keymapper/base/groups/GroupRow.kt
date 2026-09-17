@@ -135,6 +135,8 @@ fun GroupRow(
                     onClick = { onGroupClick(group.uid) },
                     text = group.name,
                     enabled = enabled,
+                    isGroupEnabled = group.isEnabled,
+                    isGroupError = group.isError,
                     icon = {
                         when (group.icon) {
                             is ComposeIconInfo.Drawable -> {
@@ -275,29 +277,54 @@ private fun GroupButton(
     text: String,
     icon: @Composable () -> Unit,
     enabled: Boolean,
+    isGroupEnabled: Boolean = true,
+    isGroupError: Boolean = false,
 ) {
-    Surface(
-        modifier = modifier,
-        onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-        enabled = enabled,
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp, horizontal = 12.dp)
-                .heightIn(min = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            icon()
+    val containerColor: Color
+    val contentColor: Color
 
-            Text(
-                text = text,
-                maxLines = 1,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                overflow = TextOverflow.Ellipsis,
-            )
+    when {
+        // If the group is disabled then never show the error color.
+        !isGroupEnabled -> {
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        }
+
+        isGroupError -> {
+            containerColor = MaterialTheme.colorScheme.errorContainer
+            contentColor = MaterialTheme.colorScheme.onErrorContainer
+        }
+
+        else -> {
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+            contentColor = MaterialTheme.colorScheme.onSurface
+        }
+    }
+
+    CompositionLocalProvider(LocalContentColor provides contentColor) {
+        Surface(
+            modifier = modifier,
+            onClick = onClick,
+            shape = MaterialTheme.shapes.medium,
+            color = containerColor,
+            enabled = enabled,
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 6.dp, horizontal = 12.dp)
+                    .heightIn(min = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                icon()
+
+                Text(
+                    text = text,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = contentColor,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
     }
 }
@@ -318,6 +345,64 @@ private fun PreviewEmptyDisabled() {
     KeyMapperTheme {
         Surface {
             GroupRow(groups = emptyList(), enabled = false)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewDisabledGroup() {
+    KeyMapperTheme {
+        Surface {
+            GroupRow(
+                groups = listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Torch",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        isEnabled = false,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewErrorGroup() {
+    KeyMapperTheme {
+        Surface {
+            GroupRow(
+                groups = listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Torch",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        isError = true,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewDisabledErrorGroup() {
+    KeyMapperTheme {
+        Surface {
+            GroupRow(
+                groups = listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Torch",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        isEnabled = false,
+                        isError = true,
+                    ),
+                ),
+            )
         }
     }
 }

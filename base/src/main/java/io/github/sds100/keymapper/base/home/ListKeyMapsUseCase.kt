@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.home
 
 import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
@@ -10,11 +11,13 @@ import io.github.sds100.keymapper.base.backup.ExportedBackupLocation
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
+import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.groups.GroupFamily
+import io.github.sds100.keymapper.base.groups.GroupWithState
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
@@ -39,6 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -88,21 +92,81 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
     override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
         keyMapListGroupUid
             .flatMapLatest(::getGroupFamily)
-            .map { groupFamily ->
+            .flatMapLatest { groupFamily ->
                 val parentGroups = getParentsRecursively(groupFamily.group?.uid)
 
-                KeyMapGroup(
-                    group = groupFamily.group,
-                    subGroups = groupFamily.children,
-                    keyMaps = State.Loading,
-                    parents = parentGroups,
-                )
+                getSubGroupsWithState(groupFamily.children).map { subGroups ->
+                    KeyMapGroup(
+                        group = groupFamily.group,
+                        subGroups = subGroups,
+                        keyMaps = State.Loading,
+                        parents = parentGroups,
+                    )
+                }
             }.onEach { send(it) }
             .flatMapLatest { keyMapGroup ->
                 getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
             }.collect {
                 send(it)
             }
+    }
+
+    /**
+     * Builds the enabled/error state of each subgroup from its own direct key maps and
+     * constraints only, not recursively through nested subgroups.
+     */
+    private fun getSubGroupsWithState(groups: List<Group>): Flow<List<GroupWithState>> {
+        if (groups.isEmpty()) {
+            return flowOf(emptyList())
+        }
+
+        return combine(
+            groups.map { group ->
+                combine(
+                    getKeyMapsByGroup(group.uid),
+                    actionErrorSnapshot,
+                    constraintErrorSnapshot,
+                ) { keyMapsState, actionSnapshot, constraintSnapshot ->
+                    buildGroupWithState(
+                        group,
+                        keyMapsState.dataOrNull() ?: emptyList(),
+                        actionSnapshot,
+                        constraintSnapshot,
+                    )
+                }
+            },
+        ) { it.toList() }
+    }
+
+    private fun buildGroupWithState(
+        group: Group,
+        keyMaps: List<KeyMap>,
+        actionErrorSnapshot: ActionErrorSnapshot,
+        constraintErrorSnapshot: ConstraintErrorSnapshot,
+    ): GroupWithState {
+        val isEnabled = keyMaps.isEmpty() || keyMaps.any { it.isEnabled }
+
+        val hasOwnConstraintError = group.constraintState.constraints.any {
+            constraintErrorSnapshot.getError(it) != null
+        }
+
+        val hasEnabledKeyMapError = keyMaps.any { keyMap ->
+            keyMap.isEnabled &&
+                (
+                    actionErrorSnapshot.getErrors(
+                        keyMap.actionList.filter { it.isEnabled }.map { it.data },
+                    ).values.any { it != null } ||
+                        keyMap.constraintState.constraints.any {
+                            constraintErrorSnapshot.getError(it) != null
+                        }
+                    )
+        }
+
+        return GroupWithState(
+            group = group,
+            isEnabled = isEnabled,
+            isError = hasOwnConstraintError || hasEnabledKeyMapError,
+        )
     }
 
     override val selectionGroupFamily: Flow<GroupFamily> =

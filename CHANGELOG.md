@@ -15,6 +15,8 @@
 - #752 Constraint groups can be given a custom name.
 - #752 Any constraint can be inverted.
 - #752 Redesigned the constraints screen with expandable constraint group cards.
+- #2139 color code disabled/enabled groups.
+- #1987 groups are red if any key maps inside have errors.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 

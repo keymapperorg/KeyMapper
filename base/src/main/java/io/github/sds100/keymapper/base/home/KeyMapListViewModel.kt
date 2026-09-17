@@ -14,9 +14,9 @@ import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
+import io.github.sds100.keymapper.base.groups.GroupWithState
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
@@ -465,18 +465,20 @@ class KeyMapListViewModel(
         }
     }
 
-    private fun buildGroupListItem(group: Group): GroupListItemModel {
+    private fun buildGroupListItem(groupState: GroupWithState): GroupListItemModel {
         var icon: ComposeIconInfo? = null
 
-        val constraint = group.constraintState.constraints.firstOrNull()
+        val constraint = groupState.group.constraintState.constraints.firstOrNull()
         if (constraint != null) {
             icon = constraintUiHelper.getIcon(constraint)
         }
 
         return GroupListItemModel(
-            uid = group.uid,
-            name = group.name,
+            uid = groupState.group.uid,
+            name = groupState.group.name,
             icon = icon,
+            isEnabled = groupState.isEnabled,
+            isError = groupState.isError,
         )
     }
 
