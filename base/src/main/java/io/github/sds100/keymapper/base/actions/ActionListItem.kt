@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.ContentCopy
@@ -40,6 +42,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
@@ -59,6 +63,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
 import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
+import io.github.sds100.keymapper.base.utils.ui.compose.horizontalFadingEdges
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
 /**
@@ -358,38 +363,60 @@ private fun ExpandedContent(
 
             Switch(checked = model.isEnabled, onCheckedChange = onEnabledChange)
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.width(16.dp))
 
-            IconButton(onClick = onDuplicateClick) {
-                Icon(
-                    imageVector = Icons.Outlined.ContentCopy,
-                    contentDescription = stringResource(R.string.action_list_item_duplicate),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            val scrollState = rememberScrollState()
+
+            // Scroll to the end initially so the delete button is always visible without
+            // needing to scroll.
+            LaunchedEffect(Unit) {
+                scrollState.scrollTo(scrollState.maxValue)
             }
 
-            IconButton(onClick = onTestClick) {
-                Icon(
-                    imageVector = Icons.Outlined.PlayArrow,
-                    contentDescription = stringResource(R.string.action_list_item_test),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalFadingEdges(scrollState)
+                    .horizontalScroll(scrollState),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                ) {
+                    IconButton(onClick = onDuplicateClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.ContentCopy,
+                            contentDescription = stringResource(
+                                R.string.action_list_item_duplicate,
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
 
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = stringResource(R.string.action_list_item_edit),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
-            }
+                    IconButton(onClick = onTestClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.PlayArrow,
+                            contentDescription = stringResource(R.string.action_list_item_test),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
 
-            IconButton(onClick = onRemoveClick) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(R.string.action_list_item_remove),
-                    tint = MaterialTheme.colorScheme.error,
-                )
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = stringResource(R.string.action_list_item_edit),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+
+                    IconButton(onClick = onRemoveClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.action_list_item_remove),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
             }
         }
     }
@@ -490,9 +517,35 @@ private fun CollapsedOneLinePreview() {
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun ExpandedPreview() {
+    KeyMapperTheme {
+        ActionListItem(
+            model = ActionListItemModel(
+                id = "id",
+                title = "Open magnifier",
+                isCustomName = true,
+                error = "A Key Mapper keyboard must be enabled!",
+                isErrorFixable = true,
+                showRepeat = true,
+                repeatText = "Repeat 5x after 400ms every 50ms until pressed again",
+                showHoldDown = true,
+                burstText = null,
+                holdDownText = "Hold down for 1000ms",
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+            ),
+            isExpanded = true,
+            isDragging = false,
+            isReorderingEnabled = true,
+            index = 0,
+        )
+    }
+}
+
+@Preview(widthDp = 300)
+@Composable
+private fun ExpandedPreviewSmall() {
     KeyMapperTheme {
         ActionListItem(
             model = ActionListItemModel(
