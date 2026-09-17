@@ -1,14 +1,18 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateBounds
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -54,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -94,6 +99,50 @@ private val collapseTransition: ExitTransition =
             animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
             shrinkTowards = Alignment.Top,
         )
+
+/**
+ * The summary fades out in the first half of the animation so it is invisible before the shrink
+ * clips it. When expanding, the space is made first and the text fades in during the second half.
+ */
+private val summaryEnterTransition: EnterTransition =
+    expandVertically(
+        animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+        expandFrom = Alignment.Top,
+    ) + fadeIn(
+        tween(
+            durationMillis = EXPAND_ANIMATION_DURATION / 2,
+            delayMillis = EXPAND_ANIMATION_DURATION / 2,
+            easing = FastOutSlowInEasing,
+        ),
+    )
+
+private val summaryExitTransition: ExitTransition =
+    fadeOut(tween(EXPAND_ANIMATION_DURATION / 2, easing = FastOutSlowInEasing)) +
+        shrinkVertically(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            shrinkTowards = Alignment.Top,
+        )
+
+/**
+ * Animate both width and height so the title row does not jump when the rename button appears.
+ */
+private val renameButtonEnterTransition: EnterTransition =
+    fadeIn(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
+        expandIn(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            expandFrom = Alignment.CenterStart,
+        )
+
+private val renameButtonExitTransition: ExitTransition =
+    fadeOut(tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)) +
+        shrinkOut(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            shrinkTowards = Alignment.CenterStart,
+        )
+
+private val headerBoundsTransform = BoundsTransform { _, _ ->
+    tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)
+}
 
 @Composable
 fun ActionListItem(
@@ -139,8 +188,6 @@ fun ActionListItem(
 
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .semantics {
                 if (isReorderingEnabled) {
                     customActions = buildList {
@@ -165,95 +212,104 @@ fun ActionListItem(
             },
         colors = cardColors,
     ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onExpandedChange(!isExpanded) },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Spacer(Modifier.width(8.dp))
-
-                if (isReorderingEnabled) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .draggable(
-                                state = draggableState,
-                                enabled = isDraggingEnabled,
-                                orientation = Orientation.Vertical,
-                                startDragImmediately = true,
-                                onDragStarted = {
-                                    dragDropState?.onDragStart(model.id)
-                                },
-                                onDragStopped = { dragDropState?.onDragInterrupted() },
-                            ),
-                        imageVector = Icons.Rounded.DragHandle,
-                        contentDescription = stringResource(
-                            R.string.drag_handle_for,
-                            model.title,
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-
-                Spacer(Modifier.width(8.dp))
-
-                ActionIcon(modifier = Modifier.size(20.dp), icon = model.icon)
-
-                Spacer(Modifier.width(8.dp))
-
-                HeaderText(
+        LookaheadScope {
+            Column {
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 8.dp),
-                    model = model,
-                    isExpanded = isExpanded,
-                    onRenameClick = onRenameClick,
-                )
-
-                CompositionLocalProvider(
-                    LocalMinimumInteractiveComponentSize provides 16.dp,
+                        .fillMaxWidth()
+                        .clickable { onExpandedChange(!isExpanded) },
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = { onExpandedChange(!isExpanded) }) {
+                    Spacer(Modifier.width(8.dp))
+
+                    if (isReorderingEnabled) {
                         Icon(
-                            imageVector = if (isExpanded) {
-                                Icons.Rounded.KeyboardArrowUp
-                            } else {
-                                Icons.Rounded.KeyboardArrowDown
-                            },
-                            contentDescription = if (isExpanded) {
-                                stringResource(R.string.action_list_item_collapse)
-                            } else {
-                                stringResource(R.string.action_list_item_expand)
-                            },
+                            modifier = Modifier
+                                .size(24.dp)
+                                .draggable(
+                                    state = draggableState,
+                                    enabled = isDraggingEnabled,
+                                    orientation = Orientation.Vertical,
+                                    startDragImmediately = true,
+                                    onDragStarted = {
+                                        dragDropState?.onDragStart(model.id)
+                                    },
+                                    onDragStopped = { dragDropState?.onDragInterrupted() },
+                                ),
+                            imageVector = Icons.Rounded.DragHandle,
+                            contentDescription = stringResource(
+                                R.string.drag_handle_for,
+                                model.title,
+                            ),
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
+
+                    Spacer(Modifier.width(8.dp))
+
+                    ActionIcon(modifier = Modifier.size(20.dp), icon = model.icon)
+
+                    Spacer(Modifier.width(8.dp))
+
+                    // The summary shrinks while the rename button grows, so the header's natural
+                    // height dips before reaching its final height. Animate straight to the final
+                    // size instead so the drag handle, icon and chevron do not bounce.
+                    HeaderText(
+                        modifier = Modifier
+                            .weight(1f)
+                            .animateBounds(
+                                lookaheadScope = this@LookaheadScope,
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                boundsTransform = headerBoundsTransform,
+                            ),
+                        model = model,
+                        isExpanded = isExpanded,
+                        onRenameClick = onRenameClick,
+                    )
+
+                    CompositionLocalProvider(
+                        LocalMinimumInteractiveComponentSize provides 16.dp,
+                    ) {
+                        IconButton(onClick = { onExpandedChange(!isExpanded) }) {
+                            Icon(
+                                imageVector = if (isExpanded) {
+                                    Icons.Rounded.KeyboardArrowUp
+                                } else {
+                                    Icons.Rounded.KeyboardArrowDown
+                                },
+                                contentDescription = if (isExpanded) {
+                                    stringResource(R.string.action_list_item_collapse)
+                                } else {
+                                    stringResource(R.string.action_list_item_expand)
+                                },
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.width(4.dp))
                 }
 
-                Spacer(Modifier.width(4.dp))
-            }
-
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = expandTransition,
-                exit = collapseTransition,
-            ) {
-                ExpandedContent(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 8.dp,
-                        bottom = 8.dp,
-                        top = 8.dp,
-                    ),
-                    model = model,
-                    onEditClick = onEditClick,
-                    onRemoveClick = onRemoveClick,
-                    onFixClick = onFixClick,
-                    onTestClick = onTestClick,
-                    onEnabledChange = onEnabledChange,
-                )
+                AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = expandTransition,
+                    exit = collapseTransition,
+                ) {
+                    ExpandedContent(
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            end = 8.dp,
+                            bottom = 8.dp,
+                            top = 8.dp,
+                        ),
+                        model = model,
+                        onEditClick = onEditClick,
+                        onRemoveClick = onRemoveClick,
+                        onFixClick = onFixClick,
+                        onTestClick = onTestClick,
+                        onEnabledChange = onEnabledChange,
+                    )
+                }
             }
         }
     }
@@ -299,7 +355,11 @@ private fun HeaderText(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            if (isExpanded) {
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = renameButtonEnterTransition,
+                exit = renameButtonExitTransition,
+            ) {
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentSize provides 16.dp,
                 ) {
@@ -316,8 +376,8 @@ private fun HeaderText(
 
         AnimatedVisibility(
             visible = !isExpanded,
-            enter = expandTransition,
-            exit = collapseTransition,
+            enter = summaryEnterTransition,
+            exit = summaryExitTransition,
         ) {
             Column {
                 if (model.summary != null) {

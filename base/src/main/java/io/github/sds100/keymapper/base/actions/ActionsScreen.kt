@@ -334,7 +334,9 @@ private fun ActionList(
                     ) { isDragging ->
                         Column {
                             ActionListItem(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
                                 model = model,
                                 index = index,
                                 isExpanded = model.id in expandedIds,
