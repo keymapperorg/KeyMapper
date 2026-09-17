@@ -223,15 +223,6 @@ private fun ConstraintsScreen(
                     }
 
                     is ConfigConstraintsState.Loaded -> {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                            text = stringResource(R.string.constraint_list_explanation),
-                            style = MaterialTheme.typography.titleSmall,
-                            textAlign = TextAlign.Center,
-                        )
-
                         ConstraintGroupList(
                             modifier = Modifier.weight(1f),
                             state = data,
@@ -348,6 +339,17 @@ private fun ConstraintGroupList(
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
+        item(key = "header") {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                text = stringResource(R.string.constraint_list_explanation),
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
+            )
+        }
+
         itemsIndexed(
             orderedGroups,
             key = { _, group -> group.uid },

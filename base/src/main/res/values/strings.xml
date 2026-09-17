@@ -1898,7 +1898,7 @@
     <string name="constraint_list_delete_dialog_text">Are you sure you want to delete this constraint?</string>
     <string name="constraint_list_delete_yes">Yes, delete</string>
     <string name="constraint_list_delete_cancel">Cancel</string>
-    <string name="constraint_list_explanation">This key map will only run\nif these constraints are met.</string>
+    <string name="constraint_list_explanation">This key map will only run if these constraints are met.</string>
     <string name="constraint_not">NOT</string>
     <string name="constraint_not_title">NOT %s</string>
     <string name="constraint_list_item_not">Invert constraint with NOT</string>
