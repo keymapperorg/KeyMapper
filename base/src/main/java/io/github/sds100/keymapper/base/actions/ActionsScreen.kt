@@ -374,10 +374,12 @@ private fun ActionList(
                                     delayBeforeNextAction = model.delayBeforeNextAction,
                                     onDelayClick = { onDelayClick(model.id) },
                                 )
-                            } else {
+                            } else if (index != orderedActions.lastIndex) {
                                 // Important! Keep the height of the item constant while dragging.
                                 // If the height changes while dragging it can lead to janky
                                 // behavior.
+                                //
+                                // But do not show a gap at the bottom of the list.
                                 Spacer(Modifier.height(linkRowHeight))
                             }
                         }
@@ -389,6 +391,8 @@ private fun ActionList(
         if (state.shortcuts.isNotEmpty()) {
             item(key = "shortcuts", contentType = "shortcuts") {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(Modifier.height(16.dp))
+
                     Text(
                         text = stringResource(R.string.recently_used_actions),
                         style = MaterialTheme.typography.titleSmall,

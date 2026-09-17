@@ -241,7 +241,12 @@ fun ActionListItem(
                 exit = collapseTransition,
             ) {
                 ExpandedContent(
-                    modifier = Modifier.padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 8.dp,
+                        bottom = 8.dp,
+                        top = 8.dp,
+                    ),
                     model = model,
                     onEditClick = onEditClick,
                     onRemoveClick = onRemoveClick,
@@ -557,6 +562,32 @@ private fun ExpandedPreview() {
                 title = "Open magnifier",
                 isCustomName = true,
                 error = "A Key Mapper keyboard must be enabled!",
+                isErrorFixable = true,
+                showRepeat = true,
+                repeatText = "Repeat 5x after 400ms every 50ms until pressed again",
+                showHoldDown = true,
+                burstText = null,
+                holdDownText = "Hold down for 1000ms",
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+            ),
+            isExpanded = true,
+            isDragging = false,
+            isReorderingEnabled = true,
+            index = 0,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ExpandedNoErrorPreview() {
+    KeyMapperTheme {
+        ActionListItem(
+            model = ActionListItemModel(
+                id = "id",
+                title = "Open magnifier",
+                isCustomName = true,
+                error = null,
                 isErrorFixable = true,
                 showRepeat = true,
                 repeatText = "Repeat 5x after 400ms every 50ms until pressed again",
