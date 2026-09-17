@@ -1,5 +1,14 @@
 package io.github.sds100.keymapper.base.constraints
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -44,7 +53,32 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
+
+/**
+ * The description and error fade out in the first half of the animation so they are invisible
+ * before the shrink clips them. When expanding, the space is made first and the text fades in
+ * during the second half.
+ */
+private val summaryEnterTransition: EnterTransition =
+    expandVertically(
+        animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+        expandFrom = Alignment.Top,
+    ) + fadeIn(
+        tween(
+            durationMillis = EXPAND_ANIMATION_DURATION / 2,
+            delayMillis = EXPAND_ANIMATION_DURATION / 2,
+            easing = FastOutSlowInEasing,
+        ),
+    )
+
+private val summaryExitTransition: ExitTransition =
+    fadeOut(tween(EXPAND_ANIMATION_DURATION / 2, easing = FastOutSlowInEasing)) +
+        shrinkVertically(
+            animationSpec = tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing),
+            shrinkTowards = Alignment.Top,
+        )
 
 @Composable
 fun ConstraintGroupItem(
@@ -147,29 +181,34 @@ private fun HeaderText(
     isExpanded: Boolean,
 ) {
     Column(modifier = modifier) {
-        if (isExpanded) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        } else {
-            Text(
-                text = model.name ?: model.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
 
-            if (model.error != null) {
+        AnimatedVisibility(
+            visible = !isExpanded,
+            enter = summaryEnterTransition,
+            exit = summaryExitTransition,
+        ) {
+            Column {
                 Text(
-                    text = model.error,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error,
+                    text = model.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
+
+                if (model.error != null) {
+                    Text(
+                        text = model.error,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
         }
     }
