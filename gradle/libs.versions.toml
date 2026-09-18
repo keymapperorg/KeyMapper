@@ -61,8 +61,7 @@ material = "1.13.0"
 
 mflisar-dragselectrecyclerview = "0.3"
 mockito-android = "4.6.1"
-mockito-core = "5.15.2"
-mockito-inline = "5.2.0"
+mockito-core = "5.23.0"
 mockito-kotlin = "4.0.0"
 
 okhttp = "4.12.0"
@@ -170,7 +169,6 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 junit-params = { group = "pl.pragmatists", name = "JUnitParams", version.ref = "junit-params" }
 mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito-android" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-core" }
-mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-inline" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 hamcrest-all = { group = "org.hamcrest", name = "hamcrest-all", version = "1.3" } # No version variable

@@ -161,7 +161,6 @@ dependencies {
     testImplementation(libs.junit.params)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.inline)
     testDebugImplementation(libs.androidx.fragment.testing)
 
     // Dependencies for Android instrumented tests
