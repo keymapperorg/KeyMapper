@@ -304,6 +304,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = inputMethodAdapter.cycleInputMethodSubtype()
             }
 
+            is ActionData.CycleKeyboard -> {
+                result = inputMethodAdapter.getNextInputMethod().then { nextIme ->
+                    switchImeInterface.switchIme(nextIme.id)
+
+                    // See issue #1064. Wait for the input method to finish switching before returning.
+                    val chosenIme = withTimeoutOrNull(2000) {
+                        inputMethodAdapter.chosenIme.filterNotNull().first { it.id == nextIme.id }
+                    }
+
+                    if (chosenIme == null) {
+                        KMError.SwitchImeFailed
+                    } else {
+                        Success(Unit)
+                    }
+                }
+            }
+
             is ActionData.Volume.Down -> {
                 result = audioAdapter.lowerVolume(
                     stream = action.volumeStream,

@@ -1172,6 +1172,8 @@ class CreateActionDelegate(
 
             ActionId.CYCLE_KEYBOARD_LANGUAGE -> return ActionData.CycleKeyboardLanguage
 
+            ActionId.CYCLE_KEYBOARD -> return ActionData.CycleKeyboard
+
             ActionId.TEXT_CUT -> return ActionData.CutText
 
             ActionId.TEXT_COPY -> return ActionData.CopyText
