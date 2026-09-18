@@ -46,6 +46,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
+    // Only for DynamicColors, to decide whether Key Mapper's notifications need tinting.
+    implementation(libs.google.android.material)
     implementation(libs.jakewharton.timber)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)

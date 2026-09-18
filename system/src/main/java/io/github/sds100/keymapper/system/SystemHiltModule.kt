@@ -38,6 +38,8 @@ import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
@@ -189,6 +191,10 @@ abstract class SystemHiltModule {
     abstract fun provideNotificationReceiverAdapter(
         impl: NotificationReceiverAdapterImpl,
     ): NotificationReceiverAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideNotificationAdapter(impl: AndroidNotificationAdapter): NotificationAdapter
 
     @Singleton
     @Binds

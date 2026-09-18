@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.notifications
 
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 interface NotificationAdapter {
@@ -19,4 +20,14 @@ interface NotificationAdapter {
     fun createChannel(channel: NotificationChannelModel)
     fun deleteChannel(channelId: String)
     fun openChannelSettings(channelId: String)
+
+    /**
+     * Dismiss every notification that Key Mapper is allowed to dismiss.
+     */
+    suspend fun dismissAllNotifications(): KMResult<*>
+
+    /**
+     * Dismiss the notification that was posted most recently.
+     */
+    suspend fun dismissLastNotification(): KMResult<*>
 }

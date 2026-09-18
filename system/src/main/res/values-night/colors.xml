@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Copy of md_theme_secondary in the base module. See values/colors.xml. -->
+    <color name="notification_accent">#BEC6DC</color>
+</resources>

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.system.notifications
+package io.github.sds100.keymapper.system.notifications
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -17,18 +17,15 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.color
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
-import io.github.sds100.keymapper.system.notifications.NotificationAdapter
-import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
-import io.github.sds100.keymapper.system.notifications.NotificationModel
-import io.github.sds100.keymapper.system.notifications.NotificationRemoteInput
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.system.R
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -37,12 +34,21 @@ class AndroidNotificationAdapter @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val classProvider: KeyMapperClassProvider,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
 ) : NotificationAdapter {
 
     private val manager: NotificationManagerCompat = NotificationManagerCompat.from(ctx)
 
     override val onNotificationActionClick = MutableSharedFlow<KMNotificationAction.IntentAction>()
     override val onNotificationRemoteInput = MutableSharedFlow<NotificationRemoteInput>()
+
+    private val postedNotificationStore = PostedNotificationStore()
+
+    override val activeNotifications: StateFlow<List<PostedNotification>> =
+        postedNotificationStore.active
+
+    override val recentNotifications: StateFlow<List<PostedNotification>> =
+        postedNotificationStore.recent
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -82,8 +88,9 @@ class AndroidNotificationAdapter @Inject constructor(
         }
 
         val builder = NotificationCompat.Builder(ctx, notification.channel).apply {
+            // The system tints the notification itself when dynamic colours are available.
             if (!DynamicColors.isDynamicColorAvailable()) {
-                color = ctx.color(R.color.md_theme_secondary)
+                color = ContextCompat.getColor(ctx, R.color.notification_accent)
             }
 
             setContentTitle(notification.title)
@@ -216,6 +223,7 @@ class AndroidNotificationAdapter @Inject constructor(
             is KMNotificationAction.Broadcast -> createBroadcastPendingIntent(
                 notificationAction.intentAction.name,
             )
+
             is KMNotificationAction.RemoteInput -> createRemoteInputPendingIntent(
                 notificationAction.intentAction.name,
             )
@@ -270,5 +278,41 @@ class AndroidNotificationAdapter @Inject constructor(
             intent,
             PendingIntent.FLAG_IMMUTABLE,
         )
+    }
+
+    override suspend fun dismissAllNotifications(): KMResult<*> =
+        notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
+
+    override suspend fun dismissLastNotification(): KMResult<*> =
+        notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
+
+    /**
+     * Replace everything that is posted, for when the listener connects.
+     *
+     * Only for [NotificationReceiver].
+     */
+    fun onNotificationsSeeded(notifications: List<PostedNotification>) {
+        postedNotificationStore.onSeeded(notifications)
+    }
+
+    /**
+     * Only for [NotificationReceiver].
+     */
+    fun onNotificationPosted(notification: PostedNotification) {
+        postedNotificationStore.onPosted(notification)
+    }
+
+    /**
+     * Only for [NotificationReceiver].
+     */
+    fun onNotificationRemoved(key: String) {
+        postedNotificationStore.onRemoved(key)
+    }
+
+    /**
+     * Only for [NotificationReceiver].
+     */
+    fun onNotificationListenerDisconnected() {
+        postedNotificationStore.clear()
     }
 }
