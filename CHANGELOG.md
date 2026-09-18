@@ -4,6 +4,7 @@
 
 ## Added
 
+- #2250 redesigned the key map options screen with in-app guides for triggering and enabling/disabling a key map by intent.
 - #701 new action options bottom sheet design.
 - #701 you can now give custom names to actions, to make it easier to identify key maps.
 - #701 redesigned the action list with expandable action cards that show each option and error.
@@ -17,6 +18,7 @@
 - #752 Redesigned the constraints screen with expandable constraint group cards.
 - #2139 color code disabled/enabled groups.
 - #1987 groups are red if any key maps inside have errors.
+- #2246 adjusted the trigger screen design to match the action and constraint screens.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 
