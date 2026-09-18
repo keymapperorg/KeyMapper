@@ -371,7 +371,6 @@
     <string name="url_translate" translatable="false">https://keymapper.app/contributing/#translating?utm_source=in_app</string>
     <string name="url_privacy_policy" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
-    <string name="url_trigger_by_intent_guide" translatable="false">https://keymapper.app/redirects/trigger-by-intent</string>
     <string name="url_trigger_guide" translatable="false">https://keymapper.app/redirects/trigger</string>
     <string name="url_trigger_options_guide" translatable="false">https://keymapper.app/redirects/trigger-options</string>
     <string name="url_action_guide" translatable="false">https://keymapper.app/redirects/action</string>
@@ -456,9 +455,6 @@
     <string name="button_add_constraint">Add constraint</string>
     <string name="button_choose_keycode">Choose Key code</string>
     <string name="button_add_intent_extra">Add extra</string>
-    <string name="button_create_keymap_shortcut_in_launcher_enabled">Create launcher shortcut</string>
-    <string name="button_create_keymap_shortcut_in_launcher_disabled">Create the shortcut manually</string>
-    <string name="button_open_trigger_keymap_from_intent_guide">Intent guide</string>
     <string name="button_help">Help</string>
     <string name="button_pick_coordinate_select_screenshot">Select screenshot (optional)</string>
     <string name="button_config_intent_choose_activity">Choose activity</string>
@@ -485,7 +481,6 @@
     <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
     <string name="tip_parallel_trigger_title">How to use this trigger</string>
     <string name="tip_sequence_trigger_title">Sequence triggers</string>
-    <string name="tip_screen_off_trigger_title">Trigger when screen is off</string>
     <string name="tip_screen_off_trigger_message">This key map cannot be detected when the screen is off because the trigger was not recorded with Expert Mode. Re-record the trigger with Expert Mode to enable screen-off remapping.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
@@ -2217,5 +2212,47 @@
 
     <string name="dialog_title_disable_auto_switch_ime">Disable auto-switch keyboard?</string>
     <string name="dialog_message_disable_auto_switch_ime">Choosing a keyboard here will disable the automatic keyboard switching feature. You can re-enable it in Settings.</string>
+
+    <!-- Code blocks -->
+    <string name="code_block_copy">Copy</string>
+    <string name="code_block_copy_content_description">Copy %s</string>
+
+    <!-- Key map options screen -->
+    <string name="key_map_options_header_information">Information</string>
+    <string name="key_map_options_header_screen_off">Screen off detection</string>
+    <string name="key_map_options_header_feedback">Feedback</string>
+    <string name="key_map_options_header_timing">Timing</string>
+    <string name="key_map_options_header_integration">Integration with other apps</string>
+    <string name="key_map_options_key_map_id">Key map ID</string>
+    <string name="key_map_options_screen_off_title">Detect trigger when the screen is off</string>
+    <string name="key_map_options_vibrate_summary">This key map will vibrate when triggered</string>
+    <string name="key_map_options_show_toast_summary">Some text will display on the screen when this key map is triggered</string>
+    <string name="key_map_options_trigger_from_other_apps_title">Allow other apps to control this key map</string>
+    <string name="key_map_options_trigger_from_other_apps_summary">Required to trigger this key map with an intent or a shortcut</string>
+    <string name="key_map_options_trigger_by_intent_title">Trigger by intent</string>
+    <string name="key_map_options_enable_by_intent_title">Enable/disable by intent</string>
+    <string name="key_map_options_intent_summary">Use key maps with Tasker, Automate, etc.</string>
+    <string name="key_map_options_create_shortcut_title">Create app shortcut</string>
+    <string name="key_map_options_create_shortcut_summary">Use key maps with other apps</string>
+    <string name="key_map_options_create_shortcut_summary_unsupported">Your launcher doesn\'t support creating shortcuts so you must create it manually</string>
+
+    <!-- Intent setup screens -->
+    <string name="intent_screen_trigger_message">Any app that can send an intent, such as Tasker or Automate, can trigger this key map. Send a broadcast to Key Mapper with these settings. The intent MUST name the receiver below because Android does not deliver implicit broadcasts to other apps.</string>
+    <string name="intent_screen_enable_message">Any app that can send an intent, such as Tasker or Automate, can turn this key map on and off without opening Key Mapper. Send a broadcast to Key Mapper with these settings.</string>
+    <string name="intent_screen_label_package">Package</string>
+    <string name="intent_screen_label_class">Class</string>
+    <string name="intent_screen_label_action">Action</string>
+    <string name="intent_screen_label_action_enable">Turn on</string>
+    <string name="intent_screen_label_action_disable">Turn off</string>
+    <string name="intent_screen_label_action_toggle">Toggle on/off</string>
+    <string name="intent_screen_label_extra_name">String extra name</string>
+    <string name="intent_screen_label_extra_value">String extra value (this key map)</string>
+    <string name="intent_screen_target_explanation">Target a broadcast receiver with the following</string>
+    <string name="intent_screen_action_explanation">Pick the one action you want to send</string>
+    <string name="intent_screen_extras_explanation">Specify this key map with the following extra</string>
+    <string name="intent_screen_adb_title">Test it with ADB</string>
+    <string name="intent_screen_label_command">Command</string>
+    <string name="intent_screen_adb_explanation">Run this from a computer to check your setup before building it in another app.</string>
+    <string name="intent_screen_clipboard_label">Key Mapper intent</string>
 
 </resources>

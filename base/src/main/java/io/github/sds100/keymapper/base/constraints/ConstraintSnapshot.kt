@@ -69,7 +69,7 @@ class LazyConstraintSnapshot(
     private val isKeyboardShowing: Boolean by lazy {
         accessibilityService.isInputMethodVisible.firstBlocking()
     }
-    private val callState: CallState by lazy { phoneAdapter.getCallState() }
+    private val callState: CallState? by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
     private val ringerMode: RingerMode by lazy { volumeAdapter.ringerMode }
 
@@ -95,6 +95,7 @@ class LazyConstraintSnapshot(
     override fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (constraint.data) {
             is ConstraintData.AppInForeground -> appInForeground == constraint.data.packageName
+
             is ConstraintData.AppPlayingMedia ->
                 appsPlayingMedia.contains(constraint.data.packageName) ||
                     (appInForeground == constraint.data.packageName && isMediaPlaying())
@@ -106,6 +107,7 @@ class LazyConstraintSnapshot(
             }
 
             is ConstraintData.OrientationCustom -> orientation == constraint.data.orientation
+
             is ConstraintData.OrientationLandscape ->
                 orientation == Orientation.ORIENTATION_90 ||
                     orientation == Orientation.ORIENTATION_270
@@ -132,6 +134,7 @@ class LazyConstraintSnapshot(
                         )
 
             is ConstraintData.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.data.lens)
+
             is ConstraintData.WifiConnected -> {
                 if (constraint.data.ssid == null) {
                     // connected to any network
@@ -142,9 +145,13 @@ class LazyConstraintSnapshot(
             }
 
             is ConstraintData.WifiOn -> isWifiEnabled
+
             is ConstraintData.ImeChosen -> chosenImeId == constraint.data.imeId
+
             is ConstraintData.KeyboardShowing -> isKeyboardShowing
+
             is ConstraintData.DeviceIsLocked -> isLocked
+
             is ConstraintData.InPhoneCall ->
                 callState == CallState.IN_PHONE_CALL ||
                     audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)

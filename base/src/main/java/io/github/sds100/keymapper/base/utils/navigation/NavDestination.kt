@@ -47,6 +47,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
         const val ID_GET_EVENT = "get_event"
         const val ID_XIAOMI_OPTIMIZATION = "xiaomi_optimization"
+        const val ID_TRIGGER_BY_INTENT = "trigger_by_intent"
+        const val ID_ENABLE_BY_INTENT = "enable_by_intent"
     }
 
     @Serializable
@@ -222,5 +224,15 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object XiaomiOptimization : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_XIAOMI_OPTIMIZATION
+    }
+
+    @Serializable
+    data class TriggerByIntent(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_TRIGGER_BY_INTENT
+    }
+
+    @Serializable
+    data class EnableByIntent(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_ENABLE_BY_INTENT
     }
 }

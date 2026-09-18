@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.base.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
@@ -11,11 +13,9 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
-import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
@@ -46,6 +46,9 @@ class ConfigKeyMapOptionsViewModel(
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
+
+    var createShortcutDialogState: CreateShortcutDialogState? by mutableStateOf(null)
+        private set
 
     val state: StateFlow<State<KeyMapOptionsState>> = combine(
         config.keyMap,
@@ -92,12 +95,25 @@ class ConfigKeyMapOptionsViewModel(
         }
     }
 
+    override fun onTriggerByIntentClick() {
+        coroutineScope.launch {
+            val keyMapUid = config.keyMap.firstOrNull()?.dataOrNull()?.uid ?: return@launch
+            navigate("trigger_by_intent", NavDestination.TriggerByIntent(keyMapUid))
+        }
+    }
+
+    override fun onEnableByIntentClick() {
+        coroutineScope.launch {
+            val keyMapUid = config.keyMap.firstOrNull()?.dataOrNull()?.uid ?: return@launch
+            navigate("enable_by_intent", NavDestination.EnableByIntent(keyMapUid))
+        }
+    }
+
     override fun onCreateShortcutClick() {
         coroutineScope.launch {
             val mapping = config.keyMap.firstOrNull()?.dataOrNull() ?: return@launch
             val keyMapUid = mapping.uid
 
-            val key = "create_launcher_shortcut"
             val defaultShortcutName: String
             val icon: Drawable?
 
@@ -131,25 +147,34 @@ class ConfigKeyMapOptionsViewModel(
                 icon = null
             }
 
-            val shortcutName = showDialog(
-                key,
-                DialogModel.Text(
-                    getString(R.string.hint_shortcut_name),
-                    allowEmpty = false,
-                    text = defaultShortcutName,
-                ),
-            ) ?: return@launch
-
-            val result = createKeyMapShortcut.pinShortcut(keyMapUid, shortcutName, icon)
-
-            result.onFailure { error ->
-                val snackBar = DialogModel.SnackBar(
-                    message = error.getFullMessage(this@ConfigKeyMapOptionsViewModel),
-                )
-
-                showDialog("create_shortcut_result", snackBar)
-            }
+            createShortcutDialogState = CreateShortcutDialogState(
+                keyMapUid = keyMapUid,
+                defaultName = defaultShortcutName,
+                icon = icon,
+            )
         }
+    }
+
+    suspend fun onConfirmCreateShortcut(name: String): String? {
+        val dialogState = createShortcutDialogState ?: return null
+
+        val result = createKeyMapShortcut.pinShortcut(dialogState.keyMapUid, name, dialogState.icon)
+
+        var errorMessage: String? = null
+
+        result.onFailure { error ->
+            errorMessage = error.getFullMessage(this@ConfigKeyMapOptionsViewModel)
+        }
+
+        if (errorMessage == null) {
+            createShortcutDialogState = null
+        }
+
+        return errorMessage
+    }
+
+    fun onDismissCreateShortcutDialog() {
+        createShortcutDialogState = null
     }
 
     private suspend fun buildState(
@@ -196,6 +221,12 @@ class ConfigKeyMapOptionsViewModel(
         )
     }
 }
+
+data class CreateShortcutDialogState(
+    val keyMapUid: String,
+    val defaultName: String,
+    val icon: Drawable?,
+)
 
 data class KeyMapOptionsState(
     val showLongPressDelay: Boolean,
