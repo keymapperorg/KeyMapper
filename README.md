@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+<a href="https://trendshift.io/repositories/13504?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-13504" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/13504" alt="keymapperorg%2FKeyMapper | Trendshift" width="250" height="55"/></a>
+</p>
+
+<p align="center">
 <a href='https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' height='75px'/></a>
 <a href="https://f-droid.org/packages/io.github.sds100.keymapper/" rel="nofollow"><img alt="Get it on F-Droid" height="75" src="https://user-images.githubusercontent.com/53379023/142497343-0e635fc5-056b-46ff-8d8e-d607ed95527e.png" data-canonical-src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" style="max-width: 100%;"></a>
   </br>
