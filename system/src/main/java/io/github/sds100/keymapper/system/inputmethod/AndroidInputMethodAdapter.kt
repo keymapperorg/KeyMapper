@@ -215,4 +215,18 @@ class AndroidInputMethodAdapter @Inject constructor(
             KMError.CycleImeSubtypeFailed
         }
     }
+
+    override fun getNextInputMethod(): KMResult<ImeInfo> {
+        val chosenImeId = getChosenImeId()
+        val enabledImes = getInputMethods().filter { it.isEnabled }
+
+        if (enabledImes.isEmpty()) {
+            return getInfoById(chosenImeId)
+        }
+
+        val currentIndex = enabledImes.indexOfFirst { it.id == chosenImeId }
+        val nextIndex = if (currentIndex == -1) 0 else (currentIndex + 1) % enabledImes.size
+
+        return Success(enabledImes[nextIndex])
+    }
 }

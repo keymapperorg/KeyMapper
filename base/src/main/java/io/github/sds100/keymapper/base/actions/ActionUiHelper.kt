@@ -736,6 +736,8 @@ class ActionUiHelper(
 
         ActionData.CycleKeyboardLanguage -> getString(R.string.action_cycle_keyboard_language)
 
+        ActionData.CycleKeyboard -> getString(R.string.action_cycle_keyboard)
+
         ActionData.ToggleSplitScreen -> getString(R.string.action_toggle_split_screen)
 
         ActionData.VoiceAssistant -> getString(R.string.action_open_assistant)

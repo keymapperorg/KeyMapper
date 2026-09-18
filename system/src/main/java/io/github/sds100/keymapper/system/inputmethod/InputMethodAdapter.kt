@@ -23,4 +23,10 @@ interface InputMethodAdapter {
      * around to the first subtype after the last.
      */
     fun cycleInputMethodSubtype(): KMResult<Unit>
+
+    /**
+     * Returns the input method that should become active next when cycling through all
+     * currently enabled input methods, in a fixed order, wrapping around after the last one.
+     */
+    fun getNextInputMethod(): KMResult<ImeInfo>
 }

@@ -252,6 +252,11 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object CycleKeyboard : ActionData() {
+        override val id = ActionId.CYCLE_KEYBOARD
+    }
+
+    @Serializable
     sealed class DoNotDisturb : ActionData() {
 
         @Serializable

@@ -4,6 +4,7 @@
 
 ## Added
 
+- #1501 new action to cycle through your enabled keyboards.
 - #2250 redesigned the key map options screen with in-app guides for triggering and enabling/disabling a key map by intent.
 - #701 new action options bottom sheet design.
 - #701 you can now give custom names to actions, to make it easier to identify key maps.

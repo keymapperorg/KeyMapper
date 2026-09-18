@@ -1157,6 +1157,7 @@
     <string name="action_switch_keyboard">Switch keyboard</string>
     <string name="action_switch_keyboard_formatted">Switch to %s</string>
     <string name="action_cycle_keyboard_language">Cycle keyboard language</string>
+    <string name="action_cycle_keyboard">Cycle through keyboards</string>
 
     <string name="action_text_cut">Cut</string>
     <string name="action_text_copy">Copy</string>
