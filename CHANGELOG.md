@@ -20,6 +20,10 @@
 - #1987 groups are red if any key maps inside have errors.
 - #2246 adjusted the trigger screen design to match the action and constraint screens.
 
+## Fixed
+
+- Do not crash if permission not granted for in phone call constraint and trying to perform key map.
+
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 
 #### TO BE RELEASED
