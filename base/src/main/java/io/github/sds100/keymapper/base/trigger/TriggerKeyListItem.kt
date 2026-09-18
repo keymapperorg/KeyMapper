@@ -194,7 +194,7 @@ fun TriggerKeyListItem(
                 }
 
                 if (model.error?.isFixable ?: false) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.width(8.dp))
 
                     CompactErrorButton(onClick = { onFixClick(model.error!!) }) {
                         Text(text = stringResource(R.string.button_fix))
