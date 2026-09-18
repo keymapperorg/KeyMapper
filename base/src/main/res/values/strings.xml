@@ -1187,7 +1187,7 @@
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
-    <string name="action_create_notification">Create notification</string>
+    <string name="action_create_notification">Show notification</string>
     <string name="action_create_notification_description">Show notification: %1$s</string>
     <string name="action_create_notification_title_label">Notification title</string>
     <string name="action_create_notification_title_hint">Enter notification title</string>
@@ -1201,7 +1201,7 @@
     <string name="button_test_create_notification">Test</string>
     <string name="button_testing">Testing…</string>
     <string name="test_create_notification_result_ok">Notification shown successfully</string>
-    <string name="action_toast">Show toast</string>
+    <string name="action_toast">Show on-screen message</string>
     <string name="action_toast_description_short">Show short toast: %1$s</string>
     <string name="action_toast_description_long">Show long toast: %1$s</string>
     <string name="action_toast_message_label">Toast message</string>
