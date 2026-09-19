@@ -22,7 +22,7 @@ import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -199,6 +199,8 @@ fun TriggerKeyListItem(
                     CompactErrorButton(onClick = { onFixClick(model.error!!) }) {
                         Text(text = stringResource(R.string.button_fix))
                     }
+
+                    Spacer(Modifier.width(4.dp))
                 }
 
                 CompositionLocalProvider(
@@ -219,11 +221,11 @@ fun TriggerKeyListItem(
 
                     IconButton(onClick = onRemoveClick) {
                         Icon(
-                            imageVector = Icons.Rounded.Clear,
+                            imageVector = Icons.Rounded.DeleteOutline,
                             contentDescription = stringResource(
                                 R.string.trigger_key_list_item_remove,
                             ),
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(24.dp),
                         )
                     }
