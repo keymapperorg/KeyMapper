@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -484,6 +485,7 @@ private fun ActionConstraintChip(model: ComposeChipModel, onFixClick: (KMError) 
                         when (icon) {
                             is ComposeIconInfo.Drawable -> Icon(
                                 modifier = Modifier
+                                    .alpha(contentAlpha)
                                     .fillMaxHeight(),
                                 painter = rememberDrawablePainter(icon.drawable),
                                 contentDescription = null,
@@ -495,7 +497,6 @@ private fun ActionConstraintChip(model: ComposeChipModel, onFixClick: (KMError) 
                                     .fillMaxHeight(),
                                 imageVector = icon.imageVector,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
@@ -576,6 +577,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Open Key Mapper",
+                        isEnabled = false,
                     ),
                     ComposeChipModel.Error(
                         id = "1",
@@ -591,6 +593,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                         id = "3",
                         text = "Toggle flashlight",
                         icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                        isEnabled = false,
                     ),
                 ),
                 constraintMode = ConstraintMode.AND,
