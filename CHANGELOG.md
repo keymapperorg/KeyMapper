@@ -4,6 +4,7 @@
 
 ## Added
 
+- #1341 new constraint for when a notification from a specific app, or with a specific title or text, is posted.
 - #1501 new action to cycle through your enabled keyboards.
 - #2250 redesigned the key map options screen with in-app guides for triggering and enabling/disabling a key map by intent.
 - #701 new action options bottom sheet design.

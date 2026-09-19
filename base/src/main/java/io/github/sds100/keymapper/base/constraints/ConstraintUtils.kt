@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MobileOff
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.RingVolume
@@ -48,6 +49,7 @@ object ConstraintUtils {
         ConstraintCategory.PHONE -> R.string.constraint_cat_phone
         ConstraintCategory.POWER -> R.string.constraint_cat_power
         ConstraintCategory.DEVICE -> R.string.constraint_cat_device
+        ConstraintCategory.NOTIFICATIONS -> R.string.constraint_cat_notifications
         ConstraintCategory.TIME -> R.string.constraint_cat_time
     }
 
@@ -102,7 +104,9 @@ object ConstraintUtils {
         ConstraintId.HINGE_OPEN,
             -> ConstraintCategory.DEVICE
 
-        ConstraintId.NOTIFICATION_PANEL_SHOWING -> ConstraintCategory.DISPLAY
+        ConstraintId.NOTIFICATION_PANEL_SHOWING,
+        ConstraintId.NOTIFICATION_POSTED,
+            -> ConstraintCategory.NOTIFICATIONS
 
         ConstraintId.TIME -> ConstraintCategory.TIME
     }
@@ -183,6 +187,9 @@ object ConstraintUtils {
         ConstraintId.NOTIFICATION_PANEL_SHOWING ->
             ComposeIconInfo.Vector(Icons.Outlined.Notifications)
 
+        ConstraintId.NOTIFICATION_POSTED ->
+            ComposeIconInfo.Vector(Icons.Outlined.NotificationsActive)
+
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
     }
 
@@ -218,6 +225,9 @@ object ConstraintUtils {
         ConstraintId.IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
 
         ConstraintId.NOT_IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.Call)
+
+        ConstraintId.NOTIFICATION_POSTED ->
+            ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
 
         else -> getIcon(constraintId)
     }
@@ -295,7 +305,22 @@ object ConstraintUtils {
         ConstraintId.NOTIFICATION_PANEL_SHOWING ->
             R.string.constraint_notification_panel_showing
 
+        ConstraintId.NOTIFICATION_POSTED -> R.string.constraint_notification_posted
+
         ConstraintId.TIME -> R.string.constraint_time
+    }
+
+    @StringRes
+    fun getNotificationFieldLabel(field: NotificationField): Int = when (field) {
+        NotificationField.PACKAGE -> R.string.notification_field_package_label
+        NotificationField.TITLE -> R.string.notification_field_title_label
+        NotificationField.TEXT -> R.string.notification_field_text_label
+    }
+
+    @StringRes
+    fun getTextMatchModeLabel(matchMode: TextMatchMode): Int = when (matchMode) {
+        TextMatchMode.CONTAINS -> R.string.notification_match_mode_contains
+        TextMatchMode.EXACT -> R.string.notification_match_mode_exact
     }
 
     fun Constraint.getDependency(): Set<ConstraintDependency> {
@@ -355,6 +380,9 @@ object ConstraintUtils {
                 setOf(ConstraintDependency.NOTIFICATION_PANEL_STATE)
 
             is ConstraintData.DisplayResolution -> setOf(ConstraintDependency.DISPLAY_RESOLUTIONS)
+
+            is ConstraintData.NotificationPosted ->
+                setOf(ConstraintDependency.POSTED_NOTIFICATIONS)
         }
     }
 }

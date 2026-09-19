@@ -45,7 +45,6 @@ import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeAsyncImpl
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCaseImpl
-import io.github.sds100.keymapper.base.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
@@ -63,16 +62,11 @@ import io.github.sds100.keymapper.common.utils.UuidGenerator
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
-import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class BaseSingletonHiltModule {
-    @Singleton
-    @Binds
-    abstract fun provideNotificationAdapter(impl: AndroidNotificationAdapter): NotificationAdapter
-
     @Singleton
     @Binds
     abstract fun provideAccessibilityAdapter(

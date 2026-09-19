@@ -12,5 +12,6 @@ enum class ConstraintCategory {
     PHONE,
     POWER,
     DEVICE,
+    NOTIFICATIONS,
     TIME,
 }

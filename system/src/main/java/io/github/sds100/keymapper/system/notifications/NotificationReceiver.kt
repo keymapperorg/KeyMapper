@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.notifications
 
+import android.app.Notification
 import android.content.ComponentName
 import android.media.session.MediaSessionManager
 import android.service.notification.NotificationListenerService
@@ -37,10 +38,11 @@ class NotificationReceiver :
             mediaAdapter.onActiveMediaSessionChange(controllers ?: emptyList())
         }
 
-    private var lastNotificationKey: String? = null
-
     @Inject
     lateinit var serviceAdapter: NotificationReceiverAdapterImpl
+
+    @Inject
+    lateinit var notificationAdapter: AndroidNotificationAdapter
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
@@ -53,13 +55,10 @@ class NotificationReceiver :
         serviceAdapter.eventsToService
             .onEach { event ->
                 when (event) {
-                    NotificationServiceEvent.DismissLastNotification -> cancelNotification(
-                        lastNotificationKey,
-                    )
+                    is NotificationServiceEvent.DismissNotification ->
+                        cancelNotification(event.key)
 
                     NotificationServiceEvent.DismissAllNotifications -> cancelAllNotifications()
-
-                    else -> Unit
                 }
             }.launchIn(lifecycleScope)
     }
@@ -72,19 +71,19 @@ class NotificationReceiver :
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
 
-        lastNotificationKey = sbn?.key
+        sbn?.let { notificationAdapter.onNotificationPosted(it.toPostedNotification()) }
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
 
-        if (sbn?.key == lastNotificationKey) {
-            lastNotificationKey = null
-        }
+        sbn?.let { notificationAdapter.onNotificationRemoved(it.key) }
     }
 
     override fun onListenerConnected() {
         super.onListenerConnected()
+
+        seedPostedNotifications()
 
         try {
             mediaSessionManager.addOnActiveSessionsChangedListener(
@@ -108,7 +107,42 @@ class NotificationReceiver :
 
         mediaAdapter.onActiveMediaSessionChange(emptyList())
 
+        notificationAdapter.onNotificationListenerDisconnected()
+
         super.onListenerDisconnected()
+    }
+
+    /**
+     * Notifications can be posted while the listener is not running, so the list has to be read
+     * once on connecting rather than relying on [onNotificationPosted] alone.
+     */
+    private fun seedPostedNotifications() {
+        try {
+            val notifications = activeNotifications
+                ?.map { it.toPostedNotification() }
+                ?: emptyList()
+
+            notificationAdapter.seedNotifications(notifications)
+        } catch (e: SecurityException) {
+            // Thrown when the listener is not connected yet.
+            Timber.e("NotificationReceiver: Failed to read the posted notifications. $e")
+        }
+    }
+
+    private fun StatusBarNotification.toPostedNotification(): PostedNotification {
+        val extras = notification.extras
+
+        return PostedNotification(
+            key = key,
+            packageName = packageName,
+            title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString(),
+            // Fall back so that notifications using an expanded style still have matchable text.
+            text = (
+                extras.getCharSequence(Notification.EXTRA_TEXT)
+                    ?: extras.getCharSequence(Notification.EXTRA_BIG_TEXT)
+                    ?: extras.getCharSequence(Notification.EXTRA_SUB_TEXT)
+                )?.toString(),
+        )
     }
 
     override val lifecycle: Lifecycle

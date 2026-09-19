@@ -19,6 +19,8 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
+import io.github.sds100.keymapper.system.notifications.PostedNotification
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
@@ -42,6 +44,7 @@ class LazyConstraintSnapshot(
     powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
     volumeAdapter: VolumeAdapter,
+    notificationAdapter: NotificationAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
@@ -83,6 +86,10 @@ class LazyConstraintSnapshot(
 
     private val isNotificationShadeExpanded: Boolean by lazy {
         accessibilityService.isNotificationShadeExpanded.firstBlocking()
+    }
+
+    private val activeNotifications: List<PostedNotification> by lazy {
+        notificationAdapter.activeNotifications.value
     }
 
     private val localTime = LocalTime.now()
@@ -197,6 +204,20 @@ class LazyConstraintSnapshot(
                     appInForeground == "com.android.systemui"
 
             is ConstraintData.NotificationPanelShowing -> isNotificationShadeExpanded
+
+            is ConstraintData.NotificationPosted -> if (constraint.isNot) {
+                // Some notifications will not match, such as from the system. The text will
+                // be replaced with a stub saying it is sensitive content.
+
+                // If it is not then none of the notifications can match.
+                return activeNotifications.none {
+                    NotificationConstraintMatcher.matches(it, constraint.data)
+                }
+            } else {
+                return activeNotifications.any {
+                    NotificationConstraintMatcher.matches(it, constraint.data)
+                }
+            }
 
             is ConstraintData.Time ->
                 if (constraint.data.startTime.isAfter(constraint.data.endTime)) {

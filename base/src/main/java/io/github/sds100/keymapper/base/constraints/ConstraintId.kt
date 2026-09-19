@@ -54,6 +54,7 @@ enum class ConstraintId {
     HINGE_OPEN,
 
     NOTIFICATION_PANEL_SHOWING,
+    NOTIFICATION_POSTED,
 
     TIME,
 }

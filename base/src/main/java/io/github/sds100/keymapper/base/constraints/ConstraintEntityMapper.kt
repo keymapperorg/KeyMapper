@@ -198,6 +198,31 @@ object ConstraintEntityMapper {
             ConstraintEntity.NOTIFICATION_PANEL_NOT_SHOWING,
                 -> ConstraintData.NotificationPanelShowing
 
+            ConstraintEntity.NOTIFICATION_POSTED -> {
+                val value = entity.extras
+                    .getData(ConstraintEntity.EXTRA_NOTIFICATION_VALUE).valueOrNull()!!
+
+                when (
+                    NotificationField.valueOf(
+                        entity.extras
+                            .getData(ConstraintEntity.EXTRA_NOTIFICATION_FIELD).valueOrNull()!!,
+                    )
+                ) {
+                    NotificationField.PACKAGE ->
+                        ConstraintData.NotificationPosted.FromApp(packageName = value)
+
+                    NotificationField.TITLE -> ConstraintData.NotificationPosted.Title(
+                        text = value,
+                        matchMode = entity.getNotificationMatchMode(),
+                    )
+
+                    NotificationField.TEXT -> ConstraintData.NotificationPosted.Text(
+                        text = value,
+                        matchMode = entity.getNotificationMatchMode(),
+                    )
+                }
+            }
+
             ConstraintEntity.TIME -> {
                 val startTime =
                     entity.extras.getData(ConstraintEntity.EXTRA_START_TIME).valueOrNull()!!
@@ -453,6 +478,40 @@ object ConstraintEntityMapper {
                 ConstraintEntity.NOTIFICATION_PANEL_SHOWING,
             )
 
+            is ConstraintData.NotificationPosted -> {
+                val value = when (constraint.data) {
+                    is ConstraintData.NotificationPosted.FromApp -> constraint.data.packageName
+                    is ConstraintData.NotificationPosted.TextMatch -> constraint.data.text
+                }
+
+                val textMatch = constraint.data as? ConstraintData.NotificationPosted.TextMatch
+
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.NOTIFICATION_POSTED,
+                    extras = buildList {
+                        add(
+                            EntityExtra(
+                                ConstraintEntity.EXTRA_NOTIFICATION_FIELD,
+                                NotificationField.of(constraint.data).name,
+                            ),
+                        )
+                        add(EntityExtra(ConstraintEntity.EXTRA_NOTIFICATION_VALUE, value))
+
+                        // Only free text constraints have a match mode, so writing one for an app
+                        // would store an option that can never be edited.
+                        if (textMatch != null) {
+                            add(
+                                EntityExtra(
+                                    ConstraintEntity.EXTRA_NOTIFICATION_MATCH_MODE,
+                                    textMatch.matchMode.name,
+                                ),
+                            )
+                        }
+                    },
+                )
+            }
+
             is ConstraintData.Time -> ConstraintEntity(
                 uid = constraint.uid,
                 type = ConstraintEntity.TIME,
@@ -466,4 +525,8 @@ object ConstraintEntityMapper {
                 ),
             )
         }
+
+    private fun ConstraintEntity.getNotificationMatchMode(): TextMatchMode = TextMatchMode.valueOf(
+        extras.getData(ConstraintEntity.EXTRA_NOTIFICATION_MATCH_MODE).valueOrNull()!!,
+    )
 }

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.utils
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
+import io.github.sds100.keymapper.base.constraints.NotificationConstraintMatcher
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
@@ -11,6 +12,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
 import io.github.sds100.keymapper.system.foldable.isOpen
+import io.github.sds100.keymapper.system.notifications.PostedNotification
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.volume.RingerMode
 import java.time.LocalTime
@@ -38,20 +40,34 @@ class TestConstraintSnapshot(
     val hingeState: HingeState = HingeState.Unavailable,
     val isNotificationPanelShowing: Boolean = false,
     val displaySize: SizeKM = SizeKM(1080, 1920),
+    val postedNotifications: List<PostedNotification> = emptyList(),
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
         val isSatisfied = when (val data = constraint.data) {
             is ConstraintData.AppInForeground -> appInForeground == data.packageName
+
             is ConstraintData.AppPlayingMedia ->
                 appsPlayingMedia.contains(data.packageName)
 
             is ConstraintData.MediaPlaying -> appsPlayingMedia.isNotEmpty()
+
+            is ConstraintData.NotificationPosted -> if (constraint.isNot) {
+                postedNotifications.all {
+                    NotificationConstraintMatcher.matches(it, constraint.data)
+                }
+            } else {
+                postedNotifications.any {
+                    NotificationConstraintMatcher.matches(it, constraint.data)
+                }
+            }
+
             is ConstraintData.BtDeviceConnected -> {
                 connectedBluetoothDevices.any { it.address == data.bluetoothAddress }
             }
 
             is ConstraintData.OrientationCustom -> orientation == data.orientation
+
             is ConstraintData.OrientationLandscape ->
                 orientation == Orientation.ORIENTATION_90 ||
                     orientation == Orientation.ORIENTATION_270
@@ -64,6 +80,7 @@ class TestConstraintSnapshot(
                 physicalOrientation == data.physicalOrientation
 
             is ConstraintData.ScreenOn -> isScreenOn
+
             is ConstraintData.DisplayResolution ->
                 (displaySize.width == data.width && displaySize.height == data.height) ||
                     (displaySize.width == data.height && displaySize.height == data.width)
@@ -83,15 +100,25 @@ class TestConstraintSnapshot(
             }
 
             is ConstraintData.WifiOn -> isWifiEnabled
+
             is ConstraintData.ImeChosen -> chosenImeId == data.imeId
+
             is ConstraintData.KeyboardShowing -> isKeyboardShowing
+
             is ConstraintData.DeviceIsLocked -> isLocked
+
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
+
             is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
+
             is ConstraintData.PhoneRinging -> callState == CallState.RINGING
+
             is ConstraintData.RingerMode -> ringerMode == data.ringerMode
+
             is ConstraintData.Charging -> isCharging
+
             is ConstraintData.LockScreenShowing -> isLockscreenShowing
+
             is ConstraintData.Time -> {
                 val startTime = data.startTime
                 val endTime = data.endTime
@@ -105,8 +132,10 @@ class TestConstraintSnapshot(
 
             ConstraintData.HingeClosed ->
                 hingeState is HingeState.Available && hingeState.isClosed()
+
             ConstraintData.HingeOpen ->
                 hingeState is HingeState.Available && hingeState.isOpen()
+
             ConstraintData.NotificationPanelShowing -> isNotificationPanelShowing
         } != constraint.isNot
 

@@ -95,6 +95,15 @@ class KeyMapConstraintsComparator(
             is ConstraintData.ImeChosen -> Success(constraint.data.imeLabel)
             is ConstraintData.InPhoneCall -> Success("")
             is ConstraintData.MediaPlaying -> Success("")
+            is ConstraintData.NotificationPosted -> Success(
+                when (constraint.data) {
+                    is ConstraintData.NotificationPosted.FromApp ->
+                        displayConstraints.getAppName(constraint.data.packageName)
+                            .valueOrNull() ?: constraint.data.packageName
+
+                    is ConstraintData.NotificationPosted.TextMatch -> constraint.data.text
+                },
+            )
             is ConstraintData.NotInPhoneCall -> Success("")
             is ConstraintData.OrientationCustom -> Success(constraint.data.orientation.toString())
             is ConstraintData.OrientationLandscape -> Success("")

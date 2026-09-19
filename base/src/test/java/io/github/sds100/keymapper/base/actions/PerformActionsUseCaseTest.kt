@@ -84,7 +84,6 @@ class PerformActionsUseCaseTest {
             resourceProvider = mock(),
             settingsRepository = mock(),
             soundsManager = mock(),
-            notificationReceiverAdapter = mock(),
             ringtoneAdapter = mock(),
             inputEventHub = mockInputEventHub,
             systemBridgeConnectionManager = mock(),

@@ -60,8 +60,6 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationModel
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
-import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
@@ -116,7 +114,6 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
-    private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val notificationAdapter: NotificationAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
@@ -994,17 +991,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.DismissAllNotifications -> {
-                result =
-                    notificationReceiverAdapter.send(
-                        NotificationServiceEvent.DismissAllNotifications,
-                    )
+                result = notificationAdapter.dismissAllNotifications()
             }
 
             ActionData.DismissLastNotification -> {
-                result =
-                    notificationReceiverAdapter.send(
-                        NotificationServiceEvent.DismissLastNotification,
-                    )
+                result = notificationAdapter.dismissLastNotification()
             }
 
             is ActionData.CreateNotification -> {

@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
@@ -36,6 +37,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val powerAdapter: PowerAdapter,
     private val foldableAdapter: FoldableAdapter,
     private val volumeAdapter: VolumeAdapter,
+    private val notificationAdapter: NotificationAdapter,
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -56,6 +58,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         powerAdapter,
         foldableAdapter,
         volumeAdapter,
+        notificationAdapter,
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -120,6 +123,9 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.NOTIFICATION_PANEL_STATE ->
                 accessibilityService.isNotificationShadeExpanded.map { dependency }
+
+            ConstraintDependency.POSTED_NOTIFICATIONS ->
+                notificationAdapter.activeNotifications.map { dependency }
 
             ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
                 dependency
