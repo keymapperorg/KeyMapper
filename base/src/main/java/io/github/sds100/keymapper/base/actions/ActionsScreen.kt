@@ -33,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -246,6 +245,7 @@ interface ActionListCallback {
     fun onActionTipDismiss() = run { }
     fun onTipButtonClick(id: String) = run { }
     fun onEnabledChange(id: String, enabled: Boolean) = run { }
+    fun onExpandedChange(id: String, expanded: Boolean) = run {}
 }
 
 @Composable
@@ -259,9 +259,6 @@ private fun ActionList(
     onRenameClick: (String) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-
-    // A list rather than a set so it can be saved in a Bundle.
-    var expandedIds by rememberSaveable { mutableStateOf(listOf<String>()) }
 
     val actions = (state as? ConfigActionsState.Loaded)?.actions.orEmpty()
     val actionIds = remember(actions) { actions.map { it.id } }
@@ -324,12 +321,6 @@ private fun ActionList(
                     key = { _, item -> item.id },
                     contentType = { _, _ -> "action" },
                 ) { index, model ->
-                    // Automatically expand the item when an error appears so the user can fix it.
-                    LaunchedEffect(model.id, model.error) {
-                        if (model.isEnabled && model.error != null && model.id !in expandedIds) {
-                            expandedIds = expandedIds + model.id
-                        }
-                    }
 
                     DraggableItem(
                         dragDropState = dragDropState,
@@ -342,18 +333,12 @@ private fun ActionList(
                                     .padding(horizontal = 16.dp),
                                 model = model,
                                 index = index,
-                                isExpanded = model.id in expandedIds,
+                                isExpanded = model.isExpanded,
                                 isDraggingEnabled = orderedActions.size > 1,
                                 isDragging = isDragging,
                                 isReorderingEnabled = state.isReorderingEnabled,
                                 dragDropState = dragDropState,
-                                onExpandedChange = { expanded ->
-                                    expandedIds = if (expanded) {
-                                        expandedIds + model.id
-                                    } else {
-                                        expandedIds - model.id
-                                    }
-                                },
+                                onExpandedChange = { callback.onExpandedChange(model.id, it) },
                                 onEditClick = { callback.onEditClick(model.id) },
                                 onRemoveClick = { onRemoveClick(model.id) },
                                 onFixClick = { callback.onFixErrorClick(model.id) },

@@ -6,6 +6,7 @@ data class ActionListItemModel(
     val id: String,
     val icon: ComposeIconInfo,
     val title: String,
+    val isExpanded: Boolean = false,
     val isCustomName: Boolean = false,
     val isEnabled: Boolean = true,
     /**

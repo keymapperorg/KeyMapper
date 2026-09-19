@@ -78,6 +78,9 @@ class ConfigActionsViewModel @Inject constructor(
             actions.map(::buildShortcut).toSet()
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
+    private val expandedActions: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    private val knownActions: MutableSet<String> = mutableSetOf()
+
     val actionOptionsUid = MutableStateFlow<String?>(null)
     val actionOptionsState: StateFlow<ActionOptionsState?> =
         combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
@@ -89,14 +92,40 @@ class ConfigActionsViewModel @Inject constructor(
         displayAction.actionErrorSnapshot.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
+        viewModelScope.launch {
+            config.keyMap
+                .map { state -> state.dataOrNull()?.actionList }
+                .filterNotNull()
+                .collect { actionList ->
+                    val errorSnapshot = displayAction.actionErrorSnapshot.first()
+                    val newExpandedActions = mutableSetOf<String>()
+
+                    for (action in actionList) {
+                        // Only expand an action automatically if it is the first time it has
+                        // been seen.
+                        if (!knownActions.contains(action.uid) &&
+                            errorSnapshot.getError(action.data) != null
+                        ) {
+                            newExpandedActions.add(action.uid)
+                        }
+                    }
+
+                    // Expand all the actions at once and not one-by-one
+                    expandedActions.update { set -> set.plus(newExpandedActions) }
+
+                    knownActions.addAll(actionList.map { it.uid })
+                }
+        }
+
         combine(
             config.keyMap,
             shortcuts,
             displayAction.showDeviceDescriptors,
             actionErrorSnapshot.filterNotNull(),
-        ) { keyMapState, shortcuts, showDeviceDescriptors, errorSnapshot ->
+            expandedActions,
+        ) { keyMapState, shortcuts, showDeviceDescriptors, errorSnapshot, expandedActions ->
             _state.value = keyMapState.mapData { keyMap ->
-                buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
+                buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors, expandedActions)
             }
         }.launchIn(viewModelScope)
 
@@ -113,9 +142,13 @@ class ConfigActionsViewModel @Inject constructor(
         return config.keyMap.first().dataOrNull()?.actionList?.singleOrNull { it.uid == uid }?.data
     }
 
-    override fun onClickShortcut(action: ActionData) {
+    override fun onClickShortcut(data: ActionData) {
         viewModelScope.launch {
-            config.addAction(action)
+            val action = config.addAction(data)
+
+            if (action != null) {
+                expandedActions.update { set -> set.plus(action.uid) }
+            }
         }
     }
 
@@ -160,7 +193,11 @@ class ConfigActionsViewModel @Inject constructor(
         viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            config.addAction(actionData)
+            val action = config.addAction(actionData)
+
+            if (action != null) {
+                expandedActions.update { set -> set.plus(action.uid) }
+            }
 
             // Never show the tap target to add an action again.
             onboardingUseCase.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
@@ -293,6 +330,14 @@ class ConfigActionsViewModel @Inject constructor(
         onRenameAction(uid, name)
     }
 
+    override fun onExpandedChange(id: String, expanded: Boolean) {
+        if (expanded) {
+            expandedActions.update { set -> set.plus(id) }
+        } else {
+            expandedActions.update { set -> set.minus(id) }
+        }
+    }
+
     fun onRenameAction(uid: String, name: String) {
         viewModelScope.launch {
             val actionData = getActionData(uid) ?: return@launch
@@ -326,13 +371,14 @@ class ConfigActionsViewModel @Inject constructor(
         shortcuts: Set<ShortcutModel<ActionData>>,
         errorSnapshot: ActionErrorSnapshot,
         showDeviceDescriptors: Boolean,
+        expandedActions: Set<String>,
     ): ConfigActionsState {
         if (keyMap.actionList.isEmpty()) {
             return ConfigActionsState.Empty(shortcuts = shortcuts)
         }
 
         val actions =
-            createListItems(keyMap, showDeviceDescriptors, errorSnapshot)
+            createListItems(keyMap, showDeviceDescriptors, errorSnapshot, expandedActions)
 
         return ConfigActionsState.Loaded(
             actions = actions,
@@ -345,6 +391,7 @@ class ConfigActionsViewModel @Inject constructor(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
+        expandedActions: Set<String>,
     ): List<ActionListItemModel> {
         val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
 
@@ -368,6 +415,7 @@ class ConfigActionsViewModel @Inject constructor(
                 title = uiHelper.getTitle(action, showDeviceDescriptors),
                 isCustomName = !action.customName.isNullOrBlank(),
                 isEnabled = action.isEnabled,
+                isExpanded = expandedActions.contains(action.uid),
                 summary = summary,
                 error = error?.getFullMessage(this),
                 isErrorFixable = error?.isFixable ?: true,

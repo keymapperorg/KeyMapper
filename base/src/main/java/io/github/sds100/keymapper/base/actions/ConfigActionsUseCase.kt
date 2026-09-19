@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.moveElement
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -41,31 +42,33 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             .map(::getActionShortcuts)
             .map { it.take(5) }
 
-    override fun addAction(data: ActionData) {
-        state.update { keyMap ->
-            val newActionList = keyMap.actionList.toMutableList().apply {
-                add(createAction(keyMap, data))
-            }
+    override fun addAction(data: ActionData): Action? {
+        val newKeyMap = state.update { keyMap ->
+            val action = createAction(keyMap, data)
 
-            preferenceRepository.update(
-                Keys.recentlyUsedActions,
-                { old ->
-                    val oldList: List<ActionData> = if (old == null) {
-                        emptyList()
-                    } else {
-                        Json.decodeFromString<List<ActionData>>(old)
-                    }
-
-                    val newShortcuts = LinkedList(oldList)
-                        .also { it.addFirst(data) }
-                        .distinct()
-
-                    Json.encodeToString(newShortcuts)
-                },
-            )
+            val newActionList = keyMap.actionList.plus(action)
 
             keyMap.copy(actionList = newActionList)
         }
+
+        preferenceRepository.update(
+            Keys.recentlyUsedActions,
+            { old ->
+                val oldList: List<ActionData> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<ActionData>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(data) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts)
+            },
+        )
+
+        return newKeyMap.dataOrNull()?.actionList?.last()
     }
 
     override fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -292,7 +295,10 @@ class ConfigActionsUseCaseImpl @Inject constructor(
 interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     val keyMap: StateFlow<State<KeyMap>>
 
-    fun addAction(data: ActionData)
+    /**
+     * @return the new action, or null if no key map was set.
+     */
+    fun addAction(data: ActionData): Action?
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
     fun duplicateAction(uid: String)
