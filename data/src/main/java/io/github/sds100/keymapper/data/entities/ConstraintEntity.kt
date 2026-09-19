@@ -143,6 +143,8 @@ data class ConstraintEntity(
         private const val NOT_DEPRECATION_MESSAGE =
             "Only read to migrate old constraints. Use the positive constraint type with isNot."
 
+        const val NOTIFICATION_POSTED = "constraint_notification_posted"
+
         const val TIME = "time"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
@@ -152,6 +154,10 @@ data class ConstraintEntity(
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
+
+        const val EXTRA_NOTIFICATION_FIELD = "extra_notification_field"
+        const val EXTRA_NOTIFICATION_MATCH_MODE = "extra_notification_match_mode"
+        const val EXTRA_NOTIFICATION_VALUE = "extra_notification_value"
 
         const val EXTRA_RESOLUTION_WIDTH = "extra_resolution_width"
         const val EXTRA_RESOLUTION_HEIGHT = "extra_resolution_height"

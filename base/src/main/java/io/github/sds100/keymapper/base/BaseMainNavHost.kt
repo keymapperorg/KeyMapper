@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.base.constraints.ConfigNotificationConstraintScreen
+import io.github.sds100.keymapper.base.constraints.ConfigNotificationConstraintViewModel
 import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
@@ -99,6 +101,15 @@ fun BaseMainNavHost(
             val viewModel: ChooseConstraintViewModel = hiltViewModel()
 
             ChooseConstraintScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.ConfigNotificationConstraint> {
+            val viewModel: ConfigNotificationConstraintViewModel = hiltViewModel()
+
+            ConfigNotificationConstraintScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
             )

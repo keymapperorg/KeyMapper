@@ -105,6 +105,16 @@ class LazyConstraintErrorSnapshot(
                 }
             }
 
+            is ConstraintData.NotificationPosted -> {
+                if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
+                    return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+                }
+
+                if (constraint.data is ConstraintData.NotificationPosted.FromApp) {
+                    return getAppError(constraint.data.packageName)
+                }
+            }
+
             else -> Unit
         }
 

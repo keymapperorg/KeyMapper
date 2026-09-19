@@ -348,6 +348,39 @@
     <string name="orientation_180">Portrait (180°)</string>
     <string name="orientation_270">Landscape (270°)</string>
 
+
+    <!-- Notification posted constraint -->
+    <string name="constraint_notification_posted">Notification is posted</string>
+    <string name="constraint_notification_posted_from_app">Notification from %s</string>
+    <string name="constraint_notification_not_posted_from_app">No notification from %s</string>
+    <string name="constraint_notification_posted_match">Notification %1$s %2$s \"%3$s\"</string>
+    <string name="constraint_notification_not_posted_match">No notification %1$s %2$s \"%3$s\"</string>
+
+    <string name="notification_field_package">app</string>
+    <string name="notification_field_title">title</string>
+    <string name="notification_field_text">text</string>
+
+    <string name="notification_field_package_label">App</string>
+    <string name="notification_field_title_label">Title</string>
+    <string name="notification_field_text_label">Text</string>
+
+    <string name="notification_match_mode_contains_sentence">contains</string>
+    <string name="notification_match_mode_exact_sentence">is exactly</string>
+
+    <string name="notification_match_mode_contains">Contains</string>
+    <string name="notification_match_mode_exact">Exactly</string>
+
+
+    <!-- Notification constraint config screen -->
+    <string name="constraint_edit">Edit constraint</string>
+    <string name="constraint_notification_screen_title">Notification constraint</string>
+    <string name="constraint_notification_field_header">Match on</string>
+    <string name="constraint_notification_match_mode_header">How to match</string>
+    <string name="constraint_notification_value_header">App</string>
+    <string name="constraint_notification_choose_app">Choose app</string>
+    <string name="constraint_notification_value_hint_title">Notification title</string>
+    <string name="constraint_notification_value_hint_text">Notification text</string>
+    <string name="constraint_notification_sensitive_content_note">Some notifications may not match if the device is hiding sensitive notification content, such as on the lock screen.</string>
     <string name="constraint_time">Time</string>
     <string name="constraint_time_formatted">Time between %s and %s</string>
     <string name="constraint_time_not_formatted">Time not between %s and %s</string>
@@ -1410,6 +1443,7 @@
     <string name="constraint_cat_phone">Phone</string>
     <string name="constraint_cat_power">Power</string>
     <string name="constraint_cat_device">Device</string>
+    <string name="constraint_cat_notifications">Notifications</string>
     <string name="constraint_cat_time">Time</string>
     <!-- constraint category labels -->
 

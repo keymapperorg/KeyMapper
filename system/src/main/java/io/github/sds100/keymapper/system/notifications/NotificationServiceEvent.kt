@@ -4,8 +4,11 @@ import kotlinx.serialization.Serializable
 
 sealed class NotificationServiceEvent {
 
+    /**
+     * @param key the [PostedNotification.key] of the notification to dismiss.
+     */
     @Serializable
-    data object DismissLastNotification : NotificationServiceEvent()
+    data class DismissNotification(val key: String) : NotificationServiceEvent()
 
     @Serializable
     data object DismissAllNotifications : NotificationServiceEvent()

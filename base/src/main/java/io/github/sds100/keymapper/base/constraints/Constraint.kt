@@ -161,6 +161,32 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    sealed class NotificationPosted : ConstraintData() {
+        override val id: ConstraintId get() = ConstraintId.NOTIFICATION_POSTED
+
+        /**
+         * A variant that compares free text the user typed, so it can be matched loosely. Matching
+         * is always case insensitive
+         */
+        @Serializable
+        sealed class TextMatch : NotificationPosted() {
+            abstract val text: String
+            abstract val matchMode: TextMatchMode
+        }
+
+        @Serializable
+        data class Title(override val text: String, override val matchMode: TextMatchMode) :
+            TextMatch()
+
+        @Serializable
+        data class Text(override val text: String, override val matchMode: TextMatchMode) :
+            TextMatch()
+
+        @Serializable
+        data class FromApp(val packageName: String) : NotificationPosted()
+    }
+
+    @Serializable
     data class Time(
         val startHour: Int,
         val startMinute: Int,

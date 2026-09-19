@@ -20,6 +20,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.R
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,9 +47,6 @@ class AndroidNotificationAdapter @Inject constructor(
 
     override val activeNotifications: StateFlow<List<PostedNotification>> =
         postedNotificationStore.active
-
-    override val recentNotifications: StateFlow<List<PostedNotification>> =
-        postedNotificationStore.recent
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -97,7 +95,7 @@ class AndroidNotificationAdapter @Inject constructor(
             setContentText(notification.text)
 
             if (notification.onClickAction != null) {
-                val pendingIntent = createActionIntent(notification.onClickAction!!)
+                val pendingIntent = createActionIntent(notification.onClickAction)
                 setContentIntent(pendingIntent)
             }
 
@@ -113,7 +111,7 @@ class AndroidNotificationAdapter @Inject constructor(
             }
 
             if (notification.timeout != null) {
-                this.setTimeoutAfter(notification.timeout!!)
+                this.setTimeoutAfter(notification.timeout)
             }
 
             if (notification.showIndeterminateProgress) {
@@ -283,16 +281,19 @@ class AndroidNotificationAdapter @Inject constructor(
     override suspend fun dismissAllNotifications(): KMResult<*> =
         notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
 
-    override suspend fun dismissLastNotification(): KMResult<*> =
-        notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
+    override suspend fun dismissLastNotification(): KMResult<*> {
+        val key = activeNotifications.value.lastOrNull()?.key ?: return Success(Unit)
+
+        return notificationReceiverAdapter.send(NotificationServiceEvent.DismissNotification(key))
+    }
 
     /**
      * Replace everything that is posted, for when the listener connects.
      *
      * Only for [NotificationReceiver].
      */
-    fun onNotificationsSeeded(notifications: List<PostedNotification>) {
-        postedNotificationStore.onSeeded(notifications)
+    fun seedNotifications(notifications: List<PostedNotification>) {
+        postedNotificationStore.seed(notifications)
     }
 
     /**

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.base.R
@@ -147,6 +148,9 @@ class ConstraintUiHelper(
         is ConstraintData.NotificationPanelShowing ->
             getString(R.string.constraint_notification_panel_showing)
 
+        is ConstraintData.NotificationPosted ->
+            getNotificationPostedTitle(constraint.data, isNot = false)
+
         is ConstraintData.Time -> getString(
             R.string.constraint_time_formatted,
             arrayOf(
@@ -235,6 +239,9 @@ class ConstraintUiHelper(
         is ConstraintData.HingeOpen ->
             getString(R.string.constraint_hinge_not_open_description)
 
+        is ConstraintData.NotificationPosted ->
+            getNotificationPostedTitle(constraint.data, isNot = true)
+
         is ConstraintData.Time -> getString(
             R.string.constraint_time_not_formatted,
             arrayOf(
@@ -291,11 +298,59 @@ class ConstraintUiHelper(
         is ConstraintData.AppPlayingMedia -> getAppIconInfo(constraint.data.packageName)
             ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
+        is ConstraintData.NotificationPosted.FromApp ->
+            getAppIconInfo(constraint.data.packageName)
+                ?: ConstraintUtils.getIcon(constraint.id)
+
         else -> if (constraint.isNot) {
             ConstraintUtils.getNotIcon(constraint.id)
         } else {
             ConstraintUtils.getIcon(constraint.id)
         }
+    }
+
+    private fun getNotificationPostedTitle(
+        data: ConstraintData.NotificationPosted,
+        isNot: Boolean,
+    ): String = when (data) {
+        is ConstraintData.NotificationPosted.FromApp -> {
+            val appName = getAppName(data.packageName).valueIfFailure { data.packageName }
+
+            getString(
+                if (isNot) {
+                    R.string.constraint_notification_not_posted_from_app
+                } else {
+                    R.string.constraint_notification_posted_from_app
+                },
+                appName,
+            )
+        }
+
+        is ConstraintData.NotificationPosted.TextMatch -> getString(
+            if (isNot) {
+                R.string.constraint_notification_not_posted_match
+            } else {
+                R.string.constraint_notification_posted_match
+            },
+            arrayOf(
+                getString(getNotificationFieldNoun(data)),
+                getString(getMatchModeVerb(data.matchMode)),
+                data.text,
+            ),
+        )
+    }
+
+    @StringRes
+    private fun getNotificationFieldNoun(data: ConstraintData.NotificationPosted.TextMatch): Int =
+        when (data) {
+            is ConstraintData.NotificationPosted.Title -> R.string.notification_field_title
+            is ConstraintData.NotificationPosted.Text -> R.string.notification_field_text
+        }
+
+    @StringRes
+    private fun getMatchModeVerb(matchMode: TextMatchMode): Int = when (matchMode) {
+        TextMatchMode.CONTAINS -> R.string.notification_match_mode_contains_sentence
+        TextMatchMode.EXACT -> R.string.notification_match_mode_exact_sentence
     }
 
     private fun getAppIconInfo(packageName: String): ComposeIconInfo? =

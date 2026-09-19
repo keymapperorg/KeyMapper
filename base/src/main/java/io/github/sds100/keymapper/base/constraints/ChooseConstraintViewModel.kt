@@ -68,6 +68,7 @@ class ChooseConstraintViewModel @Inject constructor(
             ConstraintCategory.PHONE,
             ConstraintCategory.POWER,
             ConstraintCategory.DEVICE,
+            ConstraintCategory.NOTIFICATIONS,
             ConstraintCategory.TIME,
         )
     }
@@ -186,6 +187,8 @@ class ChooseConstraintViewModel @Inject constructor(
                     -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
+
+                ConstraintId.NOTIFICATION_POSTED -> onSelectNotificationConstraint()
 
                 ConstraintId.BT_DEVICE_CONNECTED -> onSelectBluetoothConstraint()
 
@@ -572,6 +575,15 @@ class ChooseConstraintViewModel @Inject constructor(
                 deviceName = device.name,
             ),
         )
+    }
+
+    private suspend fun onSelectNotificationConstraint() {
+        val constraintData = navigate(
+            "config_notification_constraint",
+            NavDestination.ConfigNotificationConstraint,
+        ) ?: return
+
+        returnResult.emit(constraintData)
     }
 
     private suspend fun onSelectAppConstraint(type: ConstraintId) {

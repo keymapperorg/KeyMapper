@@ -49,6 +49,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_XIAOMI_OPTIMIZATION = "xiaomi_optimization"
         const val ID_TRIGGER_BY_INTENT = "trigger_by_intent"
         const val ID_ENABLE_BY_INTENT = "enable_by_intent"
+        const val ID_CONFIG_NOTIFICATION_CONSTRAINT = "config_notification_constraint"
     }
 
     @Serializable
@@ -124,6 +125,12 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object ChooseConstraint : NavDestination<ConstraintData>(isCompose = true) {
         override val id: String = ID_CHOOSE_CONSTRAINT
+    }
+
+    @Serializable
+    data object ConfigNotificationConstraint :
+        NavDestination<ConstraintData.NotificationPosted>(isCompose = true) {
+        override val id: String = ID_CONFIG_NOTIFICATION_CONSTRAINT
     }
 
     @Serializable
