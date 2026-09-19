@@ -24,8 +24,9 @@ Android app for custom key/gamepad remapping, macros, and on-screen buttons. Sup
 ./gradlew :base:testDebugUnitTest   # single module
 
 # Kotlin lint
-./gradlew ktlintCheck         # check
-./gradlew ktlintFormat        # auto-fix
+# First run format before doing check
+./gradlew ktlintFormat
+./gradlew ktlintCheck
 
 # Rust (run from evdev/src/main/rust/evdev_manager)
 cargo fmt --check
