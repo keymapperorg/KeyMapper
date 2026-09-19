@@ -375,6 +375,7 @@ private fun ActionList(
 
                             if (model.showDelayChip) {
                                 ActionLinkRow(
+                                    isEnabled = model.isEnabled,
                                     delayBeforeNextAction = model.delayBeforeNextAction,
                                     onDelayClick = { onDelayClick(model.id) },
                                 )
@@ -420,9 +421,23 @@ private fun ActionList(
 @Composable
 private fun ActionLinkRow(
     modifier: Modifier = Modifier,
+    isEnabled: Boolean,
     delayBeforeNextAction: Int?,
     onDelayClick: () -> Unit,
 ) {
+    val colors = if (isEnabled) {
+        AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            leadingIconContentColor = MaterialTheme.colorScheme.onSurface,
+        )
+    } else {
+        AssistChipDefaults.assistChipColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            leadingIconContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+            labelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -475,10 +490,7 @@ private fun ActionLinkRow(
                     contentDescription = null,
                 )
             },
-            colors = AssistChipDefaults.assistChipColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                leadingIconContentColor = MaterialTheme.colorScheme.onSurface,
-            ),
+            colors = colors,
             border = null,
         )
     }
@@ -603,12 +615,12 @@ private fun LoadedPreview() {
                             isCustomName = true,
                             showDelayChip = true,
                             delayBeforeNextAction = 100,
+                            isEnabled = false,
                         ),
                         ActionListItemModel(
                             id = "3",
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             title = "Toggle Back flashlight",
-                            isEnabled = false,
                         ),
                     ),
                     shortcuts = setOf(
