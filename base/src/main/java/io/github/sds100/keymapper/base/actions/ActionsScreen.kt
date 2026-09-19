@@ -174,6 +174,8 @@ private fun ActionsScreen(
             title = stringResource(R.string.action_options_custom_name_dialog_title),
             submitButtonText = stringResource(R.string.pos_save),
             initialText = renameModel.title,
+            hint = renameModel.title,
+            canBeEmpty = true,
             onSubmitClick = { newText ->
                 onRenameAction(renameModel.id, newText)
                 null

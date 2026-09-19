@@ -47,6 +47,8 @@ fun TextFieldDialog(
     title: String,
     submitButtonText: String,
     initialText: String,
+    hint: String? = null,
+    canBeEmpty: Boolean = false,
     /**
      * Returns an error message.
      */
@@ -64,8 +66,12 @@ fun TextFieldDialog(
             ),
         )
     }
+
     var error: String? by remember { mutableStateOf(null) }
-    val isError by remember { derivedStateOf { textFieldValue.text.isBlank() || error != null } }
+
+    val isError by remember { derivedStateOf { error != null } }
+
+    val emptyErrorText = stringResource(R.string.error_cant_be_empty)
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -109,6 +115,15 @@ fun TextFieldDialog(
             onValueChange = {
                 error = null
                 textFieldValue = it
+
+                if (!canBeEmpty && textFieldValue.text.isBlank()) {
+                    error = emptyErrorText
+                }
+            },
+            placeholder = if (hint == null) {
+                null
+            } else {
+                { Text(hint) }
             },
             singleLine = true,
             maxLines = 1,
@@ -122,13 +137,7 @@ fun TextFieldDialog(
                 },
             ),
             supportingText = {
-                when {
-                    error != null -> Text(error!!)
-
-                    textFieldValue.text.isBlank() -> {
-                        Text(stringResource(R.string.error_cant_be_empty))
-                    }
-                }
+                if (error != null) Text(error!!)
             },
         )
     }
@@ -230,12 +239,13 @@ private fun TextFieldDialogPreview() {
 
 @Preview(widthDp = 800, heightDp = 400)
 @Composable
-private fun TextFieldDialogEmptyPreview() {
+private fun TextFieldDialogHintPreview() {
     KeyMapperTheme {
         TextFieldDialog(
             title = "Title",
             submitButtonText = "Submit",
             initialText = "",
+            hint = "Some placeholder text",
         )
     }
 }

@@ -173,6 +173,7 @@ private fun ConstraintsScreen(
             title = stringResource(R.string.constraint_group_rename_hint),
             submitButtonText = stringResource(R.string.pos_save),
             initialText = renameModel.name.orEmpty(),
+            canBeEmpty = true,
             onSubmitClick = { newText ->
                 onRenameGroup(renameModel.uid, newText)
                 null
