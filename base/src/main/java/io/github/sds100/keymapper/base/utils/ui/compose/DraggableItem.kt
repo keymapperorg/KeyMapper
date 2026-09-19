@@ -19,6 +19,7 @@ fun LazyItemScope.DraggableItem(
     content: @Composable BoxScope.(isDragging: Boolean) -> Unit,
 ) {
     val dragging = key == dragDropState.draggingItemKey
+
     val draggingModifier = if (dragging) {
         Modifier
             .zIndex(1f)
@@ -31,11 +32,18 @@ fun LazyItemScope.DraggableItem(
             .graphicsLayer {
                 translationY = dragDropState.previousItemOffset.value
             }
-    } else {
+    } else if (dragDropState.draggingItemKey != null ||
+        dragDropState.previousKeyOfDraggedItem != null
+    ) {
+        // Only animate placement while a drag/drop is actually reflowing the list. Applying
+        // this unconditionally makes every row "jiggle" into place whenever the list is laid
+        // out for unrelated reasons, e.g. the pager swiping this page into view.
         Modifier.animateItem(
             fadeInSpec = null,
             fadeOutSpec = null,
         )
+    } else {
+        Modifier
     }
     Box(modifier.then(draggingModifier)) {
         content(dragging)
