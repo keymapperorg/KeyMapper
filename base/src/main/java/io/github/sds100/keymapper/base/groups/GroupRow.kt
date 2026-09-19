@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -143,7 +144,8 @@ fun GroupRow(
                                 Icon(
                                     modifier = Modifier
                                         .size(24.dp)
-                                        .padding(end = 8.dp),
+                                        .padding(end = 8.dp)
+                                        .alpha(if (group.isEnabled) 1.0f else 0.38f),
                                     painter = rememberDrawablePainter(group.icon.drawable),
                                     contentDescription = null,
                                     tint = Color.Unspecified,
@@ -360,6 +362,27 @@ private fun PreviewDisabledGroup() {
                         uid = "1",
                         name = "Torch",
                         icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        isEnabled = false,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewDisabledGroupDrawable() {
+    val ctx = LocalContext.current
+
+    KeyMapperTheme {
+        Surface {
+            GroupRow(
+                groups = listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Torch",
+                        icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
                         isEnabled = false,
                     ),
                 ),
