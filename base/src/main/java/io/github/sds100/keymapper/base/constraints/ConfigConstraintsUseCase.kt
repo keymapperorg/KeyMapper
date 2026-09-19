@@ -51,11 +51,11 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
             if (group == null) {
                 val newGroup = ConstraintGroup(constraints = listOf(newConstraint))
 
-                // The mode between groups is not used when there is only one group and old
-                // constraints load it from the group mode, so groups are combined with AND by
-                // default when a second group is created.
+                // Use OR mode by default when there are multiple groups. I think this is the
+                // most likely use case because if you want multiple constraints to match with AND
+                // you will put them in the same group.
                 val mode = if (oldState.groups.size <= 1) {
-                    ConstraintMode.AND
+                    ConstraintMode.OR
                 } else {
                     oldState.mode
                 }
