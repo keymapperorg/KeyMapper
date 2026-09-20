@@ -542,7 +542,7 @@
 
     <string name="dialog_title_failed_to_create_bug_report">Failed to create bug report</string>
 
-    <string name="dialog_title_home_fix_error">Fix error</string>
+    <string name="dialog_title_home_fix_error">Fix errors</string>
 
     <string name="dialog_message_no_app_found_to_create_file">You have no files app installed that allows you to create a file for Key Mapper. Please install a file manager.</string>
     <string name="dialog_message_no_app_found_to_choose_a_file">You have no files app installed that allows you to choose a file for Key Mapper. Please install a file manager.</string>

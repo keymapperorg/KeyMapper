@@ -71,11 +71,10 @@ fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
             Icon(
                 modifier = Modifier.fillMaxHeight(),
                 imageVector = Icons.Outlined.Error,
+                tint = MaterialTheme.colorScheme.error,
                 contentDescription = null,
             )
         },
-        containerColor = MaterialTheme.colorScheme.errorContainer,
-        contentColor = MaterialTheme.colorScheme.onErrorContainer,
         onClick = onClick,
         enabled = enabled,
     )

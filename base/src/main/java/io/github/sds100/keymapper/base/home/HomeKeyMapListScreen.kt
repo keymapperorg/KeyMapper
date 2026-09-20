@@ -66,7 +66,6 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.sorting.SortBottomSheet
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
@@ -133,6 +132,16 @@ fun HomeKeyMapListScreen(
                 viewModel.onDeleteSelectedKeyMapsClick()
                 showDeleteDialog = false
             },
+        )
+    }
+
+    val fixErrorsDialogState by viewModel.fixErrorsDialogState.collectAsStateWithLifecycle()
+
+    fixErrorsDialogState?.let { dialogState ->
+        FixErrorsDialog(
+            state = dialogState,
+            onFixClick = viewModel::onFixErrorClick,
+            onDismissRequest = viewModel::onDismissFixErrorsDialog,
         )
     }
 
@@ -214,7 +223,6 @@ fun HomeKeyMapListScreen(
                 onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
                 onSelectedChange = viewModel::onKeyMapSelectedChanged,
                 onFixClick = viewModel::onFixClick,
-                onTriggerErrorClick = viewModel::onFixTriggerError,
                 bottomListPadding = keyMapListBottomPadding,
             )
         },
@@ -500,7 +508,6 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     ),
                 ),
                 options = listOf("Vibrate"),
-                triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
                 isEnabled = true,
             ),
         ),
@@ -533,7 +540,6 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     "Vibrate",
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
-                triggerErrors = emptyList(),
                 isEnabled = true,
             ),
         ),
@@ -565,7 +571,6 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     ),
                 ),
                 options = emptyList(),
-                triggerErrors = emptyList(),
                 isEnabled = false,
             ),
         ),
@@ -587,7 +592,6 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraintMode = ConstraintMode.AND,
                 constraints = emptyList(),
                 options = emptyList(),
-                triggerErrors = emptyList(),
                 isEnabled = true,
             ),
         ),
@@ -601,7 +605,6 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraintMode = ConstraintMode.OR,
                 constraints = emptyList(),
                 options = emptyList(),
-                triggerErrors = emptyList(),
                 isEnabled = true,
             ),
         ),

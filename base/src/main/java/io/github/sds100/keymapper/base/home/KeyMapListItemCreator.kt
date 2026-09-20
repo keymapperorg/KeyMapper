@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
-import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.trigger.getCodeLabel
@@ -49,7 +48,6 @@ class KeyMapListItemCreator(
     fun build(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
-        triggerErrorSnapshot: TriggerErrorSnapshot,
         actionErrorSnapshot: ActionErrorSnapshot,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
     ): KeyMapListItemModel.Content {
@@ -86,22 +84,10 @@ class KeyMapListItemCreator(
                 isEnabled = keyMap.isEnabled,
             )
 
-        val triggerErrors = if (keyMap.isEnabled) {
-            keyMap.trigger.keys.mapNotNull { key ->
-                triggerErrorSnapshot.getTriggerError(
-                    keyMap,
-                    key,
-                )
-            }.distinct()
-        } else {
-            emptyList()
-        }
-
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
             triggerKeys = triggerKeys,
             triggerSeparatorIcon = triggerSeparator,
-            triggerErrors = triggerErrors,
             actions = actionChipList,
             constraints = constraintChipList,
             constraintMode = keyMap.constraintState.mode,
