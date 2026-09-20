@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.base.constraints
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.SegmentedButtonColors
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +23,7 @@ fun ConstraintModeButtons(
     onSelectMode: (ConstraintMode) -> Unit,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
+    colors: SegmentedButtonColors = SegmentedButtonDefaults.colors(),
 ) {
     KeyMapperSegmentedButtonRow(
         modifier = modifier,
@@ -32,6 +35,7 @@ fun ConstraintModeButtons(
         onStateSelected = onSelectMode,
         isCompact = true,
         isEnabled = isEnabled,
+        colors = colors,
     )
 }
 

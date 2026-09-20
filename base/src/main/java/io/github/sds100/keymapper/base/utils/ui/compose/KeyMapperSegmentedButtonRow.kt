@@ -8,6 +8,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
@@ -37,12 +38,13 @@ fun <T> KeyMapperSegmentedButtonRow(
     onStateSelected: (T) -> Unit,
     isCompact: Boolean = false,
     isEnabled: Boolean = true,
+    colors: SegmentedButtonColors = SegmentedButtonDefaults.colors(),
 ) {
     val colors = if (isEnabled) {
-        SegmentedButtonDefaults.colors()
+        colors
     } else {
         // The disabled border color of the inactive button is by default not greyed out enough
-        SegmentedButtonDefaults.colors(
+        colors.copy(
             disabledInactiveBorderColor =
             SegmentedButtonDefaults.colors().inactiveBorderColor.copy(alpha = 0.5f),
         )

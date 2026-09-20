@@ -17,12 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,13 +38,13 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.constraints.ConstraintModeButtons
 import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.base.groups.GroupConstraintRow
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.groups.GroupRow
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 
@@ -200,29 +200,19 @@ private fun ChildGroupHeader(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val modeColors = SegmentedButtonDefaults.colors(
+                        activeContainerColor = MaterialTheme.colorScheme.primary,
+                        activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                        activeBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        inactiveBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+
                     AnimatedVisibility(visible = state.constraints.size > 1) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_and),
-                                isSelected = state.constraintMode == ConstraintMode.AND,
-                                isEnabled = enabled,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.AND)
-                                },
-                            )
-
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_or),
-                                isSelected = state.constraintMode == ConstraintMode.OR,
-                                isEnabled = enabled,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.OR)
-                                },
-                            )
-
-                            VerticalDivider(
-                                modifier = Modifier.height(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ConstraintModeButtons(
+                                mode = state.constraintMode,
+                                onSelectMode = onConstraintModeChanged,
+                                colors = modeColors,
                             )
                         }
                     }
