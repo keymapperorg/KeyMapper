@@ -226,6 +226,8 @@ object ConstraintUtils {
 
         ConstraintId.NOT_IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.Call)
 
+        ConstraintId.PHONE_RINGING -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
+
         ConstraintId.NOTIFICATION_POSTED ->
             ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
 

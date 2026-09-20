@@ -322,9 +322,11 @@
     <string name="constraint_lock_screen_not_showing">Lock screen is not showing</string>
 
     <string name="constraint_in_phone_call">In phone call</string>
+    <string name="constraint_in_phone_call_not">Ringing or not in call</string>
     <string name="constraint_not_in_phone_call">Not in phone call</string>
+    <string name="constraint_not_in_phone_call_not">Ringing or in call</string>
     <string name="constraint_phone_ringing">Phone ringing</string>
-    <string name="constraint_phone_not_ringing">Phone not ringing</string>
+    <string name="constraint_phone_not_ringing">Not ringing</string>
     <string name="constraint_ringer_mode_normal">Ringer mode: Ring</string>
     <string name="constraint_ringer_mode_vibrate">Ringer mode: Vibrate</string>
     <string name="constraint_ringer_mode_silent">Ringer mode: Silent</string>

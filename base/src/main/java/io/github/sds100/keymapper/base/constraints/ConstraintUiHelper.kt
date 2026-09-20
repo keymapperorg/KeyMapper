@@ -213,9 +213,9 @@ class ConstraintUiHelper(
 
         is ConstraintData.DeviceIsLocked -> getString(R.string.constraint_device_is_unlocked)
 
-        is ConstraintData.InPhoneCall -> getString(R.string.constraint_not_in_phone_call)
+        is ConstraintData.InPhoneCall -> getString(R.string.constraint_in_phone_call_not)
 
-        is ConstraintData.NotInPhoneCall -> getString(R.string.constraint_in_phone_call)
+        is ConstraintData.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call_not)
 
         is ConstraintData.LockScreenShowing ->
             getString(R.string.constraint_lock_screen_not_showing)
