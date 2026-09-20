@@ -17,9 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddHome
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Message
+import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Route
 import androidx.compose.material.icons.outlined.Sensors
-import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.rounded.ContentCopy
@@ -54,6 +54,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.MobileSensorHi
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.Switch
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.launch
 
@@ -272,7 +273,7 @@ private fun Loaded(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.key_map_options_enable_by_intent_title),
             text = stringResource(R.string.key_map_options_intent_summary),
-            icon = Icons.Outlined.Terminal,
+            icon = KeyMapperIcons.Switch,
             onClick = callback::onEnableByIntentClick,
         )
         SwitchPreferenceCompose(
@@ -288,7 +289,7 @@ private fun Loaded(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.key_map_options_trigger_by_intent_title),
             text = stringResource(R.string.key_map_options_intent_summary),
-            icon = Icons.Outlined.Terminal,
+            icon = Icons.Outlined.RocketLaunch,
             // Key Mapper only listens for these intents when other apps are allowed to
             // control this key map.
             enabled = state.triggerFromOtherApps,
@@ -372,7 +373,7 @@ interface KeyMapOptionsCallback {
     fun onEnableByIntentClick() = run {}
 }
 
-@Preview
+@Preview(heightDp = 1300)
 @Composable
 private fun Preview() {
     KeyMapperTheme {
