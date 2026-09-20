@@ -23,6 +23,8 @@
 - #2246 adjusted the trigger screen design to match the action and constraint screens.
 - #2249 make key maps more compact in the home screen.
 - #2259 all key maps can now be triggered by intent or shortcut without needing to enable it first.
+- #982 new action to vibrate the device with a custom duration or a predefined haptic effect (Click, Double Click, Heavy Click, Tick).
+- #982 the "vibrate on trigger" key map option can now also be customised with a predefined haptic effect instead of just a duration, via a new settings button next to the Vibrate option.
 
 ## Fixed
 

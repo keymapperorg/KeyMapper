@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.base.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
@@ -24,7 +25,7 @@ data class Trigger(
     val longPressDoubleVibration: Boolean = false,
     val longPressDelay: Int? = null,
     val doublePressDelay: Int? = null,
-    val vibrateDuration: Int? = null,
+    val vibrateEffect: VibrateEffect? = null,
     val sequenceTriggerTimeout: Int? = null,
     val showToast: Boolean = false,
 
@@ -89,24 +90,29 @@ object TriggerEntityMapper {
         val keys = entity.keys.map { key ->
             when (key) {
                 is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
+
                 is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(
                     key,
                 )
+
                 is FloatingButtonKeyEntity -> {
                     val floatingButton = floatingButtons.find { it.button.uid == key.buttonUid }
                     FloatingButtonKey.fromEntity(key, floatingButton)
                 }
 
                 is FingerprintTriggerKeyEntity -> FingerprintTriggerKey.fromEntity(key)
+
                 is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
             }
         }
 
         val mode = when {
             entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
+
             entity.mode == TriggerEntity.PARALLEL && keys.size > 1 -> TriggerMode.Parallel(
                 keys[0].clickType,
             )
+
             else -> TriggerMode.Undefined
         }
 
@@ -126,8 +132,7 @@ object TriggerEntityMapper {
             doublePressDelay = entity.extras.getData(TriggerEntity.EXTRA_DOUBLE_PRESS_DELAY)
                 .valueOrNull()?.toIntOrNull(),
 
-            vibrateDuration = entity.extras.getData(TriggerEntity.EXTRA_VIBRATION_DURATION)
-                .valueOrNull()?.toIntOrNull(),
+            vibrateEffect = readVibrateEffect(entity),
 
             sequenceTriggerTimeout = entity.extras.getData(
                 TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
@@ -173,13 +178,40 @@ object TriggerEntityMapper {
             )
         }
 
-        if (trigger.isChangingVibrationDurationAllowed() && trigger.vibrateDuration != null) {
-            extras.add(
-                EntityExtra(
-                    TriggerEntity.EXTRA_VIBRATION_DURATION,
-                    trigger.vibrateDuration.toString(),
-                ),
-            )
+        if (trigger.isChangingVibrationDurationAllowed()) {
+            when (val effect = trigger.vibrateEffect) {
+                is VibrateEffect.CustomDuration -> {
+                    extras.add(
+                        EntityExtra(
+                            TriggerEntity.EXTRA_VIBRATE_MODE,
+                            TriggerEntity.VIBRATE_MODE_DURATION,
+                        ),
+                    )
+                    extras.add(
+                        EntityExtra(
+                            TriggerEntity.EXTRA_VIBRATION_DURATION,
+                            effect.durationMs.toString(),
+                        ),
+                    )
+                }
+
+                is VibrateEffect.Predefined -> {
+                    extras.add(
+                        EntityExtra(
+                            TriggerEntity.EXTRA_VIBRATE_MODE,
+                            TriggerEntity.VIBRATE_MODE_PREDEFINED,
+                        ),
+                    )
+                    extras.add(
+                        EntityExtra(
+                            TriggerEntity.EXTRA_VIBRATE_EFFECT_TYPE,
+                            effect.predefinedType.name,
+                        ),
+                    )
+                }
+
+                null -> {}
+            }
         }
 
         val mode = when (trigger.mode) {
@@ -212,11 +244,15 @@ object TriggerEntityMapper {
         val keys = trigger.keys.map { key ->
             when (key) {
                 is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
+
                 is KeyEventTriggerKey -> KeyEventTriggerKey.toEntity(
                     key,
                 )
+
                 is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
+
                 is FingerprintTriggerKey -> FingerprintTriggerKey.toEntity(key)
+
                 is EvdevTriggerKey -> EvdevTriggerKey.toEntity(key)
             }
         }
@@ -227,5 +263,43 @@ object TriggerEntityMapper {
             mode = mode,
             flags = flags,
         )
+    }
+
+    private fun readVibrateEffect(entity: TriggerEntity): VibrateEffect? {
+        val mode = entity.extras.getData(TriggerEntity.EXTRA_VIBRATE_MODE).valueOrNull()
+
+        if (mode != null) {
+            return when (mode) {
+                TriggerEntity.VIBRATE_MODE_DURATION -> {
+                    val durationMs = entity.extras.getData(
+                        TriggerEntity.EXTRA_VIBRATION_DURATION,
+                    ).valueOrNull()?.toLongOrNull() ?: return null
+
+                    VibrateEffect.CustomDuration(durationMs)
+                }
+
+                TriggerEntity.VIBRATE_MODE_PREDEFINED -> {
+                    val typeString = entity.extras.getData(
+                        TriggerEntity.EXTRA_VIBRATE_EFFECT_TYPE,
+                    ).valueOrNull() ?: return null
+
+                    val type = try {
+                        VibrateEffect.PredefinedType.valueOf(typeString)
+                    } catch (_: IllegalArgumentException) {
+                        return null
+                    }
+
+                    VibrateEffect.Predefined(type)
+                }
+
+                else -> null
+            }
+        }
+
+        // Key maps saved before this field existed only stored a raw duration.
+        val legacyDurationMs = entity.extras.getData(TriggerEntity.EXTRA_VIBRATION_DURATION)
+            .valueOrNull()?.toIntOrNull() ?: return null
+
+        return VibrateEffect.CustomDuration(legacyDurationMs.toLong())
     }
 }

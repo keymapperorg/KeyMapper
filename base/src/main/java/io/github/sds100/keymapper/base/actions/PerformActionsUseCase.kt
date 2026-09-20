@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.vibration.vibrate
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
@@ -68,6 +69,7 @@ import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
+import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -120,6 +122,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val settingsAdapter: SettingsAdapter,
+    private val vibratorAdapter: VibratorAdapter,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -1024,6 +1027,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     message = action.message,
                     isLong = action.duration == ActionData.Toast.Duration.LONG,
                 )
+                result = success()
+            }
+
+            is ActionData.Vibrate -> {
+                vibratorAdapter.vibrate(action.effect)
                 result = success()
             }
 

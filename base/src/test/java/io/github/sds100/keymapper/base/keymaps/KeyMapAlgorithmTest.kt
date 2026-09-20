@@ -32,6 +32,7 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventAction
@@ -951,7 +952,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+            verify(
+                detectKeyMapsUseCase,
+                times(1),
+            ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
         }
 
     /**
@@ -991,7 +995,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+            verify(
+                detectKeyMapsUseCase,
+                times(1),
+            ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
         }
 
     /**
@@ -1030,7 +1037,10 @@ class KeyMapAlgorithmTest {
         advanceUntilIdle()
 
         // THEN
-        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+        verify(
+            detectKeyMapsUseCase,
+            times(1),
+        ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
     }
 
     /**
@@ -1071,7 +1081,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+            verify(
+                detectKeyMapsUseCase,
+                times(1),
+            ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
         }
 
     /**
@@ -1112,7 +1125,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+            verify(
+                detectKeyMapsUseCase,
+                times(1),
+            ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
         }
 
     /**
@@ -1153,7 +1169,10 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // THEN
-            verify(detectKeyMapsUseCase, times(2)).vibrate(VIBRATION_DURATION)
+            verify(
+                detectKeyMapsUseCase,
+                times(2),
+            ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
         }
 
     /**
@@ -1192,7 +1211,10 @@ class KeyMapAlgorithmTest {
         advanceUntilIdle()
 
         // THEN
-        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+        verify(
+            detectKeyMapsUseCase,
+            times(1),
+        ).vibrate(VibrateEffect.CustomDuration(VIBRATION_DURATION))
     }
 
     @Test

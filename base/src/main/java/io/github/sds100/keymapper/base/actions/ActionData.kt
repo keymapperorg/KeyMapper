@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -983,6 +984,11 @@ sealed class ActionData : Comparable<ActionData> {
             is Toast -> compareValuesBy(this, other, { it.message }, { it.duration })
             else -> super.compareTo(other)
         }
+    }
+
+    @Serializable
+    data class Vibrate(val effect: VibrateEffect) : ActionData() {
+        override val id: ActionId = ActionId.VIBRATE
     }
 
     @Serializable

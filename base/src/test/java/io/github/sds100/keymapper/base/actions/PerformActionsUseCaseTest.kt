@@ -91,6 +91,7 @@ class PerformActionsUseCaseTest {
             coroutineScope = testCoroutineScope,
             notificationAdapter = mock(),
             settingsAdapter = mock(),
+            vibratorAdapter = mock(),
         )
     }
 

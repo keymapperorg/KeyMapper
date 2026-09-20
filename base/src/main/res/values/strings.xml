@@ -1259,6 +1259,16 @@
     <string name="action_toast_message_error">Message cannot be empty</string>
     <string name="action_toast_duration_short">Short</string>
     <string name="action_toast_duration_long">Long</string>
+    <string name="action_vibrate">Vibrate</string>
+    <string name="action_vibrate_description_duration">Vibrate for %1$s ms</string>
+    <string name="action_vibrate_description_predefined">Vibrate: %1$s</string>
+    <string name="vibration_effect_mode_duration">Duration</string>
+    <string name="vibration_effect_mode_predefined">Effect</string>
+    <string name="vibration_effect_mode_predefined_unsuppored">Effect (unsupported)</string>
+    <string name="vibration_effect_click">Click</string>
+    <string name="vibration_effect_double_click">Double click</string>
+    <string name="vibration_effect_heavy_click">Heavy click</string>
+    <string name="vibration_effect_tick">Tick</string>
     <string name="action_device_controls">Device controls screen</string>
     <string name="action_http_request">HTTP request</string>
     <string name="action_http_request_method_label">HTTP Method</string>

@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.isSatisfied
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import kotlinx.coroutines.CoroutineScope
@@ -120,7 +121,8 @@ abstract class SimpleMappingController(
 
         if (keyMap.vibrate || forceVibrate.value) {
             detectMappingUseCase.vibrate(
-                keyMap.vibrateDuration?.toLong() ?: defaultVibrateDuration.value,
+                keyMap.vibrateEffect
+                    ?: VibrateEffect.CustomDuration(defaultVibrateDuration.value),
             )
         }
 

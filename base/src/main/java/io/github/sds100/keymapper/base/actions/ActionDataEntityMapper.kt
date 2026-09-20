@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.util.Base64
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -73,6 +74,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
 
             ActionEntity.Type.TOAST -> ActionId.TOAST
+
+            ActionEntity.Type.VIBRATE -> ActionId.VIBRATE
         }
 
         return when (actionId) {
@@ -725,6 +728,39 @@ object ActionDataEntityMapper {
                 )
             }
 
+            ActionId.VIBRATE -> {
+                val mode = entity.extras.getData(ActionEntity.EXTRA_VIBRATE_MODE)
+                    .valueOrNull() ?: return null
+
+                val effect = when (mode) {
+                    ActionEntity.VIBRATE_MODE_DURATION -> {
+                        val durationMs = entity.extras.getData(
+                            ActionEntity.EXTRA_VIBRATE_DURATION_MS,
+                        ).valueOrNull()?.toLongOrNull() ?: return null
+
+                        VibrateEffect.CustomDuration(durationMs)
+                    }
+
+                    ActionEntity.VIBRATE_MODE_PREDEFINED -> {
+                        val typeString = entity.extras.getData(
+                            ActionEntity.EXTRA_VIBRATE_EFFECT_TYPE,
+                        ).valueOrNull() ?: return null
+
+                        val type = try {
+                            VibrateEffect.PredefinedType.valueOf(typeString)
+                        } catch (_: IllegalArgumentException) {
+                            return null
+                        }
+
+                        VibrateEffect.Predefined(type)
+                    }
+
+                    else -> return null
+                }
+
+                ActionData.Vibrate(effect = effect)
+            }
+
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
 
             ActionId.END_PHONE_CALL -> ActionData.EndCall
@@ -998,6 +1034,7 @@ object ActionDataEntityMapper {
             is ActionData.ModifySetting -> ActionEntity.Type.MODIFY_SETTING
             is ActionData.CreateNotification -> ActionEntity.Type.CREATE_NOTIFICATION
             is ActionData.Toast -> ActionEntity.Type.TOAST
+            is ActionData.Vibrate -> ActionEntity.Type.VIBRATE
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -1086,6 +1123,8 @@ object ActionDataEntityMapper {
         is ActionData.CreateNotification -> data.text
 
         is ActionData.Toast -> data.message
+
+        is ActionData.Vibrate -> ""
 
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
@@ -1437,6 +1476,21 @@ object ActionDataEntityMapper {
         is ActionData.Toast -> listOf(
             EntityExtra(ActionEntity.EXTRA_TOAST_DURATION, data.duration.name),
         )
+
+        is ActionData.Vibrate -> when (val effect = data.effect) {
+            is VibrateEffect.CustomDuration -> listOf(
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_MODE, ActionEntity.VIBRATE_MODE_DURATION),
+                EntityExtra(
+                    ActionEntity.EXTRA_VIBRATE_DURATION_MS,
+                    effect.durationMs.toString(),
+                ),
+            )
+
+            is VibrateEffect.Predefined -> listOf(
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_MODE, ActionEntity.VIBRATE_MODE_PREDEFINED),
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_EFFECT_TYPE, effect.predefinedType.name),
+            )
+        }
 
         is ActionData.TalkBackGesture -> listOf(
             EntityExtra(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE, data.gesture.name),

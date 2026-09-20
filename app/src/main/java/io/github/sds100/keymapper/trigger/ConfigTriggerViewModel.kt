@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class ConfigTriggerViewModel @Inject constructor(
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
+    vibrateConfigDelegate: VibrateConfigDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -46,6 +48,7 @@ class ConfigTriggerViewModel @Inject constructor(
     systemBridgeConnectionManager = systemBridgeConnectionManager,
     onboardingTipDelegate = onboardingTipDelegate,
     triggerSetupDelegate = triggerSetupDelegate,
+    vibrateConfigDelegate = vibrateConfigDelegate,
     resourceProvider = resourceProvider,
     navigationProvider = navigationProvider,
     dialogProvider = dialogProvider,

@@ -68,6 +68,7 @@ import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.VerticalSplit
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.ViewArray
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.outlined.WifiTetheringOff
@@ -245,6 +246,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.TOAST -> ActionCategory.NOTIFICATIONS
+        ActionId.VIBRATE -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
@@ -500,6 +502,8 @@ object ActionUtils {
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
 
         ActionId.TOAST -> R.string.action_toast
+
+        ActionId.VIBRATE -> R.string.action_vibrate
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
 
@@ -1101,6 +1105,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
         ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
         ActionId.TOAST -> Icons.AutoMirrored.Outlined.Message
+        ActionId.VIBRATE -> Icons.Outlined.Vibration
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -1163,6 +1168,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ShellCommand,
     is ActionData.CreateNotification,
     is ActionData.Toast,
+    is ActionData.Vibrate,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,

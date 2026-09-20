@@ -51,6 +51,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchSettingsPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.MobileSensorHi
@@ -79,6 +80,8 @@ fun KeyMapOptionsScreen(modifier: Modifier = Modifier, viewModel: ConfigKeyMapOp
             onDismissRequest = viewModel::onDismissCreateShortcutDialog,
         )
     }
+
+    TriggerVibrationBottomSheet(viewModel)
 }
 
 @Composable
@@ -157,29 +160,15 @@ private fun Loaded(
         )
 
         if (state.showVibrate) {
-            SwitchPreferenceCompose(
+            SwitchSettingsPreferenceCompose(
                 modifier = Modifier.fillMaxWidth(),
                 title = stringResource(R.string.flag_vibrate),
                 text = stringResource(R.string.key_map_options_vibrate_summary),
                 icon = Icons.Outlined.Vibration,
                 isChecked = state.vibrate,
                 onCheckedChange = callback::onVibrateChanged,
-            )
-        }
-
-        if (state.showVibrateDuration) {
-            val vibrateDurationMin = SliderMinimums.VIBRATION_DURATION
-            val vibrateDurationMax = SliderMaximums.VIBRATION_DURATION
-            SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                title = stringResource(R.string.extra_label_vibration_duration),
-                defaultValue = state.defaultVibrateDuration.toFloat(),
-                value = state.vibrateDuration.toFloat(),
-                valueText = { "${it.toInt()} ms" },
-                onValueChange = { callback.onVibrateDurationChanged(it.toInt()) },
-                valueRange = vibrateDurationMin.toFloat()..vibrateDurationMax.toFloat(),
-                stepSize = SliderStepSizes.VIBRATION_DURATION,
+                isSettingsEnabled = state.showVibrateSettings,
+                onSettingsClick = callback::onVibrateSettingsClick,
             )
         }
 
@@ -350,7 +339,7 @@ interface KeyMapOptionsCallback {
     fun onLongPressDelayChanged(delay: Int) = run { }
     fun onDoublePressDelayChanged(delay: Int) = run { }
     fun onSequenceTriggerTimeoutChanged(timeout: Int) = run { }
-    fun onVibrateDurationChanged(duration: Int) = run { }
+    fun onVibrateSettingsClick() = run { }
     fun onVibrateChanged(checked: Boolean) = run { }
     fun onLongPressDoubleVibrationChanged(checked: Boolean) = run { }
     fun onShowToastChanged(checked: Boolean) = run { }
@@ -380,8 +369,8 @@ private fun Preview() {
                         sequenceTriggerTimeout = 1000,
                         defaultSequenceTriggerTimeout = 1000,
 
-                        showVibrateDuration = true,
-                        vibrateDuration = 100,
+                        showVibrateSettings = true,
+                        vibrateEffect = null,
                         defaultVibrateDuration = 100,
 
                         showVibrate = true,
@@ -424,8 +413,8 @@ private fun PreviewEvdevTrigger() {
                         sequenceTriggerTimeout = 1000,
                         defaultSequenceTriggerTimeout = 1000,
 
-                        showVibrateDuration = false,
-                        vibrateDuration = 100,
+                        showVibrateSettings = false,
+                        vibrateEffect = null,
                         defaultVibrateDuration = 100,
 
                         showVibrate = true,

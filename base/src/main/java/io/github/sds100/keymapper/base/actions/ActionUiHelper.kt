@@ -10,11 +10,13 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.VibrateEffectStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -825,6 +827,24 @@ class ActionUiHelper(
 
                 ActionData.Toast.Duration.LONG -> {
                     getString(R.string.action_toast_description_long, action.message)
+                }
+            }
+        }
+
+        is ActionData.Vibrate -> {
+            when (val effect = action.effect) {
+                is VibrateEffect.CustomDuration -> {
+                    getString(
+                        R.string.action_vibrate_description_duration,
+                        effect.durationMs.toString(),
+                    )
+                }
+
+                is VibrateEffect.Predefined -> {
+                    getString(
+                        R.string.action_vibrate_description_predefined,
+                        getString(VibrateEffectStrings.getLabel(effect.predefinedType)),
+                    )
                 }
             }
         }

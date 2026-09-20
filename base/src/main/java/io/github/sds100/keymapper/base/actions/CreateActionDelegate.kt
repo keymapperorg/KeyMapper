@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
@@ -43,6 +44,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+private const val DEFAULT_VIBRATE_ACTION_DURATION_MS = 200
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
@@ -50,9 +53,11 @@ class CreateActionDelegate(
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    vibrateConfigDelegate: VibrateConfigDelegate,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    VibrateConfigDelegate by vibrateConfigDelegate {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
     var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
@@ -387,6 +392,12 @@ class CreateActionDelegate(
         )
         toastActionBottomSheetState = null
         actionResult.update { action }
+    }
+
+    fun onDoneVibrateClick() {
+        val effect = buildVibrateEffect() ?: return
+        closeVibrateConfig()
+        actionResult.update { ActionData.Vibrate(effect) }
     }
 
     fun onStepMediaDurationEnabledChange(enabled: Boolean) {
@@ -1235,6 +1246,12 @@ class CreateActionDelegate(
                     message = oldAction?.message ?: "",
                     duration = oldAction?.duration ?: ActionData.Toast.Duration.SHORT,
                 )
+                return null
+            }
+
+            ActionId.VIBRATE -> {
+                val oldEffect = (oldData as? ActionData.Vibrate)?.effect
+                openVibrateConfig(oldEffect, DEFAULT_VIBRATE_ACTION_DURATION_MS)
                 return null
             }
 

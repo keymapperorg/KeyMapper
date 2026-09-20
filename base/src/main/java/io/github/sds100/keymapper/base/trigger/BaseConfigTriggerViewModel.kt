@@ -30,6 +30,7 @@ import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
@@ -64,6 +65,7 @@ abstract class BaseConfigTriggerViewModel(
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
+    private val vibrateConfigDelegate: VibrateConfigDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -101,6 +103,7 @@ abstract class BaseConfigTriggerViewModel(
         dialogProvider,
         navigationProvider,
         resourceProvider,
+        vibrateConfigDelegate,
     )
 
     private val _state: MutableStateFlow<State<ConfigTriggerState>> =

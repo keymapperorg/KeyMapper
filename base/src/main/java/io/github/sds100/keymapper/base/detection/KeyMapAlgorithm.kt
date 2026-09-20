@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.trigger.detectWithScancode
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
@@ -800,7 +801,7 @@ class KeyMapAlgorithm(
         var awaitingLongPress = false
         var showToast = false
         val detectedShortPressTriggers = mutableSetOf<Int>()
-        val vibrateDurations = mutableListOf<Long>()
+        val vibrateEffects = mutableListOf<VibrateEffect>()
 
         val errorSnapshot = performActionsUseCase.getErrorSnapshot()
 
@@ -953,7 +954,7 @@ class KeyMapAlgorithm(
                     awaitingLongPress = true
 
                     if (trigger.vibrate && trigger.longPressDoubleVibration) {
-                        vibrateDurations.add(vibrateDuration(trigger))
+                        vibrateEffects.add(resolveVibrateEffect(trigger))
                     }
 
                     val oldJob = parallelTriggerLongPressJobs[triggerIndex]
@@ -1033,13 +1034,14 @@ class KeyMapAlgorithm(
                             showToast = true
                         }
 
-                        val vibrateDuration = when {
-                            trigger.vibrate -> vibrateDuration(trigger)
-                            forceVibrate.value -> defaultVibrateDuration.value
-                            else -> -1L
+                        val vibrateEffect = when {
+                            trigger.vibrate -> resolveVibrateEffect(trigger)
+                            forceVibrate.value ->
+                                VibrateEffect.CustomDuration(defaultVibrateDuration.value)
+                            else -> null
                         }
 
-                        vibrateDurations.add(vibrateDuration)
+                        vibrateEffect?.let { vibrateEffects.add(it) }
                     }
                 }
             }
@@ -1049,11 +1051,11 @@ class KeyMapAlgorithm(
             useCase.showTriggeredToast()
         }
 
-        if (vibrateDurations.isNotEmpty()) {
+        if (vibrateEffects.isNotEmpty()) {
             if (forceVibrate.value) {
                 useCase.vibrate(defaultVibrateDuration.value)
             } else {
-                vibrateDurations.maxOrNull()?.let {
+                resolveWinningVibrateEffect(vibrateEffects)?.let {
                     useCase.vibrate(it)
                 }
             }
@@ -1112,7 +1114,7 @@ class KeyMapAlgorithm(
         val detectedSequenceTriggerIndexes = mutableListOf<Int>()
         val detectedParallelTriggerIndexes = mutableListOf<Int>()
 
-        val vibrateDurations = mutableListOf<Long>()
+        val vibrateEffects = mutableListOf<VibrateEffect>()
 
         val imitateKeyAfterDoublePressTimeout = mutableListOf<Long>()
 
@@ -1254,7 +1256,7 @@ class KeyMapAlgorithm(
 
                     triggerActions[triggerIndex].forEach { _ ->
                         if (trigger.vibrate) {
-                            vibrateDurations.add(vibrateDuration(trigger))
+                            vibrateEffects.add(resolveVibrateEffect(trigger))
                         }
                     }
 
@@ -1451,7 +1453,7 @@ class KeyMapAlgorithm(
             if (forceVibrate.value) {
                 useCase.vibrate(defaultVibrateDuration.value)
             } else {
-                vibrateDurations.maxOrNull()?.let {
+                resolveWinningVibrateEffect(vibrateEffects)?.let {
                     useCase.vibrate(it)
                 }
             }
@@ -1638,7 +1640,7 @@ class KeyMapAlgorithm(
     private fun performActionsOnFailedDoublePress(event: AlgoEvent): Boolean {
         var showToast = false
         val detectedTriggerIndexes = mutableListOf<Int>()
-        val vibrateDurations = mutableListOf<Long>()
+        val vibrateEffects = mutableListOf<VibrateEffect>()
 
         performActionsOnFailedDoublePress.forEach { triggerIndex ->
             if (triggers[triggerIndex].keys.last().matchesEvent(event.withShortPress)) {
@@ -1649,7 +1651,7 @@ class KeyMapAlgorithm(
                 }
 
                 if (triggers[triggerIndex].vibrate) {
-                    vibrateDurations.add(vibrateDuration(triggers[triggerIndex]))
+                    vibrateEffects.add(resolveVibrateEffect(triggers[triggerIndex]))
                 }
             }
         }
@@ -1672,7 +1674,7 @@ class KeyMapAlgorithm(
             if (forceVibrate.value) {
                 useCase.vibrate(defaultVibrateDuration.value)
             } else {
-                vibrateDurations.maxOrNull()?.let {
+                resolveWinningVibrateEffect(vibrateEffects)?.let {
                     useCase.vibrate(it)
                 }
             }
@@ -1737,7 +1739,7 @@ class KeyMapAlgorithm(
                 forceVibrate.value ||
                 triggers[triggerIndex].longPressDoubleVibration
             ) {
-                useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
+                useCase.vibrate(resolveVibrateEffect(triggers[triggerIndex]))
             }
 
             if (triggers[triggerIndex].showToast) {
@@ -1773,7 +1775,7 @@ class KeyMapAlgorithm(
             forceVibrate.value ||
             triggers[triggerIndex].longPressDoubleVibration
         ) {
-            useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
+            useCase.vibrate(resolveVibrateEffect(triggers[triggerIndex]))
         }
 
         if (triggers[triggerIndex].showToast) {
@@ -1884,8 +1886,18 @@ class KeyMapAlgorithm(
     private fun doublePressTimeout(trigger: Trigger): Long =
         trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: Trigger): Long =
-        trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+    private fun resolveVibrateEffect(trigger: Trigger): VibrateEffect =
+        trigger.vibrateEffect ?: VibrateEffect.CustomDuration(defaultVibrateDuration.value)
+
+    /**
+     * When several triggers fire at once, vibrate only once using the "strongest" of their
+     * effects: a predefined effect (a deliberate choice) wins over a plain duration, and
+     * amongst durations the longest one wins, matching the previous duration-only behaviour.
+     */
+    private fun resolveWinningVibrateEffect(effects: List<VibrateEffect>): VibrateEffect? =
+        effects.filterIsInstance<VibrateEffect.Predefined>().firstOrNull()
+            ?: effects.filterIsInstance<VibrateEffect.CustomDuration>()
+                .maxByOrNull { it.durationMs }
 
     private fun sequenceTriggerTimeout(trigger: Trigger): Long =
         trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value

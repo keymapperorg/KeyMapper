@@ -54,7 +54,12 @@ data class TriggerEntity(
         const val EXTRA_SEQUENCE_TRIGGER_TIMEOUT = "extra_sequence_trigger_timeout"
         const val EXTRA_LONG_PRESS_DELAY = "extra_long_press_delay"
         const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
+
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
+        const val EXTRA_VIBRATE_MODE = "extra_vibrate_mode"
+        const val EXTRA_VIBRATE_EFFECT_TYPE = "extra_vibrate_effect_type"
+        const val VIBRATE_MODE_DURATION = "duration"
+        const val VIBRATE_MODE_PREDEFINED = "predefined"
 
         val DESERIALIZER = jsonDeserializer {
             val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)

@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import java.util.UUID
@@ -35,8 +36,8 @@ data class KeyMap(
     val vibrate: Boolean
         get() = trigger.vibrate
 
-    val vibrateDuration: Int?
-        get() = trigger.vibrateDuration
+    val vibrateEffect: VibrateEffect?
+        get() = trigger.vibrateEffect
 
     fun isRepeatingActionsAllowed(): Boolean = KeyMapAlgorithm.performActionOnDown(trigger)
 

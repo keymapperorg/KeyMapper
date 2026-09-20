@@ -16,6 +16,8 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
@@ -40,9 +42,11 @@ class ConfigKeyMapOptionsViewModel(
     private val dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    vibrateConfigDelegate: VibrateConfigDelegate,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
+    VibrateConfigDelegate by vibrateConfigDelegate,
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
@@ -69,8 +73,15 @@ class ConfigKeyMapOptionsViewModel(
         config.setSequenceTriggerTimeout(timeout)
     }
 
-    override fun onVibrateDurationChanged(duration: Int) {
-        config.setVibrationDuration(duration)
+    override fun onVibrateSettingsClick() {
+        val currentState = state.value.dataOrNull() ?: return
+        openVibrateConfig(currentState.vibrateEffect, currentState.defaultVibrateDuration)
+    }
+
+    fun onDoneVibrateConfigClick() {
+        val effect = buildVibrateEffect() ?: return
+        closeVibrateConfig()
+        config.setVibrateEffect(effect)
     }
 
     override fun onVibrateChanged(checked: Boolean) {
@@ -196,8 +207,8 @@ class ConfigKeyMapOptionsViewModel(
                 ?: defaultSequenceTriggerTimeout,
             defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
 
-            showVibrateDuration = keyMap.trigger.isChangingVibrationDurationAllowed(),
-            vibrateDuration = keyMap.trigger.vibrateDuration ?: defaultVibrateDuration,
+            showVibrateSettings = keyMap.trigger.isChangingVibrationDurationAllowed(),
+            vibrateEffect = keyMap.trigger.vibrateEffect,
             defaultVibrateDuration = defaultVibrateDuration,
 
             showVibrate = keyMap.trigger.isVibrateAllowed(),
@@ -236,8 +247,8 @@ data class KeyMapOptionsState(
     val sequenceTriggerTimeout: Int,
     val defaultSequenceTriggerTimeout: Int,
 
-    val showVibrateDuration: Boolean,
-    val vibrateDuration: Int,
+    val showVibrateSettings: Boolean,
+    val vibrateEffect: VibrateEffect?,
     val defaultVibrateDuration: Int,
 
     val showVibrate: Boolean,
