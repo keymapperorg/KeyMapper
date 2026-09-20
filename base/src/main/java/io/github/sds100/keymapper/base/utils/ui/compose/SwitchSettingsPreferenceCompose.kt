@@ -69,7 +69,7 @@ fun SwitchSettingsPreferenceCompose(
 
             IconButton(
                 onClick = onSettingsClick,
-                enabled = isEnabled && isSettingsEnabled,
+                enabled = isSettingsEnabled,
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,

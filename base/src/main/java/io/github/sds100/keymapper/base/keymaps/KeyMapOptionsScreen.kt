@@ -167,7 +167,8 @@ private fun Loaded(
                 icon = Icons.Outlined.Vibration,
                 isChecked = state.vibrate,
                 onCheckedChange = callback::onVibrateChanged,
-                isSettingsEnabled = state.showVibrateSettings,
+                // Always allow users to play around with the vibration settings.
+                isSettingsEnabled = true,
                 onSettingsClick = callback::onVibrateSettingsClick,
             )
         }
