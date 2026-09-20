@@ -309,7 +309,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                 ),
                 options = listOf("Vibrate"),
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
-                extraInfo = null,
+                isEnabled = false,
             ),
         ),
         KeyMapListItemModel(
@@ -323,7 +323,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
+                isEnabled = true,
             ),
         ),
     )

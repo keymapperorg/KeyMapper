@@ -500,7 +500,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 ),
                 options = listOf("Vibrate"),
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
-                extraInfo = "Disabled • No trigger",
+                isEnabled = true,
             ),
         ),
         KeyMapListItemModel(
@@ -533,7 +533,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
                 triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = true,
             ),
         ),
         KeyMapListItemModel(
@@ -549,6 +549,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Open Key Mapper",
+                        isEnabled = false,
                     ),
                 ),
                 constraintMode = ConstraintMode.AND,
@@ -559,11 +560,12 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Key Mapper is not open",
+                        isEnabled = false,
                     ),
                 ),
                 options = emptyList(),
                 triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = false,
             ),
         ),
         KeyMapListItemModel(
@@ -585,7 +587,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = true,
             ),
         ),
         KeyMapListItemModel(
@@ -599,7 +601,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
+                isEnabled = true,
             ),
         ),
     )

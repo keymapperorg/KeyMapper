@@ -451,6 +451,7 @@ class KeyMapListViewModel(
                 constraints = listItemCreator.buildConstraintChipList(
                     keyMapGroup.group.constraintState,
                     constraintErrorSnapshot,
+                    isEnabled = true,
                 ),
                 constraintMode = keyMapGroup.group.constraintState.mode,
                 parentConstraintCount = keyMapGroup.parents.sumOf {

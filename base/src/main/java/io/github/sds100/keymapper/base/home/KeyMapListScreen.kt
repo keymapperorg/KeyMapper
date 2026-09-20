@@ -21,10 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -46,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -70,7 +66,6 @@ import io.github.sds100.keymapper.base.utils.ui.compose.CompactChip
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.ErrorCompactChip
-import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 
@@ -246,8 +241,18 @@ private fun KeyMapListItem(
     onFixClick: (KMError) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
+    val cardColors = if (model.content.isEnabled) {
+        CardDefaults.outlinedCardColors()
+    } else {
+        CardDefaults.outlinedCardColors(
+            contentColor =
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        )
+    }
+
     OutlinedCard(
         modifier = modifier,
+        colors = cardColors,
         onClick = onClickKeyMap,
     ) {
         Row(
@@ -275,30 +280,15 @@ private fun KeyMapListItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 10.dp, end = 16.dp, bottom = 10.dp),
             ) {
-                if (model.content.extraInfo != null) {
-                    Row(
-                        modifier = Modifier.heightIn(min = chipHeight),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = model.content.extraInfo,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-
-                if (model.content.triggerKeys.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier.heightIn(min = chipHeight),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TriggerDescription(
-                            modifier = Modifier.fillMaxWidth(),
-                            triggerKeys = model.content.triggerKeys,
-                            separator = model.content.triggerSeparatorIcon,
-                        )
-                    }
+                Row(
+                    modifier = Modifier.heightIn(min = chipHeight),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TriggerDescription(
+                        modifier = Modifier.fillMaxWidth(),
+                        triggerKeys = model.content.triggerKeys,
+                        separator = model.content.triggerSeparatorIcon,
+                    )
                 }
 
                 if (model.content.triggerErrors.isNotEmpty()) {
@@ -412,13 +402,17 @@ private fun TriggerDescription(
         pop()
         append(" ")
 
-        for ((index, key) in triggerKeys.withIndex()) {
-            append(key)
+        if (triggerKeys.isEmpty()) {
+            append(stringResource(R.string.trigger_header_none))
+        } else {
+            for ((index, key) in triggerKeys.withIndex()) {
+                append(key)
 
-            if (index < triggerKeys.lastIndex) {
-                append(" ")
-                appendInlineContent("separator")
-                append(" ")
+                if (index < triggerKeys.lastIndex) {
+                    append(" ")
+                    appendInlineContent("separator")
+                    append(" ")
+                }
             }
         }
     }
@@ -557,166 +551,6 @@ private fun getTriggerErrorMessage(error: TriggerError): String {
             R.string.trigger_error_migrate_screen_off_key_map,
         )
     }
-}
-
-@Composable
-private fun sampleList(): List<KeyMapListItemModel> {
-    val context = LocalContext.current
-
-    return listOf(
-        KeyMapListItemModel(
-            isSelected = true,
-            KeyMapListItemModel.Content(
-                uid = "0",
-                triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
-                triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Open Key Mapper",
-                        isEnabled = false,
-                    ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        text = "Input KEYCODE_0 • Repeat until released",
-                        error = KMError.NoCompatibleImeChosen,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "2",
-                        text = "Input KEYCODE_Q",
-                        icon = null,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "3",
-                        text = "Toggle flashlight",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
-                        isEnabled = false,
-                    ),
-                ),
-                constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Key Mapper is not open",
-                    ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        "Key Mapper is playing media",
-                        error = KMError.AppNotFound(""),
-                    ),
-                ),
-                options = listOf("Vibrate"),
-                triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
-                extraInfo = "Disabled • No trigger",
-            ),
-        ),
-        KeyMapListItemModel(
-            isSelected = true,
-            KeyMapListItemModel.Content(
-                uid = "1",
-                triggerKeys = listOf("Volume down", "Volume up"),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Open Key Mapper",
-                    ),
-                ),
-                constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Key Mapper is not open",
-                    ),
-                ),
-                options = listOf(
-                    "Vibrate",
-                    "Vibrate when keys are initially pressed and again when long pressed",
-                ),
-                triggerErrors = emptyList(),
-                extraInfo = null,
-            ),
-        ),
-        KeyMapListItemModel(
-            isSelected = true,
-            KeyMapListItemModel.Content(
-                uid = "2",
-                triggerKeys = listOf("Volume down", "Volume up"),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Open Key Mapper",
-                        isEnabled = false,
-                    ),
-                ),
-                constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Key Mapper is not open",
-                    ),
-                ),
-                options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = null,
-            ),
-        ),
-        KeyMapListItemModel(
-            isSelected = true,
-            KeyMapListItemModel.Content(
-                uid = "3",
-                triggerKeys = listOf("Volume down", "Volume up"),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(
-                            drawable = context.drawable(R.drawable.ic_launcher_web),
-                        ),
-                        "Open Key Mapper",
-                    ),
-                ),
-                constraintMode = ConstraintMode.AND,
-                constraints = emptyList(),
-                options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = null,
-            ),
-        ),
-        KeyMapListItemModel(
-            isSelected = false,
-            content = KeyMapListItemModel.Content(
-                uid = "4",
-                triggerKeys = emptyList(),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = emptyList(),
-                constraintMode = ConstraintMode.OR,
-                constraints = emptyList(),
-                options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
-            ),
-        ),
-    )
 }
 
 @Preview

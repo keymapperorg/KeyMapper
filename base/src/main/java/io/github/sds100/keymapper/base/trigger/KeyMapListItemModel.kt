@@ -16,6 +16,6 @@ data class KeyMapListItemModel(val isSelected: Boolean, val content: Content) {
         val constraintMode: ConstraintMode,
         val constraints: List<ComposeChipModel>,
         val options: List<String>,
-        val extraInfo: String?,
+        val isEnabled: Boolean,
     )
 }
