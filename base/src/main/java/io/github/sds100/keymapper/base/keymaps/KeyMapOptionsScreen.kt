@@ -18,7 +18,6 @@ import androidx.compose.material.icons.outlined.AddHome
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material.icons.outlined.Route
-import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.Timer
@@ -28,7 +27,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.onboarding.TipCard
 import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
 import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
@@ -115,9 +114,27 @@ private fun Loaded(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
-            .fillMaxWidth().padding(horizontal = 16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (state.showScreenOffTip) {
+            TipCard(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(R.string.tip_screen_off_trigger_title),
+                message = stringResource(R.string.tip_screen_off_trigger_message),
+                isDismissable = false,
+                buttonText = if (state.isExpertModeStarted) {
+                    null
+                } else {
+                    stringResource(R.string.button_enable_expert_mode)
+                },
+                onButtonClick = callback::onOpenExpertModeSettings,
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
@@ -131,12 +148,7 @@ private fun Loaded(
             keyMapUid = state.keyMapUid,
         )
 
-        ScreenOffSection(
-            modifier = Modifier.fillMaxWidth(),
-            isEvdevTrigger = !state.showScreenOffTip,
-            isExpertModeStarted = state.isExpertModeStarted,
-            onEnableExpertModeClick = callback::onOpenExpertModeSettings,
-        )
+        Spacer(modifier = Modifier.height(4.dp))
 
         OptionsHeaderRow(
             icon = Icons.Outlined.Sensors,
@@ -341,52 +353,6 @@ private fun KeyMapUidRow(modifier: Modifier = Modifier, keyMapUid: String) {
                     R.string.flag_trigger_from_other_apps_copy_uid,
                 ),
             )
-        }
-    }
-}
-
-@Composable
-private fun ScreenOffSection(
-    modifier: Modifier = Modifier,
-    isEvdevTrigger: Boolean,
-    isExpertModeStarted: Boolean,
-    onEnableExpertModeClick: () -> Unit,
-) {
-    Column(modifier) {
-        OptionsHeaderRow(
-            icon = Icons.Outlined.Science,
-            text = stringResource(R.string.key_map_options_header_screen_off),
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        SwitchPreferenceCompose(
-            modifier = Modifier.fillMaxWidth(),
-            title = stringResource(R.string.key_map_options_screen_off_title),
-            // Explain how to fix this when the trigger was not recorded with Expert Mode.
-            text = if (isEvdevTrigger) {
-                null
-            } else {
-                stringResource(R.string.tip_screen_off_trigger_message)
-            },
-            icon = Icons.Outlined.Science,
-            isChecked = isEvdevTrigger,
-            onCheckedChange = {},
-            // This cannot be turned on and off here. It depends on how the trigger was recorded.
-            isEnabled = false,
-        )
-
-        if (!isExpertModeStarted) {
-            Spacer(Modifier.height(8.dp))
-
-            OutlinedButton(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 16.dp),
-                onClick = onEnableExpertModeClick,
-            ) {
-                Text(stringResource(R.string.button_enable_expert_mode))
-            }
         }
     }
 }
