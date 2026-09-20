@@ -140,10 +140,6 @@ class ConfigConstraintsViewModel @Inject constructor(
 
     fun onMoveGroup(fromIndex: Int, toIndex: Int) = config.moveGroup(fromIndex, toIndex)
 
-    fun onMoveConstraint(groupUid: String, fromIndex: Int, toIndex: Int) {
-        config.moveConstraint(groupUid, fromIndex, toIndex)
-    }
-
     fun onFixError(constraintUid: String) {
         viewModelScope.launch {
             val constraint = config.keyMap

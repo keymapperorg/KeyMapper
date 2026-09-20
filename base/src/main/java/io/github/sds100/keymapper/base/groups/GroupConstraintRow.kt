@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.SwapHorizontalCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ErrorOutline
@@ -71,8 +72,6 @@ fun GroupConstraintRow(
                             modifier = Modifier.widthIn(max = maxChipWidth),
                             text = constraint.text,
                             onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                            // Only allow clicking on error chips
-                            enabled = enabled,
                             icon = {
                                 if (constraint.icon is ComposeIconInfo.Vector) {
                                     Icon(
@@ -195,7 +194,7 @@ private fun ConstraintButton(
     text: String,
     icon: @Composable () -> Unit,
     onRemoveClick: () -> Unit = {},
-    enabled: Boolean,
+    onNotClick: () -> Unit = {},
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
@@ -225,8 +224,21 @@ private fun ConstraintButton(
 
                 IconButton(
                     modifier = Modifier.size(16.dp),
+                    onClick = onNotClick,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.SwapHorizontalCircle,
+                        contentDescription = stringResource(
+                            R.string.home_group_invert_constraint_button,
+                        ),
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                IconButton(
+                    modifier = Modifier.size(16.dp),
                     onClick = onRemoveClick,
-                    enabled = enabled,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
@@ -247,6 +259,7 @@ private fun ConstraintErrorButton(
     onClick: () -> Unit,
     onRemoveClick: () -> Unit = {},
     enabled: Boolean,
+    onNotClick: () -> Unit = {},
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
@@ -279,13 +292,25 @@ private fun ConstraintErrorButton(
                     style = MaterialTheme.typography.titleSmall,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Spacer(modifier = Modifier.width(4.dp))
+
+                IconButton(
+                    modifier = Modifier.size(16.dp),
+                    onClick = onNotClick,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.SwapHorizontalCircle,
+                        contentDescription = stringResource(
+                            R.string.home_group_invert_constraint_button,
+                        ),
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(4.dp))
 
                 IconButton(
                     modifier = Modifier.size(16.dp),
                     onClick = onRemoveClick,
-                    enabled = enabled,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,

@@ -89,7 +89,6 @@ fun ConstraintsScreen(
         onRenameGroup = viewModel::onRenameGroup,
         onExpandedChange = viewModel::onExpandedChange,
         onMoveGroup = viewModel::onMoveGroup,
-        onMoveConstraint = viewModel::onMoveConstraint,
     )
 }
 
@@ -109,7 +108,6 @@ private fun ConstraintsScreen(
     onRenameGroup: (groupUid: String, name: String) -> Unit = { _, _ -> },
     onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit = { _, _ -> },
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
-    onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit = { _, _, _ -> },
 ) {
     var constraintToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var groupToDelete by rememberSaveable { mutableStateOf<String?>(null) }
@@ -239,7 +237,6 @@ private fun ConstraintsScreen(
                             onRenameGroupClick = { groupToRename = it },
                             onExpandedChange = onExpandedChange,
                             onMoveGroup = onMoveGroup,
-                            onMoveConstraint = onMoveConstraint,
                         )
 
                         if (data.groups.size > 1) {
@@ -303,7 +300,6 @@ private fun ConstraintGroupList(
     onRenameGroupClick: (groupUid: String) -> Unit,
     onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit,
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit,
-    onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val groupUids = state.groups.map { it.uid }
@@ -366,9 +362,6 @@ private fun ConstraintGroupList(
                         onRemoveConstraintClick = onRemoveClick,
                         onFixConstraintClick = onFixErrorClick,
                         onNotClick = onNotClick,
-                        onMoveConstraint = { fromIndex, toIndex ->
-                            onMoveConstraint(group.uid, fromIndex, toIndex)
-                        },
                         onMoveUp = if (index > 0) {
                             { onMoveGroup(index, index - 1) }
                         } else {

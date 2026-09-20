@@ -168,14 +168,6 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
         }
     }
 
-    override fun moveConstraint(groupUid: String, fromIndex: Int, toIndex: Int) {
-        updateConstraintState { oldState ->
-            oldState.updateGroup(groupUid) { group ->
-                group.copy(constraints = group.constraints.move(fromIndex, toIndex))
-            }
-        }
-    }
-
     private fun updateConstraintState(block: (ConstraintState) -> ConstraintState): KeyMap? {
         return state.update { keyMap ->
             keyMap.copy(constraintState = block(keyMap.constraintState))
@@ -250,5 +242,4 @@ interface ConfigConstraintsUseCase {
     fun setGroupMode(groupUid: String, mode: ConstraintMode)
     fun setGroupName(groupUid: String, name: String?)
     fun moveGroup(fromIndex: Int, toIndex: Int)
-    fun moveConstraint(groupUid: String, fromIndex: Int, toIndex: Int)
 }

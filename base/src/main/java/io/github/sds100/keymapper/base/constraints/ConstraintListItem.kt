@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -34,10 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,45 +52,13 @@ import io.github.sds100.keymapper.base.utils.ui.drawable
 fun ConstraintListItem(
     modifier: Modifier = Modifier,
     model: ConstraintListItemModel,
-    isReorderingEnabled: Boolean = false,
     isDragging: Boolean = false,
-    /**
-     * The modifier that makes the drag handle draggable.
-     */
-    dragHandleModifier: Modifier = Modifier,
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
     onNotClick: () -> Unit = {},
-    onMoveUp: (() -> Unit)? = null,
-    onMoveDown: (() -> Unit)? = null,
 ) {
-    val moveUpLabel = stringResource(R.string.accessibility_action_move_up)
-    val moveDownLabel = stringResource(R.string.accessibility_action_move_down)
-
     ElevatedCard(
-        modifier = modifier
-            .semantics {
-                if (isReorderingEnabled) {
-                    customActions = buildList {
-                        onMoveUp?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveUpLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                        onMoveDown?.let { action ->
-                            add(
-                                CustomAccessibilityAction(moveDownLabel) {
-                                    action()
-                                    true
-                                },
-                            )
-                        }
-                    }
-                }
-            },
+        modifier = modifier,
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -113,23 +76,9 @@ fun ConstraintListItem(
 
         BoxWithConstraints {
             when {
-                maxWidth < 300.dp -> {
-                    ConstraintListItemSmall(
-                        modifier = listItemModifier,
-                        isReorderingEnabled = isReorderingEnabled,
-                        dragHandleModifier = dragHandleModifier,
-                        model = model,
-                        onFixClick = onFixClick,
-                        onNotClick = onNotClick,
-                        onRemoveClick = onRemoveClick,
-                    )
-                }
-
                 maxWidth < 400.dp -> {
                     ConstraintListItemMedium(
                         modifier = listItemModifier,
-                        isReorderingEnabled = isReorderingEnabled,
-                        dragHandleModifier = dragHandleModifier,
                         model = model,
                         onFixClick = onFixClick,
                         onNotClick = onNotClick,
@@ -140,8 +89,6 @@ fun ConstraintListItem(
                 else -> {
                     ConstraintListItemLarge(
                         modifier = listItemModifier,
-                        isReorderingEnabled = isReorderingEnabled,
-                        dragHandleModifier = dragHandleModifier,
                         model = model,
                         onFixClick = onFixClick,
                         onNotClick = onNotClick,
@@ -154,80 +101,8 @@ fun ConstraintListItem(
 }
 
 @Composable
-private fun ConstraintListItemSmall(
-    modifier: Modifier = Modifier,
-    isReorderingEnabled: Boolean,
-    dragHandleModifier: Modifier,
-    model: ConstraintListItemModel,
-    onFixClick: () -> Unit,
-    onNotClick: () -> Unit,
-    onRemoveClick: () -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.width(8.dp))
-
-        if (isReorderingEnabled) {
-            Icon(
-                modifier = Modifier
-                    .size(24.dp)
-                    .then(dragHandleModifier),
-                imageVector = Icons.Rounded.DragHandle,
-                contentDescription = stringResource(R.string.drag_handle_for, model.text),
-            )
-
-            Spacer(Modifier.width(8.dp))
-        }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = model.text,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (model.error != null && model.isErrorFixable) {
-                    CompactErrorButton(onClick = onFixClick) {
-                        Text(stringResource(R.string.button_fix))
-                    }
-                }
-
-                Spacer(Modifier.width(8.dp))
-
-                NotToggle(isNot = model.isNot, onClick = onNotClick)
-            }
-        }
-
-        CompositionLocalProvider(
-            LocalMinimumInteractiveComponentSize provides 16.dp,
-        ) {
-            IconButton(onClick = onRemoveClick) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Rounded.Clear,
-                    contentDescription = stringResource(
-                        R.string.constraint_list_item_remove,
-                    ),
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun ConstraintListItemLarge(
     modifier: Modifier = Modifier,
-    isReorderingEnabled: Boolean,
-    dragHandleModifier: Modifier,
     model: ConstraintListItemModel,
     onFixClick: () -> Unit,
     onNotClick: () -> Unit,
@@ -238,18 +113,6 @@ private fun ConstraintListItemLarge(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(Modifier.width(8.dp))
-
-        if (isReorderingEnabled) {
-            Icon(
-                modifier = Modifier
-                    .size(24.dp)
-                    .then(dragHandleModifier),
-                imageVector = Icons.Rounded.DragHandle,
-                contentDescription = stringResource(R.string.drag_handle_for, model.text),
-            )
-
-            Spacer(Modifier.width(8.dp))
-        }
 
         ConstraintIcon(icon = model.icon)
 
@@ -290,8 +153,6 @@ private fun ConstraintListItemLarge(
 @Composable
 private fun ConstraintListItemMedium(
     modifier: Modifier = Modifier,
-    isReorderingEnabled: Boolean,
-    dragHandleModifier: Modifier,
     model: ConstraintListItemModel,
     onFixClick: () -> Unit,
     onNotClick: () -> Unit,
@@ -302,18 +163,6 @@ private fun ConstraintListItemMedium(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(Modifier.width(8.dp))
-
-        if (isReorderingEnabled) {
-            Icon(
-                modifier = Modifier
-                    .size(24.dp)
-                    .then(dragHandleModifier),
-                imageVector = Icons.Rounded.DragHandle,
-                contentDescription = stringResource(R.string.drag_handle_for, model.text),
-            )
-
-            Spacer(Modifier.width(8.dp))
-        }
 
         ConstraintIcon(icon = model.icon)
 
@@ -425,7 +274,6 @@ private fun VectorPreview() {
                 icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
                 text = "Clear all",
             ),
-            isReorderingEnabled = true,
         )
     }
 }
@@ -444,7 +292,6 @@ private fun NotErrorPreview() {
                 error = "Permission need to control camera",
                 isErrorFixable = true,
             ),
-            isReorderingEnabled = true,
         )
     }
 }
@@ -461,7 +308,6 @@ private fun DrawablePreview() {
                 text = "Key Mapper is in foreground",
                 icon = ComposeIconInfo.Drawable(drawable),
             ),
-            isReorderingEnabled = true,
         )
     }
 }
