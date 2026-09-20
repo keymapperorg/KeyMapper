@@ -135,6 +135,7 @@ fun KeyMapListAppBar(
                 var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                 AppBarActions(
+                    showWhatsNew = true,
                     onWhatsNewClick,
                     onMenuClick = { expandedDropdown = true },
                     dropdownMenuContent = {
@@ -246,6 +247,7 @@ fun KeyMapListAppBar(
                         var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                         AppBarActions(
+                            showWhatsNew = false,
                             onWhatsNewClick,
                             onMenuClick = { expandedDropdown = true },
                             dropdownMenuContent = {
@@ -410,16 +412,19 @@ private fun SelectingAppBar(
 
 @Composable
 private fun AppBarActions(
+    showWhatsNew: Boolean,
     onWhatsNewClick: () -> Unit,
     onMenuClick: () -> Unit = {},
     dropdownMenuContent: @Composable () -> Unit,
 ) {
     Row {
-        IconButton(onClick = onWhatsNewClick) {
-            Icon(
-                Icons.Outlined.NewReleases,
-                contentDescription = stringResource(R.string.home_app_bar_whats_new),
-            )
+        if (showWhatsNew) {
+            IconButton(onClick = onWhatsNewClick) {
+                Icon(
+                    Icons.Outlined.NewReleases,
+                    contentDescription = stringResource(R.string.home_app_bar_whats_new),
+                )
+            }
         }
 
         IconButton(onClick = onMenuClick) {
