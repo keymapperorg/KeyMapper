@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -109,7 +110,10 @@ fun SliderOptionText(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            ElevatedButton(onClick = { showDialog = true }) {
+            ElevatedButton(
+                onClick = { showDialog = true },
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+            ) {
                 // Do not show the text when dragging because it popping in/out moves the slider
                 val text = if (value == defaultValue && !isDragged) {
                     stringResource(R.string.slider_default_button, valueText(value))
