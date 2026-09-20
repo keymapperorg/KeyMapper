@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -43,6 +42,7 @@ import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.base.groups.GroupConstraintRow
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.groups.GroupRow
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.drawable
@@ -67,7 +67,7 @@ fun KeyMapListHeader(
     onRemoveConstraintClick: (String) -> Unit = {},
     onNotConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (KMError) -> Unit = {},
+    onFixClick: () -> Unit = {},
     onKeyMapsEnabledChange: (Boolean) -> Unit = {},
 ) {
     // This is taken from the AppBar color code so the header is the same color as the app bar
@@ -112,7 +112,7 @@ fun KeyMapListHeader(
             onRemoveConstraintClick = onRemoveConstraintClick,
             onNotConstraintClick = onNotConstraintClick,
             onConstraintModeChanged = onConstraintModeChanged,
-            onFixConstraintClick = onFixConstraintClick,
+            onFixClick = onFixClick,
             onKeyMapsEnabledChange = onKeyMapsEnabledChange,
         )
 
@@ -168,7 +168,7 @@ private fun ChildGroupHeader(
     onRemoveConstraintClick: (String) -> Unit,
     onNotConstraintClick: (String) -> Unit,
     onConstraintModeChanged: (ConstraintMode) -> Unit,
-    onFixConstraintClick: (KMError) -> Unit,
+    onFixClick: () -> Unit,
     onKeyMapsEnabledChange: (Boolean) -> Unit,
 ) {
     val enabled = !state.isEditingGroupName
@@ -180,7 +180,27 @@ private fun ChildGroupHeader(
             color = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ) {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (state.constraints.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.home_group_invert_constraint_hint),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+
+                        if (state.constraints.any { it is ComposeChipModel.Error }) {
+                            CompactErrorButton(onClick = onFixClick) {
+                                Text(text = stringResource(R.string.button_fix))
+                            }
+                        }
+                    }
+                }
+
                 GroupConstraintRow(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
@@ -188,14 +208,11 @@ private fun ChildGroupHeader(
                     constraints = state.constraints,
                     mode = state.constraintMode,
                     parentConstraintCount = state.parentConstraintCount,
-                    onFixConstraintClick = onFixConstraintClick,
                     onNewConstraintClick = onNewConstraintClick,
                     onRemoveConstraintClick = onRemoveConstraintClick,
                     onNotConstraintClick = onNotConstraintClick,
                     enabled = enabled,
                 )
-
-                Spacer(Modifier.height(8.dp))
 
                 Row(
                     modifier = Modifier
@@ -209,6 +226,7 @@ private fun ChildGroupHeader(
                         activeContentColor = MaterialTheme.colorScheme.onPrimary,
                         activeBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         inactiveBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
 
                     AnimatedVisibility(visible = state.constraints.size > 1) {

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.ExportedBackupLocation
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
@@ -144,11 +145,11 @@ class KeyMapListViewModel(
         ),
     )
 
-    private val fixErrorsKeyMapUid = MutableStateFlow<String?>(null)
+    private val fixErrorsKeyMapUid = MutableStateFlow<FixErrorsDialogId?>(null)
 
     val fixErrorsDialogState: StateFlow<FixErrorsDialogState?> =
-        fixErrorsKeyMapUid.flatMapLatest { uid ->
-            if (uid == null) {
+        fixErrorsKeyMapUid.flatMapLatest { dialogId ->
+            if (dialogId == null) {
                 flowOf<FixErrorsDialogState?>(null)
             } else {
                 combine(
@@ -157,17 +158,31 @@ class KeyMapListViewModel(
                     listKeyMaps.actionErrorSnapshot,
                     listKeyMaps.constraintErrorSnapshot,
                 ) { keyMapGroup, triggerSnapshot, actionSnapshot, constraintSnapshot ->
-                    val keyMap = keyMapGroup.keyMaps.dataOrNull()?.firstOrNull { it.uid == uid }
-                    val errors = keyMap
-                        ?.let {
-                            buildKeyMapErrors(
-                                it,
-                                triggerSnapshot,
-                                actionSnapshot,
+
+                    val errors: List<KeyMapError> = when (dialogId) {
+                        is FixErrorsDialogId.Group -> {
+                            buildGroupConstraintsErrors(
+                                keyMapGroup.group?.constraintState?.constraints.orEmpty(),
                                 constraintSnapshot,
                             )
                         }
-                        .orEmpty()
+
+                        is FixErrorsDialogId.KeyMap -> {
+                            val keyMap = keyMapGroup.keyMaps.dataOrNull()
+                                ?.firstOrNull { it.uid == dialogId.uid }
+
+                            keyMap
+                                ?.let {
+                                    buildKeyMapErrors(
+                                        it,
+                                        triggerSnapshot,
+                                        actionSnapshot,
+                                        constraintSnapshot,
+                                    )
+                                }
+                                .orEmpty()
+                        }
+                    }
 
                     errors.takeIf { it.isNotEmpty() }?.let { FixErrorsDialogState(it) }
                 }
@@ -559,6 +574,17 @@ class KeyMapListViewModel(
         return (triggerErrors + actionErrors + constraintErrors).distinct()
     }
 
+    private fun buildGroupConstraintsErrors(
+        constraints: List<Constraint>,
+        constraintSnapshot: ConstraintErrorSnapshot,
+    ): List<KeyMapError> {
+        val constraintErrors = constraints.mapNotNull { constraint ->
+            constraintSnapshot.getError(constraint)
+        }.map { KeyMapError.Constraint(it, it.getFullMessage(this), it.isFixable) }
+
+        return constraintErrors.distinct()
+    }
+
     fun onKeyMapCardClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.Selecting) {
             multiSelectProvider.toggleSelection(uid)
@@ -633,7 +659,15 @@ class KeyMapListViewModel(
     }
 
     fun onFixClick(keyMapUid: String) {
-        fixErrorsKeyMapUid.value = keyMapUid
+        fixErrorsKeyMapUid.value = FixErrorsDialogId.KeyMap(keyMapUid)
+    }
+
+    fun onFixGroupConstraintsClick() {
+        val groupUid = keyMapGroupStateFlow.value.group?.uid
+
+        if (groupUid != null) {
+            fixErrorsKeyMapUid.value = FixErrorsDialogId.Group(groupUid)
+        }
     }
 
     fun onDismissFixErrorsDialog() {

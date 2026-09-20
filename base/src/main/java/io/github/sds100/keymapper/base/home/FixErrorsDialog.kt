@@ -27,6 +27,11 @@ import io.github.sds100.keymapper.common.utils.KMError
 
 data class FixErrorsDialogState(val errors: List<KeyMapError>)
 
+sealed class FixErrorsDialogId {
+    data class Group(val uid: String) : FixErrorsDialogId()
+    data class KeyMap(val uid: String) : FixErrorsDialogId()
+}
+
 @Composable
 fun FixErrorsDialog(
     state: FixErrorsDialogState,

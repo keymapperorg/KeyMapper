@@ -1828,7 +1828,7 @@
     <string name="home_group_constraints_title">Group constraints</string>
     <string name="home_group_new_constraint_button">New constraint</string>
     <string name="home_group_delete_constraint_button">Delete group constraint</string>
-    <string name="home_group_invert_constraint_button">Invert constraint</string>
+    <string name="home_group_invert_constraint_hint">Tap a constraint to invert it</string>
     <string name="home_this_group_button">This group</string>
 
     <!-- Trigger screen -->

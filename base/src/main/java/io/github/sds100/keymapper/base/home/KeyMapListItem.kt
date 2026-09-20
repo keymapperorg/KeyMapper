@@ -308,8 +308,8 @@ private fun ActionConstraintChip(model: ComposeChipModel, onFixClick: () -> Unit
 
         is ComposeChipModel.Error -> ErrorCompactChip(
             onClick = onFixClick,
-            model.text,
-            model.isFixable,
+            text = model.text,
+            enabled = model.isFixable,
         )
     }
 }

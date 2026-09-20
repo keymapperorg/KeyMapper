@@ -34,6 +34,7 @@ fun CompactChip(
     borderStroke: BorderStroke? = null,
     onClick: (() -> Unit)? = null,
     enabled: Boolean = false,
+    actionContent: (@Composable () -> Unit)? = null,
 ) {
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides 16.dp,
@@ -46,7 +47,7 @@ fun CompactChip(
                 border = borderStroke,
                 shape = AssistChipDefaults.shape,
             ) {
-                CompactChipContent(icon, text, contentColor)
+                CompactChipContent(icon, text, contentColor, actionContent = actionContent)
             }
         } else {
             Surface(
@@ -57,16 +58,27 @@ fun CompactChip(
                 shape = AssistChipDefaults.shape,
                 onClick = onClick,
             ) {
-                CompactChipContent(icon, text, contentColor)
+                CompactChipContent(icon, text, contentColor, actionContent = actionContent)
             }
         }
     }
 }
 
 @Composable
-fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
+fun ErrorCompactChip(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    text: String,
+    enabled: Boolean,
+    actionContent: (@Composable () -> Unit)? = null,
+) {
     CompactChip(
+        modifier = modifier,
         text = text,
+        containerColor = containerColor,
+        contentColor = contentColor,
         icon = {
             Icon(
                 modifier = Modifier.fillMaxHeight(),
@@ -77,11 +89,17 @@ fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
         },
         onClick = onClick,
         enabled = enabled,
+        actionContent = actionContent,
     )
 }
 
 @Composable
-private fun CompactChipContent(icon: @Composable (() -> Unit)?, text: String, contentColor: Color) {
+private fun CompactChipContent(
+    icon: @Composable (() -> Unit)?,
+    text: String,
+    contentColor: Color,
+    actionContent: (@Composable () -> Unit)? = null,
+) {
     Row(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -98,5 +116,10 @@ private fun CompactChipContent(icon: @Composable (() -> Unit)?, text: String, co
             style = MaterialTheme.typography.labelLarge,
             color = contentColor,
         )
+
+        if (actionContent != null) {
+            Spacer(modifier = Modifier.width(4.dp))
+            actionContent()
+        }
     }
 }
