@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +56,6 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SwitchSettingsPreference
 import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.MobileSensorHi
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.Switch
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.launch
 
@@ -262,7 +262,7 @@ private fun Loaded(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.key_map_options_enable_by_intent_title),
             text = stringResource(R.string.key_map_options_intent_summary),
-            icon = KeyMapperIcons.Switch,
+            icon = Icons.Rounded.PowerSettingsNew,
             onClick = callback::onEnableByIntentClick,
         )
         OptionPageButton(
