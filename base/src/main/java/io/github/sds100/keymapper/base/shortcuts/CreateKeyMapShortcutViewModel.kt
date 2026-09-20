@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.base.home.KeyMapListItemCreator
 import io.github.sds100.keymapper.base.home.KeyMapListState
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
-import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -43,7 +42,6 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class CreateKeyMapShortcutViewModel @Inject constructor(
     private val configKeyMapState: ConfigKeyMapState,
-    private val configTrigger: ConfigTriggerUseCase,
     private val listKeyMaps: ListKeyMapsUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val resourceProvider: ResourceProvider,
@@ -175,7 +173,6 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
             if (state.keyMaps !is State.Data) return@launch
 
             configKeyMapState.loadKeyMap(uid)
-            configTrigger.setTriggerFromOtherAppsEnabled(true)
 
             val keyMapState = configKeyMapState.keyMap.first()
 

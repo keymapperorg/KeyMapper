@@ -85,10 +85,6 @@ class ConfigKeyMapOptionsViewModel(
         config.setShowToastEnabled(checked)
     }
 
-    override fun onTriggerFromOtherAppsChanged(checked: Boolean) {
-        config.setTriggerFromOtherAppsEnabled(checked)
-    }
-
     override fun onOpenExpertModeSettings() {
         coroutineScope.launch {
             navigate("screen_off_trigger_tip", NavDestination.ExpertMode)
@@ -210,7 +206,6 @@ class ConfigKeyMapOptionsViewModel(
             showLongPressDoubleVibration = keyMap.trigger.isLongPressDoubleVibrationAllowed(),
             longPressDoubleVibration = keyMap.trigger.longPressDoubleVibration,
 
-            triggerFromOtherApps = keyMap.trigger.triggerFromOtherApps,
             keyMapUid = keyMap.uid,
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
 
@@ -251,7 +246,6 @@ data class KeyMapOptionsState(
     val showLongPressDoubleVibration: Boolean,
     val longPressDoubleVibration: Boolean,
 
-    val triggerFromOtherApps: Boolean,
     val keyMapUid: String,
     val isLauncherShortcutButtonEnabled: Boolean,
 

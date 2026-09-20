@@ -807,7 +807,6 @@
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not remap</string>
-    <string name="flag_trigger_from_other_apps">Allow other apps to control this key map with intents or shortcuts</string>
     <string name="flag_trigger_from_other_apps_copy_uid">Copy key map id</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->
@@ -2264,8 +2263,6 @@
     <string name="key_map_options_screen_off_title">Detect trigger when the screen is off</string>
     <string name="key_map_options_vibrate_summary">This key map will vibrate when triggered</string>
     <string name="key_map_options_show_toast_summary">Some text will display on the screen when this key map is triggered</string>
-    <string name="key_map_options_trigger_from_other_apps_title">Allow other apps to control this key map</string>
-    <string name="key_map_options_trigger_from_other_apps_summary">Required to trigger this key map with an intent or a shortcut</string>
     <string name="key_map_options_trigger_by_intent_title">Trigger by intent</string>
     <string name="key_map_options_enable_by_intent_title">Enable/disable by intent</string>
     <string name="key_map_options_intent_summary">Use key maps with Tasker, Automate, etc.</string>

@@ -26,7 +26,6 @@ data class Trigger(
     val doublePressDelay: Int? = null,
     val vibrateDuration: Int? = null,
     val sequenceTriggerTimeout: Int? = null,
-    val triggerFromOtherApps: Boolean = false,
     val showToast: Boolean = false,
 
     /**
@@ -135,7 +134,6 @@ object TriggerEntityMapper {
             )
                 .valueOrNull()?.toIntOrNull(),
 
-            triggerFromOtherApps = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS),
             showToast = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST),
             legacyDetectScreenOff = entity.flags.hasFlag(
                 TriggerEntity.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS,
@@ -198,10 +196,6 @@ object TriggerEntityMapper {
 
         if (trigger.isLongPressDoubleVibrationAllowed() && trigger.longPressDoubleVibration) {
             flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-        }
-
-        if (trigger.triggerFromOtherApps) {
-            flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS)
         }
 
         if (trigger.showToast) {

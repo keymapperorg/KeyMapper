@@ -553,7 +553,6 @@ Deixe em branco se alguma rede Wi-Fi precisar ser correspondida.</string>
     <string name="flag_hold_down">Segure firme</string>
     <string name="flag_hold_down_until_pressed_again">Mantenha pressionado até ser pressionado novamente</string>
     <string name="flag_dont_override_default_action">Não remapeie</string>
-    <string name="flag_trigger_from_other_apps">Permitir que outros aplicativos acionem este mapa de teclas</string>
     <string name="flag_trigger_from_other_apps_copy_uid">Copiar ID do mapa de chaves</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->

@@ -479,10 +479,6 @@ class ConfigTriggerDelegate {
         return trigger.copy(longPressDoubleVibration = enabled).validate()
     }
 
-    fun setTriggerFromOtherAppsEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(triggerFromOtherApps = enabled).validate()
-    }
-
     fun setShowToastEnabled(trigger: Trigger, enabled: Boolean): Trigger {
         return trigger.copy(showToast = enabled).validate()
     }

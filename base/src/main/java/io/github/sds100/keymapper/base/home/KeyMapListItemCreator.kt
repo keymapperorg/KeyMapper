@@ -381,10 +381,6 @@ class KeyMapListItemCreator(
             labels.add(getString(R.string.flag_long_press_double_vibration))
         }
 
-        if (trigger.triggerFromOtherApps) {
-            labels.add(getString(R.string.flag_trigger_from_other_apps))
-        }
-
         if (trigger.showToast) {
             labels.add(getString(R.string.flag_show_toast))
         }

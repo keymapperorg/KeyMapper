@@ -238,12 +238,6 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         }
     }
 
-    override fun setTriggerFromOtherAppsEnabled(enabled: Boolean) {
-        updateTrigger { trigger ->
-            delegate.setTriggerFromOtherAppsEnabled(trigger, enabled)
-        }
-    }
-
     override fun setShowToastEnabled(enabled: Boolean) {
         updateTrigger { trigger ->
             delegate.setShowToastEnabled(trigger, enabled)
@@ -338,7 +332,6 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setDoublePressDelay(delay: Int)
     fun setSequenceTriggerTimeout(delay: Int)
     fun setLongPressDoubleVibrationEnabled(enabled: Boolean)
-    fun setTriggerFromOtherAppsEnabled(enabled: Boolean)
     fun setShowToastEnabled(enabled: Boolean)
     fun setScanCodeDetectionEnabled(keyUid: String, enabled: Boolean)
 

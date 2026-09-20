@@ -137,11 +137,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
             }
         }
 
-    override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
-        allKeyMapList.map { keyMapList ->
-            keyMapList.filter { it.keyMap.trigger.triggerFromOtherApps }.map { it.keyMap }
-        }.flowOn(Dispatchers.Default)
-
     override val defaultLongPressDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultLongPressDelay)
             .map { it ?: PreferenceDefaults.LONG_PRESS_DELAY }
@@ -262,7 +257,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 interface DetectKeyMapsUseCase {
     val allKeyMapList: Flow<List<DetectKeyMapModel>>
     val requestFingerprintGestureDetection: Flow<Boolean>
-    val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
 
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>

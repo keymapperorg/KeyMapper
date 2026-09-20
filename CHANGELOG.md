@@ -22,6 +22,7 @@
 - #1987 groups are red if any key maps inside have errors.
 - #2246 adjusted the trigger screen design to match the action and constraint screens.
 - #2249 make key maps more compact in the home screen.
+- #2259 all key maps can now be triggered by intent or shortcut without needing to enable it first.
 
 ## Fixed
 

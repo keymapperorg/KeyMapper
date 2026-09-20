@@ -276,23 +276,11 @@ private fun Loaded(
             icon = KeyMapperIcons.Switch,
             onClick = callback::onEnableByIntentClick,
         )
-        SwitchPreferenceCompose(
-            modifier = Modifier.fillMaxWidth(),
-            title = stringResource(R.string.key_map_options_trigger_from_other_apps_title),
-            text = stringResource(R.string.key_map_options_trigger_from_other_apps_summary),
-            icon = Icons.Outlined.Route,
-            isChecked = state.triggerFromOtherApps,
-            onCheckedChange = callback::onTriggerFromOtherAppsChanged,
-        )
-
         OptionPageButton(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.key_map_options_trigger_by_intent_title),
             text = stringResource(R.string.key_map_options_intent_summary),
             icon = Icons.Outlined.RocketLaunch,
-            // Key Mapper only listens for these intents when other apps are allowed to
-            // control this key map.
-            enabled = state.triggerFromOtherApps,
             onClick = callback::onTriggerByIntentClick,
         )
 
@@ -305,7 +293,7 @@ private fun Loaded(
                 stringResource(R.string.key_map_options_create_shortcut_summary_unsupported)
             },
             icon = Icons.Outlined.AddHome,
-            enabled = state.triggerFromOtherApps && state.isLauncherShortcutButtonEnabled,
+            enabled = state.isLauncherShortcutButtonEnabled,
             onClick = callback::onCreateShortcutClick,
         )
 
@@ -366,7 +354,6 @@ interface KeyMapOptionsCallback {
     fun onVibrateChanged(checked: Boolean) = run { }
     fun onLongPressDoubleVibrationChanged(checked: Boolean) = run { }
     fun onShowToastChanged(checked: Boolean) = run { }
-    fun onTriggerFromOtherAppsChanged(checked: Boolean) = run {}
     fun onCreateShortcutClick() = run { }
     fun onOpenExpertModeSettings() = run {}
     fun onTriggerByIntentClick() = run {}
@@ -403,7 +390,6 @@ private fun Preview() {
                         showLongPressDoubleVibration = true,
                         longPressDoubleVibration = false,
 
-                        triggerFromOtherApps = true,
                         keyMapUid = "beea7ef5-e33e-4bd3-9987-9002e5035f23",
                         isLauncherShortcutButtonEnabled = false,
 
@@ -448,7 +434,6 @@ private fun PreviewEvdevTrigger() {
                         showLongPressDoubleVibration = false,
                         longPressDoubleVibration = false,
 
-                        triggerFromOtherApps = false,
                         keyMapUid = "beea7ef5-e33e-4bd3-9987-9002e5035f23",
                         isLauncherShortcutButtonEnabled = true,
 

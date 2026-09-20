@@ -547,7 +547,6 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="flag_hold_down">Basılı tut</string>
     <string name="flag_hold_down_until_pressed_again">Tekrar basılana kadar basılı tut</string>
     <string name="flag_dont_override_default_action">Yeniden eşleme yapma</string>
-    <string name="flag_trigger_from_other_apps">Diğer uygulamaların bu tuş eşlemesini intent\'ler veya kısayollarla kontrol etmesine izin ver</string>
     <string name="flag_trigger_from_other_apps_copy_uid">Tuş eşleme kimliğini kopyala</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->

@@ -43,6 +43,9 @@ data class TriggerEntity(
         @Deprecated("This is now on by default for evdev trigger keys")
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
 
+        @Deprecated(
+            "All key maps can now be triggered by intent or shortcut. Do not reuse this bit.",
+        )
         const val TRIGGER_FLAG_FROM_OTHER_APPS = 8
         const val TRIGGER_FLAG_SHOW_TOAST = 16
 
