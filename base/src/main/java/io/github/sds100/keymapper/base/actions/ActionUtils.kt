@@ -974,6 +974,12 @@ object ActionUtils {
             // Permissions handled based on setting type at runtime
             ActionId.MODIFY_SETTING -> return emptyList()
 
+            ActionId.HTTP_REQUEST -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.CINNAMON_BUN
+            ) {
+                return listOf(Permission.ACCESS_LOCAL_NETWORK)
+            }
+
             else -> return emptyList()
         }
 

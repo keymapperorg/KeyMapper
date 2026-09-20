@@ -32,6 +32,7 @@
 - Do not crash if permission not granted for in phone call constraint and trying to perform key map.
 - #2258 remember saved position in key map list when changing them. Do not flash with loading indicator briefly as well.
 - #2167 do not show errors for app not in foreground constraint when the app is uninstalled/disabled.
+- #2262 request local network access permission for HTTP request action on Android 17+.
 
 ## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.4.0)
 
