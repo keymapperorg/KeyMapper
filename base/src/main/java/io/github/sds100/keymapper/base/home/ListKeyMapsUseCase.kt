@@ -367,6 +367,34 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         }
     }
 
+    override suspend fun toggleGroupConstraintNot(constraintUid: String) {
+        keyMapListGroupUid.value?.also { groupUid ->
+            val groupEntity = groupRepository.getGroup(groupUid) ?: return
+            var group = GroupEntityMapper.fromEntity(groupEntity)
+
+            val constraintGroups = group.constraintState.groups.map { constraintGroup ->
+                constraintGroup.copy(
+                    constraints = constraintGroup.constraints.map { constraint ->
+                        if (constraint.uid == constraintUid) {
+                            constraint.copy(isNot = !constraint.isNot)
+                        } else {
+                            constraint
+                        }
+                    },
+                )
+            }
+
+            group =
+                group.copy(constraintState = group.constraintState.copy(groups = constraintGroups))
+
+            try {
+                groupRepository.update(GroupEntityMapper.toEntity(group))
+            } catch (_: SQLiteConstraintException) {
+                return
+            }
+        }
+    }
+
     override fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String) {
         keyMapRepository.moveToGroup(groupUid, *keyMapUids)
     }
@@ -451,6 +479,7 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun renameGroup(name: String): Boolean
     suspend fun addGroupConstraint(constraintData: ConstraintData)
     suspend fun removeGroupConstraint(constraintUid: String)
+    suspend fun toggleGroupConstraintNot(constraintUid: String)
     suspend fun setGroupConstraintMode(mode: ConstraintMode)
     fun getGroups(parentUid: String?): Flow<List<Group>>
     fun enableGroupKeyMaps()

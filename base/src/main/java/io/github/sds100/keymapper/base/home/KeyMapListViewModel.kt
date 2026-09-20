@@ -914,6 +914,12 @@ class KeyMapListViewModel(
         }
     }
 
+    fun onNotGroupConstraintClick(uid: String) {
+        coroutineScope.launch {
+            listKeyMaps.toggleGroupConstraintNot(uid)
+        }
+    }
+
     fun onGroupConstraintModeChanged(mode: ConstraintMode) {
         coroutineScope.launch {
             listKeyMaps.setGroupConstraintMode(mode)

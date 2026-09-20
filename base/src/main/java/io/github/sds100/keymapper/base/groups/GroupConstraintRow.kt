@@ -51,6 +51,7 @@ fun GroupConstraintRow(
     parentConstraintCount: Int,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
+    onNotConstraintClick: (String) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
     enabled: Boolean = true,
 ) {
@@ -72,6 +73,7 @@ fun GroupConstraintRow(
                             modifier = Modifier.widthIn(max = maxChipWidth),
                             text = constraint.text,
                             onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            onNotClick = { onNotConstraintClick(constraint.id) },
                             icon = {
                                 if (constraint.icon is ComposeIconInfo.Vector) {
                                     Icon(
@@ -106,6 +108,7 @@ fun GroupConstraintRow(
                             text = constraint.text,
                             onClick = { onFixConstraintClick(constraint.error) },
                             onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            onNotClick = { onNotConstraintClick(constraint.id) },
                             // Only allow clicking on error chips
                             enabled = enabled,
                         )

@@ -65,6 +65,7 @@ fun KeyMapListHeader(
     onGroupClick: (String?) -> Unit = {},
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
+    onNotConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
     onKeyMapsEnabledChange: (Boolean) -> Unit = {},
@@ -109,6 +110,7 @@ fun KeyMapListHeader(
             onGroupClick = onGroupClick,
             onNewConstraintClick = onNewConstraintClick,
             onRemoveConstraintClick = onRemoveConstraintClick,
+            onNotConstraintClick = onNotConstraintClick,
             onConstraintModeChanged = onConstraintModeChanged,
             onFixConstraintClick = onFixConstraintClick,
             onKeyMapsEnabledChange = onKeyMapsEnabledChange,
@@ -164,6 +166,7 @@ private fun ChildGroupHeader(
     onGroupClick: (String?) -> Unit,
     onNewConstraintClick: () -> Unit,
     onRemoveConstraintClick: (String) -> Unit,
+    onNotConstraintClick: (String) -> Unit,
     onConstraintModeChanged: (ConstraintMode) -> Unit,
     onFixConstraintClick: (KMError) -> Unit,
     onKeyMapsEnabledChange: (Boolean) -> Unit,
@@ -188,6 +191,7 @@ private fun ChildGroupHeader(
                     onFixConstraintClick = onFixConstraintClick,
                     onNewConstraintClick = onNewConstraintClick,
                     onRemoveConstraintClick = onRemoveConstraintClick,
+                    onNotConstraintClick = onNotConstraintClick,
                     enabled = enabled,
                 )
 

@@ -202,6 +202,7 @@ fun HomeKeyMapListScreen(
                         onGroupClick = viewModel::onGroupClick,
                         onNewConstraintClick = viewModel::onNewGroupConstraintClick,
                         onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                        onNotConstraintClick = viewModel::onNotGroupConstraintClick,
                         onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
                         onFixConstraintClick = viewModel::onFixClick,
                         onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,

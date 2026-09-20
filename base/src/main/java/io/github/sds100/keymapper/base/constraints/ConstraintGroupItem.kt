@@ -12,9 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -54,11 +50,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
-import io.github.sds100.keymapper.base.utils.ui.compose.DraggableColumnItem
 import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
 import io.github.sds100.keymapper.base.utils.ui.compose.horizontalFadingEdges
-import io.github.sds100.keymapper.base.utils.ui.compose.rememberColumnDragDropState
 
 /**
  * The description and error fade out in the first half of the animation so they are invisible
@@ -118,7 +112,6 @@ fun ConstraintGroupItem(
     onRemoveConstraintClick: (String) -> Unit = {},
     onFixConstraintClick: (String) -> Unit = {},
     onNotClick: (String) -> Unit = {},
-    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
 ) {
@@ -185,7 +178,6 @@ fun ConstraintGroupItem(
                 onRemoveConstraintClick = onRemoveConstraintClick,
                 onFixConstraintClick = onFixConstraintClick,
                 onNotClick = onNotClick,
-                onMoveConstraint = onMoveConstraint,
             )
         },
     )
@@ -255,7 +247,6 @@ private fun ExpandedContent(
     onRemoveConstraintClick: (String) -> Unit,
     onFixConstraintClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
-    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     Column(modifier) {
         Text(
@@ -282,7 +273,6 @@ private fun ExpandedContent(
             onRemoveConstraintClick = onRemoveConstraintClick,
             onFixConstraintClick = onFixConstraintClick,
             onNotClick = onNotClick,
-            onMoveConstraint = onMoveConstraint,
         )
 
         Spacer(Modifier.size(8.dp))
@@ -341,10 +331,6 @@ private fun ExpandedContent(
     }
 }
 
-/**
- * The constraints in a group. These are not in a lazy list so they are reordered by swapping
- * the dragged constraint with its neighbour once it has been dragged over half of its height.
- */
 @Composable
 private fun GroupConstraintList(
     modifier: Modifier = Modifier,
@@ -353,69 +339,33 @@ private fun GroupConstraintList(
     onRemoveConstraintClick: (String) -> Unit,
     onFixConstraintClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
-    onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
-    val dragDropState = rememberColumnDragDropState(
-        itemCount = constraints.size,
-        onMove = onMoveConstraint,
-    )
-
     val linkText = when (mode) {
         ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
         ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
     }
 
-    LookaheadScope {
-        Column(modifier = modifier) {
-            constraints.forEachIndexed { index, constraint ->
-                key(constraint.id) {
-                    val draggableState = rememberDraggableState(dragDropState::onDrag)
+    Column(modifier = modifier) {
+        constraints.forEachIndexed { index, constraint ->
+            key(constraint.id) {
+                ConstraintListItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    model = constraint,
+                    onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                    onFixClick = { onFixConstraintClick(constraint.id) },
+                    onNotClick = { onNotClick(constraint.id) },
+                )
 
-                    DraggableColumnItem(
-                        dragDropState = dragDropState,
-                        index = index,
-                    ) { isDragging, heightModifier ->
-                        ConstraintListItem(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .then(heightModifier),
-                            model = constraint,
-                            isReorderingEnabled = constraints.size > 1,
-                            isDragging = isDragging,
-                            dragHandleModifier = Modifier.draggable(
-                                state = draggableState,
-                                orientation = Orientation.Vertical,
-                                startDragImmediately = true,
-                                onDragStarted = { dragDropState.onDragStarted(index) },
-                                onDragStopped = { dragDropState.onDragStopped() },
-                            ),
-                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                            onFixClick = { onFixConstraintClick(constraint.id) },
-                            onNotClick = { onNotClick(constraint.id) },
-                            onMoveUp = if (index > 0) {
-                                { onMoveConstraint(index, index - 1) }
-                            } else {
-                                null
-                            },
-                            onMoveDown = if (index < constraints.lastIndex) {
-                                { onMoveConstraint(index, index + 1) }
-                            } else {
-                                null
-                            },
-                        )
-
-                        if (index < constraints.lastIndex) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                text = linkText,
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    }
+                if (index < constraints.lastIndex) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        text = linkText,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
             }
         }
