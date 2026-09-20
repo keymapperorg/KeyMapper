@@ -17,6 +17,7 @@ data class ConstraintGroupListItemModel(
     val mode: ConstraintMode,
     val constraints: List<ConstraintListItemModel>,
     val description: String,
+    val isExpanded: Boolean = false,
 ) {
     val error: String? = constraints.firstNotNullOfOrNull { it.error }
 }

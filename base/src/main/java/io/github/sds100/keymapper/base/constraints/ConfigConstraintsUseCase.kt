@@ -4,6 +4,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import java.util.LinkedList
@@ -41,11 +42,15 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
                 .take(5)
         }
 
-    override fun addConstraint(groupUid: String?, constraintData: ConstraintData): Boolean {
+    override fun addConstraint(
+        groupUid: String?,
+        constraintData: ConstraintData,
+    ): ConstraintGroup? {
         var containsConstraint = false
+        var affectedGroup: ConstraintGroup? = null
         val newConstraint = Constraint(data = constraintData)
 
-        updateConstraintState { oldState ->
+        val newKeyMap = updateConstraintState { oldState ->
             val group = oldState.groups.find { it.uid == groupUid }
 
             if (group == null) {
@@ -60,6 +65,8 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
                     oldState.mode
                 }
 
+                affectedGroup = newGroup
+
                 return@updateConstraintState oldState.copy(
                     groups = oldState.groups.plus(newGroup),
                     mode = mode,
@@ -72,26 +79,33 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
             if (containsConstraint) {
                 oldState
             } else {
-                oldState.updateGroup(group.uid) {
-                    it.copy(constraints = it.constraints.plus(newConstraint))
+                oldState.updateGroup(group.uid) { group ->
+                    affectedGroup = group
+
+                    group.copy(constraints = group.constraints.plus(newConstraint))
                 }
             }
         }
 
-        preferenceRepository.update(
-            Keys.recentlyUsedConstraints,
-            { old ->
-                val oldDataList = getConstraintShortcuts(old)
+        if (newKeyMap == null) {
+            return null
+        }
 
-                val newDataList = LinkedList(oldDataList)
-                    .apply { addFirst(constraintData) }
-                    .distinct()
+        preferenceRepository.update(Keys.recentlyUsedConstraints) { old ->
+            val oldDataList = getConstraintShortcuts(old)
 
-                Json.encodeToString(newDataList)
-            },
-        )
+            val newDataList = LinkedList(oldDataList)
+                .apply { addFirst(constraintData) }
+                .distinct()
 
-        return !containsConstraint
+            Json.encodeToString(newDataList)
+        }
+
+        return if (containsConstraint) {
+            null
+        } else {
+            affectedGroup
+        }
     }
 
     override fun removeConstraint(uid: String) {
@@ -162,10 +176,10 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
         }
     }
 
-    private fun updateConstraintState(block: (ConstraintState) -> ConstraintState) {
-        state.update { keyMap ->
+    private fun updateConstraintState(block: (ConstraintState) -> ConstraintState): KeyMap? {
+        return state.update { keyMap ->
             keyMap.copy(constraintState = block(keyMap.constraintState))
-        }
+        }.dataOrNull()
     }
 
     private fun ConstraintState.updateGroup(
@@ -221,9 +235,10 @@ interface ConfigConstraintsUseCase {
 
     /**
      * @param groupUid the group to add the constraint to. A new group is created if this is null.
-     * @return false if the group already contains the constraint.
+     * @return the group the constraint was added to (a newly created group, or an existing
+     * group), or null if the group already contains the constraint (a duplicate).
      */
-    fun addConstraint(groupUid: String?, constraintData: ConstraintData): Boolean
+    fun addConstraint(groupUid: String?, constraintData: ConstraintData): ConstraintGroup?
     fun removeConstraint(uid: String)
     fun removeGroup(groupUid: String)
     fun toggleNot(constraintUid: String)

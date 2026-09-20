@@ -87,6 +87,7 @@ fun ConstraintsScreen(
         onSelectMode = viewModel::onSelectMode,
         onSelectGroupMode = viewModel::onSelectGroupMode,
         onRenameGroup = viewModel::onRenameGroup,
+        onExpandedChange = viewModel::onExpandedChange,
         onMoveGroup = viewModel::onMoveGroup,
         onMoveConstraint = viewModel::onMoveConstraint,
     )
@@ -106,6 +107,7 @@ private fun ConstraintsScreen(
     onSelectMode: (ConstraintMode) -> Unit = {},
     onSelectGroupMode: (String, ConstraintMode) -> Unit = { _, _ -> },
     onRenameGroup: (groupUid: String, name: String) -> Unit = { _, _ -> },
+    onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit = { _, _ -> },
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit = { _, _, _ -> },
 ) {
@@ -235,6 +237,7 @@ private fun ConstraintsScreen(
                             onClickShortcut = onClickShortcut,
                             onSelectGroupMode = onSelectGroupMode,
                             onRenameGroupClick = { groupToRename = it },
+                            onExpandedChange = onExpandedChange,
                             onMoveGroup = onMoveGroup,
                             onMoveConstraint = onMoveConstraint,
                         )
@@ -298,26 +301,12 @@ private fun ConstraintGroupList(
     onClickShortcut: (ConstraintData) -> Unit,
     onSelectGroupMode: (String, ConstraintMode) -> Unit,
     onRenameGroupClick: (groupUid: String) -> Unit,
+    onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit,
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit,
     onMoveConstraint: (groupUid: String, fromIndex: Int, toIndex: Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val groupUids = state.groups.map { it.uid }
-
-    // Lists rather than sets so they can be saved in a Bundle.
-    var expandedUids by rememberSaveable { mutableStateOf(emptyList<String>()) }
-    var knownGroupUids by rememberSaveable { mutableStateOf(groupUids) }
-
-    // Expand groups that are added so the user can see the new constraint.
-    LaunchedEffect(groupUids) {
-        val newGroupUids = groupUids.filterNot { it in knownGroupUids }
-
-        if (newGroupUids.isNotEmpty()) {
-            expandedUids = expandedUids + newGroupUids
-        }
-
-        knownGroupUids = groupUids
-    }
 
     // Only the groups can be dragged. Not the row of shortcuts.
     val dragDropState = rememberDragDropState(
@@ -354,13 +343,6 @@ private fun ConstraintGroupList(
             key = { _, group -> group.uid },
             contentType = { _, _ -> "constraint_group" },
         ) { index, group ->
-            // Automatically expand the group when an error appears so the user can fix it.
-            LaunchedEffect(group.uid, group.error) {
-                if (group.error != null && group.uid !in expandedUids) {
-                    expandedUids = expandedUids + group.uid
-                }
-            }
-
             DraggableItem(
                 dragDropState = dragDropState,
                 key = group.uid,
@@ -371,18 +353,12 @@ private fun ConstraintGroupList(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         model = group,
-                        isExpanded = group.uid in expandedUids,
+                        isExpanded = group.isExpanded,
                         isDraggingEnabled = orderedGroups.size > 1,
                         isDragging = isDragging,
                         isReorderingEnabled = state.groups.size > 1,
                         dragDropState = dragDropState,
-                        onExpandedChange = { expanded ->
-                            expandedUids = if (expanded) {
-                                expandedUids + group.uid
-                            } else {
-                                expandedUids - group.uid
-                            }
-                        },
+                        onExpandedChange = { expanded -> onExpandedChange(group.uid, expanded) },
                         onSelectMode = { onSelectGroupMode(group.uid, it) },
                         onAddConstraintClick = { onAddToGroupClick(group.uid) },
                         onRenameClick = { onRenameGroupClick(group.uid) },

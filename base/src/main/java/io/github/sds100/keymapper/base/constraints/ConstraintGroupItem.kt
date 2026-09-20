@@ -40,15 +40,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -56,14 +51,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.DraggableColumnItem
 import io.github.sds100.keymapper.base.utils.ui.compose.EXPAND_ANIMATION_DURATION
 import io.github.sds100.keymapper.base.utils.ui.compose.ExpandableDraggableCard
 import io.github.sds100.keymapper.base.utils.ui.compose.horizontalFadingEdges
+import io.github.sds100.keymapper.base.utils.ui.compose.rememberColumnDragDropState
 
 /**
  * The description and error fade out in the first half of the animation so they are invisible
@@ -360,88 +356,66 @@ private fun GroupConstraintList(
     onNotClick: (String) -> Unit,
     onMoveConstraint: (fromIndex: Int, toIndex: Int) -> Unit,
 ) {
-    var draggingIndex by remember { mutableStateOf<Int?>(null) }
-    var dragOffset by remember { mutableFloatStateOf(0f) }
-    val itemHeights = remember { mutableStateMapOf<String, Int>() }
+    val dragDropState = rememberColumnDragDropState(
+        itemCount = constraints.size,
+        onMove = onMoveConstraint,
+    )
 
     val linkText = when (mode) {
         ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
         ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
     }
 
-    Column(modifier = modifier) {
-        constraints.forEachIndexed { index, constraint ->
-            key(constraint.id) {
-                val isDragging = draggingIndex == index
+    LookaheadScope {
+        Column(modifier = modifier) {
+            constraints.forEachIndexed { index, constraint ->
+                key(constraint.id) {
+                    val draggableState = rememberDraggableState(dragDropState::onDrag)
 
-                val draggableState = rememberDraggableState { delta ->
-                    val currentIndex = draggingIndex ?: return@rememberDraggableState
-                    val itemHeight = constraints.getOrNull(currentIndex)
-                        ?.let { itemHeights[it.id] }
-                        ?: return@rememberDraggableState
-
-                    dragOffset += delta
-
-                    if (dragOffset > itemHeight / 2f && currentIndex < constraints.lastIndex) {
-                        onMoveConstraint(currentIndex, currentIndex + 1)
-                        draggingIndex = currentIndex + 1
-                        dragOffset -= itemHeight
-                    } else if (dragOffset < -itemHeight / 2f && currentIndex > 0) {
-                        onMoveConstraint(currentIndex, currentIndex - 1)
-                        draggingIndex = currentIndex - 1
-                        dragOffset += itemHeight
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .onSizeChanged { itemHeights[constraint.id] = it.height }
-                        .zIndex(if (isDragging) 1f else 0f)
-                        .graphicsLayer { translationY = if (isDragging) dragOffset else 0f },
-                ) {
-                    ConstraintListItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        model = constraint,
-                        isReorderingEnabled = constraints.size > 1,
-                        isDragging = isDragging,
-                        dragHandleModifier = Modifier.draggable(
-                            state = draggableState,
-                            orientation = Orientation.Vertical,
-                            startDragImmediately = true,
-                            onDragStarted = {
-                                draggingIndex = index
-                                dragOffset = 0f
-                            },
-                            onDragStopped = {
-                                draggingIndex = null
-                                dragOffset = 0f
-                            },
-                        ),
-                        onRemoveClick = { onRemoveConstraintClick(constraint.id) },
-                        onFixClick = { onFixConstraintClick(constraint.id) },
-                        onNotClick = { onNotClick(constraint.id) },
-                        onMoveUp = if (index > 0) {
-                            { onMoveConstraint(index, index - 1) }
-                        } else {
-                            null
-                        },
-                        onMoveDown = if (index < constraints.lastIndex) {
-                            { onMoveConstraint(index, index + 1) }
-                        } else {
-                            null
-                        },
-                    )
-
-                    if (index < constraints.lastIndex) {
-                        Text(
+                    DraggableColumnItem(
+                        dragDropState = dragDropState,
+                        index = index,
+                    ) { isDragging, heightModifier ->
+                        ConstraintListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            text = linkText,
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
+                                .then(heightModifier),
+                            model = constraint,
+                            isReorderingEnabled = constraints.size > 1,
+                            isDragging = isDragging,
+                            dragHandleModifier = Modifier.draggable(
+                                state = draggableState,
+                                orientation = Orientation.Vertical,
+                                startDragImmediately = true,
+                                onDragStarted = { dragDropState.onDragStarted(index) },
+                                onDragStopped = { dragDropState.onDragStopped() },
+                            ),
+                            onRemoveClick = { onRemoveConstraintClick(constraint.id) },
+                            onFixClick = { onFixConstraintClick(constraint.id) },
+                            onNotClick = { onNotClick(constraint.id) },
+                            onMoveUp = if (index > 0) {
+                                { onMoveConstraint(index, index - 1) }
+                            } else {
+                                null
+                            },
+                            onMoveDown = if (index < constraints.lastIndex) {
+                                { onMoveConstraint(index, index + 1) }
+                            } else {
+                                null
+                            },
                         )
+
+                        if (index < constraints.lastIndex) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                text = linkText,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                     }
                 }
             }

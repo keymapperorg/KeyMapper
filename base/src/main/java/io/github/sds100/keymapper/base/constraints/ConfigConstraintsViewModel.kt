@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -70,21 +71,54 @@ class ConfigConstraintsViewModel @Inject constructor(
 
     var showDuplicateConstraintsSnackbar: Boolean by mutableStateOf(false)
 
+    private val expandedGroups: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    private val knownGroupUids: MutableSet<String> = mutableSetOf()
+
     init {
+        viewModelScope.launch {
+            config.keyMap
+                .map { state -> state.dataOrNull()?.constraintState?.groups }
+                .filterNotNull()
+                .collect { groups ->
+                    val errorSnapshot = displayConstraint.constraintErrorSnapshot.first()
+                    val newExpandedGroups = mutableSetOf<String>()
+
+                    for (group in groups) {
+                        // Only expand a group automatically if it is the first time it has
+                        // been seen.
+                        if (!knownGroupUids.contains(group.uid) &&
+                            group.constraints.any { errorSnapshot.getError(it) != null }
+                        ) {
+                            newExpandedGroups.add(group.uid)
+                        }
+                    }
+
+                    // Expand all the groups at once and not one-by-one
+                    expandedGroups.update { set -> set.plus(newExpandedGroups) }
+
+                    knownGroupUids.addAll(groups.map { it.uid })
+                }
+        }
+
         combine(
             config.keyMap,
             shortcuts,
             constraintErrorSnapshot.filterNotNull(),
-        ) { keyMapState, shortcuts, errorSnapshot ->
+            expandedGroups,
+        ) { keyMapState, shortcuts, errorSnapshot, expandedGroups ->
             _state.value = keyMapState.mapData { keyMap ->
-                buildState(keyMap.constraintState, shortcuts, errorSnapshot)
+                buildState(keyMap.constraintState, shortcuts, errorSnapshot, expandedGroups)
             }
         }.launchIn(viewModelScope)
     }
 
     fun onClickShortcut(constraintData: ConstraintData) {
         viewModelScope.launch {
-            config.addConstraint(groupUid = null, constraintData)
+            val group = config.addConstraint(groupUid = null, constraintData)
+
+            if (group != null) {
+                expandedGroups.update { set -> set.plus(group.uid) }
+            }
         }
     }
 
@@ -151,15 +185,25 @@ class ConfigConstraintsViewModel @Inject constructor(
      */
     fun addConstraint(groupUid: String?) {
         viewModelScope.launch {
-            val constraint: ConstraintData =
+            val constraintData: ConstraintData =
                 navigate("add_constraint", NavDestination.ChooseConstraint)
                     ?: return@launch
 
-            val isDuplicate = !config.addConstraint(groupUid, constraint)
+            val group = config.addConstraint(groupUid, constraintData)
 
-            if (isDuplicate) {
+            if (group == null) {
                 showDuplicateConstraintsSnackbar = true
+            } else {
+                expandedGroups.update { set -> set.plus(group.uid) }
             }
+        }
+    }
+
+    fun onExpandedChange(groupUid: String, expanded: Boolean) {
+        if (expanded) {
+            expandedGroups.update { set -> set.plus(groupUid) }
+        } else {
+            expandedGroups.update { set -> set.minus(groupUid) }
         }
     }
 
@@ -178,6 +222,7 @@ class ConfigConstraintsViewModel @Inject constructor(
         state: ConstraintState,
         shortcuts: Set<ShortcutModel<ConstraintData>>,
         errorSnapshot: ConstraintErrorSnapshot,
+        expandedGroups: Set<String>,
     ): ConfigConstraintsState {
         if (state.constraints.isEmpty()) {
             return ConfigConstraintsState.Empty(shortcuts)
@@ -212,6 +257,7 @@ class ConfigConstraintsViewModel @Inject constructor(
                     description = group.constraints.joinToString(separator = " $modeWord ") {
                         uiHelper.getTitle(it)
                     },
+                    isExpanded = expandedGroups.contains(group.uid),
                 )
             }
 
