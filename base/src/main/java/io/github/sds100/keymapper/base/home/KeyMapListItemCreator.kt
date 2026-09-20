@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.trigger.getCodeLabel
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -63,6 +64,7 @@ class KeyMapListItemCreator(
 
                 is KeyEventTriggerKey -> keyEventTriggerKeyName(
                     key,
+                    keyMap.trigger.keys,
                     showDeviceDescriptors,
                 )
 
@@ -264,6 +266,7 @@ class KeyMapListItemCreator(
 
     private fun keyEventTriggerKeyName(
         key: KeyEventTriggerKey,
+        allKeys: List<TriggerKey>,
         showDeviceDescriptors: Boolean,
     ): String = buildString {
         when (key.clickType) {
@@ -274,22 +277,7 @@ class KeyMapListItemCreator(
 
         append(key.getCodeLabel(this@KeyMapListItemCreator))
 
-        val deviceName = when (key.device) {
-            is KeyEventTriggerDevice.Internal -> null
-
-            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
-
-            is KeyEventTriggerDevice.External -> {
-                if (showDeviceDescriptors) {
-                    InputDeviceUtils.appendDeviceDescriptorToName(
-                        key.device.descriptor,
-                        key.device.name,
-                    )
-                } else {
-                    key.device.name
-                }
-            }
-        }
+        val deviceName = getTriggerKeyDeviceName(key, allKeys, showDeviceDescriptors)
 
         val parts = mutableListOf<String>()
 
@@ -311,6 +299,39 @@ class KeyMapListItemCreator(
             append(" (")
             append(parts.joinToString(separator = " $midDot "))
             append(")")
+        }
+    }
+
+    private fun getTriggerKeyDeviceName(
+        key: KeyEventTriggerKey,
+        allKeys: List<TriggerKey>,
+        showDeviceDescriptors: Boolean,
+    ): String? {
+        val keyEventKeys = allKeys.filterIsInstance<KeyEventTriggerKey>()
+
+        // If all the keys are Internal or Any, then do not show any extra text for brevity.
+        // Adding the extra information for each key is extra verbosity without any significance.
+        if (keyEventKeys.all { it.device == KeyEventTriggerDevice.Internal } ||
+            keyEventKeys.all { it.device == KeyEventTriggerDevice.Any }
+        ) {
+            return null
+        }
+
+        return when (key.device) {
+            is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+
+            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+
+            is KeyEventTriggerDevice.External -> {
+                if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        key.device.descriptor,
+                        key.device.name,
+                    )
+                } else {
+                    key.device.name
+                }
+            }
         }
     }
 

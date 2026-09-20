@@ -21,6 +21,7 @@
 - #2139 color code disabled/enabled groups.
 - #1987 groups are red if any key maps inside have errors.
 - #2246 adjusted the trigger screen design to match the action and constraint screens.
+- #2249 make key maps more compact in the home screen.
 
 ## Fixed
 
