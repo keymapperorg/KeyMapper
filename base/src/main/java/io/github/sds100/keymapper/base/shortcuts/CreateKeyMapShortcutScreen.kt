@@ -308,6 +308,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                 ),
                 options = listOf("Vibrate"),
                 isEnabled = false,
+                hasError = true,
             ),
         ),
         KeyMapListItemModel(
@@ -321,6 +322,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 isEnabled = true,
+                hasError = false,
             ),
         ),
     )

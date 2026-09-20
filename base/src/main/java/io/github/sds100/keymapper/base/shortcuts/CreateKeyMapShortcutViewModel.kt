@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.home.KeyMapListState
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -75,17 +76,20 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
             combine(
                 listKeyMaps.keyMapGroup,
                 listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
                 listKeyMaps.constraintErrorSnapshot,
             ) {
                     keyMapGroup,
                     showDeviceDescriptors,
+                    triggerErrorSnapshot,
                     actionErrorSnapshot,
                     constraintErrorSnapshot,
                 ->
                 _state.value = buildState(
                     keyMapGroup,
                     showDeviceDescriptors,
+                    triggerErrorSnapshot,
                     actionErrorSnapshot,
                     constraintErrorSnapshot,
                 )
@@ -96,6 +100,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
     private fun buildState(
         keyMapGroup: KeyMapGroup,
         showDeviceDescriptors: Boolean,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
         actionErrorSnapshot: ActionErrorSnapshot,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
     ): KeyMapListState {
@@ -104,6 +109,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                 val content = listItemCreator.build(
                     it,
                     showDeviceDescriptors,
+                    triggerErrorSnapshot,
                     actionErrorSnapshot,
                     constraintErrorSnapshot,
                 )
@@ -195,7 +201,9 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                         // background is white. Also, getting the colorOnSurface attribute
                         // from the application context doesn't seem to work correctly.
                         TintType.OnSurface -> iconInfo.drawable.setTint(Color.BLACK)
+
                         is TintType.Color -> iconInfo.drawable.setTint(iconInfo.tintType.color)
+
                         else -> {}
                     }
 

@@ -108,7 +108,7 @@ fun KeyMapListItem(
                         separator = model.content.triggerSeparatorIcon,
                     )
 
-                    if (model.content.isEnabled) {
+                    if (model.content.isEnabled && model.content.hasError) {
                         CompactErrorButton(onClick = onFixClick) {
                             Text(stringResource(R.string.button_fix))
                         }

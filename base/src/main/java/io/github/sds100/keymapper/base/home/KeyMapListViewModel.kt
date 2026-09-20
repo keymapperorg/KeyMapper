@@ -277,6 +277,7 @@ class KeyMapListViewModel(
             combine(
                 sortedKeyMapsFlow,
                 listKeyMaps.showDeviceDescriptors,
+                listKeyMaps.triggerErrorSnapshot,
                 listKeyMaps.actionErrorSnapshot,
                 listKeyMaps.constraintErrorSnapshot,
                 transform = ::buildListItems,
@@ -516,6 +517,7 @@ class KeyMapListViewModel(
     private fun buildListItems(
         keyMapsState: State<List<KeyMap>>,
         showDeviceDescriptors: Boolean,
+        triggerErrorSnapshot: TriggerErrorSnapshot,
         actionErrorSnapshot: ActionErrorSnapshot,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
     ): State<List<KeyMapListItemModel.Content>> {
@@ -524,6 +526,7 @@ class KeyMapListViewModel(
                 listItemCreator.build(
                     it,
                     showDeviceDescriptors,
+                    triggerErrorSnapshot,
                     actionErrorSnapshot,
                     constraintErrorSnapshot,
                 )

@@ -509,6 +509,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 ),
                 options = listOf("Vibrate"),
                 isEnabled = true,
+                hasError = true,
             ),
         ),
         KeyMapListItemModel(
@@ -541,6 +542,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
                 isEnabled = true,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -572,6 +574,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 ),
                 options = emptyList(),
                 isEnabled = false,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -593,6 +596,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 isEnabled = true,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -606,6 +610,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                 constraints = emptyList(),
                 options = emptyList(),
                 isEnabled = true,
+                hasError = false,
             ),
         ),
     )
