@@ -1,10 +1,9 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateBounds
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -111,10 +110,6 @@ private val renameButtonExitTransition: ExitTransition =
             shrinkTowards = Alignment.CenterStart,
         )
 
-private val headerBoundsTransform = BoundsTransform { _, _ ->
-    tween(EXPAND_ANIMATION_DURATION, easing = FastOutSlowInEasing)
-}
-
 @Composable
 fun ActionListItem(
     modifier: Modifier = Modifier,
@@ -162,17 +157,8 @@ fun ActionListItem(
 
             Spacer(Modifier.width(8.dp))
 
-            // The summary shrinks while the rename button grows, so the header's natural
-            // height dips before reaching its final height. Animate straight to the final
-            // size instead so the drag handle, icon and chevron do not bounce.
             HeaderText(
-                modifier = Modifier
-                    .weight(1f)
-                    .animateBounds(
-                        lookaheadScope = this,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        boundsTransform = headerBoundsTransform,
-                    ),
+                modifier = Modifier.weight(1f).animateContentSize().padding(vertical = 8.dp),
                 model = model,
                 isExpanded = expanded,
                 onRenameClick = onRenameClick,

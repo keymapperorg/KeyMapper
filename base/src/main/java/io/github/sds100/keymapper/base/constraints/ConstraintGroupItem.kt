@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.constraints
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
@@ -38,9 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LookaheadScope
@@ -204,7 +203,7 @@ private fun HeaderText(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier
-                    .weight(1f, fill = false),
+                    .weight(1f, fill = false).animateContentSize(),
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
