@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
-import android.os.Build
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
@@ -37,14 +36,15 @@ class LazyConstraintErrorSnapshot(
 
     override fun getError(constraint: Constraint): KMError? {
         when (constraint.data) {
-            is ConstraintData.AppInForeground -> return getAppError(constraint.data.packageName)
+            is ConstraintData.AppInForeground ->
+                return getAppError(constraint.data.packageName, constraint.isNot)
 
             is ConstraintData.AppPlayingMedia -> {
                 if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
                     return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
                 }
 
-                return getAppError(constraint.data.packageName)
+                return getAppError(constraint.data.packageName, constraint.isNot)
             }
 
             ConstraintData.MediaPlaying -> {
@@ -72,10 +72,6 @@ class LazyConstraintErrorSnapshot(
                 }
 
             is ConstraintData.FlashlightOn -> {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
-                }
-
                 if (!flashLenses.contains(constraint.data.lens)) {
                     return when (constraint.data.lens) {
                         CameraLens.FRONT -> KMError.FrontFlashNotFound
@@ -111,7 +107,7 @@ class LazyConstraintErrorSnapshot(
                 }
 
                 if (constraint.data is ConstraintData.NotificationPosted.FromApp) {
-                    return getAppError(constraint.data.packageName)
+                    return getAppError(constraint.data.packageName, constraint.isNot)
                 }
             }
 
@@ -121,7 +117,14 @@ class LazyConstraintErrorSnapshot(
         return null
     }
 
-    private fun getAppError(packageName: String): KMError? {
+    private fun getAppError(packageName: String, isNot: Boolean): KMError? {
+        // If the constraint is negated then a missing or disabled app can never satisfy the
+        // un-negated condition, so the negated condition is trivially true. There is nothing
+        // to warn about.
+        if (isNot) {
+            return null
+        }
+
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
             if (!isEnabled) {
                 return KMError.AppDisabled(packageName)
