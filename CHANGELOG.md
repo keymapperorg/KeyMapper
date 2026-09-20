@@ -25,20 +25,13 @@
 - #2259 all key maps can now be triggered by intent or shortcut without needing to enable it first.
 - #982 new action to vibrate the device with a custom duration or a predefined haptic effect (Click, Double Click, Heavy Click, Tick).
 - #982 the "vibrate on trigger" key map option can now also be customised with a predefined haptic effect instead of just a duration, via a new settings button next to the Vibrate option.
+- #2243 Redesigned What's New dialog.
 
 ## Fixed
 
 - Do not crash if permission not granted for in phone call constraint and trying to perform key map.
 - #2258 remember saved position in key map list when changing them. Do not flash with loading indicator briefly as well.
 - #2167 do not show errors for app not in foreground constraint when the app is uninstalled/disabled.
-
-## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
-
-#### TO BE RELEASED
-
-## Added
-
-- #2243 Redesigned What's New dialog.
 
 ## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.4.0)
 
