@@ -37,14 +37,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
@@ -89,27 +86,23 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         }
     }
 
-    override val keyMapGroup: Flow<KeyMapGroup> = channelFlow {
-        keyMapListGroupUid
-            .flatMapLatest(::getGroupFamily)
-            .flatMapLatest { groupFamily ->
-                val parentGroups = getParentsRecursively(groupFamily.group?.uid)
+    override val keyMapGroup: Flow<KeyMapGroup> = keyMapListGroupUid
+        .flatMapLatest(::getGroupFamily)
+        .flatMapLatest { groupFamily ->
+            val parentGroups = getParentsRecursively(groupFamily.group?.uid)
 
-                getSubGroupsWithState(groupFamily.children).map { subGroups ->
-                    KeyMapGroup(
-                        group = groupFamily.group,
-                        subGroups = subGroups,
-                        keyMaps = State.Loading,
-                        parents = parentGroups,
-                    )
-                }
-            }.onEach { send(it) }
-            .flatMapLatest { keyMapGroup ->
-                getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
-            }.collect {
-                send(it)
+            getSubGroupsWithState(groupFamily.children).map { subGroups ->
+                KeyMapGroup(
+                    group = groupFamily.group,
+                    subGroups = subGroups,
+                    keyMaps = State.Loading,
+                    parents = parentGroups,
+                )
             }
-    }
+        }
+        .flatMapLatest { keyMapGroup ->
+            getKeyMapsByGroup(keyMapGroup.group?.uid).map { keyMapGroup.copy(keyMaps = it) }
+        }
 
     /**
      * Builds the enabled/error state of each subgroup from its own direct key maps and
@@ -394,20 +387,18 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         }
     }
 
-    private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> = channelFlow {
-        send(State.Loading)
-
-        combine(
+    private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> {
+        return combine(
             keyMapRepository.getByGroup(groupUid),
             floatingButtonRepository.buttonsList,
         ) { keyMapList, buttonListState ->
-            Pair(keyMapList, buttonListState)
-        }.collectLatest { (keyMapList, buttonListState) ->
-            if (buttonListState is State.Loading) {
-                send(State.Loading)
-            }
+            val buttonList = when (buttonListState) {
+                is State.Loading -> {
+                    return@combine State.Loading
+                }
 
-            val buttonList = buttonListState.dataOrNull() ?: return@collectLatest
+                is State.Data -> buttonListState.data
+            }
 
             val keyMaps = withContext(Dispatchers.Default) {
                 keyMapList.map { keyMap ->
@@ -415,7 +406,7 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
                 }
             }
 
-            send(State.Data(keyMaps))
+            State.Data(keyMaps)
         }
     }
 

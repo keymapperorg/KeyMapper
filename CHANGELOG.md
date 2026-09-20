@@ -26,6 +26,7 @@
 ## Fixed
 
 - Do not crash if permission not granted for in phone call constraint and trying to perform key map.
+- #2258 remember saved position in key map list when changing them. Do not flash with loading indicator briefly as well.
 
 ## [4.4.1](https://github.com/sds100/KeyMapper/releases/tag/v4.4.1)
 
