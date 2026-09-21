@@ -1,8 +1,7 @@
-+ Cycle keyboard language action | Switch between your keyboard's languages with a key press
-+ Sort key maps by enabled/disabled
-+ Custom seek amount for media step actions
-+ Export/import key maps on Android TV
-+ "Reduce app killing" tips for Xiaomi/Redmi/Poco devices
-* Screen tap/swipe/pinch actions now scale to display resolution
-- Fix some crashes when auto starting Expert Mode
-- Many other bug fixes and improvements
+! Group constraints | Organize constraints into groups with their own AND/OR logic
+! Vibrate action | New action with custom duration or haptic effects like Click and Tick
++ • Cycle enabled keyboards action
++ • Notification constraint
+* • Turn off, duplicate and rename actions
+* • Redesigned action, constraint and trigger screens
+- • Many other bug fixes and improvements

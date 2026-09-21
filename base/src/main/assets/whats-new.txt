@@ -1,11 +1,8 @@
-• "Reduce app killing" tips for Xiaomi/Redmi/Poco devices
-• Sort key maps by enabled/disabled
-• Cycle keyboard language action
-• Custom seek amount for media step actions
-• Export/import key maps on Android TV
-• Fix some crashes when auto starting Expert Mode
-• Fix shell commands failing with Windows line endings
-• Screen tap/swipe/pinch actions now scale to display resolution
+• Group constraints with their own AND/OR logic
+• New vibrate action with custom duration or haptic effects
+• Cycle enabled keyboards action
+• Notification constraint
+• Turn off, duplicate and rename actions
 • Many other bug fixes and improvements
 
 📖 View the complete changelog at: http://keymapper.app/changelog
