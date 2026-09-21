@@ -23,9 +23,9 @@ class TriggerKeyMapFromOtherAppsController(
 
     init {
         coroutineScope.launch {
-            detectKeyMapsUseCase.keyMapsToTriggerFromOtherApps.collectLatest { keyMaps ->
+            detectKeyMapsUseCase.allKeyMapList.collectLatest { keyMaps ->
                 reset()
-                this@TriggerKeyMapFromOtherAppsController.keyMapList = keyMaps
+                this@TriggerKeyMapFromOtherAppsController.keyMapList = keyMaps.map { it.keyMap }
             }
         }
     }

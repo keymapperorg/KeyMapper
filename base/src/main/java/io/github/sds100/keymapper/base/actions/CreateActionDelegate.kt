@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
@@ -43,6 +44,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+private const val DEFAULT_VIBRATE_ACTION_DURATION_MS = 200
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
@@ -50,9 +53,11 @@ class CreateActionDelegate(
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    vibrateConfigDelegate: VibrateConfigDelegate,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    VibrateConfigDelegate by vibrateConfigDelegate {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
     var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
@@ -389,6 +394,12 @@ class CreateActionDelegate(
         actionResult.update { action }
     }
 
+    fun onDoneVibrateClick() {
+        val effect = buildVibrateEffect() ?: return
+        closeVibrateConfig()
+        actionResult.update { ActionData.Vibrate(effect) }
+    }
+
     fun onStepMediaDurationEnabledChange(enabled: Boolean) {
         stepMediaActionBottomSheetState =
             stepMediaActionBottomSheetState?.copy(durationEnabled = enabled)
@@ -412,9 +423,17 @@ class CreateActionDelegate(
             ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward(durationMs)
             ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward(durationMs)
             ActionId.STEP_FORWARD_PACKAGE ->
-                ActionData.ControlMediaForApp.StepForward(state.packageName!!, durationMs)
+                ActionData.ControlMediaForApp.StepForward(
+                    state.packageName!!,
+                    durationMs,
+                    state.appName,
+                )
             ActionId.STEP_BACKWARD_PACKAGE ->
-                ActionData.ControlMediaForApp.StepBackward(state.packageName!!, durationMs)
+                ActionData.ControlMediaForApp.StepBackward(
+                    state.packageName!!,
+                    durationMs,
+                    state.appName,
+                )
             else -> throw Exception("don't know how to create action for ${state.actionId}")
         }
 
@@ -466,7 +485,7 @@ class CreateActionDelegate(
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
                 -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_media_action",
                         NavDestination.ChooseApp(allowHiddenApps = true),
@@ -474,28 +493,34 @@ class CreateActionDelegate(
 
                 val action = when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(result.packageName, result.appName)
 
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(result.packageName, result.appName)
 
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(result.packageName, result.appName)
 
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(result.packageName, result.appName)
 
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(
+                            result.packageName,
+                            result.appName,
+                        )
 
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(
+                            result.packageName,
+                            result.appName,
+                        )
 
                     ActionId.REWIND_PACKAGE ->
-                        ActionData.ControlMediaForApp.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(result.packageName, result.appName)
 
                     ActionId.STOP_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Stop(packageName)
+                        ActionData.ControlMediaForApp.Stop(result.packageName, result.appName)
 
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
@@ -506,7 +531,7 @@ class CreateActionDelegate(
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
                 -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_media_action",
                         NavDestination.ChooseApp(allowHiddenApps = true),
@@ -520,7 +545,8 @@ class CreateActionDelegate(
 
                 stepMediaActionBottomSheetState = StepMediaActionBottomSheetState(
                     actionId = actionId,
-                    packageName = packageName,
+                    packageName = result.packageName,
+                    appName = result.appName,
                     durationEnabled = oldStepDurationMs != null,
                     durationSeconds = ((oldStepDurationMs ?: 30000L) / 1000).toInt(),
                 )
@@ -784,14 +810,17 @@ class CreateActionDelegate(
             }
 
             ActionId.APP -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_app_action",
                         NavDestination.ChooseApp(allowHiddenApps = false),
                     )
                         ?: return null
 
-                return ActionData.App(packageName)
+                return ActionData.App(
+                    packageName = result.packageName,
+                    savedAppName = result.appName,
+                )
             }
 
             ActionId.APP_SHORTCUT -> {
@@ -803,6 +832,7 @@ class CreateActionDelegate(
                     appShortcutResult.packageName,
                     appShortcutResult.shortcutName,
                     appShortcutResult.uri,
+                    appShortcutResult.appName,
                 )
             }
 
@@ -1172,6 +1202,8 @@ class CreateActionDelegate(
 
             ActionId.CYCLE_KEYBOARD_LANGUAGE -> return ActionData.CycleKeyboardLanguage
 
+            ActionId.CYCLE_KEYBOARD -> return ActionData.CycleKeyboard
+
             ActionId.TEXT_CUT -> return ActionData.CutText
 
             ActionId.TEXT_COPY -> return ActionData.CopyText
@@ -1233,6 +1265,12 @@ class CreateActionDelegate(
                     message = oldAction?.message ?: "",
                     duration = oldAction?.duration ?: ActionData.Toast.Duration.SHORT,
                 )
+                return null
+            }
+
+            ActionId.VIBRATE -> {
+                val oldEffect = (oldData as? ActionData.Vibrate)?.effect
+                openVibrateConfig(oldEffect, DEFAULT_VIBRATE_ACTION_DURATION_MS)
                 return null
             }
 

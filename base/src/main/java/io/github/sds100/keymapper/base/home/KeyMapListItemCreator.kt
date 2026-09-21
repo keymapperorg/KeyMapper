@@ -6,7 +6,10 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.base.constraints.ConstraintGroup
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.keymaps.ClickType
@@ -23,6 +26,7 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.trigger.getCodeLabel
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -63,6 +67,7 @@ class KeyMapListItemCreator(
 
                 is KeyEventTriggerKey -> keyEventTriggerKeyName(
                     key,
+                    keyMap.trigger.keys,
                     showDeviceDescriptors,
                 )
 
@@ -77,38 +82,31 @@ class KeyMapListItemCreator(
         val options = getTriggerOptionLabels(keyMap.trigger)
 
         val actionChipList = getActionChipList(keyMap, showDeviceDescriptors, actionErrorSnapshot)
-        val constraintChipList =
-            buildConstraintChipList(keyMap.constraintState, constraintErrorSnapshot)
-
-        val extraInfo = buildString {
-            append(createExtraInfoString(keyMap, actionChipList, constraintChipList))
-
-            if (keyMap.trigger.keys.isEmpty()) {
-                if (this.isNotEmpty()) {
-                    append(" $midDot ")
-                }
-
-                append(getString(R.string.no_trigger))
-            }
-        }
-
-        val triggerErrors = keyMap.trigger.keys.mapNotNull { key ->
-            triggerErrorSnapshot.getTriggerError(
-                keyMap,
-                key,
+        val (constraintChipList, constraintMode) =
+            buildConstraintChipList(
+                keyMap.constraintState,
+                constraintErrorSnapshot,
+                isEnabled = keyMap.isEnabled,
             )
-        }.distinct()
+
+        val hasTriggerError =
+            keyMap.trigger.keys.any { triggerErrorSnapshot.getTriggerError(keyMap, it) != null }
+
+        val hasError: Boolean =
+            hasTriggerError ||
+                actionChipList.any { it is ComposeChipModel.Error } ||
+                constraintChipList.any { it is ComposeChipModel.Error }
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
             triggerKeys = triggerKeys,
             triggerSeparatorIcon = triggerSeparator,
-            triggerErrors = triggerErrors,
             actions = actionChipList,
             constraints = constraintChipList,
-            constraintMode = keyMap.constraintState.mode,
+            constraintMode = constraintMode,
             options = options,
-            extraInfo = extraInfo.takeIf { it.isNotBlank() },
+            isEnabled = keyMap.isEnabled,
+            hasError = hasError,
         )
     }
 
@@ -121,18 +119,17 @@ class KeyMapListItemCreator(
     ): List<ComposeChipModel> = sequence {
         val midDot = getString(R.string.middot)
 
-        val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
+        val actionErrors = if (keyMap.isEnabled) {
+            errorSnapshot.getErrors(keyMap.actionList.map { it.data })
+        } else {
+            emptyMap()
+        }
 
         for (action in keyMap.actionList) {
             val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${
-                    actionUiHelper.getTitle(
-                        action.data,
-                        showDeviceDescriptors,
-                    )
-                }"
+                "${action.multiplier}x ${actionUiHelper.getTitle(action, showDeviceDescriptors)}"
             } else {
-                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
+                actionUiHelper.getTitle(action, showDeviceDescriptors)
             }
 
             val chipText = buildString {
@@ -153,7 +150,7 @@ class KeyMapListItemCreator(
 
                     append(
                         getString(
-                            R.string.action_title_wait,
+                            R.string.action_title_wait_ms,
                             action.delayBeforeNextAction,
                         ),
                     )
@@ -163,8 +160,14 @@ class KeyMapListItemCreator(
             val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
             val error: KMError? = actionErrors[action.data]
 
-            val chip = if (error == null) {
-                ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
+            // Disabled actions or key maps are never performed so do not show their errors.
+            val chip = if (error == null || !keyMap.isEnabled || !action.isEnabled) {
+                ComposeChipModel.Normal(
+                    id = action.uid,
+                    text = chipText,
+                    icon = icon,
+                    isEnabled = keyMap.isEnabled && action.isEnabled,
+                )
             } else {
                 ComposeChipModel.Error(action.uid, chipText, error, isFixable = error.isFixable)
             }
@@ -176,59 +179,112 @@ class KeyMapListItemCreator(
     fun buildConstraintChipList(
         constraintState: ConstraintState,
         errorSnapshot: ConstraintErrorSnapshot,
-    ): List<ComposeChipModel> = sequence {
-        for (constraint in constraintState.constraints) {
-            val text: String = constraintUiHelper.getTitle(constraint)
-            val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
-            val error: KMError? = errorSnapshot.getError(constraint)
+        isEnabled: Boolean,
+    ): Pair<List<ComposeChipModel>, ConstraintMode> {
+        if (constraintState.groups.isEmpty()) {
+            return Pair(emptyList(), constraintState.mode)
+        }
 
-            val chip: ComposeChipModel = if (error == null) {
+        if (constraintState.groups.size == 1) {
+            // If only one group then show the list of constraints as normal
+            val firstGroup = constraintState.groups[0]
+            val chips =
+                firstGroup.constraints.map { buildConstraintChip(it, errorSnapshot, isEnabled) }
+
+            return Pair(chips, firstGroup.mode)
+        } else {
+            val chips =
+                constraintState.groups.mapNotNull {
+                    buildGroupConstraintChip(
+                        it,
+                        errorSnapshot,
+                        isEnabled,
+                    )
+                }
+
+            return Pair(chips, constraintState.mode)
+        }
+    }
+
+    private fun buildConstraintChip(
+        constraint: Constraint,
+        errorSnapshot: ConstraintErrorSnapshot,
+        isEnabled: Boolean,
+    ): ComposeChipModel {
+        val text: String = constraintUiHelper.getTitle(constraint)
+        val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
+        val error: KMError? = errorSnapshot.getError(constraint)
+
+        // Constraints for disabled key maps are never checked so do not show their errors.
+        val chip: ComposeChipModel = if (error == null || !isEnabled) {
+            ComposeChipModel.Normal(
+                id = constraint.uid,
+                text = text,
+                icon = icon,
+                isEnabled = isEnabled,
+            )
+        } else {
+            ComposeChipModel.Error(
+                constraint.uid,
+                text,
+                error,
+                error.isFixable,
+            )
+        }
+        return chip
+    }
+
+    private fun buildGroupConstraintChip(
+        group: ConstraintGroup,
+        errorSnapshot: ConstraintErrorSnapshot,
+        isEnabled: Boolean,
+    ): ComposeChipModel? {
+        if (group.constraints.isEmpty()) {
+            return null
+        }
+
+        if (group.constraints.size == 1) {
+            return buildConstraintChip(group.constraints[0], errorSnapshot, isEnabled)
+        } else {
+            val text = if (group.name == null) {
+                when (group.mode) {
+                    ConstraintMode.AND -> getPluralString(
+                        R.plurals.constraint_group_title_and,
+                        group.constraints.size,
+                        group.constraints.size,
+                    )
+
+                    ConstraintMode.OR -> getPluralString(
+                        R.plurals.constraint_group_title_or,
+                        group.constraints.size,
+                        group.constraints.size,
+                    )
+                }
+            } else {
+                group.name
+            }
+
+            val icon: ComposeIconInfo? = null
+            val error: KMError? =
+                group.constraints.firstNotNullOfOrNull { errorSnapshot.getError(it) }
+
+            // Constraints for disabled key maps are never checked so do not show their errors.
+            val chip: ComposeChipModel = if (error == null || !isEnabled) {
                 ComposeChipModel.Normal(
-                    id = constraint.uid,
+                    id = group.uid,
                     text = text,
                     icon = icon,
+                    isEnabled = isEnabled,
                 )
             } else {
-                ComposeChipModel.Error(constraint.uid, text, error, error.isFixable)
+                ComposeChipModel.Error(
+                    id = group.uid,
+                    text = text,
+                    error = error,
+                    isFixable = error.isFixable,
+                )
             }
-
-            yield(chip)
-        }
-    }.toList()
-
-    private fun createExtraInfoString(
-        keyMap: KeyMap,
-        actionChipList: List<ComposeChipModel>,
-        constraintChipList: List<ComposeChipModel>,
-    ) = buildString {
-        val midDot by lazy { getString(R.string.middot) }
-
-        if (!keyMap.isEnabled) {
-            append(getString(R.string.switch_disabled))
-        }
-
-        if (actionChipList.any { it is ComposeChipModel.Error }) {
-            if (this.isNotEmpty()) {
-                append(" $midDot ")
-            }
-
-            append(getString(R.string.tap_actions_to_fix))
-        }
-
-        if (constraintChipList.any { it is ComposeChipModel.Error }) {
-            if (this.isNotEmpty()) {
-                append(" $midDot ")
-            }
-
-            append(getString(R.string.tap_constraints_to_fix))
-        }
-
-        if (actionChipList.isEmpty()) {
-            if (this.isNotEmpty()) {
-                append(" $midDot ")
-            }
-
-            append(getString(R.string.no_actions))
+            return chip
         }
     }
 
@@ -263,6 +319,7 @@ class KeyMapListItemCreator(
 
     private fun keyEventTriggerKeyName(
         key: KeyEventTriggerKey,
+        allKeys: List<TriggerKey>,
         showDeviceDescriptors: Boolean,
     ): String = buildString {
         when (key.clickType) {
@@ -273,22 +330,7 @@ class KeyMapListItemCreator(
 
         append(key.getCodeLabel(this@KeyMapListItemCreator))
 
-        val deviceName = when (key.device) {
-            is KeyEventTriggerDevice.Internal -> null
-
-            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
-
-            is KeyEventTriggerDevice.External -> {
-                if (showDeviceDescriptors) {
-                    InputDeviceUtils.appendDeviceDescriptorToName(
-                        key.device.descriptor,
-                        key.device.name,
-                    )
-                } else {
-                    key.device.name
-                }
-            }
-        }
+        val deviceName = getTriggerKeyDeviceName(key, allKeys, showDeviceDescriptors)
 
         val parts = mutableListOf<String>()
 
@@ -310,6 +352,39 @@ class KeyMapListItemCreator(
             append(" (")
             append(parts.joinToString(separator = " $midDot "))
             append(")")
+        }
+    }
+
+    private fun getTriggerKeyDeviceName(
+        key: KeyEventTriggerKey,
+        allKeys: List<TriggerKey>,
+        showDeviceDescriptors: Boolean,
+    ): String? {
+        val keyEventKeys = allKeys.filterIsInstance<KeyEventTriggerKey>()
+
+        // If all the keys are Internal or Any, then do not show any extra text for brevity.
+        // Adding the extra information for each key is extra verbosity without any significance.
+        if (keyEventKeys.all { it.device == KeyEventTriggerDevice.Internal } ||
+            keyEventKeys.all { it.device == KeyEventTriggerDevice.Any }
+        ) {
+            return null
+        }
+
+        return when (key.device) {
+            is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+
+            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+
+            is KeyEventTriggerDevice.External -> {
+                if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        key.device.descriptor,
+                        key.device.name,
+                    )
+                } else {
+                    key.device.name
+                }
+            }
         }
     }
 
@@ -385,10 +460,6 @@ class KeyMapListItemCreator(
 
         if (trigger.isLongPressDoubleVibrationAllowed() && trigger.longPressDoubleVibration) {
             labels.add(getString(R.string.flag_long_press_double_vibration))
-        }
-
-        if (trigger.triggerFromOtherApps) {
-            labels.add(getString(R.string.flag_trigger_from_other_apps))
         }
 
         if (trigger.showToast) {

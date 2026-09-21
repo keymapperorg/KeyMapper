@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.State
@@ -212,8 +213,8 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         delegate.setVibrateEnabled(trigger, enabled)
     }
 
-    override fun setVibrationDuration(duration: Int) = updateTrigger { trigger ->
-        delegate.setVibrationDuration(trigger, duration, defaultVibrateDuration.value)
+    override fun setVibrateEffect(effect: VibrateEffect?) = updateTrigger { trigger ->
+        delegate.setVibrateEffect(trigger, effect, defaultVibrateDuration.value)
     }
 
     override fun setLongPressDelay(delay: Int) = updateTrigger { trigger ->
@@ -235,12 +236,6 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     override fun setLongPressDoubleVibrationEnabled(enabled: Boolean) {
         updateTrigger { trigger ->
             delegate.setLongPressDoubleVibrationEnabled(trigger, enabled)
-        }
-    }
-
-    override fun setTriggerFromOtherAppsEnabled(enabled: Boolean) {
-        updateTrigger { trigger ->
-            delegate.setTriggerFromOtherAppsEnabled(trigger, enabled)
         }
     }
 
@@ -333,12 +328,11 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType)
 
     fun setVibrateEnabled(enabled: Boolean)
-    fun setVibrationDuration(duration: Int)
+    fun setVibrateEffect(effect: VibrateEffect?)
     fun setLongPressDelay(delay: Int)
     fun setDoublePressDelay(delay: Int)
     fun setSequenceTriggerTimeout(delay: Int)
     fun setLongPressDoubleVibrationEnabled(enabled: Boolean)
-    fun setTriggerFromOtherAppsEnabled(enabled: Boolean)
     fun setShowToastEnabled(enabled: Boolean)
     fun setScanCodeDetectionEnabled(keyUid: String, enabled: Boolean)
 

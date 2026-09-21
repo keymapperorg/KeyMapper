@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ChooseAppShortcutViewModel @Inject constructor(
     private val useCase: DisplayAppShortcutsUseCase,
+    private val packageManagerAdapter: PackageManagerAdapter,
     private val resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
@@ -114,11 +116,14 @@ class ChooseAppShortcutViewModel @Inject constructor(
                 ) ?: return@launch
             }
 
+            val appName = packageName?.let { packageManagerAdapter.getAppName(it).valueOrNull() }
+
             _returnResult.emit(
                 ChooseAppShortcutResult(
                     packageName = packageName,
                     shortcutName = shortcutName,
                     uri = uri,
+                    appName = appName,
                 ),
             )
         }

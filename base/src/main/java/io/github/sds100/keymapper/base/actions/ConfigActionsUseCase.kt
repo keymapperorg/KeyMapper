@@ -8,11 +8,13 @@ import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.moveElement
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import java.util.LinkedList
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -40,31 +42,33 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             .map(::getActionShortcuts)
             .map { it.take(5) }
 
-    override fun addAction(data: ActionData) {
-        state.update { keyMap ->
-            val newActionList = keyMap.actionList.toMutableList().apply {
-                add(createAction(keyMap, data))
-            }
+    override fun addAction(data: ActionData): Action? {
+        val newKeyMap = state.update { keyMap ->
+            val action = createAction(keyMap, data)
 
-            preferenceRepository.update(
-                Keys.recentlyUsedActions,
-                { old ->
-                    val oldList: List<ActionData> = if (old == null) {
-                        emptyList()
-                    } else {
-                        Json.decodeFromString<List<ActionData>>(old)
-                    }
-
-                    val newShortcuts = LinkedList(oldList)
-                        .also { it.addFirst(data) }
-                        .distinct()
-
-                    Json.encodeToString(newShortcuts)
-                },
-            )
+            val newActionList = keyMap.actionList.plus(action)
 
             keyMap.copy(actionList = newActionList)
         }
+
+        preferenceRepository.update(
+            Keys.recentlyUsedActions,
+            { old ->
+                val oldList: List<ActionData> = if (old == null) {
+                    emptyList()
+                } else {
+                    Json.decodeFromString<List<ActionData>>(old)
+                }
+
+                val newShortcuts = LinkedList(oldList)
+                    .also { it.addFirst(data) }
+                    .distinct()
+
+                Json.encodeToString(newShortcuts)
+            },
+        )
+
+        return newKeyMap.dataOrNull()?.actionList?.last()
     }
 
     override fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -80,6 +84,20 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             actionList.toMutableList().apply {
                 removeAll { it.uid == uid }
             }
+        }
+    }
+
+    override fun duplicateAction(uid: String) {
+        updateActionList { actionList ->
+            val index = actionList.indexOfFirst { it.uid == uid }
+
+            if (index == -1) {
+                return@updateActionList actionList
+            }
+
+            val duplicate = actionList[index].copy(uid = UUID.randomUUID().toString())
+
+            actionList.toMutableList().apply { add(index + 1, duplicate) }
         }
     }
 
@@ -183,6 +201,16 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun setActionCustomName(uid: String, customName: String?) {
+        setActionOption(uid) { action ->
+            action.copy(customName = customName?.trim()?.takeIf { it.isNotEmpty() })
+        }
+    }
+
+    override fun setActionEnabled(uid: String, enabled: Boolean) {
+        setActionOption(uid) { action -> action.copy(isEnabled = enabled) }
+    }
+
     private suspend fun getActionShortcuts(json: String?): List<ActionData> {
         if (json == null) {
             return emptyList()
@@ -222,12 +250,18 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             repeat = true
         }
 
+        // Actions repeat until the trigger is released by default so do not repeat if
+        // the release of the trigger can not be detected.
+        if (!keyMap.isRepeatUntilReleasedAllowed()) {
+            repeat = false
+        }
+
         if (data is ActionData.AnswerCall) {
-            configConstraints.addConstraint(ConstraintData.PhoneRinging)
+            configConstraints.addConstraint(groupUid = null, ConstraintData.PhoneRinging)
         }
 
         if (data is ActionData.EndCall) {
-            configConstraints.addConstraint(ConstraintData.InPhoneCall)
+            configConstraints.addConstraint(groupUid = null, ConstraintData.InPhoneCall)
         }
 
         return Action(
@@ -261,14 +295,20 @@ class ConfigActionsUseCaseImpl @Inject constructor(
 interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     val keyMap: StateFlow<State<KeyMap>>
 
-    fun addAction(data: ActionData)
+    /**
+     * @return the new action, or null if no key map was set.
+     */
+    fun addAction(data: ActionData): Action?
     fun moveAction(fromIndex: Int, toIndex: Int)
     fun removeAction(uid: String)
+    fun duplicateAction(uid: String)
 
     val recentlyUsedActions: Flow<List<ActionData>>
     fun setActionData(uid: String, data: ActionData)
     fun setActionMultiplier(uid: String, multiplier: Int)
     fun setDelayBeforeNextAction(uid: String, delay: Int)
+    fun setActionCustomName(uid: String, customName: String?)
+    fun setActionEnabled(uid: String, enabled: Boolean)
     fun setActionRepeatRate(uid: String, repeatRate: Int)
     fun setActionRepeatLimit(uid: String, repeatLimit: Int)
     fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String)

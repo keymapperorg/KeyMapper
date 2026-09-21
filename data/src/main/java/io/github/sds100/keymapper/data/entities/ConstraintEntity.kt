@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
 import com.github.salomonbrys.kotson.byArray
+import com.github.salomonbrys.kotson.byBool
 import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
@@ -19,6 +20,12 @@ data class ConstraintEntity(
 
     @SerializedName(NAME_UID)
     val uid: String,
+
+    @SerializedName(NAME_IS_NOT)
+    val isNot: Boolean = false,
+
+    @SerializedName(NAME_GROUP_UID)
+    val groupUid: String? = null,
 ) : Parcelable {
 
     constructor(uid: String, type: String, vararg extra: EntityExtra) : this(
@@ -32,6 +39,8 @@ data class ConstraintEntity(
         const val NAME_TYPE = "type"
         const val NAME_EXTRAS = "extras"
         const val NAME_UID = "uid"
+        const val NAME_IS_NOT = "isNot"
+        const val NAME_GROUP_UID = "groupUid"
 
         const val MODE_OR = 0
         const val MODE_AND = 1
@@ -39,16 +48,26 @@ data class ConstraintEntity(
 
         // types
         const val APP_FOREGROUND = "constraint_app_foreground"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val APP_NOT_FOREGROUND = "constraint_app_not_foreground"
         const val APP_PLAYING_MEDIA = "constraint_app_playing_media"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val APP_NOT_PLAYING_MEDIA = "constraint_app_not_playing_media"
         const val MEDIA_PLAYING = "constraint_media_playing"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val NO_MEDIA_PLAYING = "constraint_no_media_playing"
 
         const val BT_DEVICE_CONNECTED = "constraint_bt_device_connected"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val BT_DEVICE_DISCONNECTED = "constraint_bt_device_disconnected"
 
         const val SCREEN_ON = "constraint_screen_on"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val SCREEN_OFF = "constraint_screen_off"
 
         const val ORIENTATION_0 = "constraint_orientation_0"
@@ -68,22 +87,36 @@ data class ConstraintEntity(
         const val DISPLAY_RESOLUTION = "constraint_display_resolution"
 
         const val FLASHLIGHT_ON = "flashlight_on"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val FLASHLIGHT_OFF = "flashlight_off"
 
         const val WIFI_ON = "wifi_on"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val WIFI_OFF = "wifi_off"
         const val WIFI_CONNECTED = "wifi_connected"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val WIFI_DISCONNECTED = "wifi_disconnected"
 
         const val IME_CHOSEN = "ime_chosen"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val IME_NOT_CHOSEN = "ime_not_chosen"
 
         const val KEYBOARD_SHOWING = "keyboard_showing"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val KEYBOARD_NOT_SHOWING = "keyboard_not_showing"
 
         const val DEVICE_IS_LOCKED = "is_locked"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val DEVICE_IS_UNLOCKED = "is_unlocked"
         const val LOCK_SCREEN_SHOWING = "lock_screen_showing"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val LOCK_SCREEN_NOT_SHOWING = "lock_screen_not_showing"
 
         const val IN_PHONE_CALL = "in_phone_call"
@@ -95,23 +128,37 @@ data class ConstraintEntity(
         const val RINGER_MODE_SILENT = "ringer_mode_silent"
 
         const val CHARGING = "charging"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val DISCHARGING = "discharging"
 
         const val HINGE_CLOSED = "hinge_closed"
         const val HINGE_OPEN = "hinge_open"
 
         const val NOTIFICATION_PANEL_SHOWING = "notification_panel_showing"
+
+        @Deprecated(NOT_DEPRECATION_MESSAGE)
         const val NOTIFICATION_PANEL_NOT_SHOWING = "notification_panel_not_showing"
+
+        private const val NOT_DEPRECATION_MESSAGE =
+            "Only read to migrate old constraints. Use the positive constraint type with isNot."
+
+        const val NOTIFICATION_POSTED = "constraint_notification_posted"
 
         const val TIME = "time"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_APP_NAME = "extra_app_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
         const val EXTRA_FLASHLIGHT_CAMERA_LENS = "extra_flashlight_camera_lens"
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
+
+        const val EXTRA_NOTIFICATION_FIELD = "extra_notification_field"
+        const val EXTRA_NOTIFICATION_MATCH_MODE = "extra_notification_match_mode"
+        const val EXTRA_NOTIFICATION_VALUE = "extra_notification_value"
 
         const val EXTRA_RESOLUTION_WIDTH = "extra_resolution_width"
         const val EXTRA_RESOLUTION_HEIGHT = "extra_resolution_height"
@@ -131,10 +178,15 @@ data class ConstraintEntity(
             // Constraints did not always have UID so this could be null.
             val uid by it.json.byNullableString(NAME_UID)
 
+            val isNot by it.json.byBool(NAME_IS_NOT) { false }
+            val groupUid by it.json.byNullableString(NAME_GROUP_UID)
+
             ConstraintEntity(
                 uid = uid ?: UUID.randomUUID().toString(),
                 type = type,
                 extras = extraList,
+                isNot = isNot,
+                groupUid = groupUid,
             )
         }
     }

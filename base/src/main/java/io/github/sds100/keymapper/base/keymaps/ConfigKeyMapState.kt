@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -115,8 +116,8 @@ class ConfigKeyMapStateImpl @Inject constructor(
         }
     }
 
-    override fun update(block: (keyMap: KeyMap) -> KeyMap) {
-        _keyMap.update { value -> value.mapData { block.invoke(it) } }
+    override fun update(block: (keyMap: KeyMap) -> KeyMap): State<KeyMap> {
+        return _keyMap.updateAndGet { value -> value.mapData { block.invoke(it) } }
     }
 }
 
@@ -124,7 +125,7 @@ interface ConfigKeyMapState {
     val keyMap: StateFlow<State<KeyMap>>
     val isEdited: Boolean
 
-    fun update(block: (keyMap: KeyMap) -> KeyMap)
+    fun update(block: (keyMap: KeyMap) -> KeyMap): State<KeyMap>
     fun save()
 
     suspend fun loadKeyMap(uid: String)

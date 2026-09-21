@@ -6,9 +6,9 @@ import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
 import io.github.sds100.keymapper.common.utils.KMError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,14 +46,14 @@ class TriggerKeyMapFromOtherAppsControllerTest {
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
-    private lateinit var keyMapListFlow: MutableStateFlow<List<KeyMap>>
+    private lateinit var keyMapListFlow: MutableStateFlow<List<DetectKeyMapModel>>
 
     @Before
     fun init() {
         keyMapListFlow = MutableStateFlow(emptyList())
 
         detectKeyMapsUseCase = mock {
-            on { keyMapsToTriggerFromOtherApps } doReturn keyMapListFlow
+            on { allKeyMapList } doReturn keyMapListFlow
 
             MutableStateFlow(VIBRATION_DURATION).apply {
                 on { defaultVibrateDuration } doReturn this
@@ -108,9 +108,8 @@ class TriggerKeyMapFromOtherAppsControllerTest {
                 )
             val keyMap = KeyMap(
                 actionList = listOf(action),
-                trigger = Trigger(triggerFromOtherApps = true),
             )
-            keyMapListFlow.value = listOf(keyMap)
+            keyMapListFlow.value = listOf(DetectKeyMapModel(keyMap))
 
             advanceUntilIdle()
 

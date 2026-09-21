@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import org.hamcrest.MatcherAssert.assertThat
@@ -14,6 +15,7 @@ import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.nullValue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -1386,5 +1388,47 @@ class ConfigTriggerDelegateTest {
         val newTrigger = delegate.setParallelTriggerMode(trigger)
         assertThat(newTrigger.keys, hasSize(1))
         assertThat(newTrigger.keys, contains(trigger.keys[0]))
+    }
+
+    @Test
+    fun `set vibrate effect to a custom duration`() {
+        val trigger = Trigger(vibrate = true)
+
+        val newTrigger = delegate.setVibrateEffect(
+            trigger,
+            VibrateEffect.CustomDuration(250L),
+            defaultVibrateDuration = 100,
+        )
+
+        assertThat(newTrigger.vibrateEffect, `is`(VibrateEffect.CustomDuration(250L)))
+    }
+
+    @Test
+    fun `set vibrate effect to a predefined effect`() {
+        val trigger = Trigger(vibrate = true)
+
+        val newTrigger = delegate.setVibrateEffect(
+            trigger,
+            VibrateEffect.Predefined(VibrateEffect.PredefinedType.HEAVY_CLICK),
+            defaultVibrateDuration = 100,
+        )
+
+        assertThat(
+            newTrigger.vibrateEffect,
+            `is`(VibrateEffect.Predefined(VibrateEffect.PredefinedType.HEAVY_CLICK)),
+        )
+    }
+
+    @Test
+    fun `set vibrate effect to null when custom duration matches the app-wide default`() {
+        val trigger = Trigger(vibrate = true, vibrateEffect = VibrateEffect.CustomDuration(250L))
+
+        val newTrigger = delegate.setVibrateEffect(
+            trigger,
+            VibrateEffect.CustomDuration(100L),
+            defaultVibrateDuration = 100,
+        )
+
+        assertThat(newTrigger.vibrateEffect, `is`(nullValue()))
     }
 }

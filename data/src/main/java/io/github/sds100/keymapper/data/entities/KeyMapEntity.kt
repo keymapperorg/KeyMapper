@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byBool
 import com.github.salomonbrys.kotson.byInt
+import com.github.salomonbrys.kotson.byNullableArray
 import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byObject
 import com.github.salomonbrys.kotson.byString
@@ -56,6 +57,10 @@ data class KeyMapEntity(
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
     val constraintMode: Int = ConstraintEntity.DEFAULT_MODE,
 
+    @SerializedName(NAME_CONSTRAINT_GROUPS)
+    @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_GROUPS, defaultValue = "[]")
+    val constraintGroups: List<ConstraintGroupEntity> = listOf(),
+
     /**
      * Flags are stored as bits.
      */
@@ -83,6 +88,7 @@ data class KeyMapEntity(
         const val NAME_ACTION_LIST = "actionList"
         const val NAME_CONSTRAINT_LIST = "constraintList"
         const val NAME_CONSTRAINT_MODE = "constraintMode"
+        const val NAME_CONSTRAINT_GROUPS = "constraintGroups"
         const val NAME_FLAGS = "flags"
         const val NAME_IS_ENABLED = "isEnabled"
         const val NAME_UID = "uid"
@@ -99,6 +105,11 @@ data class KeyMapEntity(
             val constraintList =
                 it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
 
+            val constraintGroupsJsonArray by it.json.byNullableArray(NAME_CONSTRAINT_GROUPS)
+            val constraintGroups = constraintGroupsJsonArray?.let { jsonArray ->
+                it.context.deserialize<List<ConstraintGroupEntity>>(jsonArray)
+            } ?: listOf()
+
             val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
             val flags by it.json.byInt(NAME_FLAGS)
             val isEnabled by it.json.byBool(NAME_IS_ENABLED)
@@ -111,6 +122,7 @@ data class KeyMapEntity(
                 actionList = actionList,
                 constraintList = constraintList,
                 constraintMode = constraintMode,
+                constraintGroups = constraintGroups,
                 flags = flags,
                 isEnabled = isEnabled,
                 uid = uid,

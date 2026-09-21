@@ -590,7 +590,6 @@
     <string name="flag_hold_down">按住</string>
     <string name="flag_hold_down_until_pressed_again">保持直到再次按下</string>
     <string name="flag_dont_override_default_action">不要重映射</string>
-    <string name="flag_trigger_from_other_apps">允许其他应用通过 Intent 或快捷方式控制此按键映射</string>
     <string name="flag_trigger_from_other_apps_copy_uid">复制按键映射 id</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->

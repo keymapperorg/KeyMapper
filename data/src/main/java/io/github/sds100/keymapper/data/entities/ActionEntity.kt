@@ -69,6 +69,7 @@ data class ActionEntity(
 
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_APP_NAME = "extra_app_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"
@@ -99,6 +100,11 @@ data class ActionEntity(
         const val EXTRA_NOTIFICATION_TIMEOUT = "extra_notification_timeout"
         const val EXTRA_TOAST_DURATION = "extra_toast_duration"
         const val EXTRA_STEP_MEDIA_DURATION = "extra_step_media_duration"
+        const val EXTRA_VIBRATE_MODE = "extra_vibrate_mode"
+        const val EXTRA_VIBRATE_DURATION_MS = "extra_vibrate_duration_ms"
+        const val EXTRA_VIBRATE_EFFECT_TYPE = "extra_vibrate_effect_type"
+        const val VIBRATE_MODE_DURATION = "duration"
+        const val VIBRATE_MODE_PREDEFINED = "predefined"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
@@ -142,6 +148,12 @@ data class ActionEntity(
         const val ACTION_FLAG_SHELL_COMMAND_USE_ROOT = 16
         const val ACTION_FLAG_SHELL_COMMAND_USE_ADB = 32
 
+        /**
+         * Stored as disabled rather than enabled so actions saved before this flag existed
+         * are enabled by default.
+         */
+        const val ACTION_FLAG_DISABLED = 64
+
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
         const val EXTRA_REPEAT_DELAY = "extra_hold_down_until_repeat_delay"
@@ -150,6 +162,7 @@ data class ActionEntity(
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
+        const val EXTRA_CUSTOM_NAME = "extra_custom_name"
         const val EXTRA_SETTING_VALUE = "extra_setting_value"
         const val EXTRA_SETTING_TYPE = "extra_setting_type"
 
@@ -210,6 +223,7 @@ data class ActionEntity(
         MODIFY_SETTING,
         CREATE_NOTIFICATION,
         TOAST,
+        VIBRATE,
     }
 
     constructor(

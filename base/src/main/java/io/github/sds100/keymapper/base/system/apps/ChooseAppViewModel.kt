@@ -58,7 +58,7 @@ class ChooseAppViewModel @Inject constructor(private val useCase: DisplayAppsUse
         }
     }.flowOn(Dispatchers.Default)
 
-    private val _returnResult = MutableSharedFlow<String>()
+    private val _returnResult = MutableSharedFlow<ChooseAppResult>()
     val returnResult = _returnResult.asSharedFlow()
 
     var allowHiddenApps: Boolean = false
@@ -106,8 +106,9 @@ class ChooseAppViewModel @Inject constructor(private val useCase: DisplayAppsUse
     fun onListItemClick(id: String) {
         viewModelScope.launch {
             val packageName = id
+            val appName = useCase.getAppName(packageName).valueOrNull() ?: packageName
 
-            _returnResult.emit(packageName)
+            _returnResult.emit(ChooseAppResult(packageName = packageName, appName = appName))
         }
     }
 

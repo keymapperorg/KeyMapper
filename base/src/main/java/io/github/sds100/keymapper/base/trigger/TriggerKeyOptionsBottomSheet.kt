@@ -42,9 +42,9 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
-import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.launch
@@ -110,7 +110,7 @@ fun TriggerKeyOptionsBottomSheet(
                     isCompact = isCompact,
                 )
 
-                CheckBoxText(
+                SwitchText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
                     isChecked = state.doNotRemapChecked,
@@ -129,7 +129,7 @@ fun TriggerKeyOptionsBottomSheet(
                     isCompact = isCompact,
                 )
 
-                CheckBoxText(
+                SwitchText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
                     isChecked = state.doNotRemapChecked,

@@ -18,7 +18,6 @@ class KeyMapOptionsComparator(
             keyMap,
             otherKeyMap,
             { it.vibrate },
-            { it.trigger.triggerFromOtherApps },
             { it.showToast },
         )
 

@@ -39,9 +39,9 @@ fun SwitchPreferenceCompose(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                modifier = Modifier.align(Alignment.CenterVertically),
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,

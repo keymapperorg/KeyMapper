@@ -10,19 +10,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -34,17 +33,19 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.constraints.ConstraintModeButtons
 import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.base.groups.GroupConstraintRow
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.groups.GroupRow
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
 
@@ -65,8 +66,9 @@ fun KeyMapListHeader(
     onGroupClick: (String?) -> Unit = {},
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
+    onNotConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (KMError) -> Unit = {},
+    onFixClick: () -> Unit = {},
     onKeyMapsEnabledChange: (Boolean) -> Unit = {},
 ) {
     // This is taken from the AppBar color code so the header is the same color as the app bar
@@ -109,8 +111,9 @@ fun KeyMapListHeader(
             onGroupClick = onGroupClick,
             onNewConstraintClick = onNewConstraintClick,
             onRemoveConstraintClick = onRemoveConstraintClick,
+            onNotConstraintClick = onNotConstraintClick,
             onConstraintModeChanged = onConstraintModeChanged,
-            onFixConstraintClick = onFixConstraintClick,
+            onFixClick = onFixClick,
             onKeyMapsEnabledChange = onKeyMapsEnabledChange,
         )
 
@@ -164,8 +167,9 @@ private fun ChildGroupHeader(
     onGroupClick: (String?) -> Unit,
     onNewConstraintClick: () -> Unit,
     onRemoveConstraintClick: (String) -> Unit,
+    onNotConstraintClick: (String) -> Unit,
     onConstraintModeChanged: (ConstraintMode) -> Unit,
-    onFixConstraintClick: (KMError) -> Unit,
+    onFixClick: () -> Unit,
     onKeyMapsEnabledChange: (Boolean) -> Unit,
 ) {
     val enabled = !state.isEditingGroupName
@@ -177,7 +181,27 @@ private fun ChildGroupHeader(
             color = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ) {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (state.constraints.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.home_group_invert_constraint_hint),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+
+                        if (state.constraints.any { it is ComposeChipModel.Error }) {
+                            CompactErrorButton(onClick = onFixClick) {
+                                Text(text = stringResource(R.string.button_fix))
+                            }
+                        }
+                    }
+                }
+
                 GroupConstraintRow(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
@@ -185,13 +209,11 @@ private fun ChildGroupHeader(
                     constraints = state.constraints,
                     mode = state.constraintMode,
                     parentConstraintCount = state.parentConstraintCount,
-                    onFixConstraintClick = onFixConstraintClick,
                     onNewConstraintClick = onNewConstraintClick,
                     onRemoveConstraintClick = onRemoveConstraintClick,
+                    onNotConstraintClick = onNotConstraintClick,
                     enabled = enabled,
                 )
-
-                Spacer(Modifier.height(8.dp))
 
                 Row(
                     modifier = Modifier
@@ -200,29 +222,20 @@ private fun ChildGroupHeader(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val modeColors = SegmentedButtonDefaults.colors(
+                        activeContainerColor = MaterialTheme.colorScheme.primary,
+                        activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                        activeBorderColor = MaterialTheme.colorScheme.primary,
+                        inactiveBorderColor = MaterialTheme.colorScheme.primary,
+                        inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+
                     AnimatedVisibility(visible = state.constraints.size > 1) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_and),
-                                isSelected = state.constraintMode == ConstraintMode.AND,
-                                isEnabled = enabled,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.AND)
-                                },
-                            )
-
-                            RadioButtonText(
-                                text = stringResource(R.string.constraint_mode_or),
-                                isSelected = state.constraintMode == ConstraintMode.OR,
-                                isEnabled = enabled,
-                                onSelected = {
-                                    onConstraintModeChanged(ConstraintMode.OR)
-                                },
-                            )
-
-                            VerticalDivider(
-                                modifier = Modifier.height(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            ConstraintModeButtons(
+                                mode = state.constraintMode,
+                                onSelectMode = onConstraintModeChanged,
+                                colors = modeColors,
                             )
                         }
                     }
@@ -374,7 +387,7 @@ private fun RootGroupHeaderNoWarningsPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@PreviewLightDark
 @Composable
 private fun ChildGroupHeaderPreview() {
     val state = KeyMapAppBarState.ChildGroup(

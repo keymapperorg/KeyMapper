@@ -30,8 +30,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Edit
@@ -135,6 +135,7 @@ fun KeyMapListAppBar(
                 var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                 AppBarActions(
+                    showWhatsNew = true,
                     onWhatsNewClick,
                     onMenuClick = { expandedDropdown = true },
                     dropdownMenuContent = {
@@ -246,6 +247,7 @@ fun KeyMapListAppBar(
                         var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                         AppBarActions(
+                            showWhatsNew = false,
                             onWhatsNewClick,
                             onMenuClick = { expandedDropdown = true },
                             dropdownMenuContent = {
@@ -410,16 +412,19 @@ private fun SelectingAppBar(
 
 @Composable
 private fun AppBarActions(
+    showWhatsNew: Boolean,
     onWhatsNewClick: () -> Unit,
     onMenuClick: () -> Unit = {},
     dropdownMenuContent: @Composable () -> Unit,
 ) {
     Row {
-        IconButton(onClick = onWhatsNewClick) {
-            Icon(
-                Icons.Outlined.NewReleases,
-                contentDescription = stringResource(R.string.home_app_bar_whats_new),
-            )
+        if (showWhatsNew) {
+            IconButton(onClick = onWhatsNewClick) {
+                Icon(
+                    Icons.Rounded.Campaign,
+                    contentDescription = stringResource(R.string.home_app_bar_whats_new),
+                )
+            }
         }
 
         IconButton(onClick = onMenuClick) {

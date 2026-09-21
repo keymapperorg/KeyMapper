@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    Tints the notifications that Key Mapper posts when the device has no dynamic colour.
+    This is a copy of md_theme_secondary in the base module, which owns the app theme but can not
+    be depended on from here. Keep the two in sync.
+    -->
+    <color name="notification_accent">#565F71</color>
+</resources>

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,7 +45,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SliderOptionText(
     modifier: Modifier = Modifier,
-    title: String,
+    title: String?,
     value: Float,
     defaultValue: Float,
     valueText: (Float) -> String,
@@ -55,35 +56,43 @@ fun SliderOptionText(
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
+    var newSliderValue: Float? by remember { mutableStateOf(null) }
+    val currentValue = newSliderValue ?: value
+
     if (showDialog) {
         ValueDialog(
             initialValue = if (value == defaultValue) {
                 null
             } else {
-                value.roundToInt()
+                currentValue.roundToInt()
             },
             placeholderValue = valueText(defaultValue),
             title = title,
             onDismissRequest = { showDialog = false },
             onSaveClick = { newValue ->
+                newSliderValue = null
+
                 if (newValue == null) {
                     onValueChange(defaultValue)
                 } else {
                     onValueChange(newValue.toFloat())
                 }
+
                 showDialog = false
             },
         )
     }
 
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier,
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (title != null) {
+            Text(
+                modifier = Modifier,
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             val interactionSource = remember { MutableInteractionSource() }
@@ -92,8 +101,13 @@ fun SliderOptionText(
 
             Slider(
                 modifier = Modifier.weight(1f),
-                value = value,
-                onValueChange = onValueChange,
+                value = currentValue,
+                onValueChange = { newSliderValue = it },
+                onValueChangeFinished = {
+                    newSliderValue?.let {
+                        onValueChange(it)
+                    }
+                },
                 enabled = isEnabled,
                 valueRange = valueRange,
                 interactionSource = interactionSource,
@@ -101,18 +115,21 @@ fun SliderOptionText(
                     KeyMapperSliderThumb(interactionSource)
                 },
                 steps =
-                (((valueRange.endInclusive - valueRange.start) / stepSize.toFloat()).toInt()) -
+                (((valueRange.endInclusive - valueRange.start) / stepSize.toFloat()).roundToInt()) -
                     1,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            ElevatedButton(onClick = { showDialog = true }) {
+            ElevatedButton(
+                onClick = { showDialog = true },
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+            ) {
                 // Do not show the text when dragging because it popping in/out moves the slider
-                val text = if (value == defaultValue && !isDragged) {
-                    stringResource(R.string.slider_default_button, valueText(value))
+                val text = if (currentValue == defaultValue && !isDragged) {
+                    stringResource(R.string.slider_default_button, valueText(currentValue))
                 } else {
-                    valueText(value)
+                    valueText(currentValue)
                 }
 
                 Text(text)
@@ -120,8 +137,13 @@ fun SliderOptionText(
 
             // Always show the reset button because it popping in/out when dragging over
             // the default value causes the slider to change size and jiggle.
-            AnimatedVisibility(visible = value != defaultValue || isDragged) {
-                IconButton(onClick = { onValueChange(defaultValue) }) {
+            AnimatedVisibility(visible = currentValue != defaultValue || isDragged) {
+                IconButton(
+                    onClick = {
+                        newSliderValue = null
+                        onValueChange(defaultValue)
+                    },
+                ) {
                     Icon(
                         Icons.Rounded.RestartAlt,
                         contentDescription = stringResource(
@@ -138,7 +160,7 @@ fun SliderOptionText(
 private fun ValueDialog(
     initialValue: Int?,
     placeholderValue: String?,
-    title: String,
+    title: String?,
     onDismissRequest: () -> Unit,
     onSaveClick: (Int?) -> Unit,
 ) {
@@ -206,6 +228,26 @@ private fun Preview() {
             SliderOptionText(
                 modifier = Modifier.width(400.dp),
                 title = "Repeat delay",
+                value = 50f,
+                defaultValue = 500f,
+                valueText = { "${it.roundToInt()} ms" },
+                isEnabled = true,
+                onValueChange = {},
+                valueRange = 0f..1000f,
+                stepSize = 50,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewNoTitle() {
+    KeyMapperTheme {
+        Surface {
+            SliderOptionText(
+                modifier = Modifier.width(400.dp),
+                title = null,
                 value = 50f,
                 defaultValue = 500f,
                 valueText = { "${it.roundToInt()} ms" },

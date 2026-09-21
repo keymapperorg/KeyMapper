@@ -22,12 +22,10 @@ import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -49,6 +47,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.LinkType
+import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
 
 @Composable
@@ -127,8 +126,8 @@ fun TriggerKeyListItem(
                                 enabled = isDraggingEnabled,
                                 orientation = Orientation.Vertical,
                                 startDragImmediately = true,
-                                onDragStarted = { offset ->
-                                    dragDropState?.onDragStart(index, offset)
+                                onDragStarted = {
+                                    dragDropState?.onDragStart(model.id)
                                 },
                                 onDragStopped = { dragDropState?.onDragInterrupted() },
                             ),
@@ -157,10 +156,10 @@ fun TriggerKeyListItem(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
+
+                        Spacer(Modifier.width(8.dp))
                     }
                 }
-
-                Spacer(Modifier.width(8.dp))
 
                 if (model.error == null) {
                     val clickTypeString = when (model.clickType) {
@@ -194,24 +193,19 @@ fun TriggerKeyListItem(
                     )
                 }
 
+                if (model.error?.isFixable ?: false) {
+                    Spacer(Modifier.width(8.dp))
+
+                    CompactErrorButton(onClick = { onFixClick(model.error!!) }) {
+                        Text(text = stringResource(R.string.button_fix))
+                    }
+
+                    Spacer(Modifier.width(4.dp))
+                }
+
                 CompositionLocalProvider(
                     LocalMinimumInteractiveComponentSize provides 16.dp,
                 ) {
-                    if (model.error != null && model.error?.isFixable ?: false) {
-                        FilledTonalButton(
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                            onClick = { onFixClick(model.error!!) },
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
-                        ) {
-                            Text(
-                                text = stringResource(R.string.button_fix),
-                            )
-                        }
-                    }
-
                     if (model !is TriggerKeyListItemModel.FloatingButtonDeleted) {
                         IconButton(onClick = onEditClick) {
                             Icon(
@@ -227,11 +221,11 @@ fun TriggerKeyListItem(
 
                     IconButton(onClick = onRemoveClick) {
                         Icon(
-                            imageVector = Icons.Rounded.Clear,
+                            imageVector = Icons.Rounded.DeleteOutline,
                             contentDescription = stringResource(
                                 R.string.trigger_key_list_item_remove,
                             ),
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -375,20 +369,20 @@ private fun TextColumn(
     ) {
         Text(
             text = primaryText,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
         if (secondaryText != null) {
             Text(
                 text = secondaryText,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
         if (tertiaryText != null) {
             Text(
                 text = tertiaryText,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
@@ -396,13 +390,17 @@ private fun TextColumn(
 }
 
 @Composable
-private fun ErrorTextColumn(modifier: Modifier = Modifier, primaryText: String, errorText: String) {
+private fun ErrorTextColumn(
+    modifier: Modifier = Modifier,
+    primaryText: String,
+    errorText: String,
+) {
     Column(
         modifier = modifier,
     ) {
         Text(
             text = primaryText,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -410,7 +408,7 @@ private fun ErrorTextColumn(modifier: Modifier = Modifier, primaryText: String, 
 
         Text(
             text = errorText,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.error,
         )
     }

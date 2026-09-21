@@ -40,6 +40,7 @@ private const val DURATION_STEP_SECONDS = 5
 data class StepMediaActionBottomSheetState(
     val actionId: ActionId,
     val packageName: String? = null,
+    val appName: String? = null,
     val durationEnabled: Boolean = false,
     /**
      * UI works with seconds for user-friendliness

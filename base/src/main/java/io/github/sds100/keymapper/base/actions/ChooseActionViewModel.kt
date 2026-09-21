@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -33,6 +34,7 @@ import kotlinx.serialization.json.Json
 @HiltViewModel
 class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
+    private val vibrateConfigDelegate: VibrateConfigDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -60,7 +62,7 @@ class ChooseActionViewModel @Inject constructor(
     }
 
     val createActionDelegate =
-        CreateActionDelegate(viewModelScope, useCase, this, this, this)
+        CreateActionDelegate(viewModelScope, useCase, this, this, this, vibrateConfigDelegate)
 
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 

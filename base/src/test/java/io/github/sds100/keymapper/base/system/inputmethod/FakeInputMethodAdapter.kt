@@ -40,4 +40,18 @@ class FakeInputMethodAdapter : InputMethodAdapter {
     override fun cycleInputMethodSubtype(): KMResult<Unit> {
         return Success(Unit)
     }
+
+    override fun getNextInputMethod(): KMResult<ImeInfo> {
+        val chosenImeId = chosenIme.value?.id
+        val enabledImes = inputMethods.value.filter { it.isEnabled }
+
+        if (enabledImes.isEmpty()) {
+            return getInfoById(chosenImeId.orEmpty())
+        }
+
+        val currentIndex = enabledImes.indexOfFirst { it.id == chosenImeId }
+        val nextIndex = if (currentIndex == -1) 0 else (currentIndex + 1) % enabledImes.size
+
+        return Success(enabledImes[nextIndex])
+    }
 }
