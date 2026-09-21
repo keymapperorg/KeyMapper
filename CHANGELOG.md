@@ -34,6 +34,7 @@
 - #2167 do not show errors for app not in foreground constraint when the app is uninstalled/disabled.
 - #2262 request local network access permission for HTTP request action on Android 17+.
 - #2261 show the app's saved name instead of a generic label or raw package name for app-related constraints and actions when the app has been uninstalled.
+- #2244 only show "Expert mode started" notification the first time it is auto started. Not every time the Key Mapper process starts and the system bridge connects.
 
 ## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.4.0)
 

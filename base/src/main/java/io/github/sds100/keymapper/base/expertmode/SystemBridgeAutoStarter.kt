@@ -353,6 +353,8 @@ class SystemBridgeAutoStarter @Inject constructor(
                     it is SystemBridgeConnectionState.Connected
                 }
             }
+
+            showSystemBridgeStartedNotification()
         } catch (_: TimeoutCancellationException) {
             showAutoStartFailedNotification()
         }
@@ -475,6 +477,22 @@ class SystemBridgeAutoStarter @Inject constructor(
             onClickAction = KMNotificationAction.Activity.MainActivity(
                 BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
             ),
+        )
+
+        notificationAdapter.showNotification(model)
+    }
+
+    private fun showSystemBridgeStartedNotification() {
+        val model = NotificationModel(
+            id = ID_SYSTEM_BRIDGE_STATUS,
+            title = getString(R.string.expert_mode_setup_notification_system_bridge_started_title),
+            text = getString(R.string.expert_mode_setup_notification_system_bridge_started_text),
+            channel = CHANNEL_SETUP_ASSISTANT,
+            icon = R.drawable.offline_bolt_24px,
+            onGoing = false,
+            showOnLockscreen = false,
+            autoCancel = true,
+            timeout = 5000,
         )
 
         notificationAdapter.showNotification(model)
