@@ -74,7 +74,7 @@ fun WhatsNewDialogContent(
 
         Column(
             modifier = modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             WhatsNewHeader(
                 modifier = Modifier.padding(horizontal = 24.dp),
