@@ -423,9 +423,17 @@ class CreateActionDelegate(
             ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward(durationMs)
             ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward(durationMs)
             ActionId.STEP_FORWARD_PACKAGE ->
-                ActionData.ControlMediaForApp.StepForward(state.packageName!!, durationMs)
+                ActionData.ControlMediaForApp.StepForward(
+                    state.packageName!!,
+                    durationMs,
+                    state.appName,
+                )
             ActionId.STEP_BACKWARD_PACKAGE ->
-                ActionData.ControlMediaForApp.StepBackward(state.packageName!!, durationMs)
+                ActionData.ControlMediaForApp.StepBackward(
+                    state.packageName!!,
+                    durationMs,
+                    state.appName,
+                )
             else -> throw Exception("don't know how to create action for ${state.actionId}")
         }
 
@@ -477,7 +485,7 @@ class CreateActionDelegate(
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
                 -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_media_action",
                         NavDestination.ChooseApp(allowHiddenApps = true),
@@ -485,28 +493,34 @@ class CreateActionDelegate(
 
                 val action = when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(result.packageName, result.appName)
 
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(result.packageName, result.appName)
 
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(result.packageName, result.appName)
 
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(result.packageName, result.appName)
 
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(
+                            result.packageName,
+                            result.appName,
+                        )
 
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(
+                            result.packageName,
+                            result.appName,
+                        )
 
                     ActionId.REWIND_PACKAGE ->
-                        ActionData.ControlMediaForApp.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(result.packageName, result.appName)
 
                     ActionId.STOP_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Stop(packageName)
+                        ActionData.ControlMediaForApp.Stop(result.packageName, result.appName)
 
                     else -> throw Exception("don't know how to create action for $actionId")
                 }
@@ -517,7 +531,7 @@ class CreateActionDelegate(
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
                 -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_media_action",
                         NavDestination.ChooseApp(allowHiddenApps = true),
@@ -531,7 +545,8 @@ class CreateActionDelegate(
 
                 stepMediaActionBottomSheetState = StepMediaActionBottomSheetState(
                     actionId = actionId,
-                    packageName = packageName,
+                    packageName = result.packageName,
+                    appName = result.appName,
                     durationEnabled = oldStepDurationMs != null,
                     durationSeconds = ((oldStepDurationMs ?: 30000L) / 1000).toInt(),
                 )
@@ -795,14 +810,17 @@ class CreateActionDelegate(
             }
 
             ActionId.APP -> {
-                val packageName =
+                val result =
                     navigate(
                         "choose_app_for_app_action",
                         NavDestination.ChooseApp(allowHiddenApps = false),
                     )
                         ?: return null
 
-                return ActionData.App(packageName)
+                return ActionData.App(
+                    packageName = result.packageName,
+                    savedAppName = result.appName,
+                )
             }
 
             ActionId.APP_SHORTCUT -> {
@@ -814,6 +832,7 @@ class CreateActionDelegate(
                     appShortcutResult.packageName,
                     appShortcutResult.shortcutName,
                     appShortcutResult.uri,
+                    appShortcutResult.appName,
                 )
             }
 

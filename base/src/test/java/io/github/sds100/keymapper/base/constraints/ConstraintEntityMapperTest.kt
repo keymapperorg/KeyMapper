@@ -313,6 +313,41 @@ class ConstraintEntityMapperTest {
         }
     }
 
+    @Test
+    fun `app in foreground with no app name extra is loaded with a null app name`() {
+        val entity = ConstraintEntity(
+            UID,
+            ConstraintEntity.APP_FOREGROUND,
+            EntityExtra(ConstraintEntity.EXTRA_PACKAGE_NAME, "com.example"),
+        )
+
+        assertThat(
+            ConstraintEntityMapper.fromEntity(entity),
+            `is`(
+                Constraint(
+                    uid = UID,
+                    data = ConstraintData.AppInForeground("com.example", appName = null),
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun `app in foreground with a saved app name round trips through the entity`() {
+        val constraint = Constraint(
+            uid = UID,
+            data = ConstraintData.AppInForeground("com.example", appName = "Example"),
+        )
+
+        val entity = ConstraintEntityMapper.toEntity(constraint)
+
+        assertThat(
+            entity.extras.getData(ConstraintEntity.EXTRA_APP_NAME).valueOrNull(),
+            `is`("Example"),
+        )
+        assertThat(ConstraintEntityMapper.fromEntity(entity), `is`(constraint))
+    }
+
     private fun assertMigratedToNot(entity: ConstraintEntity, expectedData: ConstraintData) {
         assertThat(
             ConstraintEntityMapper.fromEntity(entity),

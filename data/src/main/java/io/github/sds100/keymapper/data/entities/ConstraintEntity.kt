@@ -148,6 +148,7 @@ data class ConstraintEntity(
         const val TIME = "time"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_APP_NAME = "extra_app_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
         const val EXTRA_BT_NAME = "extra_bluetooth_device_name"
         const val EXTRA_FLASHLIGHT_CAMERA_LENS = "extra_flashlight_camera_lens"

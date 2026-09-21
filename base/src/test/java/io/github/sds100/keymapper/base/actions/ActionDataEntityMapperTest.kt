@@ -17,6 +17,66 @@ import org.junit.Test
 class ActionDataEntityMapperTest {
 
     @Test
+    fun `open app action with no app name extra is loaded with a null saved app name`() {
+        val entity = ActionEntity(
+            type = ActionEntity.Type.APP,
+            data = "com.example",
+        )
+
+        assertThat(
+            ActionDataEntityMapper.fromEntity(entity),
+            `is`(ActionData.App(packageName = "com.example", savedAppName = null)),
+        )
+    }
+
+    @Test
+    fun `open app action with a saved app name round trips through the entity`() {
+        val action = ActionData.App(packageName = "com.example", savedAppName = "Example")
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
+            `is`("Example"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `app shortcut action with a saved app name round trips through the entity`() {
+        val action = ActionData.AppShortcut(
+            packageName = "com.example",
+            shortcutTitle = "Do the thing",
+            uri = "intent:...",
+            savedAppName = "Example",
+        )
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
+            `is`("Example"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `control media for app action with a saved app name round trips through the entity`() {
+        val action = ActionData.ControlMediaForApp.Pause(
+            packageName = "com.example",
+            savedAppName = "Example",
+        )
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
+            `is`("Example"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
     fun `save and load the screen resolution of a tap screen action`() {
         // GIVEN
         val action = ActionData.TapScreen(

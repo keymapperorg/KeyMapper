@@ -72,12 +72,12 @@ class ConfigNotificationConstraintViewModel @Inject constructor(
 
     fun onChooseAppClick() {
         viewModelScope.launch {
-            val packageName = navigate(
+            val result = navigate(
                 "choose_app_for_notification_constraint",
                 NavDestination.ChooseApp(allowHiddenApps = true),
             ) ?: return@launch
 
-            value = packageName
+            value = result.packageName
         }
     }
 
@@ -102,7 +102,10 @@ class ConfigNotificationConstraintViewModel @Inject constructor(
 
         return when (selectedField) {
             NotificationField.PACKAGE ->
-                ConstraintData.NotificationPosted.FromApp(packageName = value)
+                ConstraintData.NotificationPosted.FromApp(
+                    packageName = value,
+                    appName = selectedAppName!!,
+                )
 
             NotificationField.TITLE -> ConstraintData.NotificationPosted.Title(
                 text = value,

@@ -24,7 +24,7 @@ sealed class ActionData : Comparable<ActionData> {
     override fun compareTo(other: ActionData) = id.compareTo(other.id)
 
     @Serializable
-    data class App(val packageName: String) : ActionData() {
+    data class App(val packageName: String, val savedAppName: String? = null) : ActionData() {
         override val id: ActionId = ActionId.APP
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -34,8 +34,12 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class AppShortcut(val packageName: String?, val shortcutTitle: String, val uri: String) :
-        ActionData() {
+    data class AppShortcut(
+        val packageName: String?,
+        val shortcutTitle: String,
+        val uri: String,
+        val savedAppName: String? = null,
+    ) : ActionData() {
         override val id: ActionId = ActionId.APP_SHORTCUT
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -337,6 +341,7 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class ControlMediaForApp : ActionData() {
         abstract val packageName: String
+        abstract val savedAppName: String?
 
         override fun compareTo(other: ActionData) = when (other) {
             is ControlMediaForApp -> compareValuesBy(
@@ -350,42 +355,66 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class Pause(override val packageName: String) : ControlMediaForApp() {
+        data class Pause(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PAUSE_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class Play(override val packageName: String) : ControlMediaForApp() {
+        data class Play(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PLAY_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class PlayPause(override val packageName: String) : ControlMediaForApp() {
+        data class PlayPause(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PLAY_PAUSE_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class NextTrack(override val packageName: String) : ControlMediaForApp() {
+        data class NextTrack(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.NEXT_TRACK_PACKAGE
         }
 
         @Serializable
-        data class PreviousTrack(override val packageName: String) : ControlMediaForApp() {
+        data class PreviousTrack(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PREVIOUS_TRACK_PACKAGE
         }
 
         @Serializable
-        data class FastForward(override val packageName: String) : ControlMediaForApp() {
+        data class FastForward(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.FAST_FORWARD_PACKAGE
         }
 
         @Serializable
-        data class Rewind(override val packageName: String) : ControlMediaForApp() {
+        data class Rewind(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.REWIND_PACKAGE
         }
 
         @Serializable
-        data class Stop(override val packageName: String) : ControlMediaForApp() {
+        data class Stop(
+            override val packageName: String,
+            override val savedAppName: String? = null,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STOP_MEDIA_PACKAGE
         }
 
@@ -393,6 +422,7 @@ sealed class ActionData : Comparable<ActionData> {
         data class StepForward(
             override val packageName: String,
             val stepDurationMs: Long? = null,
+            override val savedAppName: String? = null,
         ) : ControlMediaForApp() {
             override val id = ActionId.STEP_FORWARD_PACKAGE
         }
@@ -401,6 +431,7 @@ sealed class ActionData : Comparable<ActionData> {
         data class StepBackward(
             override val packageName: String,
             val stepDurationMs: Long? = null,
+            override val savedAppName: String? = null,
         ) : ControlMediaForApp() {
             override val id = ActionId.STEP_BACKWARD_PACKAGE
         }

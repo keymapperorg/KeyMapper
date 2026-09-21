@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateRe
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.constraints.ConstraintData
+import io.github.sds100.keymapper.base.system.apps.ChooseAppResult
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
@@ -63,7 +64,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
          * Allow the list to show hidden apps that can't be launched.
          */
         val allowHiddenApps: Boolean,
-    ) : NavDestination<String>() {
+    ) : NavDestination<ChooseAppResult>() {
         override val id: String = ID_CHOOSE_APP
     }
 

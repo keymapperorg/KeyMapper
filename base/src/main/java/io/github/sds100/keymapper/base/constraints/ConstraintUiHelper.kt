@@ -32,17 +32,21 @@ class ConstraintUiHelper(
     }
 
     private fun getNormalTitle(constraint: Constraint): String = when (constraint.data) {
-        is ConstraintData.AppInForeground ->
-            getAppName(constraint.data.packageName).handle(
-                onSuccess = { getString(R.string.constraint_app_foreground_description, it) },
-                onError = { getString(R.string.constraint_choose_app_foreground) },
-            )
+        is ConstraintData.AppInForeground -> {
+            val name = getAppName(constraint.data.packageName).valueIfFailure {
+                constraint.data.appName ?: constraint.data.packageName
+            }
 
-        is ConstraintData.AppPlayingMedia ->
-            getAppName(constraint.data.packageName).handle(
-                onSuccess = { getString(R.string.constraint_app_playing_media_description, it) },
-                onError = { getString(R.string.constraint_choose_app_playing_media) },
-            )
+            getString(R.string.constraint_app_foreground_description, name)
+        }
+
+        is ConstraintData.AppPlayingMedia -> {
+            val name = getAppName(constraint.data.packageName).valueIfFailure {
+                constraint.data.appName ?: constraint.data.packageName
+            }
+
+            getString(R.string.constraint_app_playing_media_description, name)
+        }
 
         is ConstraintData.MediaPlaying -> getString(R.string.constraint_choose_media_playing)
 
@@ -161,19 +165,21 @@ class ConstraintUiHelper(
     }
 
     private fun getNotTitle(constraint: Constraint): String = when (constraint.data) {
-        is ConstraintData.AppInForeground ->
-            getAppName(constraint.data.packageName).handle(
-                onSuccess = { getString(R.string.constraint_app_not_foreground_description, it) },
-                onError = { getString(R.string.constraint_choose_app_not_foreground) },
-            )
+        is ConstraintData.AppInForeground -> {
+            val name = getAppName(constraint.data.packageName).valueIfFailure {
+                constraint.data.appName ?: constraint.data.packageName
+            }
 
-        is ConstraintData.AppPlayingMedia ->
-            getAppName(constraint.data.packageName).handle(
-                onSuccess = {
-                    getString(R.string.constraint_app_not_playing_media_description, it)
-                },
-                onError = { getString(R.string.constraint_choose_app_not_playing_media) },
-            )
+            getString(R.string.constraint_app_not_foreground_description, name)
+        }
+
+        is ConstraintData.AppPlayingMedia -> {
+            val name = getAppName(constraint.data.packageName).valueIfFailure {
+                constraint.data.appName ?: constraint.data.packageName
+            }
+
+            getString(R.string.constraint_app_not_playing_media_description, name)
+        }
 
         is ConstraintData.MediaPlaying ->
             getString(R.string.constraint_media_playing_not_description)
@@ -314,7 +320,9 @@ class ConstraintUiHelper(
         isNot: Boolean,
     ): String = when (data) {
         is ConstraintData.NotificationPosted.FromApp -> {
-            val appName = getAppName(data.packageName).valueIfFailure { data.packageName }
+            val appName = getAppName(data.packageName).valueIfFailure {
+                data.appName ?: data.packageName
+            }
 
             getString(
                 if (isNot) {

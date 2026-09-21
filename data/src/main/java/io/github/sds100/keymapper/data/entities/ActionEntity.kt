@@ -69,6 +69,7 @@ data class ActionEntity(
 
         const val EXTRA_SHORTCUT_TITLE = "extra_title"
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_APP_NAME = "extra_app_name"
         const val EXTRA_STREAM_TYPE = "extra_stream_type"
         const val EXTRA_LENS = "extra_flash"
         const val EXTRA_RINGER_MODE = "extra_ringer_mode"

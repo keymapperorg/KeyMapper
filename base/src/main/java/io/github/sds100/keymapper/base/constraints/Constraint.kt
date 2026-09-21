@@ -12,12 +12,14 @@ sealed class ConstraintData {
     abstract val id: ConstraintId
 
     @Serializable
-    data class AppInForeground(val packageName: String) : ConstraintData() {
+    data class AppInForeground(val packageName: String, val appName: String? = null) :
+        ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_IN_FOREGROUND
     }
 
     @Serializable
-    data class AppPlayingMedia(val packageName: String) : ConstraintData() {
+    data class AppPlayingMedia(val packageName: String, val appName: String? = null) :
+        ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_PLAYING_MEDIA
     }
 
@@ -183,7 +185,8 @@ sealed class ConstraintData {
             TextMatch()
 
         @Serializable
-        data class FromApp(val packageName: String) : NotificationPosted()
+        data class FromApp(val packageName: String, val appName: String? = null) :
+            NotificationPosted()
     }
 
     @Serializable

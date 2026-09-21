@@ -587,7 +587,7 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectAppConstraint(type: ConstraintId) {
-        val packageName =
+        val result =
             navigate(
                 "choose_package_for_constraint",
                 NavDestination.ChooseApp(allowHiddenApps = true),
@@ -596,11 +596,13 @@ class ChooseConstraintViewModel @Inject constructor(
 
         val constraintData = when (type) {
             ConstraintId.APP_IN_FOREGROUND -> ConstraintData.AppInForeground(
-                packageName = packageName,
+                packageName = result.packageName,
+                appName = result.appName,
             )
 
             ConstraintId.APP_PLAYING_MEDIA -> ConstraintData.AppPlayingMedia(
-                packageName = packageName,
+                packageName = result.packageName,
+                appName = result.appName,
             )
 
             else -> throw IllegalArgumentException(

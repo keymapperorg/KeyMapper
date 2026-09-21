@@ -79,7 +79,10 @@ object ActionDataEntityMapper {
         }
 
         return when (actionId) {
-            ActionId.APP -> ActionData.App(packageName = entity.data)
+            ActionId.APP -> ActionData.App(
+                packageName = entity.data,
+                savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
+            )
 
             ActionId.APP_SHORTCUT -> {
                 val packageName =
@@ -93,6 +96,7 @@ object ActionDataEntityMapper {
                     packageName = packageName,
                     shortcutTitle = shortcutTitle,
                     uri = entity.data,
+                    savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
                 )
             }
 
@@ -451,36 +455,46 @@ object ActionDataEntityMapper {
                     ActionEntity.EXTRA_STEP_MEDIA_DURATION,
                 ).valueOrNull()?.toLongOrNull()
 
+                val savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull()
+
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(packageName, savedAppName)
 
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(packageName, savedAppName)
 
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(packageName, savedAppName)
 
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(packageName, savedAppName)
 
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(packageName, savedAppName)
 
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(packageName, savedAppName)
 
                     ActionId.REWIND_PACKAGE ->
-                        ActionData.ControlMediaForApp.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(packageName, savedAppName)
 
                     ActionId.STOP_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Stop(packageName)
+                        ActionData.ControlMediaForApp.Stop(packageName, savedAppName)
 
                     ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName, stepDurationMs)
+                        ActionData.ControlMediaForApp.StepForward(
+                            packageName,
+                            stepDurationMs,
+                            savedAppName,
+                        )
 
                     ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName, stepDurationMs)
+                        ActionData.ControlMediaForApp.StepBackward(
+                            packageName,
+                            stepDurationMs,
+                            savedAppName,
+                        )
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -1175,11 +1189,14 @@ object ActionDataEntityMapper {
             }
         }.toList()
 
-        is ActionData.App -> emptyList()
+        is ActionData.App -> listOfNotNull(
+            data.savedAppName?.let { EntityExtra(ActionEntity.EXTRA_APP_NAME, it) },
+        )
 
         is ActionData.AppShortcut -> sequence {
             yield(EntityExtra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
             data.packageName?.let { yield(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
+            data.savedAppName?.let { yield(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }.toList()
 
         is ActionData.PhoneCall -> emptyList()
@@ -1209,6 +1226,7 @@ object ActionDataEntityMapper {
             data.stepDurationMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
             }
+            data.savedAppName?.let { add(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }
 
         is ActionData.ControlMediaForApp.StepBackward -> buildList {
@@ -1216,10 +1234,12 @@ object ActionDataEntityMapper {
             data.stepDurationMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
             }
+            data.savedAppName?.let { add(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }
 
-        is ActionData.ControlMediaForApp -> listOf(
+        is ActionData.ControlMediaForApp -> listOfNotNull(
             EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
+            data.savedAppName?.let { EntityExtra(ActionEntity.EXTRA_APP_NAME, it) },
         )
 
         is ActionData.ControlMedia.StepForward -> buildList {

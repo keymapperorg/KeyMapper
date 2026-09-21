@@ -176,13 +176,13 @@ class LazyActionErrorSnapshot(
 
         when (action) {
             is ActionData.App -> {
-                return getAppError(action.packageName)
+                return getAppError(action.packageName, action.savedAppName)
             }
 
             is ActionData.AppShortcut -> {
                 action.packageName ?: return null
 
-                return getAppError(action.packageName)
+                return getAppError(action.packageName, action.savedAppName)
             }
 
             is ActionData.Sound.SoundFile -> {
@@ -272,14 +272,14 @@ class LazyActionErrorSnapshot(
         return null
     }
 
-    private fun getAppError(packageName: String): KMError? {
+    private fun getAppError(packageName: String, appName: String?): KMError? {
         if (isAppEnabledCache.contains(packageName) && isAppInstalledCache.contains(packageName)) {
             if (isAppEnabledCache[packageName] == false) {
-                return KMError.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName, appName)
             }
 
             if (isAppInstalledCache[packageName] == false) {
-                return KMError.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName, appName)
             }
 
             return null
@@ -292,12 +292,12 @@ class LazyActionErrorSnapshot(
             isAppEnabledCache[packageName] = isEnabled
 
             if (!isEnabled) {
-                return KMError.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName, appName)
             }
         }
 
         if (!isAppInstalled) {
-            return KMError.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName, appName)
         }
 
         return null

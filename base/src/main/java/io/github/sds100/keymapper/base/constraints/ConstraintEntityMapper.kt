@@ -43,6 +43,9 @@ object ConstraintEntityMapper {
         fun getPackageName(): String =
             entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
 
+        fun getAppName(): String? =
+            entity.extras.getData(ConstraintEntity.EXTRA_APP_NAME).valueOrNull()
+
         fun getBluetoothAddress(): String =
             entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
 
@@ -82,11 +85,11 @@ object ConstraintEntityMapper {
         val constraintData = when (entity.type) {
             ConstraintEntity.APP_FOREGROUND,
             ConstraintEntity.APP_NOT_FOREGROUND,
-                -> ConstraintData.AppInForeground(getPackageName())
+                -> ConstraintData.AppInForeground(getPackageName(), getAppName())
 
             ConstraintEntity.APP_PLAYING_MEDIA,
             ConstraintEntity.APP_NOT_PLAYING_MEDIA,
-                -> ConstraintData.AppPlayingMedia(getPackageName())
+                -> ConstraintData.AppPlayingMedia(getPackageName(), getAppName())
 
             ConstraintEntity.MEDIA_PLAYING,
             ConstraintEntity.NO_MEDIA_PLAYING,
@@ -209,7 +212,10 @@ object ConstraintEntityMapper {
                     )
                 ) {
                     NotificationField.PACKAGE ->
-                        ConstraintData.NotificationPosted.FromApp(packageName = value)
+                        ConstraintData.NotificationPosted.FromApp(
+                            packageName = value,
+                            appName = getAppName(),
+                        )
 
                     NotificationField.TITLE -> ConstraintData.NotificationPosted.Title(
                         text = value,
@@ -266,22 +272,28 @@ object ConstraintEntityMapper {
             is ConstraintData.AppInForeground -> ConstraintEntity(
                 uid = constraint.uid,
                 type = ConstraintEntity.APP_FOREGROUND,
-                extras = listOf(
+                extras = listOfNotNull(
                     EntityExtra(
                         ConstraintEntity.EXTRA_PACKAGE_NAME,
                         constraint.data.packageName,
                     ),
+                    constraint.data.appName?.let {
+                        EntityExtra(ConstraintEntity.EXTRA_APP_NAME, it)
+                    },
                 ),
             )
 
             is ConstraintData.AppPlayingMedia -> ConstraintEntity(
                 uid = constraint.uid,
                 type = ConstraintEntity.APP_PLAYING_MEDIA,
-                extras = listOf(
+                extras = listOfNotNull(
                     EntityExtra(
                         ConstraintEntity.EXTRA_PACKAGE_NAME,
                         constraint.data.packageName,
                     ),
+                    constraint.data.appName?.let {
+                        EntityExtra(ConstraintEntity.EXTRA_APP_NAME, it)
+                    },
                 ),
             )
 
@@ -507,6 +519,12 @@ object ConstraintEntityMapper {
                                     textMatch.matchMode.name,
                                 ),
                             )
+                        }
+
+                        if (constraint.data is ConstraintData.NotificationPosted.FromApp) {
+                            constraint.data.appName?.let {
+                                add(EntityExtra(ConstraintEntity.EXTRA_APP_NAME, it))
+                            }
                         }
                     },
                 )

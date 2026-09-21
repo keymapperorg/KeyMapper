@@ -31,8 +31,8 @@ abstract class KMError : KMResult<Nothing>() {
     data object BackupVersionTooNew : KMError()
     data object LauncherShortcutsNotSupported : KMError()
 
-    data class AppNotFound(val packageName: String) : KMError()
-    data class AppDisabled(val packageName: String) : KMError()
+    data class AppNotFound(val packageName: String, val appName: String? = null) : KMError()
+    data class AppDisabled(val packageName: String, val appName: String? = null) : KMError()
     data object AppShortcutCantBeOpened : KMError()
     data object InsufficientPermissionsToOpenAppShortcut : KMError()
     data object NoCompatibleImeEnabled : KMError()

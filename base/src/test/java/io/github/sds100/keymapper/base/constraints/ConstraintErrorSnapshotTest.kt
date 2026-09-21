@@ -100,4 +100,18 @@ class ConstraintErrorSnapshotTest {
             `is`(KMError.AppDisabled("com.disabled") as KMError?),
         )
     }
+
+    @Test
+    fun `app not found error includes the saved app name when it is available`() {
+        setAppMissing("com.uninstalled")
+
+        val constraint = Constraint(
+            data = ConstraintData.AppInForeground("com.uninstalled", appName = "Example"),
+        )
+
+        assertThat(
+            snapshot.getError(constraint),
+            `is`(KMError.AppNotFound("com.uninstalled", "Example") as KMError?),
+        )
+    }
 }

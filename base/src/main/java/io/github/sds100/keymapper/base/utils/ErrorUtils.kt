@@ -86,16 +86,19 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             resourceProvider.getString(resId)
         }
 
-        is KMError.AppNotFound ->
-            resourceProvider.getString(
-                R.string.error_app_isnt_installed,
-                packageName,
-            )
+        is KMError.AppNotFound -> {
+            val name = appName
+            if (name != null) {
+                resourceProvider.getString(R.string.error_app_isnt_installed_named, name)
+            } else {
+                resourceProvider.getString(R.string.error_app_isnt_installed, packageName)
+            }
+        }
 
         is KMError.AppDisabled ->
             resourceProvider.getString(
                 R.string.error_app_is_disabled_package_name,
-                this.packageName,
+                this.appName ?: this.packageName,
             )
 
         is KMError.NoCompatibleImeEnabled ->

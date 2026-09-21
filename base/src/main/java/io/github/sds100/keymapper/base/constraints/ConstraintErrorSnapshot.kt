@@ -37,14 +37,22 @@ class LazyConstraintErrorSnapshot(
     override fun getError(constraint: Constraint): KMError? {
         when (constraint.data) {
             is ConstraintData.AppInForeground ->
-                return getAppError(constraint.data.packageName, constraint.isNot)
+                return getAppError(
+                    constraint.data.packageName,
+                    constraint.data.appName,
+                    constraint.isNot,
+                )
 
             is ConstraintData.AppPlayingMedia -> {
                 if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
                     return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
                 }
 
-                return getAppError(constraint.data.packageName, constraint.isNot)
+                return getAppError(
+                    constraint.data.packageName,
+                    constraint.data.appName,
+                    constraint.isNot,
+                )
             }
 
             ConstraintData.MediaPlaying -> {
@@ -107,7 +115,11 @@ class LazyConstraintErrorSnapshot(
                 }
 
                 if (constraint.data is ConstraintData.NotificationPosted.FromApp) {
-                    return getAppError(constraint.data.packageName, constraint.isNot)
+                    return getAppError(
+                        constraint.data.packageName,
+                        constraint.data.appName,
+                        constraint.isNot,
+                    )
                 }
             }
 
@@ -117,7 +129,7 @@ class LazyConstraintErrorSnapshot(
         return null
     }
 
-    private fun getAppError(packageName: String, isNot: Boolean): KMError? {
+    private fun getAppError(packageName: String, appName: String?, isNot: Boolean): KMError? {
         // If the constraint is negated then a missing or disabled app can never satisfy the
         // un-negated condition, so the negated condition is trivially true. There is nothing
         // to warn about.
@@ -127,12 +139,12 @@ class LazyConstraintErrorSnapshot(
 
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
             if (!isEnabled) {
-                return KMError.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName, appName)
             }
         }
 
         if (!packageManager.isAppInstalled(packageName)) {
-            return KMError.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName, appName)
         }
 
         return null
