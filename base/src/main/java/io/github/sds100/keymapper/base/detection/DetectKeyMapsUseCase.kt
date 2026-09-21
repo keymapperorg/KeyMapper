@@ -19,6 +19,8 @@ import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityServic
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
+import io.github.sds100.keymapper.base.vibration.vibrate
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.Keys
@@ -81,7 +83,10 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                     if (groupUid == null) {
                         add(
                             DetectKeyMapModel(
-                                keyMap = keyMap,
+                                // Disabled actions must never be performed.
+                                keyMap = keyMap.copy(
+                                    actionList = keyMap.actionList.filter { it.isEnabled },
+                                ),
                                 groupConstraintStates = constraintStates,
                             ),
                         )
@@ -95,7 +100,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                     val group = groupMap[groupUid]!!
                     groupUid = group.parentUid
 
-                    if (group.constraintState.constraints.isNotEmpty()) {
+                    if (group.constraintState.allConstraints.isNotEmpty()) {
                         constraintStates.add(group.constraintState)
                     }
 
@@ -133,11 +138,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                     model.keyMap.trigger.keys.any { it is FingerprintTriggerKey }
             }
         }
-
-    override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
-        allKeyMapList.map { keyMapList ->
-            keyMapList.filter { it.keyMap.trigger.triggerFromOtherApps }.map { it.keyMap }
-        }.flowOn(Dispatchers.Default)
 
     override val defaultLongPressDelay: Flow<Long> =
         preferenceRepository.get(Keys.defaultLongPressDelay)
@@ -181,6 +181,10 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
     override fun vibrate(duration: Long) {
         vibrator.vibrate(duration)
+    }
+
+    override fun vibrate(effect: VibrateEffect) {
+        vibrator.vibrate(effect)
     }
 
     override fun imitateKeyEvent(
@@ -259,7 +263,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 interface DetectKeyMapsUseCase {
     val allKeyMapList: Flow<List<DetectKeyMapModel>>
     val requestFingerprintGestureDetection: Flow<Boolean>
-    val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
 
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>
@@ -270,6 +273,7 @@ interface DetectKeyMapsUseCase {
 
     fun showTriggeredToast()
     fun vibrate(duration: Long)
+    fun vibrate(effect: VibrateEffect)
 
     val currentTime: Long
 

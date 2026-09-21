@@ -29,9 +29,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Edit
@@ -100,7 +100,7 @@ fun KeyMapListAppBar(
     onSettingsClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onSortClick: () -> Unit = {},
-    onHelpClick: () -> Unit = {},
+    onWhatsNewClick: () -> Unit = {},
     onTogglePausedClick: () -> Unit = {},
     onExportClick: () -> Unit = {},
     onImportClick: () -> Unit = {},
@@ -135,7 +135,8 @@ fun KeyMapListAppBar(
                 var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                 AppBarActions(
-                    onHelpClick,
+                    showWhatsNew = true,
+                    onWhatsNewClick,
                     onMenuClick = { expandedDropdown = true },
                     dropdownMenuContent = {
                         RootGroupDropdownMenu(
@@ -246,7 +247,8 @@ fun KeyMapListAppBar(
                         var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
                         AppBarActions(
-                            onHelpClick,
+                            showWhatsNew = false,
+                            onWhatsNewClick,
                             onMenuClick = { expandedDropdown = true },
                             dropdownMenuContent = {
                                 ChildGroupDropdownMenu(
@@ -410,16 +412,19 @@ private fun SelectingAppBar(
 
 @Composable
 private fun AppBarActions(
-    onHelpClick: () -> Unit,
+    showWhatsNew: Boolean,
+    onWhatsNewClick: () -> Unit,
     onMenuClick: () -> Unit = {},
     dropdownMenuContent: @Composable () -> Unit,
 ) {
     Row {
-        IconButton(onClick = onHelpClick) {
-            Icon(
-                Icons.AutoMirrored.Rounded.HelpOutline,
-                contentDescription = stringResource(R.string.home_app_bar_help),
-            )
+        if (showWhatsNew) {
+            IconButton(onClick = onWhatsNewClick) {
+                Icon(
+                    Icons.Rounded.Campaign,
+                    contentDescription = stringResource(R.string.home_app_bar_whats_new),
+                )
+            }
         }
 
         IconButton(onClick = onMenuClick) {

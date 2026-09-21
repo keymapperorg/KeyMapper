@@ -2,7 +2,9 @@ package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.base.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
@@ -11,11 +13,11 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
-import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
@@ -40,12 +42,17 @@ class ConfigKeyMapOptionsViewModel(
     private val dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    vibrateConfigDelegate: VibrateConfigDelegate,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
+    VibrateConfigDelegate by vibrateConfigDelegate,
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
+
+    var createShortcutDialogState: CreateShortcutDialogState? by mutableStateOf(null)
+        private set
 
     val state: StateFlow<State<KeyMapOptionsState>> = combine(
         config.keyMap,
@@ -66,8 +73,15 @@ class ConfigKeyMapOptionsViewModel(
         config.setSequenceTriggerTimeout(timeout)
     }
 
-    override fun onVibrateDurationChanged(duration: Int) {
-        config.setVibrationDuration(duration)
+    override fun onVibrateSettingsClick() {
+        val currentState = state.value.dataOrNull() ?: return
+        openVibrateConfig(currentState.vibrateEffect, currentState.defaultVibrateDuration)
+    }
+
+    fun onDoneVibrateConfigClick() {
+        val effect = buildVibrateEffect() ?: return
+        closeVibrateConfig()
+        config.setVibrateEffect(effect)
     }
 
     override fun onVibrateChanged(checked: Boolean) {
@@ -82,13 +96,23 @@ class ConfigKeyMapOptionsViewModel(
         config.setShowToastEnabled(checked)
     }
 
-    override fun onTriggerFromOtherAppsChanged(checked: Boolean) {
-        config.setTriggerFromOtherAppsEnabled(checked)
-    }
-
     override fun onOpenExpertModeSettings() {
         coroutineScope.launch {
             navigate("screen_off_trigger_tip", NavDestination.ExpertMode)
+        }
+    }
+
+    override fun onTriggerByIntentClick() {
+        coroutineScope.launch {
+            val keyMapUid = config.keyMap.firstOrNull()?.dataOrNull()?.uid ?: return@launch
+            navigate("trigger_by_intent", NavDestination.TriggerByIntent(keyMapUid))
+        }
+    }
+
+    override fun onEnableByIntentClick() {
+        coroutineScope.launch {
+            val keyMapUid = config.keyMap.firstOrNull()?.dataOrNull()?.uid ?: return@launch
+            navigate("enable_by_intent", NavDestination.EnableByIntent(keyMapUid))
         }
     }
 
@@ -97,7 +121,6 @@ class ConfigKeyMapOptionsViewModel(
             val mapping = config.keyMap.firstOrNull()?.dataOrNull() ?: return@launch
             val keyMapUid = mapping.uid
 
-            val key = "create_launcher_shortcut"
             val defaultShortcutName: String
             val icon: Drawable?
 
@@ -131,25 +154,34 @@ class ConfigKeyMapOptionsViewModel(
                 icon = null
             }
 
-            val shortcutName = showDialog(
-                key,
-                DialogModel.Text(
-                    getString(R.string.hint_shortcut_name),
-                    allowEmpty = false,
-                    text = defaultShortcutName,
-                ),
-            ) ?: return@launch
-
-            val result = createKeyMapShortcut.pinShortcut(keyMapUid, shortcutName, icon)
-
-            result.onFailure { error ->
-                val snackBar = DialogModel.SnackBar(
-                    message = error.getFullMessage(this@ConfigKeyMapOptionsViewModel),
-                )
-
-                showDialog("create_shortcut_result", snackBar)
-            }
+            createShortcutDialogState = CreateShortcutDialogState(
+                keyMapUid = keyMapUid,
+                defaultName = defaultShortcutName,
+                icon = icon,
+            )
         }
+    }
+
+    suspend fun onConfirmCreateShortcut(name: String): String? {
+        val dialogState = createShortcutDialogState ?: return null
+
+        val result = createKeyMapShortcut.pinShortcut(dialogState.keyMapUid, name, dialogState.icon)
+
+        var errorMessage: String? = null
+
+        result.onFailure { error ->
+            errorMessage = error.getFullMessage(this@ConfigKeyMapOptionsViewModel)
+        }
+
+        if (errorMessage == null) {
+            createShortcutDialogState = null
+        }
+
+        return errorMessage
+    }
+
+    fun onDismissCreateShortcutDialog() {
+        createShortcutDialogState = null
     }
 
     private suspend fun buildState(
@@ -175,8 +207,8 @@ class ConfigKeyMapOptionsViewModel(
                 ?: defaultSequenceTriggerTimeout,
             defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
 
-            showVibrateDuration = keyMap.trigger.isChangingVibrationDurationAllowed(),
-            vibrateDuration = keyMap.trigger.vibrateDuration ?: defaultVibrateDuration,
+            showVibrateSettings = keyMap.trigger.isChangingVibrationDurationAllowed(),
+            vibrateEffect = keyMap.trigger.vibrateEffect,
             defaultVibrateDuration = defaultVibrateDuration,
 
             showVibrate = keyMap.trigger.isVibrateAllowed(),
@@ -185,7 +217,6 @@ class ConfigKeyMapOptionsViewModel(
             showLongPressDoubleVibration = keyMap.trigger.isLongPressDoubleVibrationAllowed(),
             longPressDoubleVibration = keyMap.trigger.longPressDoubleVibration,
 
-            triggerFromOtherApps = keyMap.trigger.triggerFromOtherApps,
             keyMapUid = keyMap.uid,
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
 
@@ -196,6 +227,12 @@ class ConfigKeyMapOptionsViewModel(
         )
     }
 }
+
+data class CreateShortcutDialogState(
+    val keyMapUid: String,
+    val defaultName: String,
+    val icon: Drawable?,
+)
 
 data class KeyMapOptionsState(
     val showLongPressDelay: Boolean,
@@ -210,8 +247,8 @@ data class KeyMapOptionsState(
     val sequenceTriggerTimeout: Int,
     val defaultSequenceTriggerTimeout: Int,
 
-    val showVibrateDuration: Boolean,
-    val vibrateDuration: Int,
+    val showVibrateSettings: Boolean,
+    val vibrateEffect: VibrateEffect?,
     val defaultVibrateDuration: Int,
 
     val showVibrate: Boolean,
@@ -220,7 +257,6 @@ data class KeyMapOptionsState(
     val showLongPressDoubleVibration: Boolean,
     val longPressDoubleVibration: Boolean,
 
-    val triggerFromOtherApps: Boolean,
     val keyMapUid: String,
     val isLauncherShortcutButtonEnabled: Boolean,
 

@@ -170,7 +170,7 @@ private fun TalkBackGestureItem(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewPickTalkBackGestureDialog() {
     KeyMapperTheme {

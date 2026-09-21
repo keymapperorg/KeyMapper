@@ -19,12 +19,13 @@ import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChooseAppBinding>() {
 
     companion object {
-        const val EXTRA_PACKAGE_NAME = "extra_package_name"
+        const val EXTRA_RESULT = "extra_choose_app_result"
         const val SEARCH_STATE_KEY = "key_app_search_state"
     }
 
@@ -48,7 +49,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
-                returnResult(EXTRA_PACKAGE_NAME to it)
+                returnResult(EXTRA_RESULT to Json.encodeToString(it))
             }
         }
 

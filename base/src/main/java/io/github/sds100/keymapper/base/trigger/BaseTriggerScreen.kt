@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,12 +25,13 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -127,7 +127,7 @@ fun BaseTriggerScreen(
                         onButtonClick = { viewModel.onTipButtonClick(tip.id) },
                     )
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(16.dp))
                 }
             }
 
@@ -229,12 +229,8 @@ private fun TriggerScreenVertical(
 
             when (configState) {
                 is ConfigTriggerState.Empty -> {
-                    Column {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp),
-                        ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(modifier = Modifier.weight(1f)) {
                             discoverScreenContent()
                         }
 
@@ -250,10 +246,6 @@ private fun TriggerScreenVertical(
                 }
 
                 is ConfigTriggerState.Loaded -> {
-                    Spacer(Modifier.height(8.dp))
-
-                    tipContent()
-
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
@@ -263,6 +255,7 @@ private fun TriggerScreenVertical(
                         onMove = onMoveTriggerKey,
                         onFixErrorClick = onFixErrorClick,
                         onAddMoreClick = onAddMoreTriggerKeysClick,
+                        tipContent = tipContent,
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
@@ -441,18 +434,18 @@ private fun TriggerList(
     onFixErrorClick: (TriggerError) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
     onAddMoreClick: () -> Unit,
+    tipContent: @Composable () -> Unit = {},
 ) {
     val lazyListState = rememberLazyListState()
+    val triggerKeyIds = remember(triggerList) { triggerList.map { it.id } }
+
+    // Only the trigger keys can be dragged. Not the "add more" button.
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
+        keys = triggerKeyIds,
         onMove = onMove,
-        // Do not drag and drop the "add more" button
-        ignoreLastItems = if (triggerList.isEmpty()) {
-            0
-        } else {
-            1
-        },
     )
+    val orderedTriggerList = dragDropState.ordered(triggerList) { it.id }
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -462,20 +455,24 @@ private fun TriggerList(
         contentPadding = PaddingValues(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        item(key = "tip", contentType = "tip") {
+            tipContent()
+        }
+
         itemsIndexed(
-            triggerList,
+            orderedTriggerList,
             key = { _, item -> item.id },
             contentType = { _, _ -> "key" },
         ) { index, model ->
             DraggableItem(
                 dragDropState = dragDropState,
-                index = index,
+                key = model.id,
             ) { isDragging ->
                 TriggerKeyListItem(
                     modifier = Modifier.fillMaxWidth(),
                     model = model,
                     index = index,
-                    isDraggingEnabled = triggerList.size > 1,
+                    isDraggingEnabled = orderedTriggerList.size > 1,
                     isDragging = isDragging,
                     isReorderingEnabled = isReorderingEnabled,
                     dragDropState = dragDropState,
@@ -487,7 +484,7 @@ private fun TriggerList(
                     } else {
                         null
                     },
-                    onMoveDown = if (isReorderingEnabled && index < triggerList.size - 1) {
+                    onMoveDown = if (isReorderingEnabled && index < orderedTriggerList.size - 1) {
                         { onMove(index, index + 1) }
                     } else {
                         null
@@ -631,7 +628,7 @@ private val previewState =
         triggerModeButtonsVisible = true,
     )
 
-@Preview(device = Devices.PIXEL)
+@PreviewLightDark
 @Composable
 private fun VerticalPreview() {
     KeyMapperTheme {
@@ -646,24 +643,20 @@ private fun VerticalPreview() {
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
-        )
-    }
-}
+            tipContent = {
+                TipCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = "Tip Title",
+                    message = """
+                        This is a tip message to help the user understand something about the 
+                        current screen. It can be quite long so it should wrap properly.
+                    """.trimIndent(),
+                    onDismiss = {},
+                )
 
-@Preview(device = Devices.PIXEL)
-@Composable
-private fun VerticalPreviewDark() {
-    KeyMapperTheme(darkTheme = true) {
-        TriggerScreenVertical(
-            configState = previewState,
-            recordTriggerState = RecordTriggerState.Idle,
-            expertModeSwitchState = ExpertModeRecordSwitchState(
-                isVisible = true,
-                isChecked = false,
-                isEnabled = true,
-            ),
-            discoverScreenContent = {
-                TriggerDiscoverScreen()
+                Spacer(Modifier.height(16.dp))
             },
         )
     }
@@ -731,7 +724,7 @@ private fun PreviewSquareRectangle() {
     }
 }
 
-@Preview(device = Devices.PIXEL)
+@PreviewLightDark
 @Composable
 private fun VerticalEmptyPreview() {
     KeyMapperTheme {
@@ -742,25 +735,6 @@ private fun VerticalEmptyPreview() {
                 isVisible = false,
                 isChecked = false,
                 isEnabled = true,
-            ),
-            discoverScreenContent = {
-                TriggerDiscoverScreen()
-            },
-        )
-    }
-}
-
-@Preview(device = Devices.PIXEL, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun VerticalEmptyDarkPreview() {
-    KeyMapperTheme {
-        TriggerScreenVertical(
-            configState = ConfigTriggerState.Empty,
-            recordTriggerState = RecordTriggerState.Idle,
-            expertModeSwitchState = ExpertModeRecordSwitchState(
-                isVisible = true,
-                isChecked = true,
-                isEnabled = false,
             ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
@@ -797,7 +771,7 @@ private fun HorizontalPreview() {
                     onDismiss = {},
                 )
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
             },
         )
     }

@@ -20,6 +20,8 @@ interface PackageManagerAdapter {
     fun getActivityIcon(packageName: String, activityClass: String): KMResult<Drawable?>
     fun isAppEnabled(packageName: String): KMResult<Boolean>
     fun isAppInstalled(packageName: String): Boolean
+    fun getInstallTime(packageName: String): Long
+    fun getLastUpdateTime(packageName: String): Long
 
     fun openApp(packageName: String): KMResult<*>
     fun enableApp(packageName: String)

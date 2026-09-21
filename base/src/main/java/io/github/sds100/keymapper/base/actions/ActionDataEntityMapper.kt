@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.util.Base64
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -73,10 +74,15 @@ object ActionDataEntityMapper {
             ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
 
             ActionEntity.Type.TOAST -> ActionId.TOAST
+
+            ActionEntity.Type.VIBRATE -> ActionId.VIBRATE
         }
 
         return when (actionId) {
-            ActionId.APP -> ActionData.App(packageName = entity.data)
+            ActionId.APP -> ActionData.App(
+                packageName = entity.data,
+                savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
+            )
 
             ActionId.APP_SHORTCUT -> {
                 val packageName =
@@ -90,6 +96,7 @@ object ActionDataEntityMapper {
                     packageName = packageName,
                     shortcutTitle = shortcutTitle,
                     uri = entity.data,
+                    savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull(),
                 )
             }
 
@@ -448,36 +455,46 @@ object ActionDataEntityMapper {
                     ActionEntity.EXTRA_STEP_MEDIA_DURATION,
                 ).valueOrNull()?.toLongOrNull()
 
+                val savedAppName = entity.extras.getData(ActionEntity.EXTRA_APP_NAME).valueOrNull()
+
                 when (actionId) {
                     ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Pause(packageName)
+                        ActionData.ControlMediaForApp.Pause(packageName, savedAppName)
 
                     ActionId.PLAY_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Play(packageName)
+                        ActionData.ControlMediaForApp.Play(packageName, savedAppName)
 
                     ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                        ActionData.ControlMediaForApp.PlayPause(packageName, savedAppName)
 
                     ActionId.NEXT_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                        ActionData.ControlMediaForApp.NextTrack(packageName, savedAppName)
 
                     ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                        ActionData.ControlMediaForApp.PreviousTrack(packageName, savedAppName)
 
                     ActionId.FAST_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.FastForward(packageName)
+                        ActionData.ControlMediaForApp.FastForward(packageName, savedAppName)
 
                     ActionId.REWIND_PACKAGE ->
-                        ActionData.ControlMediaForApp.Rewind(packageName)
+                        ActionData.ControlMediaForApp.Rewind(packageName, savedAppName)
 
                     ActionId.STOP_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Stop(packageName)
+                        ActionData.ControlMediaForApp.Stop(packageName, savedAppName)
 
                     ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName, stepDurationMs)
+                        ActionData.ControlMediaForApp.StepForward(
+                            packageName,
+                            stepDurationMs,
+                            savedAppName,
+                        )
 
                     ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName, stepDurationMs)
+                        ActionData.ControlMediaForApp.StepBackward(
+                            packageName,
+                            stepDurationMs,
+                            savedAppName,
+                        )
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -645,6 +662,8 @@ object ActionDataEntityMapper {
 
             ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionData.CycleKeyboardLanguage
 
+            ActionId.CYCLE_KEYBOARD -> ActionData.CycleKeyboard
+
             ActionId.TEXT_CUT -> ActionData.CutText
 
             ActionId.TEXT_COPY -> ActionData.CopyText
@@ -721,6 +740,39 @@ object ActionDataEntityMapper {
                     message = message,
                     duration = duration,
                 )
+            }
+
+            ActionId.VIBRATE -> {
+                val mode = entity.extras.getData(ActionEntity.EXTRA_VIBRATE_MODE)
+                    .valueOrNull() ?: return null
+
+                val effect = when (mode) {
+                    ActionEntity.VIBRATE_MODE_DURATION -> {
+                        val durationMs = entity.extras.getData(
+                            ActionEntity.EXTRA_VIBRATE_DURATION_MS,
+                        ).valueOrNull()?.toLongOrNull() ?: return null
+
+                        VibrateEffect.CustomDuration(durationMs)
+                    }
+
+                    ActionEntity.VIBRATE_MODE_PREDEFINED -> {
+                        val typeString = entity.extras.getData(
+                            ActionEntity.EXTRA_VIBRATE_EFFECT_TYPE,
+                        ).valueOrNull() ?: return null
+
+                        val type = try {
+                            VibrateEffect.PredefinedType.valueOf(typeString)
+                        } catch (_: IllegalArgumentException) {
+                            return null
+                        }
+
+                        VibrateEffect.Predefined(type)
+                    }
+
+                    else -> return null
+                }
+
+                ActionData.Vibrate(effect = effect)
             }
 
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
@@ -996,6 +1048,7 @@ object ActionDataEntityMapper {
             is ActionData.ModifySetting -> ActionEntity.Type.MODIFY_SETTING
             is ActionData.CreateNotification -> ActionEntity.Type.CREATE_NOTIFICATION
             is ActionData.Toast -> ActionEntity.Type.TOAST
+            is ActionData.Vibrate -> ActionEntity.Type.VIBRATE
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -1085,6 +1138,8 @@ object ActionDataEntityMapper {
 
         is ActionData.Toast -> data.message
 
+        is ActionData.Vibrate -> ""
+
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
@@ -1134,11 +1189,14 @@ object ActionDataEntityMapper {
             }
         }.toList()
 
-        is ActionData.App -> emptyList()
+        is ActionData.App -> listOfNotNull(
+            data.savedAppName?.let { EntityExtra(ActionEntity.EXTRA_APP_NAME, it) },
+        )
 
         is ActionData.AppShortcut -> sequence {
             yield(EntityExtra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
             data.packageName?.let { yield(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
+            data.savedAppName?.let { yield(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }.toList()
 
         is ActionData.PhoneCall -> emptyList()
@@ -1168,6 +1226,7 @@ object ActionDataEntityMapper {
             data.stepDurationMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
             }
+            data.savedAppName?.let { add(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }
 
         is ActionData.ControlMediaForApp.StepBackward -> buildList {
@@ -1175,10 +1234,12 @@ object ActionDataEntityMapper {
             data.stepDurationMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
             }
+            data.savedAppName?.let { add(EntityExtra(ActionEntity.EXTRA_APP_NAME, it)) }
         }
 
-        is ActionData.ControlMediaForApp -> listOf(
+        is ActionData.ControlMediaForApp -> listOfNotNull(
             EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
+            data.savedAppName?.let { EntityExtra(ActionEntity.EXTRA_APP_NAME, it) },
         )
 
         is ActionData.ControlMedia.StepForward -> buildList {
@@ -1436,6 +1497,21 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_TOAST_DURATION, data.duration.name),
         )
 
+        is ActionData.Vibrate -> when (val effect = data.effect) {
+            is VibrateEffect.CustomDuration -> listOf(
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_MODE, ActionEntity.VIBRATE_MODE_DURATION),
+                EntityExtra(
+                    ActionEntity.EXTRA_VIBRATE_DURATION_MS,
+                    effect.durationMs.toString(),
+                ),
+            )
+
+            is VibrateEffect.Predefined -> listOf(
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_MODE, ActionEntity.VIBRATE_MODE_PREDEFINED),
+                EntityExtra(ActionEntity.EXTRA_VIBRATE_EFFECT_TYPE, effect.predefinedType.name),
+            )
+        }
+
         is ActionData.TalkBackGesture -> listOf(
             EntityExtra(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE, data.gesture.name),
         )
@@ -1600,6 +1676,7 @@ object ActionDataEntityMapper {
 
         ActionId.SWITCH_KEYBOARD to "switch_keyboard",
         ActionId.CYCLE_KEYBOARD_LANGUAGE to "cycle_keyboard_language",
+        ActionId.CYCLE_KEYBOARD to "cycle_keyboard",
 
         ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
         ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",

@@ -66,7 +66,6 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.sorting.SortBottomSheet
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
@@ -84,8 +83,10 @@ fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
     viewModel: KeyMapListViewModel,
     snackbarState: SnackbarHostState,
+    headerExtraContent: @Composable () -> Unit,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onWhatsNewClick: () -> Unit,
     finishActivity: () -> Unit,
     fabBottomPadding: Dp,
 ) {
@@ -134,6 +135,16 @@ fun HomeKeyMapListScreen(
         )
     }
 
+    val fixErrorsDialogState by viewModel.fixErrorsDialogState.collectAsStateWithLifecycle()
+
+    fixErrorsDialogState?.let { dialogState ->
+        FixErrorsDialog(
+            state = dialogState,
+            onFixClick = viewModel::onFixErrorClick,
+            onDismissRequest = viewModel::onDismissFixErrorsDialog,
+        )
+    }
+
     val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
 
     if (fixKeyEventActionState != null) {
@@ -160,9 +171,7 @@ fun HomeKeyMapListScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val uriHandler = LocalUriHandler.current
     val ctx = LocalContext.current
-    val helpUrl = stringResource(R.string.url_quick_start_guide)
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
     val lazyListState = rememberLazyListState()
@@ -196,13 +205,15 @@ fun HomeKeyMapListScreen(
                     KeyMapListHeader(
                         state = state.appBarState,
                         scrollBehavior = scrollBehavior,
+                        extraContent = headerExtraContent,
                         onFixWarningClick = viewModel::onFixWarningClick,
                         onNewGroupClick = viewModel::onNewGroupClick,
                         onGroupClick = viewModel::onGroupClick,
                         onNewConstraintClick = viewModel::onNewGroupConstraintClick,
                         onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                        onNotConstraintClick = viewModel::onNotGroupConstraintClick,
                         onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
-                        onFixConstraintClick = viewModel::onFixClick,
+                        onFixClick = viewModel::onFixGroupConstraintsClick,
                         onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                     )
                 },
@@ -212,7 +223,6 @@ fun HomeKeyMapListScreen(
                 onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
                 onSelectedChange = viewModel::onKeyMapSelectedChanged,
                 onFixClick = viewModel::onFixClick,
-                onTriggerErrorClick = viewModel::onFixTriggerError,
                 bottomListPadding = keyMapListBottomPadding,
             )
         },
@@ -223,7 +233,7 @@ fun HomeKeyMapListScreen(
                 onSettingsClick = onSettingsClick,
                 onAboutClick = onAboutClick,
                 onSortClick = { viewModel.showSortBottomSheet = true },
-                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+                onWhatsNewClick = onWhatsNewClick,
                 onExportClick = viewModel::onExportClick,
                 onImportClick = {
                     if (LeanbackUtils.isTvDevice(ctx)) {
@@ -288,7 +298,7 @@ fun HomeKeyMapListScreen(
 }
 
 @Composable
-private fun HomeKeyMapListScreen(
+fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
     snackbarState: SnackbarHostState = SnackbarHostState(),
     appBarContent: @Composable () -> Unit,
@@ -448,7 +458,7 @@ private fun BugReportDialog(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun sampleList(): List<KeyMapListItemModel> {
+fun sameKeyMapListItems(): List<KeyMapListItemModel> {
     val context = LocalContext.current
 
     return listOf(
@@ -498,8 +508,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     ),
                 ),
                 options = listOf("Vibrate"),
-                triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
-                extraInfo = "Disabled • No trigger",
+                isEnabled = true,
+                hasError = true,
             ),
         ),
         KeyMapListItemModel(
@@ -531,8 +541,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     "Vibrate",
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
-                triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = true,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -548,6 +558,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Open Key Mapper",
+                        isEnabled = false,
                     ),
                 ),
                 constraintMode = ConstraintMode.AND,
@@ -558,11 +569,12 @@ private fun sampleList(): List<KeyMapListItemModel> {
                             drawable = context.drawable(R.drawable.ic_launcher_web),
                         ),
                         "Key Mapper is not open",
+                        isEnabled = false,
                     ),
                 ),
                 options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = false,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -583,8 +595,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraintMode = ConstraintMode.AND,
                 constraints = emptyList(),
                 options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = null,
+                isEnabled = true,
+                hasError = false,
             ),
         ),
         KeyMapListItemModel(
@@ -597,8 +609,8 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraintMode = ConstraintMode.OR,
                 constraints = emptyList(),
                 options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
+                isEnabled = true,
+                hasError = false,
             ),
         ),
     )
@@ -617,7 +629,7 @@ private fun PreviewSelectingKeyMaps() {
         showThisGroup = false,
     )
 
-    val listState = State.Data(sampleList())
+    val listState = State.Data(sameKeyMapListItems())
 
     KeyMapperTheme {
         HomeKeyMapListScreen(
@@ -626,7 +638,7 @@ private fun PreviewSelectingKeyMaps() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(initialFirstVisibleItemIndex = 4),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = true,
                 )
@@ -656,7 +668,7 @@ private fun PreviewKeyMapsRunning() {
         isPaused = false,
     )
 
-    val listState = State.Data(sampleList())
+    val listState = State.Data(sameKeyMapListItems())
 
     KeyMapperTheme {
         HomeKeyMapListScreen(
@@ -670,7 +682,7 @@ private fun PreviewKeyMapsRunning() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -693,7 +705,7 @@ private fun PreviewKeyMapsPaused() {
         isPaused = true,
     )
 
-    val listState = State.Data(sampleList())
+    val listState = State.Data(sameKeyMapListItems())
 
     KeyMapperTheme {
         HomeKeyMapListScreen(
@@ -707,7 +719,7 @@ private fun PreviewKeyMapsPaused() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -749,7 +761,7 @@ private fun PreviewKeyMapsWarnings() {
         isPaused = true,
     )
 
-    val listState = State.Data(sampleList())
+    val listState = State.Data(sameKeyMapListItems())
 
     KeyMapperTheme {
         HomeKeyMapListScreen(
@@ -763,7 +775,7 @@ private fun PreviewKeyMapsWarnings() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )
@@ -811,7 +823,7 @@ private fun PreviewKeyMapsWarningsEmpty() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
 
@@ -849,7 +861,7 @@ private fun PreviewKeyMapsLoading() {
                 KeyMapList(
                     lazyListState = rememberLazyListState(),
                     listItems = listState,
-                    header = { KeyMapListHeader(state = appBarState) },
+                    header = { KeyMapListHeader(state = appBarState, extraContent = {}) },
                     footerText = stringResource(R.string.home_key_map_list_footer_text),
                     isSelectable = false,
                 )

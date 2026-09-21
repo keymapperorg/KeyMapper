@@ -11,12 +11,13 @@ import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.ExportedBackupLocation
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
+import io.github.sds100.keymapper.base.groups.GroupWithState
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
@@ -29,6 +30,7 @@ import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -142,6 +144,50 @@ class KeyMapListViewModel(
             parents = emptyList(),
         ),
     )
+
+    private val fixErrorsKeyMapUid = MutableStateFlow<FixErrorsDialogId?>(null)
+
+    val fixErrorsDialogState: StateFlow<FixErrorsDialogState?> =
+        fixErrorsKeyMapUid.flatMapLatest { dialogId ->
+            if (dialogId == null) {
+                flowOf<FixErrorsDialogState?>(null)
+            } else {
+                combine(
+                    keyMapGroupStateFlow,
+                    listKeyMaps.triggerErrorSnapshot,
+                    listKeyMaps.actionErrorSnapshot,
+                    listKeyMaps.constraintErrorSnapshot,
+                ) { keyMapGroup, triggerSnapshot, actionSnapshot, constraintSnapshot ->
+
+                    val errors: List<KeyMapError> = when (dialogId) {
+                        is FixErrorsDialogId.Group -> {
+                            buildGroupConstraintsErrors(
+                                keyMapGroup.group?.constraintState?.allConstraints.orEmpty(),
+                                constraintSnapshot,
+                            )
+                        }
+
+                        is FixErrorsDialogId.KeyMap -> {
+                            val keyMap = keyMapGroup.keyMaps.dataOrNull()
+                                ?.firstOrNull { it.uid == dialogId.uid }
+
+                            keyMap
+                                ?.let {
+                                    buildKeyMapErrors(
+                                        it,
+                                        triggerSnapshot,
+                                        actionSnapshot,
+                                        constraintSnapshot,
+                                    )
+                                }
+                                .orEmpty()
+                        }
+                    }
+
+                    errors.takeIf { it.isNotEmpty() }?.let { FixErrorsDialogState(it) }
+                }
+            }
+        }.stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
     val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
@@ -446,15 +492,18 @@ class KeyMapListViewModel(
             val selectedKeyMapsEnabled: SelectedKeyMapsEnabled? =
                 getKeyMapSelectedState(keyMapGroup.keyMaps.dataOrNull() ?: emptyList())
 
+            val (constraints, constraintMode) = listItemCreator.buildConstraintChipList(
+                keyMapGroup.group.constraintState,
+                constraintErrorSnapshot,
+                isEnabled = true,
+            )
+
             return KeyMapAppBarState.ChildGroup(
                 groupName = keyMapGroup.group.name,
-                constraints = listItemCreator.buildConstraintChipList(
-                    keyMapGroup.group.constraintState,
-                    constraintErrorSnapshot,
-                ),
-                constraintMode = keyMapGroup.group.constraintState.mode,
+                constraints = constraints,
+                constraintMode = constraintMode,
                 parentConstraintCount = keyMapGroup.parents.sumOf {
-                    it.constraintState.constraints.size
+                    it.constraintState.allConstraints.size
                 },
                 subGroups = subGroupListItems,
                 breadcrumbs = breadcrumbs,
@@ -465,18 +514,20 @@ class KeyMapListViewModel(
         }
     }
 
-    private fun buildGroupListItem(group: Group): GroupListItemModel {
+    private fun buildGroupListItem(groupState: GroupWithState): GroupListItemModel {
         var icon: ComposeIconInfo? = null
 
-        val constraint = group.constraintState.constraints.firstOrNull()
+        val constraint = groupState.group.constraintState.allConstraints.firstOrNull()
         if (constraint != null) {
             icon = constraintUiHelper.getIcon(constraint)
         }
 
         return GroupListItemModel(
-            uid = group.uid,
-            name = group.name,
+            uid = groupState.group.uid,
+            name = groupState.group.name,
             icon = icon,
+            isEnabled = groupState.isEnabled,
+            isError = groupState.isError,
         )
     }
 
@@ -498,6 +549,42 @@ class KeyMapListViewModel(
                 )
             }
         }
+    }
+
+    private fun buildKeyMapErrors(
+        keyMap: KeyMap,
+        triggerSnapshot: TriggerErrorSnapshot,
+        actionSnapshot: ActionErrorSnapshot,
+        constraintSnapshot: ConstraintErrorSnapshot,
+    ): List<KeyMapError> {
+        val triggerErrors = keyMap.trigger.keys
+            .mapNotNull { triggerSnapshot.getTriggerError(keyMap, it) }
+            .distinct()
+            .map { KeyMapError.Trigger(it, it.getFullMessage(this)) }
+
+        val actionErrorsByData = actionSnapshot.getErrors(keyMap.actionList.map { it.data })
+        val actionErrors = keyMap.actionList.filter { it.isEnabled }
+            .mapNotNull { actionErrorsByData[it.data] }
+            .map { KeyMapError.Action(it, it.getFullMessage(this), it.isFixable) }
+
+        val constraintErrors = keyMap.constraintState.groups.flatMap { group ->
+            group.constraints.mapNotNull { constraint ->
+                constraintSnapshot.getError(constraint)
+            }
+        }.map { KeyMapError.Constraint(it, it.getFullMessage(this), it.isFixable) }
+
+        return (triggerErrors + actionErrors + constraintErrors).distinct()
+    }
+
+    private fun buildGroupConstraintsErrors(
+        constraints: List<Constraint>,
+        constraintSnapshot: ConstraintErrorSnapshot,
+    ): List<KeyMapError> {
+        val constraintErrors = constraints.mapNotNull { constraint ->
+            constraintSnapshot.getError(constraint)
+        }.map { KeyMapError.Constraint(it, it.getFullMessage(this), it.isFixable) }
+
+        return constraintErrors.distinct()
     }
 
     fun onKeyMapCardClick(uid: String) {
@@ -570,6 +657,38 @@ class KeyMapListViewModel(
                     listKeyMaps.fixTriggerError(error)
                 }
             }
+        }
+    }
+
+    fun onFixClick(keyMapUid: String) {
+        fixErrorsKeyMapUid.value = FixErrorsDialogId.KeyMap(keyMapUid)
+    }
+
+    fun onFixGroupConstraintsClick() {
+        val groupUid = keyMapGroupStateFlow.value.group?.uid
+
+        if (groupUid != null) {
+            fixErrorsKeyMapUid.value = FixErrorsDialogId.Group(groupUid)
+        }
+    }
+
+    fun onDismissFixErrorsDialog() {
+        fixErrorsKeyMapUid.value = null
+    }
+
+    fun onFixErrorClick(item: KeyMapError) {
+        when (item) {
+            is KeyMapError.Trigger -> onFixTriggerError(item.error)
+            is KeyMapError.Action -> fixKeyMapError(item.error)
+            is KeyMapError.Constraint -> fixKeyMapError(item.error)
+        }
+    }
+
+    private fun fixKeyMapError(error: KMError) {
+        if (error is KMError.KeyEventActionError) {
+            showFixKeyEventActionBottomSheet()
+        } else {
+            coroutineScope.launch { listKeyMaps.fixError(error) }
         }
     }
 
@@ -908,6 +1027,12 @@ class KeyMapListViewModel(
     fun onRemoveGroupConstraintClick(uid: String) {
         coroutineScope.launch {
             listKeyMaps.removeGroupConstraint(uid)
+        }
+    }
+
+    fun onNotGroupConstraintClick(uid: String) {
+        coroutineScope.launch {
+            listKeyMaps.toggleGroupConstraintNot(uid)
         }
     }
 

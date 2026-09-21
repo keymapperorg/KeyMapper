@@ -68,6 +68,7 @@ import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.VerticalSplit
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.ViewArray
 import androidx.compose.material.icons.outlined.WifiTethering
 import androidx.compose.material.icons.outlined.WifiTetheringOff
@@ -231,6 +232,7 @@ object ActionUtils {
         ActionId.PERFORM_IME_ACTION -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.CYCLE_KEYBOARD_LANGUAGE -> ActionCategory.KEYBOARD
+        ActionId.CYCLE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
@@ -244,6 +246,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.TOAST -> ActionCategory.NOTIFICATIONS
+        ActionId.VIBRATE -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
@@ -439,6 +442,8 @@ object ActionUtils {
 
         ActionId.CYCLE_KEYBOARD_LANGUAGE -> R.string.action_cycle_keyboard_language
 
+        ActionId.CYCLE_KEYBOARD -> R.string.action_cycle_keyboard
+
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
 
         ActionId.ENABLE_AIRPLANE_MODE -> R.string.action_enable_airplane_mode
@@ -497,6 +502,8 @@ object ActionUtils {
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
 
         ActionId.TOAST -> R.string.action_toast
+
+        ActionId.VIBRATE -> R.string.action_vibrate
 
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
 
@@ -912,6 +919,10 @@ object ActionUtils {
 
             ActionId.CYCLE_KEYBOARD_LANGUAGE -> return listOf(Permission.WRITE_SECURE_SETTINGS)
 
+            ActionId.CYCLE_KEYBOARD -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                return listOf(Permission.WRITE_SECURE_SETTINGS)
+            }
+
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
@@ -962,6 +973,12 @@ object ActionUtils {
 
             // Permissions handled based on setting type at runtime
             ActionId.MODIFY_SETTING -> return emptyList()
+
+            ActionId.HTTP_REQUEST -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.CINNAMON_BUN
+            ) {
+                return listOf(Permission.ACCESS_LOCAL_NETWORK)
+            }
 
             else -> return emptyList()
         }
@@ -1062,6 +1079,7 @@ object ActionUtils {
         ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
         ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Outlined.Keyboard
+        ActionId.CYCLE_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.DISABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeInactive
@@ -1093,6 +1111,7 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
         ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
         ActionId.TOAST -> Icons.AutoMirrored.Outlined.Message
+        ActionId.VIBRATE -> Icons.Outlined.Vibration
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -1155,6 +1174,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ShellCommand,
     is ActionData.CreateNotification,
     is ActionData.Toast,
+    is ActionData.Vibrate,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,

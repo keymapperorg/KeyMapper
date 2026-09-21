@@ -5,13 +5,15 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ActionEntityMapper
 import io.github.sds100.keymapper.base.actions.canBeHeldDown
-import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
-import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
+import io.github.sds100.keymapper.base.constraints.ConstraintStateEntityMapper
 import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import java.util.UUID
@@ -34,8 +36,8 @@ data class KeyMap(
     val vibrate: Boolean
         get() = trigger.vibrate
 
-    val vibrateDuration: Int?
-        get() = trigger.vibrateDuration
+    val vibrateEffect: VibrateEffect?
+        get() = trigger.vibrateEffect
 
     fun isRepeatingActionsAllowed(): Boolean = KeyMapAlgorithm.performActionOnDown(trigger)
 
@@ -56,6 +58,13 @@ data class KeyMap(
 
     fun isChangingRepeatLimitAllowed(action: Action): Boolean =
         action.repeat && isRepeatingActionsAllowed()
+
+    /**
+     * The release of assistant and fingerprint gesture triggers can not be detected.
+     */
+    fun isRepeatUntilReleasedAllowed(): Boolean = trigger.keys.none {
+        it is AssistantTriggerKey || it is FingerprintTriggerKey
+    }
 
     fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean =
         action.holdDown && !action.repeat && isHoldingDownActionAllowed(action)
@@ -116,17 +125,18 @@ object KeyMapEntityMapper {
             .filterNotNull()
             .mapNotNull { ActionEntityMapper.fromEntity(it) }
 
-        val constraintList =
-            entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()
-
-        val constraintMode = ConstraintModeEntityMapper.fromEntity(entity.constraintMode)
+        val constraintState = ConstraintStateEntityMapper.fromEntityWithGroups(
+            entity.constraintList,
+            entity.constraintGroups,
+            entity.constraintMode,
+        )
 
         return KeyMap(
             dbId = entity.id,
             uid = entity.uid,
             trigger = TriggerEntityMapper.fromEntity(entity.trigger, floatingButtons),
             actionList = actionList,
-            constraintState = ConstraintState(constraintList, constraintMode),
+            constraintState = constraintState,
             isEnabled = entity.isEnabled,
             groupUid = entity.groupUid,
         )
@@ -134,17 +144,16 @@ object KeyMapEntityMapper {
 
     fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
         val actionEntityList = ActionEntityMapper.toEntity(keyMap)
+        val (constraintList, constraintGroups, constraintMode) =
+            ConstraintStateEntityMapper.toEntityWithGroups(keyMap.constraintState)
 
         return KeyMapEntity(
             id = dbId,
             trigger = TriggerEntityMapper.toEntity(keyMap.trigger),
             actionList = actionEntityList,
-            constraintList = keyMap.constraintState.constraints.map {
-                ConstraintEntityMapper.toEntity(
-                    it,
-                )
-            },
-            constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
+            constraintList = constraintList,
+            constraintGroups = constraintGroups,
+            constraintMode = constraintMode,
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,
             groupUid = keyMap.groupUid,

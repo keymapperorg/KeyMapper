@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -267,7 +268,7 @@ private fun TimePickerDialog(state: TimePickerState, onDismiss: () -> Unit, onCo
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     KeyMapperTheme {
@@ -275,6 +276,7 @@ private fun Preview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         TimeConstraintBottomSheet(

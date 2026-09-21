@@ -24,14 +24,14 @@ class KeyMapConstraintsComparator(
             return 0
         }
 
-        val keyMapConstraintsLength = keyMap.constraintState.constraints.size
-        val otherKeyMapConstraintsLength = otherKeyMap.constraintState.constraints.size
+        val keyMapConstraintsLength = keyMap.constraintState.allConstraints.size
+        val otherKeyMapConstraintsLength = otherKeyMap.constraintState.allConstraints.size
         val maxLength = keyMapConstraintsLength.coerceAtMost(otherKeyMapConstraintsLength)
 
         // Compare constraints one by one
         for (i in 0 until maxLength) {
-            val constraint = keyMap.constraintState.constraints.elementAt(i)
-            val otherConstraint = otherKeyMap.constraintState.constraints.elementAt(i)
+            val constraint = keyMap.constraintState.allConstraints.elementAt(i)
+            val otherConstraint = otherKeyMap.constraintState.allConstraints.elementAt(i)
 
             val result = compareConstraints(constraint, otherConstraint)
 
@@ -85,55 +85,63 @@ class KeyMapConstraintsComparator(
             is ConstraintData.AppInForeground -> displayConstraints.getAppName(
                 constraint.data.packageName,
             )
-            is ConstraintData.AppNotInForeground -> displayConstraints.getAppName(
-                constraint.data.packageName,
-            )
-            is ConstraintData.AppNotPlayingMedia -> displayConstraints.getAppName(
-                constraint.data.packageName,
-            )
+
             is ConstraintData.AppPlayingMedia -> displayConstraints.getAppName(
                 constraint.data.packageName,
             )
+
             is ConstraintData.BtDeviceConnected -> Success(constraint.data.deviceName)
-            is ConstraintData.BtDeviceDisconnected -> Success(constraint.data.deviceName)
+
             is ConstraintData.Charging -> Success("")
+
             is ConstraintData.DeviceIsLocked -> Success("")
-            is ConstraintData.DeviceIsUnlocked -> Success("")
-            is ConstraintData.Discharging -> Success("")
-            is ConstraintData.FlashlightOff -> Success(constraint.data.lens.toString())
+
             is ConstraintData.FlashlightOn -> Success(constraint.data.lens.toString())
+
             is ConstraintData.ImeChosen -> Success(constraint.data.imeLabel)
-            is ConstraintData.ImeNotChosen -> Success(constraint.data.imeLabel)
+
             is ConstraintData.InPhoneCall -> Success("")
+
             is ConstraintData.MediaPlaying -> Success("")
-            is ConstraintData.NoMediaPlaying -> Success("")
+
+            is ConstraintData.NotificationPosted -> Success(
+                when (constraint.data) {
+                    is ConstraintData.NotificationPosted.FromApp ->
+                        displayConstraints.getAppName(constraint.data.packageName)
+                            .valueOrNull() ?: constraint.data.packageName
+
+                    is ConstraintData.NotificationPosted.TextMatch -> constraint.data.text
+                },
+            )
+
             is ConstraintData.NotInPhoneCall -> Success("")
+
             is ConstraintData.OrientationCustom -> Success(constraint.data.orientation.toString())
+
             is ConstraintData.OrientationLandscape -> Success("")
+
             is ConstraintData.OrientationPortrait -> Success("")
+
             is ConstraintData.PhoneRinging -> Success("")
+
             is ConstraintData.RingerMode -> Success("")
-            is ConstraintData.ScreenOff -> Success("")
+
             is ConstraintData.ScreenOn -> Success("")
+
             is ConstraintData.DisplayResolution -> Success(
                 "${constraint.data.width}x${constraint.data.height}",
             )
+
             is ConstraintData.WifiConnected -> if (constraint.data.ssid == null) {
                 Success("")
             } else {
                 Success(constraint.data.ssid)
             }
 
-            is ConstraintData.WifiDisconnected -> if (constraint.data.ssid == null) {
-                Success("")
-            } else {
-                Success(constraint.data.ssid)
-            }
-
-            is ConstraintData.WifiOff -> Success("")
             is ConstraintData.WifiOn -> Success("")
-            is ConstraintData.LockScreenNotShowing -> Success("")
+
             is ConstraintData.LockScreenShowing -> Success("")
+
             is ConstraintData.Time -> Success(
                 constraint.data.startTime
                     .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
@@ -141,14 +149,16 @@ class KeyMapConstraintsComparator(
             )
 
             ConstraintData.HingeClosed -> Success("")
+
             ConstraintData.HingeOpen -> Success("")
-            ConstraintData.KeyboardNotShowing -> Success("")
+
             ConstraintData.KeyboardShowing -> Success("")
+
             is ConstraintData.PhysicalOrientation -> Success(
                 constraint.data.physicalOrientation.toString(),
             )
+
             ConstraintData.NotificationPanelShowing -> Success("")
-            ConstraintData.NotificationPanelNotShowing -> Success("")
         }
     }
 }

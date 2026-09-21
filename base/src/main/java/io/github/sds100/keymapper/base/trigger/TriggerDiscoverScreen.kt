@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -53,12 +54,14 @@ fun TriggerDiscoverScreen(
 ) {
     val customColors = LocalCustomColorsPalette.current
 
+    val horizontalPadding = 16.dp
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Column {
+        Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
             Text(
                 text = stringResource(R.string.trigger_discover_screen_title),
                 style = MaterialTheme.typography.headlineSmall,
@@ -74,6 +77,7 @@ fun TriggerDiscoverScreen(
         }
 
         TriggerSection(
+            modifier = Modifier.padding(horizontal = horizontalPadding),
             title = stringResource(R.string.trigger_discover_section_on_device_buttons),
             shortcuts = buildList {
                 add(
@@ -114,6 +118,7 @@ fun TriggerDiscoverScreen(
         )
 
         TriggerSection(
+            modifier = Modifier.padding(horizontal = horizontalPadding),
             title = stringResource(R.string.trigger_discover_section_peripherals_gaming),
             shortcuts = listOf(
                 ShortcutData(
@@ -142,6 +147,7 @@ fun TriggerDiscoverScreen(
 
         AnimatedVisibility(visible = showFloatingButtons) {
             TriggerSection(
+                modifier = Modifier.padding(horizontal = horizontalPadding),
                 title = stringResource(R.string.trigger_discover_section_floating_buttons),
                 shortcuts = listOf(
                     ShortcutData(
@@ -170,12 +176,14 @@ fun TriggerDiscoverScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TriggerSection(
+    modifier: Modifier = Modifier,
     title: String,
     shortcuts: List<ShortcutData>,
     onShortcutClick: (TriggerSetupShortcut) -> Unit,
     backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
 ) {
     Column(
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(

@@ -16,6 +16,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import io.github.sds100.keymapper.base.actions.ChooseActionScreen
 import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
 import io.github.sds100.keymapper.base.actions.ChooseSettingScreen
@@ -25,10 +26,14 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
+import io.github.sds100.keymapper.base.constraints.ConfigNotificationConstraintScreen
+import io.github.sds100.keymapper.base.constraints.ConfigNotificationConstraintViewModel
 import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
 import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationScreen
+import io.github.sds100.keymapper.base.keymaps.EnableByIntentScreen
+import io.github.sds100.keymapper.base.keymaps.TriggerByIntentScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
 import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
@@ -96,6 +101,15 @@ fun BaseMainNavHost(
             val viewModel: ChooseConstraintViewModel = hiltViewModel()
 
             ChooseConstraintScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.ConfigNotificationConstraint> {
+            val viewModel: ConfigNotificationConstraintViewModel = hiltViewModel()
+
+            ConfigNotificationConstraintScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
             )
@@ -186,6 +200,26 @@ fun BaseMainNavHost(
             ChooseSettingScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
+            )
+        }
+
+        composable<NavDestination.TriggerByIntent> { backStackEntry ->
+            val destination = backStackEntry.toRoute<NavDestination.TriggerByIntent>()
+
+            TriggerByIntentScreen(
+                modifier = Modifier.fillMaxSize(),
+                keyMapUid = destination.keyMapUid,
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<NavDestination.EnableByIntent> { backStackEntry ->
+            val destination = backStackEntry.toRoute<NavDestination.EnableByIntent>()
+
+            EnableByIntentScreen(
+                modifier = Modifier.fillMaxSize(),
+                keyMapUid = destination.keyMapUid,
+                onBackClick = { navController.popBackStack() },
             )
         }
 

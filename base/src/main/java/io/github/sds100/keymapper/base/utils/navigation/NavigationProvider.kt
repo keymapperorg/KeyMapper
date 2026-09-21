@@ -377,9 +377,9 @@ fun NavigationProvider.sendNavResultFromBundle(
 ) {
     when (destinationId) {
         NavDestination.ID_CHOOSE_APP -> {
-            val packageName = bundle.getString(ChooseAppFragment.EXTRA_PACKAGE_NAME)
+            val json = bundle.getString(ChooseAppFragment.EXTRA_RESULT)
 
-            onNavResult(NavResult(requestKey, Json.encodeToString(packageName!!)))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CHOOSE_APP_SHORTCUT -> {

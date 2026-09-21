@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.vibration.vibrate
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
@@ -60,8 +61,6 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationModel
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
-import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
@@ -70,6 +69,7 @@ import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
+import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -116,13 +116,13 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
-    private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val notificationAdapter: NotificationAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val settingsAdapter: SettingsAdapter,
+    private val vibratorAdapter: VibratorAdapter,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -302,6 +302,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.CycleKeyboardLanguage -> {
                 result = inputMethodAdapter.cycleInputMethodSubtype()
+            }
+
+            is ActionData.CycleKeyboard -> {
+                result = inputMethodAdapter.getNextInputMethod().then { nextIme ->
+                    switchImeInterface.switchIme(nextIme.id)
+
+                    // See issue #1064. Wait for the input method to finish switching before returning.
+                    val chosenIme = withTimeoutOrNull(2000) {
+                        inputMethodAdapter.chosenIme.filterNotNull().first { it.id == nextIme.id }
+                    }
+
+                    if (chosenIme == null) {
+                        KMError.SwitchImeFailed
+                    } else {
+                        Success(Unit)
+                    }
+                }
             }
 
             is ActionData.Volume.Down -> {
@@ -977,17 +994,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.DismissAllNotifications -> {
-                result =
-                    notificationReceiverAdapter.send(
-                        NotificationServiceEvent.DismissAllNotifications,
-                    )
+                result = notificationAdapter.dismissAllNotifications()
             }
 
             ActionData.DismissLastNotification -> {
-                result =
-                    notificationReceiverAdapter.send(
-                        NotificationServiceEvent.DismissLastNotification,
-                    )
+                result = notificationAdapter.dismissLastNotification()
             }
 
             is ActionData.CreateNotification -> {
@@ -1016,6 +1027,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     message = action.message,
                     isLong = action.duration == ActionData.Toast.Duration.LONG,
                 )
+                result = success()
+            }
+
+            is ActionData.Vibrate -> {
+                vibratorAdapter.vibrate(action.effect)
                 result = success()
             }
 

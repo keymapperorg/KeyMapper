@@ -116,7 +116,11 @@ class AndroidPhoneAdapter @Inject constructor(
         }
     }
 
-    override fun getCallState(): CallState {
+    override fun getCallState(): CallState? {
+        if (!hasReadPhoneStatePermission()) {
+            return null
+        }
+
         if (telephonyManager == null) {
             throw Exception("TelephonyManager is null. Does this device support telephony?")
         }
@@ -151,6 +155,13 @@ class AndroidPhoneAdapter @Inject constructor(
         return ActivityCompat.checkSelfPermission(
             ctx,
             Manifest.permission.ANSWER_PHONE_CALLS,
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasReadPhoneStatePermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.READ_PHONE_STATE,
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -232,8 +243,11 @@ class AndroidPhoneAdapter @Inject constructor(
     private fun callStateConverter(sdkCallState: Int): CallState {
         when (sdkCallState) {
             TelephonyManager.CALL_STATE_IDLE -> return CallState.NONE
+
             TelephonyManager.CALL_STATE_OFFHOOK -> return CallState.IN_PHONE_CALL
+
             TelephonyManager.CALL_STATE_RINGING -> return CallState.RINGING
+
             else -> throw IllegalArgumentException(
                 "Don't know how to convert that call state $sdkCallState",
             )

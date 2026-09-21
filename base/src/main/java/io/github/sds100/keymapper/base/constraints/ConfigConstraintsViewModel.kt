@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -15,7 +16,6 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -70,32 +71,74 @@ class ConfigConstraintsViewModel @Inject constructor(
 
     var showDuplicateConstraintsSnackbar: Boolean by mutableStateOf(false)
 
+    private val expandedGroups: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
+    private val knownGroupUids: MutableSet<String> = mutableSetOf()
+
     init {
+        viewModelScope.launch {
+            config.keyMap
+                .map { state -> state.dataOrNull()?.constraintState?.groups }
+                .filterNotNull()
+                .collect { groups ->
+                    val errorSnapshot = displayConstraint.constraintErrorSnapshot.first()
+                    val newExpandedGroups = mutableSetOf<String>()
+
+                    for (group in groups) {
+                        // Only expand a group automatically if it is the first time it has
+                        // been seen.
+                        if (!knownGroupUids.contains(group.uid) &&
+                            group.constraints.any { errorSnapshot.getError(it) != null }
+                        ) {
+                            newExpandedGroups.add(group.uid)
+                        }
+                    }
+
+                    // Expand all the groups at once and not one-by-one
+                    expandedGroups.update { set -> set.plus(newExpandedGroups) }
+
+                    knownGroupUids.addAll(groups.map { it.uid })
+                }
+        }
+
         combine(
             config.keyMap,
             shortcuts,
             constraintErrorSnapshot.filterNotNull(),
-        ) { keyMapState, shortcuts, errorSnapshot ->
+            expandedGroups,
+        ) { keyMapState, shortcuts, errorSnapshot, expandedGroups ->
             _state.value = keyMapState.mapData { keyMap ->
-                buildState(keyMap.constraintState, shortcuts, errorSnapshot)
+                buildState(keyMap.constraintState, shortcuts, errorSnapshot, expandedGroups)
             }
         }.launchIn(viewModelScope)
     }
 
     fun onClickShortcut(constraintData: ConstraintData) {
         viewModelScope.launch {
-            config.addConstraint(constraintData)
+            val group = config.addConstraint(groupUid = null, constraintData)
+
+            if (group != null) {
+                expandedGroups.update { set -> set.plus(group.uid) }
+            }
         }
     }
 
     fun onRemoveClick(id: String) = config.removeConstraint(id)
 
-    fun onSelectMode(mode: ConstraintMode) {
-        when (mode) {
-            ConstraintMode.AND -> config.setAndMode()
-            ConstraintMode.OR -> config.setOrMode()
-        }
+    fun onRemoveGroupClick(groupUid: String) = config.removeGroup(groupUid)
+
+    fun onNotClick(constraintUid: String) = config.toggleNot(constraintUid)
+
+    fun onSelectMode(mode: ConstraintMode) = config.setMode(mode)
+
+    fun onSelectGroupMode(groupUid: String, mode: ConstraintMode) {
+        config.setGroupMode(groupUid, mode)
     }
+
+    fun onRenameGroup(groupUid: String, name: String) {
+        config.setGroupName(groupUid, name)
+    }
+
+    fun onMoveGroup(fromIndex: Int, toIndex: Int) = config.moveGroup(fromIndex, toIndex)
 
     fun onFixError(constraintUid: String) {
         viewModelScope.launch {
@@ -103,7 +146,7 @@ class ConfigConstraintsViewModel @Inject constructor(
                 .firstOrNull()
                 ?.dataOrNull()
                 ?.constraintState
-                ?.constraints
+                ?.allConstraints
                 ?.find { it.uid == constraintUid }
                 ?: return@launch
 
@@ -133,17 +176,30 @@ class ConfigConstraintsViewModel @Inject constructor(
         }
     }
 
-    fun addConstraint() {
+    /**
+     * @param groupUid the group to add the constraint to. A new group is created if this is null.
+     */
+    fun addConstraint(groupUid: String?) {
         viewModelScope.launch {
-            val constraint: ConstraintData =
+            val constraintData: ConstraintData =
                 navigate("add_constraint", NavDestination.ChooseConstraint)
                     ?: return@launch
 
-            val isDuplicate = !config.addConstraint(constraint)
+            val group = config.addConstraint(groupUid, constraintData)
 
-            if (isDuplicate) {
+            if (group == null) {
                 showDuplicateConstraintsSnackbar = true
+            } else {
+                expandedGroups.update { set -> set.plus(group.uid) }
             }
+        }
+    }
+
+    fun onExpandedChange(groupUid: String, expanded: Boolean) {
+        if (expanded) {
+            expandedGroups.update { set -> set.plus(groupUid) }
+        } else {
+            expandedGroups.update { set -> set.minus(groupUid) }
         }
     }
 
@@ -162,35 +218,48 @@ class ConfigConstraintsViewModel @Inject constructor(
         state: ConstraintState,
         shortcuts: Set<ShortcutModel<ConstraintData>>,
         errorSnapshot: ConstraintErrorSnapshot,
+        expandedGroups: Set<String>,
     ): ConfigConstraintsState {
-        if (state.constraints.isEmpty()) {
+        if (state.allConstraints.isEmpty()) {
             return ConfigConstraintsState.Empty(shortcuts)
         }
 
-        val constraintList = state.constraints.mapIndexed { index, constraint ->
-            val title: String = uiHelper.getTitle(constraint)
-            val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
-            val error: KMError? = errorSnapshot.getError(constraint)
+        val groups = state.groups
+            .filter { it.constraints.isNotEmpty() }
+            .map { group ->
+                val constraints = group.constraints.map { constraint ->
+                    val error: KMError? = errorSnapshot.getError(constraint)
 
-            ConstraintListItemModel(
-                id = constraint.uid,
-                icon = icon,
-                constraintModeLink = if (state.constraints.size > 1 &&
-                    index < state.constraints.size - 1
-                ) {
-                    state.mode
-                } else {
-                    null
-                },
-                text = title,
-                error = error?.getFullMessage(this),
-                isErrorFixable = error?.isFixable ?: true,
-            )
-        }
+                    ConstraintListItemModel(
+                        id = constraint.uid,
+                        icon = uiHelper.getIcon(constraint),
+                        text = uiHelper.getTitle(constraint),
+                        isNot = constraint.isNot,
+                        error = error?.getFullMessage(this),
+                        isErrorFixable = error?.isFixable ?: true,
+                    )
+                }
+
+                val modeWord = when (group.mode) {
+                    ConstraintMode.AND -> getString(R.string.constraint_mode_and)
+                    ConstraintMode.OR -> getString(R.string.constraint_mode_or)
+                }
+
+                ConstraintGroupListItemModel(
+                    uid = group.uid,
+                    name = group.name,
+                    mode = group.mode,
+                    constraints = constraints,
+                    description = group.constraints.joinToString(separator = " $modeWord ") {
+                        uiHelper.getTitle(it)
+                    },
+                    isExpanded = expandedGroups.contains(group.uid),
+                )
+            }
 
         return ConfigConstraintsState.Loaded(
-            constraintList = constraintList,
-            selectedMode = state.mode,
+            groups = groups,
+            mode = state.mode,
             shortcuts = shortcuts,
         )
     }
@@ -201,8 +270,11 @@ sealed class ConfigConstraintsState {
         ConfigConstraintsState()
 
     data class Loaded(
-        val constraintList: List<ConstraintListItemModel>,
-        val selectedMode: ConstraintMode,
+        val groups: List<ConstraintGroupListItemModel>,
+        /**
+         * The mode that combines the groups.
+         */
+        val mode: ConstraintMode,
         val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet(),
     ) : ConfigConstraintsState()
 }

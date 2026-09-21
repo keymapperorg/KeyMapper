@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.purchasing
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
+import io.github.sds100.keymapper.base.purchasing.RevenueCatState
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class PurchasingManagerImpl : PurchasingManager {
     override val onCompleteProductPurchase: MutableSharedFlow<RevenueCatEntitlementId> =
         MutableSharedFlow()
-    override val entitlements: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> =
+    override val state: Flow<State<KMResult<RevenueCatState>>> =
         MutableStateFlow(State.Data(PurchasingError.PurchasingNotImplemented))
 
     override suspend fun launchPurchasingFlow(

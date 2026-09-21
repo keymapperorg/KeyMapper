@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -27,6 +28,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val keyMapRepository: KeyMapRepository,
+    private val packageManager: PackageManagerAdapter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
@@ -40,10 +42,18 @@ class OnboardingUseCaseImpl @Inject constructor(
         set(Keys.lastInstalledVersionCodeHomeScreen, buildConfigProvider.versionCode)
     }
 
-    override fun getWhatsNewText(): String =
-        with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
-            readText()
-        }
+    override fun isFreshInstall(): Boolean {
+        return packageManager.getInstallTime(buildConfigProvider.packageName) ==
+            packageManager.getLastUpdateTime(buildConfigProvider.packageName)
+    }
+
+    override val appVersionName: String
+        get() = buildConfigProvider.version
+
+    override fun getWhatsNewNotes(): WhatsNewNotes {
+        val text = fileAdapter.openAsset("whats-new-app.txt").bufferedReader().use { it.readText() }
+        return WhatsNewParser.parse(text)
+    }
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         settingsRepository.get(Keys.shownShizukuPermissionPrompt),
@@ -51,10 +61,10 @@ class OnboardingUseCaseImpl @Inject constructor(
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
     ) {
             shownPromptBefore,
-            isShizkuInstalled,
+            isShizukuInstalled,
             isShizukuPermissionGranted,
         ->
-        shownPromptBefore != true && isShizkuInstalled && !isShizukuPermissionGranted
+        shownPromptBefore != true && isShizukuInstalled && !isShizukuPermissionGranted
     }
 
     override val showShizukuAppIntroSlide: Boolean
@@ -119,7 +129,11 @@ interface OnboardingUseCase {
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()
-    fun getWhatsNewText(): String
+    val appVersionName: String
+
+    fun isFreshInstall(): Boolean
+
+    fun getWhatsNewNotes(): WhatsNewNotes
 
     val promptForShizukuPermission: Flow<Boolean>
 

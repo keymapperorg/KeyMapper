@@ -1,4 +1,42 @@
-## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.3.2)
+## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
+
+#### 21 September 2026
+
+## Added
+
+- #1341 new constraint for when a notification from a specific app, or with a specific title or text, is posted.
+- #1501 new action to cycle through your enabled keyboards.
+- #2250 redesigned the key map options screen with in-app guides for triggering and enabling/disabling a key map by intent.
+- #701 new action options bottom sheet design.
+- #701 you can now give custom names to actions, to make it easier to identify key maps.
+- #701 redesigned the action list with expandable action cards that show each option and error.
+- #1465 actions can be turned off individually without deleting them.
+- #1479 you can now duplicate an action from the action list.
+- #701 the delay before the next action is now set with a button between actions instead of in the action options.
+- Redesigned the action options with grouped repeat, burst, hold down and delay sections.
+- #752 Constraints can be organised into groups that each have their own AND/OR mode, and the groups are combined with AND or OR.
+- #752 Constraint groups can be given a custom name.
+- #752 Any constraint can be inverted.
+- #752 Redesigned the constraints screen with expandable constraint group cards.
+- #2139 color code disabled/enabled groups.
+- #1987 groups are red if any key maps inside have errors.
+- #2246 adjusted the trigger screen design to match the action and constraint screens.
+- #2249 make key maps more compact in the home screen.
+- #2259 all key maps can now be triggered by intent or shortcut without needing to enable it first.
+- #982 new action to vibrate the device with a custom duration or a predefined haptic effect (Click, Double Click, Heavy Click, Tick).
+- #982 the "vibrate on trigger" key map option can now also be customised with a predefined haptic effect instead of just a duration, via a new settings button next to the Vibrate option.
+- #2243 Redesigned What's New dialog.
+
+## Fixed
+
+- Do not crash if permission not granted for in phone call constraint and trying to perform key map.
+- #2258 remember saved position in key map list when changing them. Do not flash with loading indicator briefly as well.
+- #2167 do not show errors for app not in foreground constraint when the app is uninstalled/disabled.
+- #2262 request local network access permission for HTTP request action on Android 17+.
+- #2261 show the app's saved name instead of a generic label or raw package name for app-related constraints and actions when the app has been uninstalled.
+- #2244 only show "Expert mode started" notification the first time it is auto started. Not every time the Key Mapper process starts and the system bridge connects.
+
+## [4.4.0](https://github.com/sds100/KeyMapper/releases/tag/v4.4.0)
 
 #### 12 September 2026
 

@@ -3,11 +3,14 @@ package io.github.sds100.keymapper.base.actions
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.base.system.devices.FakeDevicesAdapter
+import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -18,6 +21,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -38,6 +43,8 @@ class PerformActionsUseCaseTest {
     private lateinit var mockToastAdapter: ToastAdapter
     private lateinit var mockInputEventHub: InputEventHub
     private lateinit var mockDisplayAdapter: DisplayAdapter
+    private lateinit var fakeInputMethodAdapter: FakeInputMethodAdapter
+    private lateinit var mockSwitchImeInterface: SwitchImeInterface
 
     @Before
     fun init() {
@@ -46,11 +53,13 @@ class PerformActionsUseCaseTest {
         mockToastAdapter = mock()
         mockInputEventHub = mock()
         mockDisplayAdapter = mock()
+        fakeInputMethodAdapter = FakeInputMethodAdapter()
+        mockSwitchImeInterface = mock()
 
         useCase = PerformActionsUseCaseImpl(
             service = mockAccessibilityService,
-            inputMethodAdapter = mock(),
-            switchImeInterface = mock(),
+            inputMethodAdapter = fakeInputMethodAdapter,
+            switchImeInterface = mockSwitchImeInterface,
             fileAdapter = mock(),
             suAdapter = mock {},
             shell = mock(),
@@ -75,7 +84,6 @@ class PerformActionsUseCaseTest {
             resourceProvider = mock(),
             settingsRepository = mock(),
             soundsManager = mock(),
-            notificationReceiverAdapter = mock(),
             ringtoneAdapter = mock(),
             inputEventHub = mockInputEventHub,
             systemBridgeConnectionManager = mock(),
@@ -83,6 +91,7 @@ class PerformActionsUseCaseTest {
             coroutineScope = testCoroutineScope,
             notificationAdapter = mock(),
             settingsAdapter = mock(),
+            vibratorAdapter = mock(),
         )
     }
 
@@ -272,5 +281,76 @@ class PerformActionsUseCaseTest {
 
             // THEN
             verify(mockAccessibilityService).tapScreen(eq(540), eq(1200), any())
+        }
+
+    /**
+     * issue #1501
+     */
+    @Test
+    fun `cycle keyboard action switches to the next input method`() = runTest(testDispatcher) {
+        // GIVEN
+        val imeA = ImeInfo("ime.a", "ime.a", "Keyboard A", isEnabled = true, isChosen = true)
+        val imeB = ImeInfo("ime.b", "ime.b", "Keyboard B", isEnabled = true, isChosen = false)
+
+        fakeInputMethodAdapter.inputMethods.value = listOf(imeA, imeB)
+        fakeInputMethodAdapter.chosenIme.value = imeA
+
+        // Simulate the input method actually switching once switchIme is called.
+        whenever(mockSwitchImeInterface.switchIme(any())).doAnswer { invocation ->
+            val imeId = invocation.getArgument<String>(0)
+            fakeInputMethodAdapter.chosenIme.value =
+                fakeInputMethodAdapter.inputMethods.value.first { it.id == imeId }
+            Success(Unit)
+        }
+
+        // WHEN
+        useCase.perform(ActionData.CycleKeyboard)
+
+        // THEN
+        verify(mockSwitchImeInterface).switchIme(eq("ime.b"))
+        verify(mockToastAdapter, never()).show(any(), any())
+    }
+
+    /**
+     * issue #1501
+     */
+    @Test
+    fun `cycle keyboard action shows an error if the keyboard does not switch in time`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val imeA = ImeInfo("ime.a", "ime.a", "Keyboard A", isEnabled = true, isChosen = true)
+            val imeB = ImeInfo("ime.b", "ime.b", "Keyboard B", isEnabled = true, isChosen = false)
+
+            fakeInputMethodAdapter.inputMethods.value = listOf(imeA, imeB)
+            fakeInputMethodAdapter.chosenIme.value = imeA
+            // The chosen IME never actually changes to ime.b.
+
+            // WHEN
+            useCase.perform(ActionData.CycleKeyboard)
+
+            // THEN
+            verify(mockSwitchImeInterface).switchIme(eq("ime.b"))
+            verify(mockToastAdapter).show(anyOrNull(), any())
+        }
+
+    /**
+     * issue #1501
+     */
+    @Test
+    fun `cycle keyboard action does not switch when there is only one enabled keyboard`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val onlyIme = ImeInfo("ime.a", "ime.a", "Keyboard A", isEnabled = true, isChosen = true)
+
+            fakeInputMethodAdapter.inputMethods.value = listOf(onlyIme)
+            fakeInputMethodAdapter.chosenIme.value = onlyIme
+
+            // WHEN
+            useCase.perform(ActionData.CycleKeyboard)
+
+            // THEN it still "switches" to the same keyboard rather than showing an error, and
+            // since that keyboard is already chosen the confirmation succeeds immediately.
+            verify(mockSwitchImeInterface).switchIme(eq("ime.a"))
+            verify(mockToastAdapter, never()).show(any(), any())
         }
 }

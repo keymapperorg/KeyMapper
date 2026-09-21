@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.base.input.EvdevDevicesDelegate
 import io.github.sds100.keymapper.base.purchasing.PurchasingError.ProductNotPurchased
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
+import io.github.sds100.keymapper.base.purchasing.RevenueCatState
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.trigger.TriggerError
@@ -88,11 +89,11 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
      * This waits for the purchases to be processed with a timeout so the UI doesn't
      * say there are no purchases while it is loading.
      */
-    private val purchasesFlow: Flow<State<KMResult<Set<RevenueCatEntitlementId>>>> = callbackFlow {
+    private val purchasesFlow: Flow<State<KMResult<RevenueCatState>>> = callbackFlow {
         try {
             val value = withTimeout(5000L) {
-                purchasingManager.entitlements.filterIsInstance<
-                    State.Data<KMResult<Set<RevenueCatEntitlementId>>>,
+                purchasingManager.state.filterIsInstance<
+                    State.Data<KMResult<RevenueCatState>>,
                     >()
                     .first()
             }
@@ -101,7 +102,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         } catch (_: TimeoutCancellationException) {
         }
 
-        purchasingManager.entitlements.collect(this::send)
+        purchasingManager.state.collect(this::send)
     }
 
     private val systemBridgeConnectionState: Flow<SystemBridgeConnectionState?> =
@@ -128,7 +129,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
-            purchases = purchases.dataOrNull() ?: Success(emptySet()),
+            purchases = purchases.dataOrNull()?.then { Success(it.entitlements) }
+                ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
             isSystemBridgeConnected = sysBridgeState is SystemBridgeConnectionState.Connected,
             evdevDevices = evdevDevices,

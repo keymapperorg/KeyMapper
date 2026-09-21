@@ -33,6 +33,7 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
+import io.github.sds100.keymapper.data.entities.ConstraintGroupEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
@@ -119,6 +120,7 @@ class BackupManagerImpl @Inject constructor(
             .registerTypeAdapter(ActionEntity.DESERIALIZER)
             .registerTypeAdapter(EntityExtra.DESERIALIZER)
             .registerTypeAdapter(ConstraintEntity.DESERIALIZER)
+            .registerTypeAdapter(ConstraintGroupEntity.DESERIALIZER)
             .registerTypeAdapter(FloatingLayoutEntity.DESERIALIZER)
             .registerTypeAdapter(FloatingButtonEntity.DESERIALIZER)
             .registerTypeAdapter(GroupEntity.DESERIALIZER)
@@ -260,6 +262,11 @@ class BackupManagerImpl @Inject constructor(
 
                     // Do nothing. Just added columns to floating button entity.
                     JsonMigration(21, 22) { json -> json },
+
+                    // Do nothing. Adds the constraint_groups column, which defaults to empty.
+                    // The isNot/groupUid extras this replaces were still WIP and unreleased,
+                    // so pre-existing key maps just fall back to isNot=false/groupUid=null.
+                    JsonMigration(22, 23) { json -> json },
                 )
 
                 if (keyMapListJsonArray != null) {

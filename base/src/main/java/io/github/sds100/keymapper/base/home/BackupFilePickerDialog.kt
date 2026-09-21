@@ -48,7 +48,7 @@ fun BackupFilePickerDialog(
         Column(modifier = Modifier.fillMaxWidth()) {
             if (files.isEmpty()) {
                 Text(
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 24.dp),
                     text = stringResource(R.string.home_import_no_backups_found_in_downloads),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -95,7 +95,7 @@ private fun BackupFileListRow(modifier: Modifier = Modifier, name: String, onCli
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewBackupFilePickerDialog() {
     KeyMapperTheme {
@@ -112,7 +112,7 @@ private fun PreviewBackupFilePickerDialog() {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewBackupFilePickerDialogEmpty() {
     KeyMapperTheme {

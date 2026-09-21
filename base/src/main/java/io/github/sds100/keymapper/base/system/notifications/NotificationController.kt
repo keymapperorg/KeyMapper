@@ -16,8 +16,6 @@ import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
@@ -44,7 +42,6 @@ class NotificationController @Inject constructor(
     private val hideInputMethod: ShowHideInputMethodUseCase,
     private val onboardingUseCase: OnboardingUseCase,
     private val resourceProvider: ResourceProvider,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ResourceProvider by resourceProvider {
 
@@ -188,15 +185,6 @@ class NotificationController @Inject constructor(
                 else -> Unit // Ignore other notification actions
             }
         }.launchIn(coroutineScope)
-
-        coroutineScope.launch {
-            systemBridgeConnectionManager.connectionState
-                .collect { connectionState ->
-                    if (connectionState is SystemBridgeConnectionState.Connected) {
-                        showSystemBridgeStartedNotification()
-                    }
-                }
-        }
 
         coroutineScope.launch {
             if (onboardingUseCase.showMigrateScreenOffKeyMapsNotification.first()) {
@@ -414,20 +402,4 @@ class NotificationController @Inject constructor(
         onGoing = true,
         priority = NotificationCompat.PRIORITY_LOW,
     )
-
-    private fun showSystemBridgeStartedNotification() {
-        val model = NotificationModel(
-            id = ID_SYSTEM_BRIDGE_STATUS,
-            title = getString(R.string.expert_mode_setup_notification_system_bridge_started_title),
-            text = getString(R.string.expert_mode_setup_notification_system_bridge_started_text),
-            channel = CHANNEL_SETUP_ASSISTANT,
-            icon = R.drawable.offline_bolt_24px,
-            onGoing = false,
-            showOnLockscreen = false,
-            autoCancel = true,
-            timeout = 5000,
-        )
-
-        manageNotifications.show(model)
-    }
 }

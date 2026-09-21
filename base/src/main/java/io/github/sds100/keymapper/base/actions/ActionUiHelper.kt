@@ -10,11 +10,13 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.VibrateEffectStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -22,6 +24,7 @@ import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.toPercentString
+import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentTarget
 
@@ -31,12 +34,22 @@ class ActionUiHelper(
 ) : ResourceProvider by resourceProvider,
     DisplayActionUseCase by displayActionUseCase {
 
+    /**
+     * @return the custom name of the action if it has one, otherwise the generated title.
+     */
+    fun getTitle(action: Action, showDeviceDescriptors: Boolean): String {
+        return action.customName?.takeIf { it.isNotBlank() }
+            ?: getTitle(action.data, showDeviceDescriptors)
+    }
+
     fun getTitle(action: ActionData, showDeviceDescriptors: Boolean): String = when (action) {
-        is ActionData.App ->
-            getAppName(action.packageName).handle(
-                onSuccess = { getString(R.string.description_open_app, it) },
-                onError = { getString(R.string.description_open_app, action.packageName) },
-            )
+        is ActionData.App -> {
+            val name = getAppName(action.packageName).valueIfFailure {
+                action.savedAppName ?: action.packageName
+            }
+
+            getString(R.string.description_open_app, name)
+        }
 
         is ActionData.AppShortcut -> action.shortcutTitle
 
@@ -204,95 +217,61 @@ class ActionUiHelper(
             }
         }
 
-        is ActionData.ControlMediaForApp ->
-            getAppName(action.packageName).handle(
-                onSuccess = { appName ->
-                    if (action is ActionData.ControlMediaForApp.StepForward &&
-                        action.stepDurationMs != null
-                    ) {
-                        getString(
-                            R.string.action_step_forward_media_package_with_duration_formatted,
-                            arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
-                        )
-                    } else if (action is ActionData.ControlMediaForApp.StepBackward &&
-                        action.stepDurationMs != null
-                    ) {
-                        getString(
-                            R.string.action_step_backward_media_package_with_duration_formatted,
-                            arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
-                        )
-                    } else {
-                        val resId = when (action) {
-                            is ActionData.ControlMediaForApp.Play ->
-                                R.string.action_play_media_package_formatted
+        is ActionData.ControlMediaForApp -> {
+            val appName = getAppName(action.packageName).valueIfFailure {
+                action.savedAppName ?: action.packageName
+            }
 
-                            is ActionData.ControlMediaForApp.FastForward ->
-                                R.string.action_fast_forward_package_formatted
+            if (action is ActionData.ControlMediaForApp.StepForward &&
+                action.stepDurationMs != null
+            ) {
+                getString(
+                    R.string.action_step_forward_media_package_with_duration_formatted,
+                    arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
+                )
+            } else if (action is ActionData.ControlMediaForApp.StepBackward &&
+                action.stepDurationMs != null
+            ) {
+                getString(
+                    R.string.action_step_backward_media_package_with_duration_formatted,
+                    arrayOf(appName, (action.stepDurationMs / 1000).toInt()),
+                )
+            } else {
+                val resId = when (action) {
+                    is ActionData.ControlMediaForApp.Play ->
+                        R.string.action_play_media_package_formatted
 
-                            is ActionData.ControlMediaForApp.NextTrack ->
-                                R.string.action_next_track_package_formatted
+                    is ActionData.ControlMediaForApp.FastForward ->
+                        R.string.action_fast_forward_package_formatted
 
-                            is ActionData.ControlMediaForApp.Pause ->
-                                R.string.action_pause_media_package_formatted
+                    is ActionData.ControlMediaForApp.NextTrack ->
+                        R.string.action_next_track_package_formatted
 
-                            is ActionData.ControlMediaForApp.PlayPause ->
-                                R.string.action_play_pause_media_package_formatted
+                    is ActionData.ControlMediaForApp.Pause ->
+                        R.string.action_pause_media_package_formatted
 
-                            is ActionData.ControlMediaForApp.PreviousTrack ->
-                                R.string.action_previous_track_package_formatted
+                    is ActionData.ControlMediaForApp.PlayPause ->
+                        R.string.action_play_pause_media_package_formatted
 
-                            is ActionData.ControlMediaForApp.Rewind ->
-                                R.string.action_rewind_package_formatted
+                    is ActionData.ControlMediaForApp.PreviousTrack ->
+                        R.string.action_previous_track_package_formatted
 
-                            is ActionData.ControlMediaForApp.Stop ->
-                                R.string.action_stop_media_package_formatted
+                    is ActionData.ControlMediaForApp.Rewind ->
+                        R.string.action_rewind_package_formatted
 
-                            is ActionData.ControlMediaForApp.StepForward ->
-                                R.string.action_step_forward_media_package_formatted
+                    is ActionData.ControlMediaForApp.Stop ->
+                        R.string.action_stop_media_package_formatted
 
-                            is ActionData.ControlMediaForApp.StepBackward ->
-                                R.string.action_step_backward_media_package_formatted
-                        }
+                    is ActionData.ControlMediaForApp.StepForward ->
+                        R.string.action_step_forward_media_package_formatted
 
-                        getString(resId, appName)
-                    }
-                },
-                onError = {
-                    val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play ->
-                            R.string.action_play_media_package
+                    is ActionData.ControlMediaForApp.StepBackward ->
+                        R.string.action_step_backward_media_package_formatted
+                }
 
-                        is ActionData.ControlMediaForApp.FastForward ->
-                            R.string.action_fast_forward_package
-
-                        is ActionData.ControlMediaForApp.NextTrack ->
-                            R.string.action_next_track_package
-
-                        is ActionData.ControlMediaForApp.Pause ->
-                            R.string.action_pause_media_package
-
-                        is ActionData.ControlMediaForApp.PlayPause ->
-                            R.string.action_play_pause_media_package
-
-                        is ActionData.ControlMediaForApp.PreviousTrack ->
-                            R.string.action_previous_track_package
-
-                        is ActionData.ControlMediaForApp.Rewind ->
-                            R.string.action_rewind_package
-
-                        is ActionData.ControlMediaForApp.Stop ->
-                            R.string.action_stop_media_package
-
-                        is ActionData.ControlMediaForApp.StepForward ->
-                            R.string.action_step_forward_media_package
-
-                        is ActionData.ControlMediaForApp.StepBackward ->
-                            R.string.action_step_backward_media_package
-                    }
-
-                    getString(resId)
-                },
-            )
+                getString(resId, appName)
+            }
+        }
 
         is ActionData.Flashlight -> {
             when (action) {
@@ -712,17 +691,23 @@ class ActionUiHelper(
             R.string.action_expand_notification_drawer,
         )
 
-        ActionData.StatusBar.ExpandQuickSettings -> getString(R.string.action_expand_quick_settings)
+        ActionData.StatusBar.ExpandQuickSettings -> getString(
+            R.string.action_expand_quick_settings,
+        )
 
         ActionData.StatusBar.ToggleNotifications -> getString(
             R.string.action_toggle_notification_drawer,
         )
 
-        ActionData.StatusBar.ToggleQuickSettings -> getString(R.string.action_toggle_quick_settings)
+        ActionData.StatusBar.ToggleQuickSettings -> getString(
+            R.string.action_toggle_quick_settings,
+        )
 
         ActionData.ToggleKeyboard -> getString(R.string.action_toggle_keyboard)
 
         ActionData.CycleKeyboardLanguage -> getString(R.string.action_cycle_keyboard_language)
+
+        ActionData.CycleKeyboard -> getString(R.string.action_cycle_keyboard)
 
         ActionData.ToggleSplitScreen -> getString(R.string.action_toggle_split_screen)
 
@@ -734,7 +719,9 @@ class ActionUiHelper(
 
         ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
 
-        ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
+        ActionData.DismissAllNotifications -> getString(
+            R.string.action_dismiss_all_notifications,
+        )
 
         ActionData.DismissLastNotification -> getString(
             R.string.action_dismiss_most_recent_notification,
@@ -809,6 +796,24 @@ class ActionUiHelper(
 
                 ActionData.Toast.Duration.LONG -> {
                     getString(R.string.action_toast_description_long, action.message)
+                }
+            }
+        }
+
+        is ActionData.Vibrate -> {
+            when (val effect = action.effect) {
+                is VibrateEffect.CustomDuration -> {
+                    getString(
+                        R.string.action_vibrate_description_duration,
+                        effect.durationMs.toString(),
+                    )
+                }
+
+                is VibrateEffect.Predefined -> {
+                    getString(
+                        R.string.action_vibrate_description_predefined,
+                        getString(VibrateEffectStrings.getLabel(effect.predefinedType)),
+                    )
                 }
             }
         }
@@ -891,63 +896,7 @@ class ActionUiHelper(
     }
 
     fun getOptionLabels(keyMap: KeyMap, action: Action) = buildList {
-        if (keyMap.isRepeatingActionsAllowed() && action.repeat) {
-            val repeatDescription = buildString {
-                append(getString(R.string.flag_repeat_build_description_start))
-
-                val repeatLimit = when {
-                    action.repeatLimit != null -> action.repeatLimit
-
-                    action.repeatMode == RepeatMode.LIMIT_REACHED -> 1
-
-                    // and is null
-                    else -> null
-                }
-
-                if (repeatLimit != null) {
-                    append(" ")
-                    append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
-                }
-
-                if (action.repeatRate != null) {
-                    append(" ")
-                    append(
-                        getString(
-                            R.string.flag_repeat_build_description_repeat_rate,
-                            action.repeatRate,
-                        ),
-                    )
-                }
-
-                if (action.repeatDelay != null) {
-                    append(" ")
-                    append(
-                        getString(
-                            R.string.flag_repeat_build_description_repeat_delay,
-                            action.repeatDelay,
-                        ),
-                    )
-                }
-
-                append(" ")
-
-                when (action.repeatMode) {
-                    RepeatMode.TRIGGER_RELEASED -> {
-                        append(getString(R.string.flag_repeat_build_description_until_released))
-                    }
-
-                    RepeatMode.TRIGGER_PRESSED_AGAIN -> {
-                        append(
-                            getString(R.string.flag_repeat_build_description_until_pressed_again),
-                        )
-                    }
-
-                    else -> Unit
-                }
-            }
-
-            add(repeatDescription)
-        }
+        getRepeatDescription(keyMap, action)?.let { add(it) }
 
         if (keyMap.isHoldingDownActionAllowed(action) &&
             action.holdDown &&
@@ -961,6 +910,102 @@ class ActionUiHelper(
             action.stopHoldDownWhenTriggerPressedAgain
         ) {
             add(getString(R.string.flag_hold_down_until_pressed_again))
+        }
+    }
+
+    /**
+     * @return null if the action does not repeat.
+     */
+    fun getRepeatDescription(keyMap: KeyMap, action: Action): String? {
+        if (!keyMap.isRepeatingActionsAllowed() || !action.repeat) {
+            return null
+        }
+
+        return buildString {
+            append(getString(R.string.flag_repeat_build_description_start))
+
+            val repeatLimit = when {
+                action.repeatLimit != null -> action.repeatLimit
+
+                action.repeatMode == RepeatMode.LIMIT_REACHED -> 1
+
+                // and is null
+                else -> null
+            }
+
+            if (repeatLimit != null) {
+                append(" ")
+                append(getString(R.string.flag_repeat_build_description_limit, repeatLimit))
+            }
+
+            if (action.repeatRate != null) {
+                append(" ")
+                append(
+                    getString(
+                        R.string.flag_repeat_build_description_repeat_rate,
+                        action.repeatRate,
+                    ),
+                )
+            }
+
+            if (action.repeatDelay != null) {
+                append(" ")
+                append(
+                    getString(
+                        R.string.flag_repeat_build_description_repeat_delay,
+                        action.repeatDelay,
+                    ),
+                )
+            }
+
+            append(" ")
+
+            when (action.repeatMode) {
+                RepeatMode.TRIGGER_RELEASED -> {
+                    append(getString(R.string.flag_repeat_build_description_until_released))
+                }
+
+                RepeatMode.TRIGGER_PRESSED_AGAIN -> {
+                    append(
+                        getString(R.string.flag_repeat_build_description_until_pressed_again),
+                    )
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    /**
+     * @return null if the action is not performed in a burst.
+     */
+    fun getBurstDescription(action: Action): String? {
+        val multiplier = action.multiplier ?: return null
+
+        if (multiplier <= 1) {
+            return null
+        }
+
+        return getString(R.string.action_list_burst, multiplier)
+    }
+
+    /**
+     * @return null if the action is not held down.
+     */
+    fun getHoldDownDescription(keyMap: KeyMap, action: Action): String? {
+        if (!keyMap.isHoldingDownActionAllowed(action) || !action.holdDown) {
+            return null
+        }
+
+        return when {
+            keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) &&
+                action.holdDownDuration != null ->
+                getString(R.string.action_list_hold_down_duration, action.holdDownDuration)
+
+            action.stopHoldDownWhenTriggerPressedAgain ->
+                getString(R.string.flag_hold_down_until_pressed_again)
+
+            else -> getString(R.string.flag_hold_down)
         }
     }
 }

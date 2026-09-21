@@ -6,6 +6,7 @@ import android.telephony.SmsManager
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.RevenueCatEntitlementId
+import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
@@ -85,16 +86,19 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             resourceProvider.getString(resId)
         }
 
-        is KMError.AppNotFound ->
-            resourceProvider.getString(
-                R.string.error_app_isnt_installed,
-                packageName,
-            )
+        is KMError.AppNotFound -> {
+            val name = appName
+            if (name != null) {
+                resourceProvider.getString(R.string.error_app_isnt_installed_named, name)
+            } else {
+                resourceProvider.getString(R.string.error_app_isnt_installed, packageName)
+            }
+        }
 
         is KMError.AppDisabled ->
             resourceProvider.getString(
                 R.string.error_app_is_disabled_package_name,
-                this.packageName,
+                this.appName ?: this.packageName,
             )
 
         is KMError.NoCompatibleImeEnabled ->
@@ -612,3 +616,38 @@ val KMError.isFixable: Boolean
         else ->
             false
     }
+
+fun TriggerError.getFullMessage(resourceProvider: ResourceProvider): String = when (this) {
+    TriggerError.DND_ACCESS_DENIED ->
+        resourceProvider.getString(R.string.trigger_error_dnd_access_denied)
+
+    TriggerError.CANT_DETECT_IN_PHONE_CALL ->
+        resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call)
+
+    TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED ->
+        resourceProvider.getString(R.string.trigger_error_assistant_not_purchased)
+
+    TriggerError.DPAD_IME_NOT_SELECTED ->
+        resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
+
+    TriggerError.FLOATING_BUTTON_DELETED ->
+        resourceProvider.getString(R.string.trigger_error_floating_button_deleted)
+
+    TriggerError.FLOATING_BUTTONS_NOT_PURCHASED ->
+        resourceProvider.getString(R.string.trigger_error_floating_buttons_not_purchased)
+
+    TriggerError.PURCHASE_VERIFICATION_FAILED ->
+        resourceProvider.getString(R.string.trigger_error_product_verification_failed)
+
+    TriggerError.SYSTEM_BRIDGE_UNSUPPORTED ->
+        resourceProvider.getString(R.string.trigger_error_system_bridge_unsupported)
+
+    TriggerError.SYSTEM_BRIDGE_DISCONNECTED ->
+        resourceProvider.getString(R.string.trigger_error_system_bridge_disconnected)
+
+    TriggerError.EVDEV_DEVICE_NOT_FOUND ->
+        resourceProvider.getString(R.string.trigger_error_evdev_device_not_found)
+
+    TriggerError.MIGRATE_SCREEN_OFF_TRIGGER ->
+        resourceProvider.getString(R.string.trigger_error_migrate_screen_off_key_map)
+}

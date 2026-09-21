@@ -1221,7 +1221,7 @@ private fun SystemBridgeStartErrorDialog(
     )
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewSystemBridgeStartErrorDialog() {
     KeyMapperTheme {

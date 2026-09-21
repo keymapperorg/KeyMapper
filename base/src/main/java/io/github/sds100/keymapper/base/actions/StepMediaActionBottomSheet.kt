@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ private const val DURATION_STEP_SECONDS = 5
 data class StepMediaActionBottomSheetState(
     val actionId: ActionId,
     val packageName: String? = null,
+    val appName: String? = null,
     val durationEnabled: Boolean = false,
     /**
      * UI works with seconds for user-friendliness
@@ -173,7 +175,7 @@ private fun StepMediaActionBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun StepMediaActionBottomSheetPreview() {
     KeyMapperTheme {
@@ -181,6 +183,7 @@ private fun StepMediaActionBottomSheetPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         StepMediaActionBottomSheet(
@@ -195,7 +198,7 @@ private fun StepMediaActionBottomSheetPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun StepMediaActionBottomSheetDefaultPreview() {
     KeyMapperTheme {
@@ -203,6 +206,7 @@ private fun StepMediaActionBottomSheetDefaultPreview() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         StepMediaActionBottomSheet(

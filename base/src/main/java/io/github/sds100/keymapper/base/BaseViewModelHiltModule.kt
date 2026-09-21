@@ -61,6 +61,8 @@ import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
 import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegateImpl
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
+import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegateImpl
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -196,6 +198,10 @@ abstract class BaseViewModelHiltModule {
     abstract fun bindFixKeyEventActionDelegate(
         impl: FixKeyEventActionDelegateImpl,
     ): FixKeyEventActionDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindVibrateConfigDelegate(impl: VibrateConfigDelegateImpl): VibrateConfigDelegate
 
     @Binds
     @ViewModelScoped

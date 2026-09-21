@@ -18,6 +18,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -192,7 +193,7 @@ private fun DisplayResolutionConstraintBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewWithModes() {
     KeyMapperTheme {
@@ -200,6 +201,7 @@ private fun PreviewWithModes() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         DisplayResolutionConstraintBottomSheet(
@@ -219,7 +221,7 @@ private fun PreviewWithModes() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewCustomOnly() {
     KeyMapperTheme {
@@ -227,6 +229,7 @@ private fun PreviewCustomOnly() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
 
         DisplayResolutionConstraintBottomSheet(

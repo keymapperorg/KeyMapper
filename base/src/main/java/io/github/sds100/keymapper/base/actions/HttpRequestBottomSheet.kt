@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -291,7 +292,7 @@ private fun HttpRequestBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
@@ -299,6 +300,7 @@ private fun PreviewEmpty() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
         HttpRequestBottomSheet(
             sheetState = sheetState,
@@ -315,7 +317,7 @@ private fun PreviewEmpty() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun PreviewFilled() {
     KeyMapperTheme {
@@ -323,6 +325,7 @@ private fun PreviewFilled() {
             skipPartiallyExpanded = true,
             positionalThreshold = { 0f },
             velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
         )
         HttpRequestBottomSheet(
             sheetState = sheetState,

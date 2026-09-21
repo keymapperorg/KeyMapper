@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.trigger
 import io.github.sds100.keymapper.base.floating.FloatingButtonData
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 
@@ -435,16 +436,23 @@ class ConfigTriggerDelegate {
         return trigger.copy(vibrate = enabled).validate()
     }
 
-    fun setVibrationDuration(
+    fun setVibrateEffect(
         trigger: Trigger,
-        duration: Int,
+        effect: VibrateEffect?,
         defaultVibrateDuration: Int,
     ): Trigger {
-        return if (duration == defaultVibrateDuration) {
-            trigger.copy(vibrateDuration = null).validate()
+        // Store null (use the app-wide default, which can change later) rather than a
+        // custom duration that happens to currently match it.
+        val normalizedEffect = if (
+            effect is VibrateEffect.CustomDuration &&
+            effect.durationMs == defaultVibrateDuration.toLong()
+        ) {
+            null
         } else {
-            trigger.copy(vibrateDuration = duration).validate()
+            effect
         }
+
+        return trigger.copy(vibrateEffect = normalizedEffect).validate()
     }
 
     fun setLongPressDelay(trigger: Trigger, delay: Int, defaultLongPressDelay: Int): Trigger {
@@ -477,10 +485,6 @@ class ConfigTriggerDelegate {
 
     fun setLongPressDoubleVibrationEnabled(trigger: Trigger, enabled: Boolean): Trigger {
         return trigger.copy(longPressDoubleVibration = enabled).validate()
-    }
-
-    fun setTriggerFromOtherAppsEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(triggerFromOtherApps = enabled).validate()
     }
 
     fun setShowToastEnabled(trigger: Trigger, enabled: Boolean): Trigger {

@@ -24,8 +24,9 @@ Android app for custom key/gamepad remapping, macros, and on-screen buttons. Sup
 ./gradlew :base:testDebugUnitTest   # single module
 
 # Kotlin lint
-./gradlew ktlintCheck         # check
-./gradlew ktlintFormat        # auto-fix
+# First run format before doing check
+./gradlew ktlintFormat
+./gradlew ktlintCheck
 
 # Rust (run from evdev/src/main/rust/evdev_manager)
 cargo fmt --check
@@ -90,6 +91,9 @@ Example: `#2025 feat: add button to report bug on home screen`
 - Use `LocalUriHandler.openUriSafe` extension for URL launching — do not hoist URL launching logic up the call stack
 - Use import statements; never use fully qualified names in Compose code
 - Write `@Preview` composables for every screen
+- Dialog and modal bottom sheet previews render blank by default because they open a separate
+  window. Use `@Preview(showSystemUi = true)` for both. For bottom sheets, also create the
+  preview's `SheetState` with `initialValue = SheetValue.Expanded`.
 
 ## Adding a New Action (10-step checklist)
 

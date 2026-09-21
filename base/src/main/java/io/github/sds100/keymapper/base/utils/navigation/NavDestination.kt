@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateRe
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.constraints.ConstraintData
+import io.github.sds100.keymapper.base.system.apps.ChooseAppResult
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
@@ -47,6 +48,9 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
         const val ID_GET_EVENT = "get_event"
         const val ID_XIAOMI_OPTIMIZATION = "xiaomi_optimization"
+        const val ID_TRIGGER_BY_INTENT = "trigger_by_intent"
+        const val ID_ENABLE_BY_INTENT = "enable_by_intent"
+        const val ID_CONFIG_NOTIFICATION_CONSTRAINT = "config_notification_constraint"
     }
 
     @Serializable
@@ -60,7 +64,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
          * Allow the list to show hidden apps that can't be launched.
          */
         val allowHiddenApps: Boolean,
-    ) : NavDestination<String>() {
+    ) : NavDestination<ChooseAppResult>() {
         override val id: String = ID_CHOOSE_APP
     }
 
@@ -122,6 +126,12 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object ChooseConstraint : NavDestination<ConstraintData>(isCompose = true) {
         override val id: String = ID_CHOOSE_CONSTRAINT
+    }
+
+    @Serializable
+    data object ConfigNotificationConstraint :
+        NavDestination<ConstraintData.NotificationPosted>(isCompose = true) {
+        override val id: String = ID_CONFIG_NOTIFICATION_CONSTRAINT
     }
 
     @Serializable
@@ -222,5 +232,15 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object XiaomiOptimization : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_XIAOMI_OPTIMIZATION
+    }
+
+    @Serializable
+    data class TriggerByIntent(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_TRIGGER_BY_INTENT
+    }
+
+    @Serializable
+    data class EnableByIntent(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_ENABLE_BY_INTENT
     }
 }

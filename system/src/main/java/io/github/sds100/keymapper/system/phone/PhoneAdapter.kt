@@ -10,7 +10,7 @@ interface PhoneAdapter {
      * Must check if Key Mapper has READ_PHONE_STATE permission before calling this. Otherwise
      * a security exception will be thrown.
      */
-    fun getCallState(): CallState
+    fun getCallState(): CallState?
     fun startCall(number: String): KMResult<*>
     fun answerCall()
     fun endCall()
