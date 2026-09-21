@@ -121,7 +121,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
         val subGroupListItems = keyMapGroup.subGroups.map { (group, _, _) ->
             var icon: ComposeIconInfo? = null
 
-            val constraint = group.constraintState.constraints.firstOrNull()
+            val constraint = group.constraintState.allConstraints.firstOrNull()
             if (constraint != null) {
                 icon = constraintUiHelper.getIcon(constraint)
             }
@@ -157,7 +157,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                 isEditingGroupName = false,
                 isNewGroup = false,
                 parentConstraintCount = keyMapGroup.parents.sumOf {
-                    it.constraintState.constraints.size
+                    it.constraintState.allConstraints.size
                 },
                 keyMapsEnabled = null,
             )

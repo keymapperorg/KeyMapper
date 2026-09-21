@@ -37,7 +37,7 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
             // Do not include constraints that the key map already contains.
             shortcutData
                 .filter { constraintData ->
-                    !keyMap.data.constraintState.constraints.any { it.data == constraintData }
+                    !keyMap.data.constraintState.allConstraints.any { it.data == constraintData }
                 }
                 .take(5)
         }

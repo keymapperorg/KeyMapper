@@ -59,7 +59,7 @@ abstract class SimpleMappingController(
         if (!keyMap.isEnabled) return
         if (keyMap.actionList.isEmpty()) return
 
-        if (keyMap.constraintState.constraints.isNotEmpty()) {
+        if (keyMap.constraintState.allConstraints.isNotEmpty()) {
             val constraintSnapshot = detectConstraintsUseCase.getSnapshot()
             if (!constraintSnapshot.isSatisfied(keyMap.constraintState)) return
         }

@@ -162,7 +162,7 @@ class KeyMapListViewModel(
                     val errors: List<KeyMapError> = when (dialogId) {
                         is FixErrorsDialogId.Group -> {
                             buildGroupConstraintsErrors(
-                                keyMapGroup.group?.constraintState?.constraints.orEmpty(),
+                                keyMapGroup.group?.constraintState?.allConstraints.orEmpty(),
                                 constraintSnapshot,
                             )
                         }
@@ -492,16 +492,18 @@ class KeyMapListViewModel(
             val selectedKeyMapsEnabled: SelectedKeyMapsEnabled? =
                 getKeyMapSelectedState(keyMapGroup.keyMaps.dataOrNull() ?: emptyList())
 
+            val (constraints, constraintMode) = listItemCreator.buildConstraintChipList(
+                keyMapGroup.group.constraintState,
+                constraintErrorSnapshot,
+                isEnabled = true,
+            )
+
             return KeyMapAppBarState.ChildGroup(
                 groupName = keyMapGroup.group.name,
-                constraints = listItemCreator.buildConstraintChipList(
-                    keyMapGroup.group.constraintState,
-                    constraintErrorSnapshot,
-                    isEnabled = true,
-                ),
-                constraintMode = keyMapGroup.group.constraintState.mode,
+                constraints = constraints,
+                constraintMode = constraintMode,
                 parentConstraintCount = keyMapGroup.parents.sumOf {
-                    it.constraintState.constraints.size
+                    it.constraintState.allConstraints.size
                 },
                 subGroups = subGroupListItems,
                 breadcrumbs = breadcrumbs,
@@ -515,7 +517,7 @@ class KeyMapListViewModel(
     private fun buildGroupListItem(groupState: GroupWithState): GroupListItemModel {
         var icon: ComposeIconInfo? = null
 
-        val constraint = groupState.group.constraintState.constraints.firstOrNull()
+        val constraint = groupState.group.constraintState.allConstraints.firstOrNull()
         if (constraint != null) {
             icon = constraintUiHelper.getIcon(constraint)
         }

@@ -10,6 +10,6 @@ data class ConstraintState(
     val groups: List<ConstraintGroup> = emptyList(),
     val mode: ConstraintMode = ConstraintMode.AND,
 ) {
-    val constraints: List<Constraint>
+    val allConstraints: List<Constraint>
         get() = groups.flatMap { it.constraints }
 }

@@ -139,7 +139,7 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
     ): GroupWithState {
         val isEnabled = keyMaps.isEmpty() || keyMaps.any { it.isEnabled }
 
-        val hasOwnConstraintError = group.constraintState.constraints.any {
+        val hasOwnConstraintError = group.constraintState.allConstraints.any {
             constraintErrorSnapshot.getError(it) != null
         }
 
@@ -149,7 +149,7 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
                     actionErrorSnapshot.getErrors(
                         keyMap.actionList.filter { it.isEnabled }.map { it.data },
                     ).values.any { it != null } ||
-                        keyMap.constraintState.constraints.any {
+                        keyMap.constraintState.allConstraints.any {
                             constraintErrorSnapshot.getError(it) != null
                         }
                     )

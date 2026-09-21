@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -23,6 +24,10 @@ class ResourceProviderImpl @Inject constructor(@ApplicationContext context: Cont
 
     override fun getString(resId: Int): String = ctx.str(resId)
 
+    override fun getPluralString(resId: Int, quantity: Int, vararg args: Any): String {
+        return ctx.resources.getQuantityString(resId, quantity, *args)
+    }
+
     override fun getDrawable(resId: Int): Drawable = ctx.drawable(resId)
 
     override fun getColor(color: Int): Int = ctx.color(color)
@@ -32,6 +37,8 @@ interface ResourceProvider {
     fun getString(@StringRes resId: Int, args: Array<Any>): String
     fun getString(@StringRes resId: Int, arg: Any): String
     fun getString(@StringRes resId: Int): String
+    fun getPluralString(@PluralsRes resId: Int, quantity: Int, vararg args: Any): String
+
     fun getText(@StringRes resId: Int): CharSequence
     fun getDrawable(@DrawableRes resId: Int): Drawable
     fun getColor(@ColorRes color: Int): Int

@@ -146,7 +146,7 @@ class ConfigConstraintsViewModel @Inject constructor(
                 .firstOrNull()
                 ?.dataOrNull()
                 ?.constraintState
-                ?.constraints
+                ?.allConstraints
                 ?.find { it.uid == constraintUid }
                 ?: return@launch
 
@@ -220,7 +220,7 @@ class ConfigConstraintsViewModel @Inject constructor(
         errorSnapshot: ConstraintErrorSnapshot,
         expandedGroups: Set<String>,
     ): ConfigConstraintsState {
-        if (state.constraints.isEmpty()) {
+        if (state.allConstraints.isEmpty()) {
             return ConfigConstraintsState.Empty(shortcuts)
         }
 

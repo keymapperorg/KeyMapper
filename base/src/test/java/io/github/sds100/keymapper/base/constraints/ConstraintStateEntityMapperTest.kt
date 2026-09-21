@@ -46,7 +46,7 @@ class ConstraintStateEntityMapperTest {
 
         assertThat(state.groups.size, `is`(1))
         assertThat(
-            state.constraints,
+            state.allConstraints,
             `is`(
                 listOf(
                     Constraint(uid = "uid1", data = ConstraintData.ScreenOn, isNot = true),

@@ -100,7 +100,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
                     val group = groupMap[groupUid]!!
                     groupUid = group.parentUid
 
-                    if (group.constraintState.constraints.isNotEmpty()) {
+                    if (group.constraintState.allConstraints.isNotEmpty()) {
                         constraintStates.add(group.constraintState)
                     }
 
