@@ -121,10 +121,7 @@ jobs:
           cache: 'gradle'
 
       - name: Setup Android SDK
-        # Pinned to vbuberen's fork/commit for android-actions/setup-android#538,
-        # which drops the deprecated `tools` package that Google stopped serving.
-        # Switch back to android-actions/setup-android@v4 once that PR merges.
-        uses: vbuberen/setup-android@dd83ef4e10ea64da1c6e9484424382da8db64e36
+        uses: android-actions/setup-android@v4
         with:
           ndk-version: "27.2.12479018"
 
