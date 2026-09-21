@@ -178,7 +178,6 @@ private fun WhatsNewSection(
             if (item.isSpotlight) {
                 Surface(
                     modifier = Modifier.padding(horizontal = 16.dp),
-
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     border = BorderStroke(
                         width = 1.dp,
@@ -186,7 +185,7 @@ private fun WhatsNewSection(
                     ),
                     shape = MaterialTheme.shapes.small,
                 ) {
-                    WhatsNewItemText(Modifier.padding(vertical = 4.dp, horizontal = 8.dp), item)
+                    WhatsNewItemText(Modifier.padding(vertical = 8.dp, horizontal = 12.dp), item)
                 }
             } else {
                 WhatsNewItemText(
