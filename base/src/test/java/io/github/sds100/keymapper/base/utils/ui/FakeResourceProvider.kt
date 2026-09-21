@@ -17,6 +17,10 @@ class FakeResourceProvider : ResourceProvider {
         return stringResourceMap[resId] ?: ""
     }
 
+    override fun getPluralString(resId: Int, quantity: Int, vararg args: Any): String {
+        throw Exception()
+    }
+
     override fun getText(resId: Int): CharSequence {
         return stringResourceMap[resId] ?: ""
     }
