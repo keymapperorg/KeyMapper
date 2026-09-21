@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
@@ -224,8 +225,8 @@ private fun ChildGroupHeader(
                     val modeColors = SegmentedButtonDefaults.colors(
                         activeContainerColor = MaterialTheme.colorScheme.primary,
                         activeContentColor = MaterialTheme.colorScheme.onPrimary,
-                        activeBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        inactiveBorderColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        activeBorderColor = MaterialTheme.colorScheme.primary,
+                        inactiveBorderColor = MaterialTheme.colorScheme.primary,
                         inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
 
@@ -386,7 +387,7 @@ private fun RootGroupHeaderNoWarningsPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@PreviewLightDark
 @Composable
 private fun ChildGroupHeaderPreview() {
     val state = KeyMapAppBarState.ChildGroup(
