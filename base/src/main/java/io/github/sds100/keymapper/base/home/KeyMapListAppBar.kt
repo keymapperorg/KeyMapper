@@ -30,8 +30,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Campaign
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Edit
@@ -421,7 +421,7 @@ private fun AppBarActions(
         if (showWhatsNew) {
             IconButton(onClick = onWhatsNewClick) {
                 Icon(
-                    Icons.Outlined.Campaign,
+                    Icons.Rounded.Campaign,
                     contentDescription = stringResource(R.string.home_app_bar_whats_new),
                 )
             }
