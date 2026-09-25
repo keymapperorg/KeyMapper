@@ -112,6 +112,7 @@ fun ConstraintGroupItem(
     onRemoveConstraintClick: (String) -> Unit = {},
     onFixConstraintClick: (String) -> Unit = {},
     onNotClick: (String) -> Unit = {},
+    onEditConstraintClick: (String) -> Unit = {},
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
 ) {
@@ -178,6 +179,7 @@ fun ConstraintGroupItem(
                 onRemoveConstraintClick = onRemoveConstraintClick,
                 onFixConstraintClick = onFixConstraintClick,
                 onNotClick = onNotClick,
+                onEditConstraintClick = onEditConstraintClick,
             )
         },
     )
@@ -247,6 +249,7 @@ private fun ExpandedContent(
     onRemoveConstraintClick: (String) -> Unit,
     onFixConstraintClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
+    onEditConstraintClick: (String) -> Unit,
 ) {
     Column(modifier) {
         Text(
@@ -273,6 +276,7 @@ private fun ExpandedContent(
             onRemoveConstraintClick = onRemoveConstraintClick,
             onFixConstraintClick = onFixConstraintClick,
             onNotClick = onNotClick,
+            onEditConstraintClick = onEditConstraintClick,
         )
 
         Spacer(Modifier.size(8.dp))
@@ -339,6 +343,7 @@ private fun GroupConstraintList(
     onRemoveConstraintClick: (String) -> Unit,
     onFixConstraintClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
+    onEditConstraintClick: (String) -> Unit,
 ) {
     val linkText = when (mode) {
         ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
@@ -354,6 +359,7 @@ private fun GroupConstraintList(
                     onRemoveClick = { onRemoveConstraintClick(constraint.id) },
                     onFixClick = { onFixConstraintClick(constraint.id) },
                     onNotClick = { onNotClick(constraint.id) },
+                    onEditClick = { onEditConstraintClick(constraint.id) },
                 )
 
                 if (index < constraints.lastIndex) {
@@ -385,6 +391,7 @@ private val previewConstraints = listOf(
         id = "2",
         icon = ComposeIconInfo.Vector(Icons.Outlined.Wifi),
         text = "Wi-Fi is on",
+        isEditable = true,
     ),
 )
 

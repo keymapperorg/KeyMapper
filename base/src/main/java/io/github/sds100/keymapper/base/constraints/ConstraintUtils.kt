@@ -388,3 +388,20 @@ object ConstraintUtils {
         }
     }
 }
+
+fun ConstraintData.isEditable(): Boolean = when (this) {
+    is ConstraintData.AppInForeground,
+    is ConstraintData.AppPlayingMedia,
+    is ConstraintData.BtDeviceConnected,
+    is ConstraintData.OrientationCustom,
+    is ConstraintData.PhysicalOrientation,
+    is ConstraintData.DisplayResolution,
+    is ConstraintData.FlashlightOn,
+    is ConstraintData.WifiConnected,
+    is ConstraintData.ImeChosen,
+    is ConstraintData.NotificationPosted,
+    is ConstraintData.Time,
+        -> true
+
+    else -> false
+}

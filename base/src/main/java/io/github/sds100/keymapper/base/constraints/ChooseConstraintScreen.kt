@@ -54,8 +54,7 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
     val state by viewModel.groups.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
-    TimeConstraintBottomSheet(viewModel)
-    DisplayResolutionConstraintBottomSheet(viewModel)
+    HandleConstraintBottomSheets(viewModel.createConstraintDelegate)
 
     ChooseConstraintScreen(
         modifier = modifier,
@@ -66,6 +65,12 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
         onClickConstraint = viewModel::onListItemClick,
         onNavigateBack = viewModel::onNavigateBack,
     )
+}
+
+@Composable
+fun HandleConstraintBottomSheets(delegate: CreateConstraintDelegate) {
+    TimeConstraintBottomSheet(delegate)
+    DisplayResolutionConstraintBottomSheet(delegate)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

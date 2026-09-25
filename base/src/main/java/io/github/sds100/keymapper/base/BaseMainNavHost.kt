@@ -106,8 +106,12 @@ fun BaseMainNavHost(
             )
         }
 
-        composable<NavDestination.ConfigNotificationConstraint> {
+        composable<NavDestination.ConfigNotificationConstraint> { backStackEntry ->
             val viewModel: ConfigNotificationConstraintViewModel = hiltViewModel()
+
+            backStackEntry.handleRouteArgs<NavDestination.ConfigNotificationConstraint> {
+                it.oldJson?.let { json -> viewModel.loadOldData(Json.decodeFromString(json)) }
+            }
 
             ConfigNotificationConstraintScreen(
                 modifier = Modifier.fillMaxSize(),

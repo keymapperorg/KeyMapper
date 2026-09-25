@@ -65,6 +65,8 @@ fun ConstraintsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    HandleConstraintBottomSheets(viewModel.createConstraintDelegate)
+
     if (viewModel.showDuplicateConstraintsSnackbar) {
         val message = stringResource(R.string.error_duplicate_constraint)
 
@@ -82,6 +84,7 @@ fun ConstraintsScreen(
         onRemoveClick = viewModel::onRemoveClick,
         onRemoveGroupClick = viewModel::onRemoveGroupClick,
         onNotClick = viewModel::onNotClick,
+        onEditClick = viewModel::onEditClick,
         onFixErrorClick = viewModel::onFixError,
         onClickShortcut = viewModel::onClickShortcut,
         onSelectMode = viewModel::onSelectMode,
@@ -101,6 +104,7 @@ private fun ConstraintsScreen(
     onRemoveClick: (String) -> Unit = {},
     onRemoveGroupClick: (String) -> Unit = {},
     onNotClick: (String) -> Unit = {},
+    onEditClick: (String) -> Unit = {},
     onFixErrorClick: (String) -> Unit = {},
     onClickShortcut: (ConstraintData) -> Unit = {},
     onSelectMode: (ConstraintMode) -> Unit = {},
@@ -231,6 +235,7 @@ private fun ConstraintsScreen(
                             onRemoveClick = { constraintToDelete = it },
                             onRemoveGroupClick = { groupToDelete = it },
                             onNotClick = onNotClick,
+                            onEditClick = onEditClick,
                             onFixErrorClick = onFixErrorClick,
                             onClickShortcut = onClickShortcut,
                             onSelectGroupMode = onSelectGroupMode,
@@ -294,6 +299,7 @@ private fun ConstraintGroupList(
     onRemoveClick: (String) -> Unit,
     onRemoveGroupClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
     onClickShortcut: (ConstraintData) -> Unit,
     onSelectGroupMode: (String, ConstraintMode) -> Unit,
@@ -362,6 +368,7 @@ private fun ConstraintGroupList(
                         onRemoveConstraintClick = onRemoveClick,
                         onFixConstraintClick = onFixErrorClick,
                         onNotClick = onNotClick,
+                        onEditConstraintClick = onEditClick,
                         onMoveUp = if (index > 0) {
                             { onMoveGroup(index, index - 1) }
                         } else {

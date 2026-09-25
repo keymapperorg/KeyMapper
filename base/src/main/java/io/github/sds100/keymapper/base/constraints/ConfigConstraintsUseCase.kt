@@ -108,6 +108,24 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun setConstraintData(uid: String, data: ConstraintData) {
+        updateConstraintState { oldState ->
+            val groups = oldState.groups.map { group ->
+                val constraints = group.constraints.map { constraint ->
+                    if (constraint.uid == uid) {
+                        constraint.copy(data = data)
+                    } else {
+                        constraint
+                    }
+                }
+
+                group.copy(constraints = constraints)
+            }
+
+            oldState.copy(groups = groups)
+        }
+    }
+
     override fun removeConstraint(uid: String) {
         updateConstraintState { oldState ->
             val groups = oldState.groups
@@ -231,6 +249,7 @@ interface ConfigConstraintsUseCase {
      * group), or null if the group already contains the constraint (a duplicate).
      */
     fun addConstraint(groupUid: String?, constraintData: ConstraintData): ConstraintGroup?
+    fun setConstraintData(uid: String, data: ConstraintData)
     fun removeConstraint(uid: String)
     fun removeGroup(groupUid: String)
     fun toggleNot(constraintUid: String)

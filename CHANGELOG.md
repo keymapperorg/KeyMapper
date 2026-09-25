@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #2263 constraints can now be edited in place from the constraints list instead of being deleted and re-added.
+
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
 #### 21 September 2026

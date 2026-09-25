@@ -1940,6 +1940,7 @@
     <string name="constraints_recyclerview_placeholder">Add constraints if you want key maps to only work in some situations.</string>
     <string name="recently_used_constraints">Recently used constraints</string>
     <string name="constraint_list_item_remove">Remove</string>
+    <string name="constraint_list_item_edit">Edit</string>
     <string name="constraint_list_delete_dialog_title">Delete constraint</string>
     <string name="constraint_list_delete_dialog_text">Are you sure you want to delete this constraint?</string>
     <string name="constraint_list_delete_yes">Yes, delete</string>

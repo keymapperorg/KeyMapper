@@ -49,25 +49,25 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
+fun TimeConstraintBottomSheet(delegate: CreateConstraintDelegate) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    if (viewModel.timeConstraintState != null) {
+    if (delegate.timeConstraintState != null) {
         TimeConstraintBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {
-                viewModel.timeConstraintState = null
+                delegate.timeConstraintState = null
             },
-            state = viewModel.timeConstraintState!!,
+            state = delegate.timeConstraintState!!,
             onSelectStartTime = { hour, min ->
-                viewModel.timeConstraintState = viewModel.timeConstraintState?.copy(
+                delegate.timeConstraintState = delegate.timeConstraintState?.copy(
                     startHour = hour,
                     startMinute = min,
                 )
             },
             onSelectEndTime = { hour, min ->
-                viewModel.timeConstraintState = viewModel.timeConstraintState?.copy(
+                delegate.timeConstraintState = delegate.timeConstraintState?.copy(
                     endHour = hour,
                     endMinute = min,
                 )
@@ -75,7 +75,7 @@ fun TimeConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
             onDoneClick = {
                 scope.launch {
                     sheetState.hide()
-                    viewModel.onDoneConfigTimeConstraintClick()
+                    delegate.onDoneConfigTimeConstraintClick()
                 }
             },
         )

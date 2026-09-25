@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 class ConfigConstraintsViewModel @Inject constructor(
     private val config: ConfigConstraintsUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
+    createConstraint: CreateConstraintUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -50,6 +51,11 @@ class ConfigConstraintsViewModel @Inject constructor(
     NavigationProvider by navigationProvider {
 
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
+
+    val createConstraintDelegate =
+        CreateConstraintDelegate(viewModelScope, createConstraint, this, this, this)
+
+    private var editedConstraintUid: String? = null
 
     private val _state: MutableStateFlow<State<ConfigConstraintsState>> =
         MutableStateFlow(State.Loading)
@@ -75,6 +81,13 @@ class ConfigConstraintsViewModel @Inject constructor(
     private val knownGroupUids: MutableSet<String> = mutableSetOf()
 
     init {
+        viewModelScope.launch {
+            createConstraintDelegate.constraintResult.filterNotNull().collect { data ->
+                val uid = editedConstraintUid ?: return@collect
+                config.setConstraintData(uid, data)
+            }
+        }
+
         viewModelScope.launch {
             config.keyMap
                 .map { state -> state.dataOrNull()?.constraintState?.groups }
@@ -119,6 +132,21 @@ class ConfigConstraintsViewModel @Inject constructor(
             if (group != null) {
                 expandedGroups.update { set -> set.plus(group.uid) }
             }
+        }
+    }
+
+    fun onEditClick(constraintUid: String) {
+        viewModelScope.launch {
+            val constraint = config.keyMap
+                .firstOrNull()
+                ?.dataOrNull()
+                ?.constraintState
+                ?.allConstraints
+                ?.find { it.uid == constraintUid }
+                ?: return@launch
+
+            editedConstraintUid = constraintUid
+            createConstraintDelegate.editConstraint(constraint.data)
         }
     }
 
@@ -235,6 +263,7 @@ class ConfigConstraintsViewModel @Inject constructor(
                         icon = uiHelper.getIcon(constraint),
                         text = uiHelper.getTitle(constraint),
                         isNot = constraint.isNot,
+                        isEditable = constraint.data.isEditable(),
                         error = error?.getFullMessage(this),
                         isErrorFixable = error?.isFixable ?: true,
                     )

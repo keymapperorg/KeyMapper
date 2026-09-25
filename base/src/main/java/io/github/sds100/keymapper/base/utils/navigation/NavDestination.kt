@@ -129,7 +129,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ConfigNotificationConstraint :
+    data class ConfigNotificationConstraint(val oldJson: String? = null) :
         NavDestination<ConstraintData.NotificationPosted>(isCompose = true) {
         override val id: String = ID_CONFIG_NOTIFICATION_CONSTRAINT
     }

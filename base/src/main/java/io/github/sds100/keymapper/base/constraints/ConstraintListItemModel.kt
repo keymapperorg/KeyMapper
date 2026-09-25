@@ -7,6 +7,7 @@ data class ConstraintListItemModel(
     val icon: ComposeIconInfo,
     val text: String,
     val isNot: Boolean = false,
+    val isEditable: Boolean = false,
     val error: String? = null,
     val isErrorFixable: Boolean = true,
 )

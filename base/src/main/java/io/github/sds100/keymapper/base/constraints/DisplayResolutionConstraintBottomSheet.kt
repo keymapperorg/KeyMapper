@@ -37,19 +37,19 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DisplayResolutionConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
+fun DisplayResolutionConstraintBottomSheet(delegate: CreateConstraintDelegate) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val state = viewModel.displayResolutionState ?: return
+    val state = delegate.displayResolutionState ?: return
 
     DisplayResolutionConstraintBottomSheet(
         sheetState = sheetState,
         state = state,
-        onSelectResolution = viewModel::onSelectDisplayResolution,
-        onSelectCustom = viewModel::onSelectCustomDisplayResolution,
-        onWidthChange = viewModel::onDisplayResolutionWidthChange,
-        onHeightChange = viewModel::onDisplayResolutionHeightChange,
-        onDismissRequest = viewModel::onDismissDisplayResolution,
-        onDoneClick = viewModel::onDoneConfigDisplayResolutionClick,
+        onSelectResolution = delegate::onSelectDisplayResolution,
+        onSelectCustom = delegate::onSelectCustomDisplayResolution,
+        onWidthChange = delegate::onDisplayResolutionWidthChange,
+        onHeightChange = delegate::onDisplayResolutionHeightChange,
+        onDismissRequest = delegate::onDismissDisplayResolution,
+        onDoneClick = delegate::onDoneConfigDisplayResolutionClick,
     )
 }
 

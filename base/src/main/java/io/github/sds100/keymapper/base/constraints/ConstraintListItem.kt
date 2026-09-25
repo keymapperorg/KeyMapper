@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.base.constraints
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,12 +11,15 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -26,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,10 +48,11 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ui.compose.CompactErrorButton
 import io.github.sds100.keymapper.base.utils.ui.compose.CompactFilledTonalButton
 import io.github.sds100.keymapper.base.utils.ui.compose.CompactOutlinedButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.ShrinkWrapText
+import io.github.sds100.keymapper.base.utils.ui.compose.horizontalFadingEdges
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
 @Composable
@@ -56,6 +63,7 @@ fun ConstraintListItem(
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
     onNotClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -69,141 +77,120 @@ fun ConstraintListItem(
             CardDefaults.elevatedCardElevation()
         },
     ) {
-        val listItemModifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 48.dp)
-            .padding(vertical = 4.dp)
-
-        BoxWithConstraints {
-            when {
-                maxWidth < 400.dp -> {
-                    ConstraintListItemMedium(
-                        modifier = listItemModifier,
-                        model = model,
-                        onFixClick = onFixClick,
-                        onNotClick = onNotClick,
-                        onRemoveClick = onRemoveClick,
-                    )
-                }
-
-                else -> {
-                    ConstraintListItemLarge(
-                        modifier = listItemModifier,
-                        model = model,
-                        onFixClick = onFixClick,
-                        onNotClick = onNotClick,
-                        onRemoveClick = onRemoveClick,
-                    )
-                }
-            }
-        }
+        ConstraintListItemContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(vertical = 4.dp),
+            model = model,
+            onFixClick = onFixClick,
+            onNotClick = onNotClick,
+            onRemoveClick = onRemoveClick,
+            onEditClick = onEditClick,
+        )
     }
 }
 
 @Composable
-private fun ConstraintListItemLarge(
+private fun ConstraintListItemContent(
     modifier: Modifier = Modifier,
     model: ConstraintListItemModel,
     onFixClick: () -> Unit,
     onNotClick: () -> Unit,
     onRemoveClick: () -> Unit,
+    onEditClick: () -> Unit,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.width(8.dp))
-
-        ConstraintIcon(icon = model.icon)
-
-        Spacer(Modifier.width(8.dp))
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = model.text,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        if (model.error != null && model.isErrorFixable) {
-            CompactErrorButton(onClick = onFixClick) {
-                Text(stringResource(R.string.button_fix))
-            }
-        }
-
-        Spacer(Modifier.width(8.dp))
-
-        NotToggle(isNot = model.isNot, onClick = onNotClick)
-
-        CompositionLocalProvider(
-            LocalMinimumInteractiveComponentSize provides 16.dp,
+    BoxWithConstraints {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            IconButton(onClick = onRemoveClick) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Rounded.Clear,
-                    contentDescription = stringResource(R.string.constraint_list_item_remove),
+            Row(
+                modifier = Modifier.widthIn(max = this@BoxWithConstraints.maxWidth / 2),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(Modifier.width(8.dp))
+
+                if (this@BoxWithConstraints.maxWidth > 350.dp) {
+                    ConstraintIcon(icon = model.icon)
+
+                    Spacer(Modifier.width(8.dp))
+                }
+
+                ShrinkWrapText(
+                    text = model.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
+
+                Spacer(Modifier.width(8.dp))
             }
-        }
-    }
-}
 
-@Composable
-private fun ConstraintListItemMedium(
-    modifier: Modifier = Modifier,
-    model: ConstraintListItemModel,
-    onFixClick: () -> Unit,
-    onNotClick: () -> Unit,
-    onRemoveClick: () -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(Modifier.width(8.dp))
+            val scrollState = rememberScrollState()
 
-        ConstraintIcon(icon = model.icon)
+            // Scroll to the end initially so the delete button is always visible without
+            // needing to scroll.
+            LaunchedEffect(Unit) {
+                scrollState.scrollTo(scrollState.maxValue)
+            }
 
-        Spacer(Modifier.width(8.dp))
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = model.text,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        CompositionLocalProvider(
-            LocalMinimumInteractiveComponentSize provides 16.dp,
-        ) {
-            if (model.error != null && model.isErrorFixable) {
-                IconButton(
-                    modifier = Modifier.size(24.dp),
-                    onClick = onFixClick,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
+            Row(
+                modifier = Modifier
+                    .horizontalFadingEdges(scrollState)
+                    .horizontalScroll(scrollState),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CompositionLocalProvider(
+                    LocalMinimumInteractiveComponentSize provides 16.dp,
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Error,
-                        contentDescription = stringResource(R.string.button_fix),
-                    )
+                    if (model.error != null && model.isErrorFixable) {
+                        IconButton(
+                            modifier = Modifier.size(24.dp),
+                            onClick = onFixClick,
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = Icons.Rounded.Error,
+                                contentDescription = stringResource(
+                                    R.string.constraint_list_item_remove,
+                                ),
+                            )
+                        }
+
+                        Spacer(Modifier.width(8.dp))
+                    }
+
+                    NotToggle(isNot = model.isNot, onClick = onNotClick)
+
+                    if (model.isEditable) {
+                        Spacer(Modifier.width(8.dp))
+
+                        IconButton(onClick = onEditClick) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = stringResource(
+                                    R.string.constraint_list_item_edit,
+                                ),
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = onRemoveClick) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            imageVector = Icons.Rounded.Clear,
+                            contentDescription = stringResource(
+                                R.string.constraint_list_item_remove,
+                            ),
+                        )
+                    }
                 }
-            }
-
-            Spacer(Modifier.width(8.dp))
-
-            NotToggle(isNot = model.isNot, onClick = onNotClick)
-
-            IconButton(onClick = onRemoveClick) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Rounded.Clear,
-                    contentDescription = stringResource(R.string.constraint_list_item_remove),
-                )
             }
         }
     }
@@ -273,6 +260,7 @@ private fun VectorPreview() {
                 id = "id",
                 icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
                 text = "Clear all",
+                isEditable = true,
             ),
         )
     }
@@ -287,10 +275,11 @@ private fun NotErrorPreview() {
             model = ConstraintListItemModel(
                 id = "id",
                 icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
-                text = "Flashlight is on",
+                text = "Flashlight is on (very very long text)",
                 isNot = true,
                 error = "Permission need to control camera",
                 isErrorFixable = true,
+                isEditable = true,
             ),
         )
     }
@@ -307,6 +296,7 @@ private fun DrawablePreview() {
                 id = "id",
                 text = "Key Mapper is in foreground",
                 icon = ComposeIconInfo.Drawable(drawable),
+                isEditable = true,
             ),
         )
     }
