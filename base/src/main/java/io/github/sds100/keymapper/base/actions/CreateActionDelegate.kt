@@ -1240,6 +1240,10 @@ class CreateActionDelegate(
 
             ActionId.SHOW_POWER_MENU -> return ActionData.ShowPowerMenu
 
+            ActionId.SHUTDOWN_DEVICE -> return ActionData.ShutdownDevice
+
+            ActionId.REBOOT_DEVICE -> return ActionData.RebootDevice
+
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
 
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification

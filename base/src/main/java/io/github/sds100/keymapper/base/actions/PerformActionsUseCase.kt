@@ -1088,6 +1088,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
+            ActionData.ShutdownDevice -> {
+                result = systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.shutdownDevice()
+                }
+            }
+
+            ActionData.RebootDevice -> {
+                result = systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.rebootDevice()
+                }
+            }
+
             ActionData.ForceStopApp -> {
                 val packageName = service.activeWindowPackageNames
                     .firstOrNull {

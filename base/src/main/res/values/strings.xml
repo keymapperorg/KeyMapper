@@ -1218,6 +1218,8 @@
 
     <string name="action_open_settings">Open settings</string>
     <string name="action_show_power_menu">Show power menu</string>
+    <string name="action_shutdown_device">Shut down device</string>
+    <string name="action_reboot_device">Restart device</string>
 
     <string name="action_toggle_airplane_mode">Toggle airplane mode</string>
     <string name="action_enable_airplane_mode">Enable airplane mode</string>

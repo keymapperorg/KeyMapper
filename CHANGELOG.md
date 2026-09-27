@@ -9,6 +9,7 @@
 - #2254 you can now give a key map a custom name, which is shown in the key map list.
 - #2252 undo and redo changes when configuring a key map.
 - #2155 the Expert Mode setup wizard now detects Samsung Auto Blocker and guides how to disable it, since it can silently block wireless debugging from staying enabled.
+- #2127 shut down and restart device actions.
 
 ## Changed
 

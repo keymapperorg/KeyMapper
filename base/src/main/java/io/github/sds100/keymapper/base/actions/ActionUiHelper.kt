@@ -758,6 +758,10 @@ class ActionUiHelper(
 
         ActionData.ForceStopApp -> getString(R.string.action_force_stop_app)
 
+        ActionData.ShutdownDevice -> getString(R.string.action_shutdown_device)
+
+        ActionData.RebootDevice -> getString(R.string.action_reboot_device)
+
         is ActionData.ComposeSms -> getString(
             R.string.action_compose_sms_description,
             arrayOf(action.message, action.number),

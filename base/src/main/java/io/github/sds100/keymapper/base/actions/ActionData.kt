@@ -981,6 +981,16 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object ShutdownDevice : ActionData() {
+        override val id = ActionId.SHUTDOWN_DEVICE
+    }
+
+    @Serializable
+    data object RebootDevice : ActionData() {
+        override val id = ActionId.REBOOT_DEVICE
+    }
+
+    @Serializable
     data object DismissLastNotification : ActionData() {
         override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
     }

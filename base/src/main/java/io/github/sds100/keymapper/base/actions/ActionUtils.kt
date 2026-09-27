@@ -53,6 +53,7 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.SelectAll
@@ -237,6 +238,8 @@ object ActionUtils {
         ActionId.CYCLE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
+        ActionId.SHUTDOWN_DEVICE -> ActionCategory.INTERFACE
+        ActionId.REBOOT_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.SHOW_POWER_MENU -> ActionCategory.INTERFACE
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
@@ -471,6 +474,8 @@ object ActionUtils {
         ActionId.OPEN_SETTINGS -> R.string.action_open_settings
 
         ActionId.SHOW_POWER_MENU -> R.string.action_show_power_menu
+        ActionId.SHUTDOWN_DEVICE -> R.string.action_shutdown_device
+        ActionId.REBOOT_DEVICE -> R.string.action_reboot_device
 
         ActionId.APP -> R.string.action_open_app
 
@@ -818,6 +823,8 @@ object ActionUtils {
                 Build.VERSION.SDK_INT >=
                     Build.VERSION_CODES.Q
 
+            ActionId.SHUTDOWN_DEVICE, ActionId.REBOOT_DEVICE -> true
+
             else -> false
         }
     }
@@ -1095,6 +1102,8 @@ object ActionUtils {
         ActionId.CONSUME_KEY_EVENT -> Icons.Outlined.Cancel
         ActionId.OPEN_SETTINGS -> Icons.Outlined.Settings
         ActionId.SHOW_POWER_MENU -> Icons.Outlined.PowerSettingsNew
+        ActionId.SHUTDOWN_DEVICE -> Icons.Outlined.PowerSettingsNew
+        ActionId.REBOOT_DEVICE -> Icons.Outlined.RestartAlt
         ActionId.APP -> Icons.Rounded.Android
         ActionId.APP_SHORTCUT -> Icons.AutoMirrored.Outlined.OpenInNew
         ActionId.KEY_CODE -> Icons.Rounded.Abc
