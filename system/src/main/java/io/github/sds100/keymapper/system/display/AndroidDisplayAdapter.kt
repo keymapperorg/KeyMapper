@@ -220,7 +220,7 @@ class AndroidDisplayAdapter @Inject constructor(
     }
 
     private fun setBrightness(delta: Float): KMResult<*> {
-        val currentBrightness = getDisplayBrightness() / 100f
+        val currentBrightness = getDisplayBrightness()
 
         val newBrightness: Float = (currentBrightness + delta).coerceIn(0f, 1f)
 
@@ -233,7 +233,7 @@ class AndroidDisplayAdapter @Inject constructor(
 
             return Success(Unit)
         } else {
-            val rawBrightness: Int = (newBrightness * 255).roundToInt().coerceIn(0, 255)
+            val rawBrightness: Int = (newBrightness * 255).roundToInt().coerceIn(1, 255)
 
             val success = SettingsUtils.putSystemSetting(
                 ctx,
@@ -272,11 +272,14 @@ class AndroidDisplayAdapter @Inject constructor(
 
     private fun getDisplayBrightness(displayId: Int = getFirstOnDisplay()): Float {
         return if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
-            displayManager.getBrightness(displayId, DisplayManager.BRIGHTNESS_UNIT_PERCENTAGE)
+            displayManager.getBrightness(
+                displayId,
+                DisplayManager.BRIGHTNESS_UNIT_PERCENTAGE,
+            ) / 100f
         } else {
             val rawBrightness =
                 SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.SCREEN_BRIGHTNESS)
-                    ?: return 0f
+                    ?: return 255f
 
             rawBrightness / 255f
         }
