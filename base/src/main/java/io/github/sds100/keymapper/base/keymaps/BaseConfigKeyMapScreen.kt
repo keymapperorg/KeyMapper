@@ -485,8 +485,8 @@ private fun determineTabs(maxWidth: Dp, maxHeight: Dp): List<ConfigKeyMapTab> {
     return when {
         maxWidth >= 800.dp && maxHeight >= 800.dp -> listOf(ConfigKeyMapTab.ALL)
 
-        (maxWidth >= 1000.dp && maxHeight >= 450.dp) ||
-            (maxWidth >= 450.dp && maxHeight >= 1000.dp) -> listOf(
+        (maxWidth >= 800.dp && maxHeight >= 450.dp) ||
+            (maxWidth >= 450.dp && maxHeight >= 800.dp) -> listOf(
             ConfigKeyMapTab.TRIGGER_AND_ACTIONS,
             ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS,
         )
