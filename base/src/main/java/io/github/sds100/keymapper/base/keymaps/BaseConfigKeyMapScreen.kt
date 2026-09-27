@@ -486,7 +486,8 @@ private fun determineTabs(maxWidth: Dp, maxHeight: Dp): List<ConfigKeyMapTab> {
         maxWidth >= 800.dp && maxHeight >= 800.dp -> listOf(ConfigKeyMapTab.ALL)
 
         (maxWidth >= 800.dp && maxHeight >= 450.dp) ||
-            (maxWidth >= 450.dp && maxHeight >= 800.dp) -> listOf(
+            // Stacking on top of each other should require more height than when landscape
+            (maxWidth >= 450.dp && maxHeight >= 1000.dp) -> listOf(
             ConfigKeyMapTab.TRIGGER_AND_ACTIONS,
             ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS,
         )
