@@ -370,6 +370,27 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         )
     }
 
+    override fun openAutoBlockerSettings() {
+        val autoBlockerIntent = Intent().apply {
+            component = ComponentName(
+                "com.samsung.android.rampart",
+                "com.samsung.android.rampart.ui.MainSettingActivity",
+            )
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val fallback = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        try {
+            ctx.startActivity(autoBlockerIntent)
+        } catch (_: ActivityNotFoundException) {
+            ctx.startActivity(fallback)
+        } catch (_: SecurityException) {
+            ctx.startActivity(fallback)
+        }
+    }
+
     fun invalidateSettings() {
         isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
         isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
@@ -455,6 +476,8 @@ interface SystemBridgeSetupController {
     val xiaomiAdbSecuritySettingsEnabled: StateFlow<Boolean>
 
     fun launchDeveloperOptions()
+
+    fun openAutoBlockerSettings()
 
     suspend fun getShellStartCommand(): KMResult<String>
 }

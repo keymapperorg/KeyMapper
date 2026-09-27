@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 
 interface PackageManagerAdapter {
     val onPackagesChanged: Flow<Unit>
@@ -39,19 +39,18 @@ interface PackageManagerAdapter {
     fun getInstallSourcePackageName(): String?
 }
 
-fun PackageManagerAdapter.isAppInstalledFlow(packageName: String): Flow<Boolean> = callbackFlow {
-    send(isAppInstalled(packageName))
+fun PackageManagerAdapter.isAppInstalledFlow(packageName: String): Flow<Boolean> = flow {
+    emit(isAppInstalled(packageName))
 
     onPackagesChanged.collect {
-        send(isAppInstalled(packageName))
+        emit(isAppInstalled(packageName))
     }
 }
 
-fun PackageManagerAdapter.getPackageInfoFlow(packageName: String): Flow<PackageInfo?> =
-    callbackFlow {
-        send(getPackageInfo(packageName))
+fun PackageManagerAdapter.getPackageInfoFlow(packageName: String): Flow<PackageInfo?> = flow {
+    emit(getPackageInfo(packageName))
 
-        onPackagesChanged.collect {
-            send(getPackageInfo(packageName))
-        }
+    onPackagesChanged.collect {
+        emit(getPackageInfo(packageName))
     }
+}

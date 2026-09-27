@@ -2080,6 +2080,11 @@
     <string name="expert_mode_setup_wizard_local_network_permission_description">Key Mapper needs access to the local network to connect to the ADB service on your device.</string>
     <string name="expert_mode_setup_wizard_local_network_permission_button">Give permission</string>
 
+    <string name="expert_mode_setup_wizard_disable_samsung_auto_blocker_title">Disable Auto Blocker</string>
+    <string name="expert_mode_setup_wizard_disable_samsung_auto_blocker_description">Samsung Auto Blocker prevents Key Mapper from enabling the features it needs on your device.</string>
+    <string name="expert_mode_setup_wizard_samsung_auto_blocker_warning_title">Not working?</string>
+    <string name="expert_mode_setup_wizard_samsung_auto_blocker_warning_description">Samsung Auto Blocker might be turned on. Turn it off before you continue.</string>
+
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>
 
