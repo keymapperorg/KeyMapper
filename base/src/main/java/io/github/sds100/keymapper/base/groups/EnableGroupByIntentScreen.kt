@@ -100,6 +100,7 @@ private fun EnableGroupByIntentScreen(
             label = stringResource(R.string.intent_screen_label_class),
             code = IntentApi.GROUP_RECEIVER_CLASS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         Text(
@@ -112,18 +113,21 @@ private fun EnableGroupByIntentScreen(
             label = stringResource(R.string.intent_screen_label_action_enable),
             code = IntentApi.ACTION_ENABLE_GROUP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_action_disable),
             code = IntentApi.ACTION_DISABLE_GROUP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_action_toggle),
             code = IntentApi.ACTION_TOGGLE_GROUP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         Text(
@@ -151,6 +155,7 @@ private fun EnableGroupByIntentScreen(
                 label = stringResource(R.string.intent_screen_label_extra_name),
                 code = IntentApi.EXTRA_GROUP_UID,
                 clipboardLabel = clipboardLabel,
+                scrollToEnd = true,
             )
 
             CodeBlock(

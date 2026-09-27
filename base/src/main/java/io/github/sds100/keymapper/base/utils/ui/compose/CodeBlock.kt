@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -57,6 +58,10 @@ fun CodeBlock(
     label: String? = null,
     maxLineLength: Int = CodeBlockDefaults.MAX_LINE_LENGTH,
     maxHeight: Dp = CodeBlockDefaults.MaxHeight,
+    /**
+     * Whether to scroll horizontally to the end by default.
+     */
+    scrollToEnd: Boolean = false,
 ) {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
@@ -92,12 +97,20 @@ fun CodeBlock(
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                val horizontalScrollState = rememberScrollState()
+
+                if (scrollToEnd) {
+                    LaunchedEffect(Unit) {
+                        horizontalScrollState.scrollTo(horizontalScrollState.maxValue)
+                    }
+                }
+
                 SelectionContainer(
                     modifier = Modifier
                         .weight(1f)
                         .heightIn(max = maxHeight)
                         .verticalScroll(rememberScrollState())
-                        .horizontalScroll(rememberScrollState()),
+                        .horizontalScroll(horizontalScrollState),
                 ) {
                     Text(
                         modifier = Modifier

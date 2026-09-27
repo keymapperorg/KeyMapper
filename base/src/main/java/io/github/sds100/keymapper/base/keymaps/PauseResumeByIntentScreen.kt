@@ -39,6 +39,7 @@ fun PauseResumeByIntentScreen(modifier: Modifier = Modifier, onBackClick: () -> 
             label = stringResource(R.string.intent_screen_label_class),
             code = IntentApi.PAUSE_RECEIVER_CLASS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         Text(
@@ -51,18 +52,21 @@ fun PauseResumeByIntentScreen(modifier: Modifier = Modifier, onBackClick: () -> 
             label = stringResource(R.string.intent_screen_tab_pause),
             code = IntentApi.ACTION_PAUSE_MAPPINGS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_tab_resume),
             code = IntentApi.ACTION_RESUME_MAPPINGS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_tab_toggle),
             code = IntentApi.ACTION_TOGGLE_MAPPINGS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         AdbSection(
