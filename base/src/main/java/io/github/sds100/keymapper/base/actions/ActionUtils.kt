@@ -79,6 +79,7 @@ import androidx.compose.material.icons.rounded.BluetoothDisabled
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
@@ -88,6 +89,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.InstantMix
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyboardPreviousLanguage
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.MatchWord
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.NfcOff
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TextSelectEnd
@@ -1077,9 +1079,9 @@ object ActionUtils {
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
         ActionId.SELECT_ALL_TEXT -> Icons.Outlined.SelectAll
         ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
-        ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
-        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Outlined.Keyboard
-        ActionId.CYCLE_KEYBOARD -> Icons.Outlined.Keyboard
+        ActionId.SWITCH_KEYBOARD -> KeyMapperIcons.KeyboardPreviousLanguage
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Rounded.Language
+        ActionId.CYCLE_KEYBOARD -> KeyMapperIcons.KeyboardPreviousLanguage
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.DISABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeInactive
