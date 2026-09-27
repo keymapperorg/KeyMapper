@@ -24,11 +24,12 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.Devices
-import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.PauseCircleOutline
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
@@ -70,6 +71,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyboardPreviousLanguage
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.system.files.FileUtils
@@ -148,6 +150,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
             onExpertModeClick = viewModel::onExpertModeClick,
+            onPauseResumeByIntentClick = viewModel::onPauseResumeByIntentClick,
+            onEnableDisableGroupsByIntentClick = viewModel::onEnableDisableGroupsByIntentClick,
             onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onLoggingToggled = viewModel::onLoggingToggled,
@@ -231,6 +235,8 @@ private fun Content(
     onDefaultOptionsClick: () -> Unit = { },
     onAutomaticBackupClick: () -> Unit = { },
     onExpertModeClick: () -> Unit = { },
+    onPauseResumeByIntentClick: () -> Unit = { },
+    onEnableDisableGroupsByIntentClick: () -> Unit = { },
     onAutomaticChangeImeClick: () -> Unit = { },
     onForceVibrateToggled: (Boolean) -> Unit = { },
     onLoggingToggled: (Boolean) -> Unit = { },
@@ -336,8 +342,8 @@ private fun Content(
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
-            icon = Icons.Rounded.Construction,
-            text = stringResource(R.string.settings_section_power_user_title),
+            icon = Icons.Outlined.Keyboard,
+            text = stringResource(R.string.settings_section_onscreen_keyboard_title),
         )
 
         KeyEventActionMethodRow(
@@ -346,13 +352,6 @@ private fun Content(
                 .padding(horizontal = 16.dp),
             isExpertModeSelected = state.keyEventActionsUseSystemBridge,
             onSelected = onKeyEventActionMethodSelected,
-        )
-
-        OptionPageButton(
-            title = stringResource(R.string.title_pref_expert_mode),
-            text = stringResource(R.string.summary_pref_expert_mode),
-            icon = Icons.Outlined.OfflineBolt,
-            onClick = onExpertModeClick,
         )
 
         OptionPageButton(
@@ -365,9 +364,36 @@ private fun Content(
                     BuildUtils.getSdkVersionName(Build.VERSION_CODES.R),
                 )
             },
-            icon = Icons.Rounded.Keyboard,
+            icon = KeyMapperIcons.KeyboardPreviousLanguage,
             onClick = onAutomaticChangeImeClick,
             enabled = isAutoSwitchImeSupported,
+        )
+
+        OptionsHeaderRow(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Rounded.Construction,
+            text = stringResource(R.string.settings_section_power_user_title),
+        )
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_expert_mode),
+            text = stringResource(R.string.summary_pref_expert_mode),
+            icon = Icons.Outlined.OfflineBolt,
+            onClick = onExpertModeClick,
+        )
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_pause_resume_by_intent),
+            text = stringResource(R.string.summary_pref_pause_resume_by_intent),
+            icon = Icons.Rounded.PauseCircleOutline,
+            onClick = onPauseResumeByIntentClick,
+        )
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_enable_disable_groups_by_intent),
+            text = stringResource(R.string.summary_pref_enable_disable_groups_by_intent),
+            icon = KeyMapperIcons.FolderManaged,
+            onClick = onEnableDisableGroupsByIntentClick,
         )
 
         OptionsHeaderRow(

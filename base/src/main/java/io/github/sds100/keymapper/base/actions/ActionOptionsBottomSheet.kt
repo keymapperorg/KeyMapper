@@ -108,7 +108,7 @@ fun ActionOptionsBottomSheet(
                         modifier = Modifier.weight(1f, fill = false),
                         textAlign = TextAlign.Center,
                         text = state.title,
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = false,

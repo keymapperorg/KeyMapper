@@ -4,6 +4,7 @@
 
 ## Added
 
+- #2075 enable/disable/toggle a group by sending a broadcast intent, configurable from Power user options in Settings.
 - #2263 constraints can now be edited in place from the constraints list instead of being deleted and re-added.
 - #2254 you can now give a key map a custom name, which is shown in the key map list.
 - #2252 undo and redo changes when configuring a key map.

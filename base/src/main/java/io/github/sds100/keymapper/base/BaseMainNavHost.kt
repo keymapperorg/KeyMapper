@@ -32,7 +32,9 @@ import io.github.sds100.keymapper.base.debug.GetEventScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeScreen
 import io.github.sds100.keymapper.base.expertmode.ExpertModeSetupScreen
 import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationScreen
+import io.github.sds100.keymapper.base.groups.EnableGroupByIntentScreen
 import io.github.sds100.keymapper.base.keymaps.EnableByIntentScreen
+import io.github.sds100.keymapper.base.keymaps.PauseResumeByIntentScreen
 import io.github.sds100.keymapper.base.keymaps.TriggerByIntentScreen
 import io.github.sds100.keymapper.base.logging.LogScreen
 import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
@@ -224,6 +226,20 @@ fun BaseMainNavHost(
                 modifier = Modifier.fillMaxSize(),
                 keyMapUid = destination.keyMapUid,
                 onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<NavDestination.PauseResumeByIntent> {
+            PauseResumeByIntentScreen(
+                modifier = Modifier.fillMaxSize(),
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<NavDestination.EnableGroupByIntent> {
+            EnableGroupByIntentScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
             )
         }
 

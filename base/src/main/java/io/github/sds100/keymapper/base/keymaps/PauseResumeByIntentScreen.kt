@@ -13,19 +13,14 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CodeBlock
 
 @Composable
-fun TriggerByIntentScreen(
-    modifier: Modifier = Modifier,
-    keyMapUid: String,
-    onBackClick: () -> Unit,
-) {
-    // Use the package name of this build so the .debug and .ci builds show the correct one.
+fun PauseResumeByIntentScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     val packageName = LocalContext.current.packageName
     val clipboardLabel = stringResource(R.string.intent_screen_clipboard_label)
 
     IntentScreen(
         modifier = modifier,
-        title = stringResource(R.string.key_map_options_trigger_by_intent_title),
-        text = stringResource(R.string.intent_screen_trigger_message),
+        title = stringResource(R.string.title_pref_pause_resume_by_intent),
+        text = stringResource(R.string.intent_screen_pause_resume_message),
         onBackClick = onBackClick,
     ) {
         Text(
@@ -42,47 +37,48 @@ fun TriggerByIntentScreen(
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_class),
-            code = IntentApi.TRIGGER_RECEIVER_CLASS,
+            code = IntentApi.PAUSE_RECEIVER_CLASS,
+            clipboardLabel = clipboardLabel,
+        )
+
+        Text(
+            text = stringResource(R.string.intent_screen_action_explanation),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        CodeBlock(
+            label = stringResource(R.string.intent_screen_tab_pause),
+            code = IntentApi.ACTION_PAUSE_MAPPINGS,
             clipboardLabel = clipboardLabel,
         )
 
         CodeBlock(
-            label = stringResource(R.string.intent_screen_label_action),
-            code = IntentApi.ACTION_TRIGGER_KEYMAP_BY_UID,
+            label = stringResource(R.string.intent_screen_tab_resume),
+            code = IntentApi.ACTION_RESUME_MAPPINGS,
             clipboardLabel = clipboardLabel,
         )
 
         CodeBlock(
-            label = stringResource(R.string.intent_screen_label_extra_name),
-            code = EXTRA_KEYMAP_UID,
-            clipboardLabel = clipboardLabel,
-        )
-
-        CodeBlock(
-            label = stringResource(R.string.intent_screen_label_extra_value),
-            code = keyMapUid,
+            label = stringResource(R.string.intent_screen_tab_toggle),
+            code = IntentApi.ACTION_TOGGLE_MAPPINGS,
             clipboardLabel = clipboardLabel,
         )
 
         AdbSection(
             command = buildAdbCommand(
                 packageName = packageName,
-                receiverClass = IntentApi.TRIGGER_RECEIVER_CLASS,
-                action = IntentApi.ACTION_TRIGGER_KEYMAP_BY_UID,
-                extraName = EXTRA_KEYMAP_UID,
-                extraValue = keyMapUid,
+                receiverClass = IntentApi.PAUSE_RECEIVER_CLASS,
+                action = IntentApi.ACTION_TOGGLE_MAPPINGS,
             ),
         )
     }
 }
 
-@Preview
+@Preview(heightDp = 1000)
 @Composable
-private fun TriggerByIntentScreenPreview() {
+private fun PauseResumeByIntentScreenPreview() {
     KeyMapperTheme {
-        TriggerByIntentScreen(
-            keyMapUid = "beea7ef5-e33e-4bd3-9987-9002e5035f23",
-            onBackClick = {},
-        )
+        PauseResumeByIntentScreen(onBackClick = {})
     }
 }

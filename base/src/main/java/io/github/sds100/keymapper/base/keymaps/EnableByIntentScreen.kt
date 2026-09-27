@@ -99,7 +99,8 @@ fun EnableByIntentScreen(
                 packageName = packageName,
                 receiverClass = ENABLE_RECEIVER_CLASS,
                 action = ACTION_TOGGLE_KEY_MAP,
-                keyMapUid = keyMapUid,
+                extraName = EXTRA_KEYMAP_UID,
+                extraValue = keyMapUid,
             ),
         )
     }

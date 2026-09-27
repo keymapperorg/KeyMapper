@@ -51,6 +51,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_TRIGGER_BY_INTENT = "trigger_by_intent"
         const val ID_ENABLE_BY_INTENT = "enable_by_intent"
         const val ID_CONFIG_NOTIFICATION_CONSTRAINT = "config_notification_constraint"
+        const val ID_PAUSE_RESUME_BY_INTENT = "pause_resume_by_intent"
+        const val ID_ENABLE_GROUP_BY_INTENT = "enable_group_by_intent"
     }
 
     @Serializable
@@ -242,5 +244,15 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data class EnableByIntent(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_ENABLE_BY_INTENT
+    }
+
+    @Serializable
+    data object PauseResumeByIntent : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_PAUSE_RESUME_BY_INTENT
+    }
+
+    @Serializable
+    data object EnableGroupByIntent : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_ENABLE_GROUP_BY_INTENT
     }
 }

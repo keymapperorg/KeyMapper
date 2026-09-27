@@ -768,6 +768,7 @@
     <string name="settings_section_customize_experience_title">Customize your experience</string>
     <string name="settings_section_key_maps_title">Key maps</string>
     <string name="settings_section_data_management_title">Data management</string>
+    <string name="settings_section_onscreen_keyboard_title">On-screen keyboard options</string>
     <string name="settings_section_power_user_title">Power user options</string>
     <string name="settings_section_debugging_title">Debugging</string>
     <string name="settings_section_notifications">Notifications</string>
@@ -792,6 +793,12 @@
 
     <string name="title_pref_expert_mode">Use Expert Mode</string>
     <string name="summary_pref_expert_mode">Advanced detection of key events and more</string>
+
+    <string name="title_pref_pause_resume_by_intent">Pause/resume by intent</string>
+    <string name="summary_pref_pause_resume_by_intent">Pause, resume, or toggle all key maps from another app</string>
+
+    <string name="title_pref_enable_disable_groups_by_intent">Enable/disable groups by intent</string>
+    <string name="summary_pref_enable_disable_groups_by_intent">Enable, disable, or toggle a group from another app</string>
 
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
@@ -2315,5 +2322,18 @@
     <string name="intent_screen_label_command">Command</string>
     <string name="intent_screen_adb_explanation">Run this from a computer to check your setup before building it in another app.</string>
     <string name="intent_screen_clipboard_label">Key Mapper intent</string>
+
+    <string name="intent_screen_pause_resume_message">Any app that can send an intent, such as Tasker or Automate, can pause, resume, or toggle all key maps without opening Key Mapper. Send a broadcast to Key Mapper with these settings.</string>
+    <string name="intent_screen_tab_pause">Pause</string>
+    <string name="intent_screen_tab_resume">Resume</string>
+    <string name="intent_screen_tab_toggle">Toggle</string>
+
+    <string name="enable_disable_group_by_intent_title">Enable/disable group by intent</string>
+    <string name="intent_screen_enable_group_message">Any app that can send an intent, such as Tasker or Automate, can turn a group on and off without opening Key Mapper. Send a broadcast to Key Mapper with these settings.</string>
+    <string name="intent_screen_extras_explanation_group">Specify this group with the following extra</string>
+    <string name="intent_screen_label_extra_value_group">String extra value</string>
+    <string name="intent_screen_select_group_hint">Select a group above to see its ID and the ready-made command.</string>
+    <string name="select_group_by_intent_title">Select a group</string>
+    <string name="select_group_by_intent_summary">Choose which group this intent controls</string>
 
 </resources>

@@ -20,6 +20,8 @@ import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
+import io.github.sds100.keymapper.base.keymaps.EnableGroupUseCase
+import io.github.sds100.keymapper.base.keymaps.EnableGroupUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.EnableKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.EnableKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
@@ -198,6 +200,10 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindEnableKeyMapsUseCase(impl: EnableKeyMapsUseCaseImpl): EnableKeyMapsUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindEnableGroupUseCase(impl: EnableGroupUseCaseImpl): EnableGroupUseCase
 
     @Binds
     @Singleton

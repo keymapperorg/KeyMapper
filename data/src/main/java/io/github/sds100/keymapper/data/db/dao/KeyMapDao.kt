@@ -54,6 +54,11 @@ interface KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_GROUP_UID IS (:groupUid)")
     suspend fun disableKeyMapByGroup(groupUid: String?)
 
+    @Query(
+        "UPDATE $TABLE_NAME SET $KEY_ENABLED=NOT $KEY_ENABLED WHERE $KEY_GROUP_UID IS (:groupUid)",
+    )
+    suspend fun toggleKeyMapByGroup(groupUid: String?)
+
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
     suspend fun disableKeyMapByUid(vararg uid: String)
 
