@@ -148,9 +148,9 @@ internal fun ConfigKeyMapAppBar(
                             )
                         }
 
-                        if (!showUndoRedoInline) {
-                            Spacer(Modifier.width(8.dp))
+                        Spacer(Modifier.width(8.dp))
 
+                        if (!showUndoRedoInline) {
                             UndoRedoMenu(
                                 canUndo = canUndo,
                                 canRedo = canRedo,
