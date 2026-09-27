@@ -180,7 +180,6 @@ fun CustomDialogContent(
                 Text(
                     modifier = Modifier
                         .align(Alignment.Start)
-                        .fillMaxWidth()
                         .padding(start = 24.dp, end = 24.dp),
                     text = title,
                     style = MaterialTheme.typography.headlineSmall,
@@ -194,7 +193,6 @@ fun CustomDialogContent(
                 Text(
                     modifier = Modifier
                         .align(Alignment.Start)
-                        .fillMaxWidth()
                         .padding(start = 24.dp, end = 24.dp),
                     text = text,
                     style = MaterialTheme.typography.bodyMedium,
@@ -211,7 +209,6 @@ fun CustomDialogContent(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.End)
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.End),
