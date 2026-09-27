@@ -12,6 +12,10 @@
 
 - #2252 redesigned the app bar when configuring a key map. Changes are saved automatically so there is no Done button, and the help button was removed.
 
+## Fixed
+
+- #2268 use trampoline when launching device assistant and settings apps when the device is locked so the lock screen dismisses.
+
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
 #### 21 September 2026
