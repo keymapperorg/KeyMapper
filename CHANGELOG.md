@@ -5,6 +5,12 @@
 ## Added
 
 - #2263 constraints can now be edited in place from the constraints list instead of being deleted and re-added.
+- #2254 you can now give a key map a custom name, which is shown in the key map list.
+- #2252 undo and redo changes when configuring a key map.
+
+## Changed
+
+- #2252 redesigned the app bar when configuring a key map. Changes are saved automatically so there is no Done button, and the help button was removed.
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 

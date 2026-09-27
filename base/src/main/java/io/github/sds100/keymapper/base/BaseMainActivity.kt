@@ -205,6 +205,11 @@ abstract class BaseMainActivity : AppCompatActivity() {
         onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
     }
 
+    override fun onPause() {
+        configKeyMapState.save()
+        super.onPause()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         configKeyMapState.saveState(outState)
 

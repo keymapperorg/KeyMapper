@@ -23,6 +23,7 @@ interface KeyMapDao {
         const val KEY_CONSTRAINT_GROUPS = "constraint_groups"
         const val KEY_UID = "uid"
         const val KEY_GROUP_UID = "group_uid"
+        const val KEY_NAME = "name"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")

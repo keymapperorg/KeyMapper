@@ -36,6 +36,7 @@ import io.github.sds100.keymapper.data.migration.AutoMigration19To20
 import io.github.sds100.keymapper.data.migration.AutoMigration20To21
 import io.github.sds100.keymapper.data.migration.AutoMigration21To22
 import io.github.sds100.keymapper.data.migration.AutoMigration22To23
+import io.github.sds100.keymapper.data.migration.AutoMigration23To24
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -73,6 +74,8 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 21, to = 22, spec = AutoMigration21To22::class),
         // Adds the constraint_groups column to key maps
         AutoMigration(from = 22, to = 23, spec = AutoMigration22To23::class),
+        // Adds the name column to key maps
+        AutoMigration(from = 23, to = 24, spec = AutoMigration23To24::class),
     ],
 )
 @TypeConverters(
@@ -85,7 +88,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 23
+        const val DATABASE_VERSION = 24
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 

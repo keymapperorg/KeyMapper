@@ -21,13 +21,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +31,6 @@ import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -65,55 +61,64 @@ import kotlinx.coroutines.launch
 @Composable
 fun BaseConfigKeyMapScreen(
     modifier: Modifier = Modifier,
-    isKeyMapEnabled: Boolean,
+    state: ConfigKeyMapScreenState,
+    onEditNameClick: () -> Unit = {},
+    onConfirmNameClick: (String) -> Unit = {},
+    onCancelEditNameClick: () -> Unit = {},
     onKeyMapEnabledChange: (Boolean) -> Unit = {},
+    onUndoClick: () -> Unit = {},
+    onRedoClick: () -> Unit = {},
     triggerScreen: @Composable () -> Unit,
     actionsScreen: @Composable () -> Unit,
     constraintsScreen: @Composable () -> Unit,
     optionsScreen: @Composable () -> Unit,
     onBackClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    showActionPulse: Boolean = false,
 ) {
     val scope = rememberCoroutineScope()
+
+    // Store the name here while the user is typing instead of sending it to the view model state
+    // because that would mean each character pushes on a new state for undo/redo.
+    var nameDraft by remember { mutableStateOf(TextFieldValue(state.name)) }
+
+    // Reset the draft whenever the saved name changes (e.g. undo/redo) or editing starts/stops.
+    LaunchedEffect(state.name, state.isEditingName) {
+        // Show the start of the name when not editing, and put the cursor at the end when editing.
+        val cursor = if (state.isEditingName) state.name.length else 0
+        nameDraft = TextFieldValue(state.name, selection = TextRange(cursor))
+    }
+
     val triggerHelpUrl = stringResource(R.string.url_trigger_guide)
     val actionsHelpUrl = stringResource(R.string.url_action_guide)
     val constraintsHelpUrl = stringResource(R.string.url_constraints_guide)
     val optionsHelpUrl = stringResource(R.string.url_trigger_options_guide)
 
-    var currentTab: ConfigKeyMapTab? by remember { mutableStateOf(null) }
-    val uriHandler = LocalUriHandler.current
-    val ctx = LocalContext.current
+    // Back cancels editing the name instead of leaving the screen.
+    val onBack = if (state.isEditingName) {
+        onCancelEditNameClick
+    } else {
+        onBackClick
+    }
 
-    BackHandler(onBack = onBackClick)
+    BackHandler(onBack = onBack)
 
     Scaffold(
         modifier.displayCutoutPadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             ConfigKeyMapAppBar(
-                isKeyMapEnabled = isKeyMapEnabled,
+                name = nameDraft,
+                onNameChange = { nameDraft = it },
+                isEditingName = state.isEditingName,
+                onEditNameClick = onEditNameClick,
+                onConfirmNameClick = { onConfirmNameClick(nameDraft.text) },
+                isKeyMapEnabled = state.isEnabled,
                 onKeyMapEnabledChange = onKeyMapEnabledChange,
-                onBackClick = onBackClick,
-                onDoneClick = onDoneClick,
-                showHelpButton = currentTab == ConfigKeyMapTab.TRIGGER ||
-                    currentTab == ConfigKeyMapTab.ACTIONS ||
-                    currentTab == ConfigKeyMapTab.CONSTRAINTS ||
-                    currentTab == ConfigKeyMapTab.OPTIONS,
-                onHelpClick = {
-                    val url = when (currentTab) {
-                        ConfigKeyMapTab.TRIGGER -> triggerHelpUrl
-                        ConfigKeyMapTab.ACTIONS -> actionsHelpUrl
-                        ConfigKeyMapTab.CONSTRAINTS -> constraintsHelpUrl
-                        ConfigKeyMapTab.OPTIONS -> optionsHelpUrl
-                        else -> return@ConfigKeyMapAppBar
-                    }
-
-                    if (url.isNotEmpty()) {
-                        uriHandler.openUriSafe(ctx, url)
-                    }
-                },
+                canUndo = state.undoRedo.canUndo,
+                canRedo = state.undoRedo.canRedo,
+                onUndoClick = onUndoClick,
+                onRedoClick = onRedoClick,
+                onBackClick = onBack,
             )
         },
     ) { innerPadding ->
@@ -121,7 +126,6 @@ fun BaseConfigKeyMapScreen(
             val tabs = determineTabs(maxWidth, maxHeight)
             val isVerticalTwoScreen = maxWidth < 720.dp
             val pagerState = rememberPagerState(pageCount = { tabs.size }, initialPage = 0)
-            currentTab = tabs.getOrNull(pagerState.targetPage)
 
             Column(Modifier.fillMaxSize()) {
                 if (tabs.size > 1) {
@@ -137,7 +141,7 @@ fun BaseConfigKeyMapScreen(
 
                                 var finishedAnimation by rememberSaveable { mutableStateOf(false) }
 
-                                LaunchedEffect(showActionPulse) {
+                                LaunchedEffect(state.showActionPulse) {
                                     var startedAnimation = false
 
                                     repeat(10) {
@@ -147,7 +151,7 @@ fun BaseConfigKeyMapScreen(
                                             pagerState.targetPage == index &&
                                                 tab == ConfigKeyMapTab.ACTIONS
 
-                                        if (!showActionPulse ||
+                                        if (!state.showActionPulse ||
                                             finishedAnimation ||
                                             isActionsTabSelected
                                         ) {
@@ -301,69 +305,6 @@ fun BaseConfigKeyMapScreen(
             }
         }
     }
-}
-
-@Composable
-private fun ConfigKeyMapAppBar(
-    modifier: Modifier = Modifier,
-    isKeyMapEnabled: Boolean,
-    onKeyMapEnabledChange: (Boolean) -> Unit = {},
-    showHelpButton: Boolean,
-    onHelpClick: () -> Unit,
-    onBackClick: () -> Unit,
-    onDoneClick: () -> Unit,
-) {
-    BottomAppBar(
-        modifier = modifier,
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onDoneClick,
-                text = { Text(stringResource(R.string.button_done)) },
-                icon = {
-                    Icon(Icons.Rounded.Check, stringResource(R.string.button_done))
-                },
-                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
-            )
-        },
-        actions = {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.action_go_back))
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            val text = if (isKeyMapEnabled) {
-                stringResource(R.string.switch_enabled)
-            } else {
-                stringResource(R.string.switch_disabled)
-            }
-
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelLarge,
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Switch(
-                checked = isKeyMapEnabled,
-                onCheckedChange = onKeyMapEnabledChange,
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            if (showHelpButton) {
-                IconButton(onClick = onHelpClick) {
-                    Icon(
-                        Icons.AutoMirrored.Rounded.HelpOutline,
-                        stringResource(R.string.action_help),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-        },
-    )
 }
 
 @Composable
@@ -588,7 +529,7 @@ private fun SmallScreenPreview() {
     KeyMapperTheme {
         BaseConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            isKeyMapEnabled = false,
+            state = ConfigKeyMapScreenState(isEnabled = false),
             triggerScreen = {},
             actionsScreen = {},
             constraintsScreen = {},
@@ -603,7 +544,7 @@ private fun MediumScreenPreview() {
     KeyMapperTheme {
         BaseConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            isKeyMapEnabled = true,
+            state = ConfigKeyMapScreenState(isEnabled = true),
             triggerScreen = {},
             actionsScreen = {},
             constraintsScreen = {},
@@ -618,7 +559,7 @@ private fun MediumScreenLandscapePreview() {
     KeyMapperTheme {
         BaseConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            isKeyMapEnabled = true,
+            state = ConfigKeyMapScreenState(isEnabled = true),
             triggerScreen = {},
             actionsScreen = {},
             constraintsScreen = {},
@@ -633,7 +574,7 @@ private fun LargeScreenPreview() {
     KeyMapperTheme {
         BaseConfigKeyMapScreen(
             modifier = Modifier.fillMaxSize(),
-            isKeyMapEnabled = true,
+            state = ConfigKeyMapScreenState(isEnabled = true),
             triggerScreen = {},
             actionsScreen = {},
             constraintsScreen = {},

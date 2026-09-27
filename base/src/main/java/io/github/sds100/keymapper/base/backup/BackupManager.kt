@@ -267,6 +267,9 @@ class BackupManagerImpl @Inject constructor(
                     // The isNot/groupUid extras this replaces were still WIP and unreleased,
                     // so pre-existing key maps just fall back to isNot=false/groupUid=null.
                     JsonMigration(22, 23) { json -> json },
+
+                    // Do nothing. Adds the nullable name column to key maps.
+                    JsonMigration(23, 24) { json -> json },
                 )
 
                 if (keyMapListJsonArray != null) {

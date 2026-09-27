@@ -466,6 +466,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
             isSelected = true,
             KeyMapListItemModel.Content(
                 uid = "0",
+                name = "Custom key map name",
                 triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
                 triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                 actions = listOf(

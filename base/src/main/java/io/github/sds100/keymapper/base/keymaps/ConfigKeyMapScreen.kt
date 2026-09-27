@@ -3,12 +3,8 @@ package io.github.sds100.keymapper.base.keymaps
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.sds100.keymapper.base.utils.ui.UnsavedChangesDialog
 
 @Composable
 fun ConfigKeyMapScreen(
@@ -20,37 +16,22 @@ fun ConfigKeyMapScreen(
     constraintsScreen: @Composable () -> Unit,
     optionsScreen: @Composable () -> Unit,
 ) {
-    val isKeyMapEnabled by keyMapViewModel.isEnabled.collectAsStateWithLifecycle()
-    val showActionPulse by keyMapViewModel.showActionsTapTarget.collectAsStateWithLifecycle()
-    var showBackDialog by rememberSaveable { mutableStateOf(false) }
-
-    if (showBackDialog) {
-        UnsavedChangesDialog(
-            onDismiss = { showBackDialog = false },
-            onDiscardClick = {
-                showBackDialog = false
-                keyMapViewModel.onBackClick()
-            },
-        )
-    }
+    val state by keyMapViewModel.state.collectAsStateWithLifecycle()
 
     BaseConfigKeyMapScreen(
         modifier = modifier,
-        isKeyMapEnabled = isKeyMapEnabled,
+        state = state,
+        onEditNameClick = keyMapViewModel::onEditNameClick,
+        onConfirmNameClick = keyMapViewModel::onConfirmNameClick,
+        onCancelEditNameClick = keyMapViewModel::onCancelEditNameClick,
         onKeyMapEnabledChange = keyMapViewModel::onEnabledChanged,
+        onUndoClick = keyMapViewModel::onUndoClick,
+        onRedoClick = keyMapViewModel::onRedoClick,
         triggerScreen = triggerScreen,
         actionsScreen = actionsScreen,
         constraintsScreen = constraintsScreen,
         optionsScreen = optionsScreen,
-        onBackClick = {
-            if (keyMapViewModel.isKeyMapEdited) {
-                showBackDialog = true
-            } else {
-                keyMapViewModel.onBackClick()
-            }
-        },
-        onDoneClick = keyMapViewModel::onDoneClick,
+        onBackClick = keyMapViewModel::onBackClick,
         snackbarHostState = snackbarHostState,
-        showActionPulse = showActionPulse,
     )
 }

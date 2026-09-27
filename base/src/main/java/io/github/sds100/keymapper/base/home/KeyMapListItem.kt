@@ -32,6 +32,7 @@ import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -96,6 +97,16 @@ fun KeyMapListItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 10.dp, end = 16.dp, bottom = 10.dp),
             ) {
+                if (model.content.name.isNotBlank()) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        text = model.content.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+
                 Row(
                     modifier = Modifier.heightIn(min = chipHeight),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

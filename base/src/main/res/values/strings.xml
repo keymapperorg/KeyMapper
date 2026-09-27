@@ -66,6 +66,13 @@
 
     <string name="switch_enabled">Enabled</string>
     <string name="switch_disabled">Disabled</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_redo">Redo</string>
+    <string name="config_key_map_name_placeholder">(no name)</string>
+    <string name="config_key_map_edit_name">Edit key map name</string>
+    <string name="config_key_map_save_name">Save key map name</string>
+    <string name="config_key_map_enabled_tooltip">Key map enabled</string>
+    <string name="config_key_map_disabled_tooltip">Key map disabled</string>
 
     <string name="reset">Reset</string>
     <string name="enable_device_admin_message">Once you have enabled the device admin, you must DEACTIVATE it if you want to uninstall Key Mapper.</string>

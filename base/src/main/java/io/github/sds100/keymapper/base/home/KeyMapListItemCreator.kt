@@ -107,6 +107,7 @@ class KeyMapListItemCreator(
             options = options,
             isEnabled = keyMap.isEnabled,
             hasError = hasError,
+            name = keyMap.name,
         )
     }
 
