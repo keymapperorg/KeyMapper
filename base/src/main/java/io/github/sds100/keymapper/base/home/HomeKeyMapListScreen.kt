@@ -543,7 +543,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
                 isEnabled = true,
-                hasError = false,
+                hasError = true,
             ),
         ),
         KeyMapListItemModel(

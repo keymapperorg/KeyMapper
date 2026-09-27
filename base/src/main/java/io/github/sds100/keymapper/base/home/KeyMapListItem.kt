@@ -97,14 +97,30 @@ fun KeyMapListItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 10.dp, end = 16.dp, bottom = 10.dp),
             ) {
-                if (model.content.name.isNotBlank()) {
-                    Text(
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        text = model.content.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                val showName = model.content.name.isNotBlank()
+
+                if (showName) {
+                    Row(
+                        modifier = Modifier.heightIn(min = chipHeight),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
+                            text = model.content.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+
+                        if (model.content.isEnabled && model.content.hasError) {
+                            CompactErrorButton(onClick = onFixClick) {
+                                Text(stringResource(R.string.button_fix))
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
                 }
 
                 Row(
@@ -119,7 +135,7 @@ fun KeyMapListItem(
                         separator = model.content.triggerSeparatorIcon,
                     )
 
-                    if (model.content.isEnabled && model.content.hasError) {
+                    if (!showName && model.content.isEnabled && model.content.hasError) {
                         CompactErrorButton(onClick = onFixClick) {
                             Text(stringResource(R.string.button_fix))
                         }
