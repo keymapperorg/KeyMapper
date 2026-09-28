@@ -122,6 +122,8 @@ private fun Loaded(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (state.showScreenOffTip) {
             TipCard(
                 modifier = Modifier.fillMaxWidth(),
