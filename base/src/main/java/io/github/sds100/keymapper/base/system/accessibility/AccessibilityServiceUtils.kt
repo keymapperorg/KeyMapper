@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.base.system.accessibility
 
+import android.accessibilityservice.AccessibilityService
 import android.os.Build
+import android.view.Display
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
@@ -9,6 +11,14 @@ import android.view.accessibility.AccessibilityNodeInfo
  * scrolling container.
  */
 private const val MAX_ACTION_TARGET_DEPTH = 10
+
+fun AccessibilityService.getActiveDisplayId(): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        rootInActiveWindow?.window?.displayId ?: Display.DEFAULT_DISPLAY
+    } else {
+        Display.DEFAULT_DISPLAY
+    }
+}
 
 /**
  * @return The node to find. Returns null if the node doesn't match the predicate

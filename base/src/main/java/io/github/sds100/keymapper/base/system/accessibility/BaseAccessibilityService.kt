@@ -395,6 +395,7 @@ abstract class BaseAccessibilityService :
 
         strokeDescription.let {
             val gestureDescription = GestureDescription.Builder().apply {
+                setDisplayId(getActiveDisplayId())
                 addStroke(it)
             }.build()
 
@@ -431,6 +432,10 @@ abstract class BaseAccessibilityService :
         val pEnd = Point(xEnd, yEnd)
 
         val gestureBuilder = GestureDescription.Builder()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            gestureBuilder.setDisplayId(getActiveDisplayId())
+        }
 
         if (fingerCount == 1) {
             val p = Path()
@@ -523,6 +528,11 @@ abstract class BaseAccessibilityService :
         }
 
         val gestureBuilder = GestureDescription.Builder()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            gestureBuilder.setDisplayId(getActiveDisplayId())
+        }
+
         val distributedPoints: List<Point> =
             MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
 
