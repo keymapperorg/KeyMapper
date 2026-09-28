@@ -1,25 +1,16 @@
 package io.github.sds100.keymapper.base.constraints
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.TimerOff
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -37,11 +28,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.compose.KMBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.common.utils.TimeUtils
 import java.time.format.FormatStyle
@@ -92,7 +83,6 @@ private fun TimeConstraintBottomSheet(
     onSelectEndTime: (Int, Int) -> Unit = { _, _ -> },
     onDoneClick: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
     val formatter = remember { TimeUtils.localeDateFormatter(FormatStyle.SHORT) }
 
     val startTimePickerState = rememberTimePickerState()
@@ -127,121 +117,74 @@ private fun TimeConstraintBottomSheet(
         )
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+    KMBottomSheet(
+        title = stringResource(R.string.constraint_time_bottom_sheet_title),
+        negButtonText = stringResource(R.string.neg_cancel),
+        posButtonText = stringResource(R.string.pos_done),
+        onPosButtonClick = onDoneClick,
         sheetState = sheetState,
-        dragHandle = null,
+        onDismissRequest = onDismissRequest,
     ) {
-        Column {
-            Spacer(modifier = Modifier.height(16.dp))
+        OptionsHeaderRow(
+            icon = Icons.Rounded.Timer,
+            text = stringResource(R.string.constraint_time_bottom_sheet_start_time),
+        )
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                textAlign = TextAlign.Center,
-                text = stringResource(R.string.constraint_time_bottom_sheet_title),
-                style = MaterialTheme.typography.headlineMedium,
+                text = formatter.format(state.startTime),
+                style = MaterialTheme.typography.titleLarge,
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            IconButton(
+                modifier = Modifier.padding(start = 8.dp),
+                onClick = {
+                    startTimePickerState.hour = state.startHour
+                    startTimePickerState.minute = state.startMinute
 
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.Rounded.Timer,
-                text = stringResource(R.string.constraint_time_bottom_sheet_start_time),
-            )
-
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    showStartTimePickerDialog = true
+                },
             ) {
-                Text(
-                    text = formatter.format(state.startTime),
-                    style = MaterialTheme.typography.titleLarge,
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = stringResource(
+                        R.string.constraint_time_bottom_sheet_edit_start_time,
+                    ),
                 )
-
-                IconButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    onClick = {
-                        startTimePickerState.hour = state.startHour
-                        startTimePickerState.minute = state.startMinute
-
-                        showStartTimePickerDialog = true
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(
-                            R.string.constraint_time_bottom_sheet_edit_start_time,
-                        ),
-                    )
-                }
             }
+        }
 
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.Rounded.TimerOff,
-                text = stringResource(R.string.constraint_time_bottom_sheet_end_time),
+        OptionsHeaderRow(
+            icon = Icons.Rounded.TimerOff,
+            text = stringResource(R.string.constraint_time_bottom_sheet_end_time),
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = formatter.format(state.endTime),
+                style = MaterialTheme.typography.titleLarge,
             )
 
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            IconButton(
+                modifier = Modifier.padding(start = 8.dp),
+                onClick = {
+                    endTimePickerState.hour = state.endHour
+                    endTimePickerState.minute = state.endMinute
+
+                    showEndTimePickerDialog = true
+                },
             ) {
-                Text(
-                    text = formatter.format(state.endTime),
-                    style = MaterialTheme.typography.titleLarge,
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = stringResource(
+                        R.string.constraint_time_bottom_sheet_edit_end_time,
+                    ),
                 )
-
-                IconButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    onClick = {
-                        endTimePickerState.hour = state.endHour
-                        endTimePickerState.minute = state.endMinute
-
-                        showEndTimePickerDialog = true
-                    },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(
-                            R.string.constraint_time_bottom_sheet_edit_end_time,
-                        ),
-                    )
-                }
             }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = onDoneClick,
-                ) {
-                    Text(stringResource(R.string.pos_done))
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
         }
     }
 }
