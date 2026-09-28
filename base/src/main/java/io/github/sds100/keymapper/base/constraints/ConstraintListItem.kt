@@ -112,7 +112,7 @@ private fun ConstraintListItemContent(
             ) {
                 Spacer(Modifier.width(8.dp))
 
-                if (this@BoxWithConstraints.maxWidth > 350.dp) {
+                if (this@BoxWithConstraints.maxWidth > 300.dp) {
                     ConstraintIcon(icon = model.icon)
 
                     Spacer(Modifier.width(8.dp))
