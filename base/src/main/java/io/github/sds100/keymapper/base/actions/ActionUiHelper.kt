@@ -489,13 +489,23 @@ class ActionUiHelper(
 
         ActionData.Bluetooth.Toggle -> getString(R.string.action_toggle_bluetooth)
 
-        ActionData.Brightness.Decrease -> getString(R.string.action_decrease_brightness)
+        is ActionData.Brightness.Decrease ->
+            if (action.stepPercent != null) {
+                getString(R.string.action_decrease_brightness_with_percent, action.stepPercent)
+            } else {
+                getString(R.string.action_decrease_brightness)
+            }
 
         ActionData.Brightness.DisableAuto -> getString(R.string.action_disable_auto_brightness)
 
         ActionData.Brightness.EnableAuto -> getString(R.string.action_enable_auto_brightness)
 
-        ActionData.Brightness.Increase -> getString(R.string.action_increase_brightness)
+        is ActionData.Brightness.Increase ->
+            if (action.stepPercent != null) {
+                getString(R.string.action_increase_brightness_with_percent, action.stepPercent)
+            } else {
+                getString(R.string.action_increase_brightness)
+            }
 
         ActionData.Brightness.ToggleAuto -> getString(R.string.action_toggle_auto_brightness)
 

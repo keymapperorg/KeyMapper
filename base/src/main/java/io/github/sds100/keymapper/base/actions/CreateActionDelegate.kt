@@ -75,6 +75,7 @@ class CreateActionDelegate(
         by mutableStateOf(null)
     var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
     var stepMediaActionBottomSheetState: StepMediaActionBottomSheetState? by mutableStateOf(null)
+    var brightnessStepActionState: BrightnessStepActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -438,6 +439,24 @@ class CreateActionDelegate(
         }
 
         stepMediaActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onBrightnessStepPercentChange(stepPercent: Int) {
+        brightnessStepActionState = brightnessStepActionState?.copy(stepPercent = stepPercent)
+    }
+
+    fun onDoneBrightnessStepClick() {
+        val state = brightnessStepActionState ?: return
+        val stepPercent = state.stepPercent.takeIf { it != DEFAULT_BRIGHTNESS_STEP_PERCENT }
+
+        val action = when (state.actionId) {
+            ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase(stepPercent)
+            ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease(stepPercent)
+            else -> throw Exception("don't know how to create action for ${state.actionId}")
+        }
+
+        brightnessStepActionState = null
         actionResult.update { action }
     }
 
@@ -1100,9 +1119,22 @@ class CreateActionDelegate(
 
             ActionId.ENABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.EnableAuto
 
-            ActionId.INCREASE_BRIGHTNESS -> return ActionData.Brightness.Increase
+            ActionId.INCREASE_BRIGHTNESS,
+            ActionId.DECREASE_BRIGHTNESS,
+                -> {
+                val oldStepPercent = when (oldData) {
+                    is ActionData.Brightness.Increase -> oldData.stepPercent
+                    is ActionData.Brightness.Decrease -> oldData.stepPercent
+                    else -> null
+                }
 
-            ActionId.DECREASE_BRIGHTNESS -> return ActionData.Brightness.Decrease
+                brightnessStepActionState = BrightnessStepActionBottomSheetState(
+                    actionId = actionId,
+                    stepPercent = oldStepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT,
+                )
+
+                return null
+            }
 
             ActionId.TOGGLE_NIGHT_SHIFT -> return ActionData.NightShift.Toggle
 

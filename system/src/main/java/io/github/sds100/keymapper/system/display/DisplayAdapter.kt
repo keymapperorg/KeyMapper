@@ -33,8 +33,8 @@ interface DisplayAdapter {
     fun fetchOrientation(): Orientation
 
     fun isAutoBrightnessEnabled(): Boolean
-    fun increaseBrightness(): KMResult<*>
-    fun decreaseBrightness(): KMResult<*>
+    fun increaseBrightness(stepPercent: Float): KMResult<*>
+    fun decreaseBrightness(stepPercent: Float): KMResult<*>
     fun enableAutoBrightness(): KMResult<*>
     fun disableAutoBrightness(): KMResult<*>
 }

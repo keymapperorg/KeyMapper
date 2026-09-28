@@ -62,6 +62,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     ToastActionBottomSheet(delegate)
     VibrateActionBottomSheet(delegate)
     StepMediaActionBottomSheet(delegate)
+    BrightnessStepActionBottomSheet(delegate)
     PickTalkBackGestureDialog(delegate)
 }
 

@@ -48,11 +48,6 @@ class AndroidDisplayAdapter @Inject constructor(
     companion object {
 
         /**
-         * How much to change the brightness by.
-         */
-        private const val BRIGHTNESS_CHANGE_STEP_PERCENT: Float = 0.1f
-
-        /**
          * Tolerance in degrees for orientation detection.
          * This helps avoid rapid switching at orientation boundaries.
          */
@@ -205,18 +200,18 @@ class AndroidDisplayAdapter @Inject constructor(
         Settings.System.SCREEN_BRIGHTNESS_MODE,
     ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
 
-    override fun increaseBrightness(): KMResult<*> {
+    override fun increaseBrightness(stepPercent: Float): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        return setBrightness(BRIGHTNESS_CHANGE_STEP_PERCENT)
+        return setBrightness(stepPercent)
     }
 
-    override fun decreaseBrightness(): KMResult<*> {
+    override fun decreaseBrightness(stepPercent: Float): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        return setBrightness(-BRIGHTNESS_CHANGE_STEP_PERCENT)
+        return setBrightness(-stepPercent)
     }
 
     private fun setBrightness(delta: Float): KMResult<*> {

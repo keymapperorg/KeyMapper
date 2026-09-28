@@ -776,12 +776,12 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data object Increase : Brightness() {
+        data class Increase(val stepPercent: Int? = null) : Brightness() {
             override val id = ActionId.INCREASE_BRIGHTNESS
         }
 
         @Serializable
-        data object Decrease : Brightness() {
+        data class Decrease(val stepPercent: Int? = null) : Brightness() {
             override val id = ActionId.DECREASE_BRIGHTNESS
         }
     }

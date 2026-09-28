@@ -562,9 +562,21 @@ object ActionDataEntityMapper {
 
             ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.EnableAuto
 
-            ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase
+            ActionId.INCREASE_BRIGHTNESS -> {
+                val stepPercent = entity.extras.getData(
+                    ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT,
+                ).valueOrNull()?.toIntOrNull()
 
-            ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease
+                ActionData.Brightness.Increase(stepPercent)
+            }
+
+            ActionId.DECREASE_BRIGHTNESS -> {
+                val stepPercent = entity.extras.getData(
+                    ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT,
+                ).valueOrNull()?.toIntOrNull()
+
+                ActionData.Brightness.Decrease(stepPercent)
+            }
 
             ActionId.TOGGLE_NIGHT_SHIFT -> ActionData.NightShift.Toggle
 
@@ -1255,6 +1267,18 @@ object ActionDataEntityMapper {
         is ActionData.ControlMedia.StepBackward -> buildList {
             data.stepDurationMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_STEP_MEDIA_DURATION, it.toString()))
+            }
+        }
+
+        is ActionData.Brightness.Increase -> buildList {
+            data.stepPercent?.let {
+                add(EntityExtra(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT, it.toString()))
+            }
+        }
+
+        is ActionData.Brightness.Decrease -> buildList {
+            data.stepPercent?.let {
+                add(EntityExtra(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT, it.toString()))
             }
         }
 

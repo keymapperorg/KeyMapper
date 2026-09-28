@@ -1186,6 +1186,8 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.CreateNotification,
     is ActionData.Toast,
     is ActionData.Vibrate,
+    is ActionData.Brightness.Increase,
+    is ActionData.Brightness.Decrease,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,

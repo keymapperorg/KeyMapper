@@ -188,4 +188,78 @@ class ActionDataEntityMapperTest {
             assertThat(malformedValue, action.screenResolution, `is`(nullValue()))
         }
     }
+
+    @Test
+    fun `increase brightness action with a non-default step round trips through the entity`() {
+        val action = ActionData.Brightness.Increase(stepPercent = 25)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`("25"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `dont save an extra when the increase brightness action has no custom step`() {
+        val action = ActionData.Brightness.Increase(stepPercent = null)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `load no brightness step for an increase brightness action saved before it existed`() {
+        // GIVEN an entity saved by an older version of the app, with no extra at all.
+        val entity =
+            ActionEntity(type = ActionEntity.Type.SYSTEM_ACTION, data = "increase_brightness")
+
+        val action = ActionDataEntityMapper.fromEntity(entity)
+
+        assertThat((action as ActionData.Brightness.Increase).stepPercent, `is`(nullValue()))
+    }
+
+    @Test
+    fun `decrease brightness action with a non-default step round trips through the entity`() {
+        val action = ActionData.Brightness.Decrease(stepPercent = 25)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`("25"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `dont save an extra when the decrease brightness action has no custom step`() {
+        val action = ActionData.Brightness.Decrease(stepPercent = null)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `load no brightness step for a decrease brightness action saved before it existed`() {
+        // GIVEN an entity saved by an older version of the app, with no extra at all.
+        val entity =
+            ActionEntity(type = ActionEntity.Type.SYSTEM_ACTION, data = "decrease_brightness")
+
+        val action = ActionDataEntityMapper.fromEntity(entity)
+
+        assertThat((action as ActionData.Brightness.Decrease).stepPercent, `is`(nullValue()))
+    }
 }
