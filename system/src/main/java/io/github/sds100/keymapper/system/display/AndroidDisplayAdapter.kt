@@ -95,14 +95,22 @@ class AndroidDisplayAdapter @Inject constructor(
     override val cachedPhysicalOrientation: PhysicalOrientation
         get() = _physicalOrientation.value
 
+    override var activityDisplayId: Int? = null
+
     override val size: SizeKM
         get() = ctx.getRealDisplaySize()
 
     override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(isAodEnabled())
 
+    /**
+     * On (some?) foldable devices, such as the Pixel 10 Pro Fold emulator,
+     * the display manager only returns the display
+     * that is currently in use. It does not return both front and back displays.
+     * So, this will not contain the resolution of all displays.
+     */
     override val supportedResolutions: MutableStateFlow<Set<SizeKM>> =
-        MutableStateFlow(getSupportedResolutions())
+        MutableStateFlow(getSupportedResolutions(*displayManager.displays))
 
     private val orientationEventListener = object : OrientationEventListener(ctx) {
         override fun onOrientationChanged(orientationDegrees: Int) {
@@ -295,11 +303,17 @@ class AndroidDisplayAdapter @Inject constructor(
 
     private fun onDisplaysChanged() {
         _orientation.update { getDisplayOrientation() }
-        supportedResolutions.update { getSupportedResolutions() }
+
+        supportedResolutions.update { getSupportedResolutions(*displayManager.displays) }
     }
 
     private fun getFirstOnDisplay(): Int {
-        return displayManager.displays.first { it.state == Display.STATE_ON }.displayId
+        return displayManager.displays?.first { it.state == Display.STATE_ON }?.displayId
+            ?: Display.DEFAULT_DISPLAY
+    }
+
+    override fun getDisplayResolutions(id: Int): Set<SizeKM> {
+        return getSupportedResolutions(displayManager.getDisplay(id))
     }
 
     /**
@@ -338,10 +352,10 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    private fun getSupportedResolutions(): Set<SizeKM> {
-        val display = displayManager.displays.firstOrNull() ?: return emptySet()
-
-        return display.supportedModes
+    private fun getSupportedResolutions(vararg display: Display?): Set<SizeKM> {
+        return display
+            .filterNotNull()
+            .flatMap { it.supportedModes.toList() }
             .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
             .toSet()
     }

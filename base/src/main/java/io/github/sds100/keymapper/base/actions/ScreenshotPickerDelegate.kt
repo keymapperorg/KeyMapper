@@ -37,7 +37,10 @@ class ScreenshotPickerDelegate(
     fun selectedScreenshot(newBitmap: Bitmap) {
         val newBitmapSize = SizeKM(newBitmap.width, newBitmap.height)
 
-        if (!displayAdapter.size.hasSameAspectRatio(newBitmapSize)) {
+        val matchingAspectRatio =
+            displayAdapter.supportedResolutions.value.any { it.hasSameAspectRatio(newBitmapSize) }
+
+        if (!matchingAspectRatio) {
             coroutineScope.launch {
                 val snackBar = DialogModel.SnackBar(
                     message = getString(R.string.toast_incorrect_screenshot_resolution),
@@ -63,8 +66,12 @@ class ScreenshotPickerDelegate(
      * action on a device that has since changed resolution does not stamp the wrong one on
      * unchanged coordinates.
      */
-    fun screenResolution(): SizeKM =
-        screenshotResolution.value ?: loadedResolution.value ?: displayAdapter.size
+    fun screenResolution(): SizeKM {
+        val activeDisplaySize =
+            displayAdapter.getDisplayResolutions(displayAdapter.activityDisplayId ?: 0).first()
+
+        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplaySize
+    }
 
     fun recycle() {
         _bitmap.value?.recycle()

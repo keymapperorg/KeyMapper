@@ -38,6 +38,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
+import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
@@ -105,6 +106,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var configKeyMapState: ConfigKeyMapStateImpl
+
+    @Inject
+    lateinit var displayAdapter: AndroidDisplayAdapter
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -222,6 +226,18 @@ abstract class BaseMainActivity : AppCompatActivity() {
         viewModel.previousNightMode = currentNightMode
         unregisterReceiver(broadcastReceiver)
         super.onDestroy()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        displayAdapter.activityDisplayId = display?.displayId
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
+        displayAdapter.activityDisplayId = null
     }
 
     /**

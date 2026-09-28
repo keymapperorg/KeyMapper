@@ -13,14 +13,24 @@ interface DisplayAdapter {
     val cachedOrientation: Orientation
     val physicalOrientation: Flow<PhysicalOrientation>
     val cachedPhysicalOrientation: PhysicalOrientation
-    val size: SizeKM
     val isAmbientDisplayEnabled: Flow<Boolean>
 
     /**
-     * The distinct resolutions supported by the default display, taken from the
+     * The display id the Key Mapper MainActivity is attached to. It is set to null when it is
+     * detached.
+     */
+    val activityDisplayId: Int?
+
+    // TODO remove
+    val size: SizeKM
+
+    /**
+     * The distinct resolutions supported by all displays, taken from the
      * display's supported modes. The dimensions are in the display's natural orientation.
      */
     val supportedResolutions: StateFlow<Set<SizeKM>>
+
+    fun getDisplayResolutions(id: Int): Set<SizeKM>
 
     fun isAutoRotateEnabled(): Boolean
     fun enableAutoRotate(): KMResult<*>
