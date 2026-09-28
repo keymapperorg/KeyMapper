@@ -156,6 +156,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                         R.string.error_system_feature_telephony_unsupported,
                     )
 
+                PackageManager.FEATURE_SENSOR_HINGE_ANGLE ->
+                    resourceProvider.getString(R.string.error_system_feature_hinge_unsupported)
+
                 else ->
                     throw Exception(
                         "Don't know how to get error message for this system feature ${this.feature}",

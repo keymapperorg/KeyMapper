@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
+import android.os.Build
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
@@ -119,6 +120,23 @@ class LazyConstraintErrorSnapshot(
                         constraint.data.packageName,
                         constraint.data.appName,
                         constraint.isNot,
+                    )
+                }
+            }
+
+            is ConstraintData.HingeClosed,
+            is ConstraintData.HingeOpen,
+                -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    return KMError.SdkVersionTooLow(Build.VERSION_CODES.R)
+                }
+
+                if (!systemFeatureAdapter.hasSystemFeature(
+                        PackageManager.FEATURE_SENSOR_HINGE_ANGLE,
+                    )
+                ) {
+                    return KMError.SystemFeatureNotSupported(
+                        PackageManager.FEATURE_SENSOR_HINGE_ANGLE,
                     )
                 }
             }
