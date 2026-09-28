@@ -208,28 +208,28 @@ class AndroidDisplayAdapter @Inject constructor(
         Settings.System.SCREEN_BRIGHTNESS_MODE,
     ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
 
-    override fun increaseBrightness(stepPercent: Float): KMResult<*> {
+    override fun increaseBrightness(stepPercent: Float, display: Int): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        return setBrightness(stepPercent)
+        return setBrightness(stepPercent, display)
     }
 
-    override fun decreaseBrightness(stepPercent: Float): KMResult<*> {
+    override fun decreaseBrightness(stepPercent: Float, display: Int): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        return setBrightness(-stepPercent)
+        return setBrightness(-stepPercent, display)
     }
 
-    private fun setBrightness(delta: Float): KMResult<*> {
-        val currentBrightness = getDisplayBrightness()
+    private fun setBrightness(delta: Float, display: Int): KMResult<*> {
+        val currentBrightness = getDisplayBrightness(display)
 
         val newBrightness: Float = (currentBrightness + delta).coerceIn(0f, 1f)
 
         if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
             displayManager.setBrightness(
-                getFirstOnDisplay(),
+                display,
                 newBrightness * 100,
                 DisplayManager.BRIGHTNESS_UNIT_PERCENTAGE,
             )
@@ -273,7 +273,7 @@ class AndroidDisplayAdapter @Inject constructor(
         return _orientation.updateAndGet { getDisplayOrientation() }
     }
 
-    private fun getDisplayBrightness(displayId: Int = getFirstOnDisplay()): Float {
+    private fun getDisplayBrightness(displayId: Int): Float {
         return if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
             displayManager.getBrightness(
                 displayId,
@@ -305,11 +305,6 @@ class AndroidDisplayAdapter @Inject constructor(
         _orientation.update { getDisplayOrientation() }
 
         supportedResolutions.update { getSupportedResolutions(*displayManager.displays) }
-    }
-
-    private fun getFirstOnDisplay(): Int {
-        return displayManager.displays?.first { it.state == Display.STATE_ON }?.displayId
-            ?: Display.DEFAULT_DISPLAY
     }
 
     override fun getDisplayResolutions(id: Int): Set<SizeKM> {

@@ -647,4 +647,8 @@ abstract class BaseAccessibilityService :
     override fun performTalkBackGesture(gesture: TalkBackGestureType): KMResult<*> {
         return TalkbackGesturePerformer.performTalkBackGesture(this, gesture, gestureHandler)
     }
+
+    override fun getActiveDisplayId(): Int {
+        return getActiveDisplayIdExt()
+    }
 }

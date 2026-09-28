@@ -12,7 +12,7 @@ import android.view.accessibility.AccessibilityNodeInfo
  */
 private const val MAX_ACTION_TARGET_DEPTH = 10
 
-fun AccessibilityService.getActiveDisplayId(): Int {
+fun AccessibilityService.getActiveDisplayIdExt(): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         rootInActiveWindow?.window?.displayId ?: Display.DEFAULT_DISPLAY
     } else {

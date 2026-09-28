@@ -50,6 +50,8 @@ interface IAccessibilityService : SwitchImeInterface {
     val activeWindowPackage: Flow<String?>
     val activeWindowPackageNames: List<String>
 
+    fun getActiveDisplayId(): Int
+
     fun hideKeyboard()
     fun showKeyboard()
 

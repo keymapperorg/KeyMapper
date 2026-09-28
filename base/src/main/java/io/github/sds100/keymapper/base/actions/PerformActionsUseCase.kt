@@ -545,12 +545,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.Brightness.Increase -> {
                 val stepPercent = action.stepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT
-                result = displayAdapter.increaseBrightness(stepPercent / 100f)
+                result = displayAdapter.increaseBrightness(
+                    stepPercent / 100f,
+                    service.getActiveDisplayId(),
+                )
             }
 
             is ActionData.Brightness.Decrease -> {
                 val stepPercent = action.stepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT
-                result = displayAdapter.decreaseBrightness(stepPercent / 100f)
+                result = displayAdapter.decreaseBrightness(
+                    stepPercent / 100f,
+                    service.getActiveDisplayId(),
+                )
             }
 
             is ActionData.Rotation.ToggleAuto -> {

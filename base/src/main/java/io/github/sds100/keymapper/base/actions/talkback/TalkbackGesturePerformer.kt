@@ -5,7 +5,7 @@ import android.accessibilityservice.GestureDescription
 import android.os.Build
 import android.os.Handler
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityGestureUtils
-import io.github.sds100.keymapper.base.system.accessibility.getActiveDisplayId
+import io.github.sds100.keymapper.base.system.accessibility.getActiveDisplayIdExt
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -27,7 +27,7 @@ object TalkbackGesturePerformer {
         val gestureBuilder = GestureDescription.Builder()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            gestureBuilder.setDisplayId(service.getActiveDisplayId())
+            gestureBuilder.setDisplayId(service.getActiveDisplayIdExt())
         }
 
         when (gesture) {
