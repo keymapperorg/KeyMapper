@@ -479,12 +479,14 @@ private fun LoadedPreview() {
                     groups = listOf(
                         ConstraintGroupListItemModel(
                             uid = "group1",
+                            icon = flashlightConstraint.icon,
                             mode = ConstraintMode.AND,
                             constraints = listOf(flashlightConstraint, appConstraint),
                             description = "Flashlight is not on AND Key Mapper is in foreground",
                         ),
                         ConstraintGroupListItemModel(
                             uid = "group2",
+                            icon = appConstraint.icon,
                             name = "Foreground or wifi",
                             mode = ConstraintMode.OR,
                             constraints = listOf(appConstraint, wifiConstraint),
@@ -492,6 +494,7 @@ private fun LoadedPreview() {
                         ),
                         ConstraintGroupListItemModel(
                             uid = "group3",
+                            icon = wifiConstraint.icon,
                             mode = ConstraintMode.AND,
                             constraints = listOf(wifiConstraint),
                             description = "Wi-Fi is on",

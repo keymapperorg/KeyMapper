@@ -276,6 +276,7 @@ class ConfigConstraintsViewModel @Inject constructor(
 
                 ConstraintGroupListItemModel(
                     uid = group.uid,
+                    icon = uiHelper.getIcon(group.constraints.first()),
                     name = group.name,
                     mode = group.mode,
                     constraints = constraints,

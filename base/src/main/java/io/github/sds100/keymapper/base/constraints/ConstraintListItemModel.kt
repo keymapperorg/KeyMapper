@@ -14,6 +14,7 @@ data class ConstraintListItemModel(
 
 data class ConstraintGroupListItemModel(
     val uid: String,
+    val icon: ComposeIconInfo,
     val name: String? = null,
     val mode: ConstraintMode,
     val constraints: List<ConstraintListItemModel>,

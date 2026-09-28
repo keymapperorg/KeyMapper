@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -149,6 +151,12 @@ fun ConstraintGroupItem(
         onMoveUp = onMoveUp,
         onMoveDown = onMoveDown,
         headerContent = { expanded ->
+            if (model.constraints.size == 1 && !isExpanded) {
+                ConstraintIcon(modifier = Modifier.size(20.dp), icon = model.icon)
+
+                Spacer(Modifier.width(8.dp))
+            }
+
             HeaderText(
                 modifier = Modifier
                     .weight(1f)
@@ -156,8 +164,7 @@ fun ConstraintGroupItem(
                 title = if (isExpanded) {
                     model.name ?: countBasedTitle
                 } else {
-                    model.name
-                        ?: model.description
+                    model.name ?: model.description
                 },
                 model = model,
                 isExpanded = expanded,
@@ -186,6 +193,27 @@ fun ConstraintGroupItem(
 }
 
 @Composable
+private fun ConstraintIcon(modifier: Modifier = Modifier, icon: ComposeIconInfo) {
+    when (icon) {
+        is ComposeIconInfo.Vector -> Icon(
+            modifier = modifier,
+            imageVector = icon.imageVector,
+            contentDescription = null,
+        )
+
+        is ComposeIconInfo.Drawable -> {
+            val painter = rememberDrawablePainter(icon.drawable)
+            Icon(
+                modifier = modifier,
+                painter = painter,
+                contentDescription = null,
+                tint = Color.Unspecified,
+            )
+        }
+    }
+}
+
+@Composable
 private fun HeaderText(
     modifier: Modifier = Modifier,
     title: String,
@@ -197,7 +225,8 @@ private fun HeaderText(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier
-                    .weight(1f, fill = false).animateContentSize(),
+                    .weight(1f, fill = false)
+                    .animateContentSize(),
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
@@ -403,6 +432,7 @@ private fun AndExpandedPreview() {
         ConstraintGroupItem(
             model = ConstraintGroupListItemModel(
                 uid = "group",
+                icon = previewConstraints[0].icon,
                 mode = ConstraintMode.AND,
                 constraints = previewConstraints,
                 description = "Flashlight is not on AND Wi-Fi is on",
@@ -420,6 +450,7 @@ private fun OrExpandedPreview() {
         ConstraintGroupItem(
             model = ConstraintGroupListItemModel(
                 uid = "group",
+                icon = previewConstraints[0].icon,
                 mode = ConstraintMode.OR,
                 constraints = previewConstraints.map { it.copy(error = null, isNot = false) },
                 description = "Flashlight is on OR Wi-Fi is on",
@@ -436,6 +467,7 @@ private fun SingleExpandedPreview() {
         ConstraintGroupItem(
             model = ConstraintGroupListItemModel(
                 uid = "group",
+                icon = previewConstraints[1].icon,
                 mode = ConstraintMode.AND,
                 constraints = listOf(previewConstraints[1]),
                 description = "Wi-Fi is on",
@@ -453,9 +485,29 @@ private fun CollapsedPreview() {
         ConstraintGroupItem(
             model = ConstraintGroupListItemModel(
                 uid = "group",
+                icon = previewConstraints[0].icon,
                 mode = ConstraintMode.AND,
                 constraints = previewConstraints,
                 description = "Flashlight is not on AND Wi-Fi is on",
+            ),
+            isExpanded = false,
+            isReorderingEnabled = true,
+        )
+    }
+}
+
+@PreviewLightDark
+@Preview(widthDp = 300)
+@Composable
+private fun CollapsedOneConstraintPreview() {
+    KeyMapperTheme {
+        ConstraintGroupItem(
+            model = ConstraintGroupListItemModel(
+                uid = "group",
+                icon = previewConstraints[0].icon,
+                mode = ConstraintMode.AND,
+                constraints = previewConstraints.take(1),
+                description = "Flashlight is not on",
             ),
             isExpanded = false,
             isReorderingEnabled = true,
@@ -470,6 +522,7 @@ private fun CollapsedErrorPreview() {
         ConstraintGroupItem(
             model = ConstraintGroupListItemModel(
                 uid = "group",
+                icon = previewConstraints[0].icon,
                 mode = ConstraintMode.AND,
                 constraints = previewConstraints,
                 description = "Flashlight is not on AND Wi-Fi is on",
