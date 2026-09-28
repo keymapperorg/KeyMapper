@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.graphics.Bitmap
+import android.view.Display
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -38,7 +39,9 @@ class ScreenshotPickerDelegate(
         val newBitmapSize = SizeKM(newBitmap.width, newBitmap.height)
 
         val matchingAspectRatio =
-            displayAdapter.supportedResolutions.value.any { it.hasSameAspectRatio(newBitmapSize) }
+            displayAdapter.displays.value
+                .flatMap { it.supportedSizes }
+                .any { it.hasSameAspectRatio(newBitmapSize) }
 
         if (!matchingAspectRatio) {
             coroutineScope.launch {
@@ -67,10 +70,10 @@ class ScreenshotPickerDelegate(
      * unchanged coordinates.
      */
     fun screenResolution(): SizeKM {
-        val activeDisplaySize =
-            displayAdapter.getDisplayResolutions(displayAdapter.activityDisplayId ?: 0).first()
+        val activeDisplay =
+            displayAdapter.getDisplay(displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY)!!
 
-        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplaySize
+        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.activeSize
     }
 
     fun recycle() {

@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.DisplayInfo
 import io.github.sds100.keymapper.system.foldable.FoldableAdapter
 import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
@@ -32,10 +33,10 @@ import java.time.LocalTime
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
 class LazyConstraintSnapshot(
-    accessibilityService: IAccessibilityService,
+    private val accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
-    displayAdapter: DisplayAdapter,
+    private val displayAdapter: DisplayAdapter,
     networkAdapter: NetworkAdapter,
     private val cameraAdapter: CameraAdapter,
     inputMethodAdapter: InputMethodAdapter,
@@ -50,12 +51,15 @@ class LazyConstraintSnapshot(
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
         devicesAdapter.connectedBluetoothDevices.value
     }
-    private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
+    private val orientation: Orientation by lazy { getActiveDisplay()!!.rotation }
     private val physicalOrientation: PhysicalOrientation by lazy {
         displayAdapter.cachedPhysicalOrientation
     }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
-    private val displaySize: SizeKM by lazy { displayAdapter.size }
+    private val displaySize: SizeKM by lazy {
+        getActiveDisplay()!!.activeSize
+    }
+
     private val appsPlayingMedia: List<String> by lazy {
         mediaAdapter.getActiveMediaSessionPackages()
     }
@@ -230,6 +234,10 @@ class LazyConstraintSnapshot(
         }
 
         return isSatisfied != constraint.isNot
+    }
+
+    private fun getActiveDisplay(): DisplayInfo? {
+        return displayAdapter.getDisplay(accessibilityService.getActiveDisplayId())
     }
 }
 

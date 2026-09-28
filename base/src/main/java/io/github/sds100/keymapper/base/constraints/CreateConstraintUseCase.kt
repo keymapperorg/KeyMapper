@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import android.view.Display
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -61,9 +62,14 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
     }
 
-    override fun getSupportedResolutions(): Set<SizeKM> = displayAdapter.supportedResolutions.value
+    override fun getSupportedResolutions(): Set<SizeKM> =
+        displayAdapter.displays.value.flatMap { it.supportedSizes }.toSet()
 
-    override fun getCurrentResolution(): SizeKM = displayAdapter.size
+    override fun getCurrentResolution(): SizeKM {
+        return displayAdapter.getDisplay(
+            displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY,
+        )!!.activeSize
+    }
 }
 
 interface CreateConstraintUseCase : IsConstraintSupportedUseCase {

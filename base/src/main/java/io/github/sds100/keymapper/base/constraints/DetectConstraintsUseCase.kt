@@ -79,7 +79,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
 
             ConstraintDependency.DISPLAY_ORIENTATION ->
-                displayAdapter.orientation.map { dependency }
+                displayAdapter.displays.map { dependency }
 
             ConstraintDependency.PHYSICAL_ORIENTATION ->
                 displayAdapter.physicalOrientation.map { dependency }
@@ -127,7 +127,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.POSTED_NOTIFICATIONS ->
                 notificationAdapter.activeNotifications.map { dependency }
 
-            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
+            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.displays.map {
                 dependency
             }
         }

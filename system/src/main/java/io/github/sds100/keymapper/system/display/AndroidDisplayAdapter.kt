@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.getRealDisplaySize
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
@@ -29,7 +28,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 /**
@@ -85,11 +83,6 @@ class AndroidDisplayAdapter @Inject constructor(
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
 
-    private val _orientation = MutableStateFlow(getDisplayOrientation())
-    override val orientation: Flow<Orientation> = _orientation
-    override val cachedOrientation: Orientation
-        get() = _orientation.value
-
     private val _physicalOrientation = MutableStateFlow(PhysicalOrientation.PORTRAIT)
     override val physicalOrientation: Flow<PhysicalOrientation> = _physicalOrientation
     override val cachedPhysicalOrientation: PhysicalOrientation
@@ -97,20 +90,11 @@ class AndroidDisplayAdapter @Inject constructor(
 
     override var activityDisplayId: Int? = null
 
-    override val size: SizeKM
-        get() = ctx.getRealDisplaySize()
-
     override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(isAodEnabled())
 
-    /**
-     * On (some?) foldable devices, such as the Pixel 10 Pro Fold emulator,
-     * the display manager only returns the display
-     * that is currently in use. It does not return both front and back displays.
-     * So, this will not contain the resolution of all displays.
-     */
-    override val supportedResolutions: MutableStateFlow<Set<SizeKM>> =
-        MutableStateFlow(getSupportedResolutions(*displayManager.displays))
+    override val displays: MutableStateFlow<List<DisplayInfo>> =
+        MutableStateFlow(fetchAllDisplayInfo())
 
     private val orientationEventListener = object : OrientationEventListener(ctx) {
         override fun onOrientationChanged(orientationDegrees: Int) {
@@ -269,10 +253,6 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    override fun fetchOrientation(): Orientation {
-        return _orientation.updateAndGet { getDisplayOrientation() }
-    }
-
     private fun getDisplayBrightness(displayId: Int): Float {
         return if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
             displayManager.getBrightness(
@@ -288,27 +268,16 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    private fun getDisplayOrientation(): Orientation =
-        when (val sdkRotation = displayManager.displays[0].rotation) {
-            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
-            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
-        }
-
     private fun isAodEnabled(): Boolean {
         return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
     }
 
     private fun onDisplaysChanged() {
-        _orientation.update { getDisplayOrientation() }
-
-        supportedResolutions.update { getSupportedResolutions(*displayManager.displays) }
+        displays.value = fetchAllDisplayInfo()
     }
 
-    override fun getDisplayResolutions(id: Int): Set<SizeKM> {
-        return getSupportedResolutions(displayManager.getDisplay(id))
+    override fun getDisplay(id: Int): DisplayInfo? {
+        return displayManager.getDisplay(id)?.let { buildDisplayInfo(it) }
     }
 
     /**
@@ -347,10 +316,34 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    private fun getSupportedResolutions(vararg display: Display?): Set<SizeKM> {
-        return display
-            .filterNotNull()
-            .flatMap { it.supportedModes.toList() }
+    private fun fetchAllDisplayInfo(): List<DisplayInfo> {
+        return displayManager.displays?.filterNotNull()?.map(::buildDisplayInfo) ?: emptyList()
+    }
+
+    private fun buildDisplayInfo(display: Display): DisplayInfo {
+        return DisplayInfo(
+            id = display.displayId,
+            activeSize = SizeKM(
+                width = display.mode.physicalWidth,
+                height = display.mode.physicalHeight,
+            ),
+            rotation = getDisplayOrientation(display),
+            supportedSizes = getSupportedResolutions(display),
+        )
+    }
+
+    private fun getDisplayOrientation(display: Display): Orientation {
+        return when (val sdkRotation = display.rotation) {
+            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+        }
+    }
+
+    private fun getSupportedResolutions(display: Display): Set<SizeKM> {
+        return display.supportedModes
             .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
             .toSet()
     }

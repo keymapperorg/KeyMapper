@@ -6,10 +6,12 @@ import io.github.sds100.keymapper.base.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.DisplayInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -118,13 +120,24 @@ class PerformActionsUseCaseTest {
             verify(mockToastAdapter, never()).show(any(), any())
         }
 
+    private fun stubDisplaySize(size: SizeKM) {
+        whenever(mockDisplayAdapter.getDisplay(any())).doReturn(
+            DisplayInfo(
+                id = 0,
+                activeSize = size,
+                rotation = Orientation.ORIENTATION_0,
+                supportedSizes = setOf(size),
+            ),
+        )
+    }
+
     /**
      * issue #2217
      */
     @Test
     fun `scale tap screen action to the current display resolution`() = runTest(testDispatcher) {
         // GIVEN the coordinate was picked on a 1080x2400 display and the display is now 1440x3200.
-        whenever(mockDisplayAdapter.size).doReturn(SizeKM(1440, 3200))
+        stubDisplaySize(SizeKM(1440, 3200))
         whenever(mockAccessibilityService.tapScreen(any(), any(), any())).doReturn(Success(Unit))
 
         val action = ActionData.TapScreen(
@@ -148,7 +161,7 @@ class PerformActionsUseCaseTest {
     fun `dont scale tap screen action created before the resolution was saved`() =
         runTest(testDispatcher) {
             // GIVEN
-            whenever(mockDisplayAdapter.size).doReturn(SizeKM(1440, 3200))
+            stubDisplaySize(SizeKM(1440, 3200))
             whenever(mockAccessibilityService.tapScreen(any(), any(), any()))
                 .doReturn(Success(Unit))
 
@@ -173,7 +186,7 @@ class PerformActionsUseCaseTest {
     fun `scale both ends of a swipe screen action to the current display resolution`() =
         runTest(testDispatcher) {
             // GIVEN
-            whenever(mockDisplayAdapter.size).doReturn(SizeKM(1440, 3200))
+            stubDisplaySize(SizeKM(1440, 3200))
             whenever(
                 mockAccessibilityService.swipeScreen(
                     any(),
@@ -218,7 +231,7 @@ class PerformActionsUseCaseTest {
     @Test
     fun `scale the centre and the distance of a pinch screen action`() = runTest(testDispatcher) {
         // GIVEN
-        whenever(mockDisplayAdapter.size).doReturn(SizeKM(1440, 3200))
+        stubDisplaySize(SizeKM(1440, 3200))
         whenever(
             mockAccessibilityService.pinchScreen(
                 any(),
@@ -265,7 +278,7 @@ class PerformActionsUseCaseTest {
         runTest(testDispatcher) {
             // GIVEN the coordinate was picked on a portrait display and the display is now
             // landscape at the same resolution.
-            whenever(mockDisplayAdapter.size).doReturn(SizeKM(2400, 1080))
+            stubDisplaySize(SizeKM(2400, 1080))
             whenever(mockAccessibilityService.tapScreen(any(), any(), any()))
                 .doReturn(Success(Unit))
 

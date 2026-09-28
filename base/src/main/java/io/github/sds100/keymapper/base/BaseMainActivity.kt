@@ -7,7 +7,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.view.Display
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
@@ -231,13 +233,11 @@ abstract class BaseMainActivity : AppCompatActivity() {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
-        displayAdapter.activityDisplayId = display?.displayId
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-
-        displayAdapter.activityDisplayId = null
+        displayAdapter.activityDisplayId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display?.displayId
+        } else {
+            Display.DEFAULT_DISPLAY
+        }
     }
 
     /**

@@ -49,6 +49,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.DisplayInfo
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
@@ -255,7 +256,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
-                    val currentOrientation = displayAdapter.cachedOrientation
+                    val currentOrientation = getActiveDisplay()!!.rotation
 
                     val index = action.orientations.indexOf(currentOrientation)
 
@@ -376,7 +377,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
 
@@ -384,7 +385,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwipeScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val start = scaleCoordinate(
                     action.xStart,
                     action.yStart,
@@ -406,7 +407,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.PinchScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
                 val distance =
@@ -586,8 +587,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                if (displayAdapter.cachedOrientation == Orientation.ORIENTATION_180 ||
-                    displayAdapter.cachedOrientation == Orientation.ORIENTATION_0
+                val currentOrientation = getActiveDisplay()!!.rotation
+
+                if (currentOrientation == Orientation.ORIENTATION_180 ||
+                    currentOrientation == Orientation.ORIENTATION_0
                 ) {
                     result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
                 } else {
@@ -1287,6 +1290,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private fun <T> compareIfNonNull(a: T?, b: T?): Boolean {
         return a != null && b != null && a == b
     }
+
+    private fun getActiveDisplay(): DisplayInfo? =
+        displayAdapter.getDisplay(service.getActiveDisplayId())
 }
 
 /**
