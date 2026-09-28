@@ -395,7 +395,9 @@ abstract class BaseAccessibilityService :
 
         strokeDescription.let {
             val gestureDescription = GestureDescription.Builder().apply {
-                setDisplayId(getActiveDisplayId())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    setDisplayId(getActiveDisplayId())
+                }
                 addStroke(it)
             }.build()
 
@@ -487,7 +489,7 @@ abstract class BaseAccessibilityService :
                         angle,
                     )
 
-                // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
+                // create a path for each finger, move the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                 val p = Path()
                 p.moveTo(
                     startFingerCoordinateWithOffset.x.toFloat(),
