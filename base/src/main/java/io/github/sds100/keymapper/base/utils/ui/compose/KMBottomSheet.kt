@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -48,7 +49,12 @@ fun KMBottomSheet(
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
-        modifier = modifier.widthIn(max = 400.dp),
+        modifier = modifier
+            .widthIn(max = 400.dp)
+            // When the bottom sheet fills the whole screen, scrolling pushes the top
+            // underneath the status bar, but the content stays below the status bar. This gives
+            // it an ugly forehead so make sure the bottom sheet never goes under the status bar.
+            .statusBarsPadding(),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,
