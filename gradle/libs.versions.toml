@@ -67,6 +67,7 @@ mockito-kotlin = "4.0.0"
 okhttp = "4.12.0"
 # Need the beta for SDK 37 support
 robolectric = "4.17-beta-4"
+roborazzi = "1.76.0"
 shizuku = "13.1.5"
 splitties = "3.0.0"
 storage-anggrayudi = "0.8.1"
@@ -135,6 +136,8 @@ androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.mat
 androidx-compose-ui-android = { group = "androidx.compose.ui", name = "ui-android" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview-android" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 # Google
 google-accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "google-accompanist-drawablepainter" }
@@ -172,6 +175,7 @@ mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mo
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 hamcrest-all = { group = "org.hamcrest", name = "hamcrest-all", version = "1.3" } # No version variable
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
 
 # Other
 anggrayudi-storage = { group = "com.anggrayudi", name = "storage", version.ref = "storage-anggrayudi" }
@@ -217,6 +221,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-android" }
 mozilla-rust-android = { id = "org.mozilla.rust-android-gradle.rust-android", version.ref = "rust-android-gradle" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 
 [bundles]
 splitties = [
