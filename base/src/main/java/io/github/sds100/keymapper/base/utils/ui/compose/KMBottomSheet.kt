@@ -58,6 +58,10 @@ fun KMBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,
+        // Disable gestures so when scrolling down, the user doesn't accidentally dismiss the
+        // bottom sheet. Also, to disable the bottom sheet (not scrolling container) springing
+        // up when over-scrolling.
+        sheetGesturesEnabled = false,
     ) {
         Column(
             modifier = Modifier
