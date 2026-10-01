@@ -261,8 +261,8 @@
     <string name="constraint_mode_and">AND</string>
     <string name="constraint_mode_or">OR</string>
 
-    <string name="constraint_choose_app_foreground">App in foreground</string>
-    <string name="constraint_choose_app_not_foreground">App not in foreground</string>
+    <string name="constraint_choose_app_foreground">App is open</string>
+    <string name="constraint_choose_app_not_foreground">App not open</string>
     <string name="constraint_choose_bluetooth_device_connected">Bluetooth device is connected</string>
     <string name="constraint_choose_bluetooth_device_disconnected">Bluetooth device is disconnected</string>
     <string name="constraint_choose_screen_on_description">Screen is on</string>
