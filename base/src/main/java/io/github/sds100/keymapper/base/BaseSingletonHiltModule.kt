@@ -57,6 +57,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
+import io.github.sds100.keymapper.base.variables.VariablesUseCaseImpl
 import io.github.sds100.keymapper.common.utils.Clock
 import io.github.sds100.keymapper.common.utils.ClockImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
@@ -214,4 +216,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindClock(impl: ClockImpl): Clock
+
+    @Binds
+    @Singleton
+    abstract fun bindVariablesUseCase(impl: VariablesUseCaseImpl): VariablesUseCase
 }

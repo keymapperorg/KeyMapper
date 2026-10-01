@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Battery2Bar
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.FlashlightOff
@@ -55,6 +56,7 @@ object ConstraintUtils {
         ConstraintCategory.DEVICE -> R.string.constraint_cat_device
         ConstraintCategory.NOTIFICATIONS -> R.string.constraint_cat_notifications
         ConstraintCategory.TIME -> R.string.constraint_cat_time
+        ConstraintCategory.VARIABLES -> R.string.constraint_cat_variables
     }
 
     fun getCategory(constraintId: ConstraintId): ConstraintCategory = when (constraintId) {
@@ -113,6 +115,7 @@ object ConstraintUtils {
             -> ConstraintCategory.NOTIFICATIONS
 
         ConstraintId.TIME -> ConstraintCategory.TIME
+        ConstraintId.VARIABLE -> ConstraintCategory.VARIABLES
     }
 
     fun getIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
@@ -194,7 +197,8 @@ object ConstraintUtils {
         ConstraintId.NOTIFICATION_POSTED ->
             Vector(Icons.Outlined.NotificationsActive)
 
-        ConstraintId.TIME -> Vector(Icons.Outlined.Timer)
+        ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
+        ConstraintId.VARIABLE -> ComposeIconInfo.Vector(Icons.Outlined.Calculate)
     }
 
     fun getNotIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
@@ -314,6 +318,7 @@ object ConstraintUtils {
         ConstraintId.NOTIFICATION_POSTED -> R.string.constraint_notification_posted
 
         ConstraintId.TIME -> R.string.constraint_time
+        ConstraintId.VARIABLE -> R.string.constraint_variable
     }
 
     @StringRes
@@ -389,6 +394,8 @@ object ConstraintUtils {
 
             is ConstraintData.NotificationPosted ->
                 setOf(ConstraintDependency.POSTED_NOTIFICATIONS)
+
+            is ConstraintData.Variable -> setOf(ConstraintDependency.VARIABLES)
         }
     }
 }
@@ -405,6 +412,7 @@ fun ConstraintData.isEditable(): Boolean = when (this) {
     is ConstraintData.ImeChosen,
     is ConstraintData.NotificationPosted,
     is ConstraintData.Time,
+    is ConstraintData.Variable,
         -> true
 
     else -> false

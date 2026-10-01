@@ -71,6 +71,7 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
 fun HandleConstraintBottomSheets(delegate: CreateConstraintDelegate) {
     TimeConstraintBottomSheet(delegate)
     DisplayResolutionConstraintBottomSheet(delegate)
+    VariableConstraintBottomSheet(delegate.variableDelegate)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

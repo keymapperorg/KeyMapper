@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.BrightnessLow
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.CameraAlt
@@ -116,6 +117,7 @@ object ActionUtils {
         ActionCategory.DISPLAY -> R.string.action_cat_display
         ActionCategory.NOTIFICATIONS -> R.string.action_cat_notifications
         ActionCategory.SPECIAL -> R.string.action_cat_special
+        ActionCategory.VARIABLES -> R.string.action_cat_variables
     }
 
     fun getCategory(id: ActionId): ActionCategory = when (id) {
@@ -259,6 +261,7 @@ object ActionUtils {
         ActionId.MODIFY_SETTING -> ActionCategory.APPS
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
         ActionId.TALKBACK_GESTURE -> ActionCategory.INTERFACE
+        ActionId.SET_VARIABLE -> ActionCategory.VARIABLES
     }
 
     @StringRes
@@ -541,6 +544,7 @@ object ActionUtils {
         ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
 
         ActionId.TALKBACK_GESTURE -> R.string.action_talkback_gesture
+        ActionId.SET_VARIABLE -> R.string.action_set_variable
     }
 
     @DrawableRes
@@ -1136,6 +1140,7 @@ object ActionUtils {
         ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
         ActionId.TALKBACK_GESTURE -> Icons.Outlined.Accessibility
+        ActionId.SET_VARIABLE -> Icons.Outlined.Calculate
     }
 }
 
@@ -1192,6 +1197,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,
     is ActionData.TalkBackGesture,
+    is ActionData.SetVariable,
         -> true
 
     else -> false

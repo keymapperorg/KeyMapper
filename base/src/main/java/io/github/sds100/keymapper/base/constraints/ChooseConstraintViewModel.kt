@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.State
 import javax.inject.Inject
@@ -36,6 +37,7 @@ class ChooseConstraintViewModel @Inject constructor(
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
@@ -60,11 +62,12 @@ class ChooseConstraintViewModel @Inject constructor(
             ConstraintCategory.DEVICE,
             ConstraintCategory.NOTIFICATIONS,
             ConstraintCategory.TIME,
+            ConstraintCategory.VARIABLES,
         )
     }
 
     val createConstraintDelegate =
-        CreateConstraintDelegate(viewModelScope, useCase, this, this, this)
+        CreateConstraintDelegate(useCase, this, this, this, variablesUseCase)
 
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups(useCase) }
 

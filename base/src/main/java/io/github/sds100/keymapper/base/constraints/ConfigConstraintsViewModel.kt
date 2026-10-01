@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -45,6 +46,7 @@ class ConfigConstraintsViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
@@ -53,7 +55,13 @@ class ConfigConstraintsViewModel @Inject constructor(
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
 
     val createConstraintDelegate =
-        CreateConstraintDelegate(viewModelScope, createConstraint, this, this, this)
+        CreateConstraintDelegate(
+            createConstraint,
+            this,
+            this,
+            this,
+            variablesUseCase,
+        )
 
     private var editedConstraintUid: String? = null
 

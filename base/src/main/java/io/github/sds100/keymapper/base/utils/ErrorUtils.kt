@@ -220,6 +220,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         is KMError.NumberTooBig ->
             resourceProvider.getString(R.string.error_number_too_big, max)
 
+        is KMError.NumberOverflow ->
+            resourceProvider.getString(R.string.error_number_overflow)
+
         is KMError.EmptyText ->
             resourceProvider.getString(R.string.error_cant_be_empty)
 

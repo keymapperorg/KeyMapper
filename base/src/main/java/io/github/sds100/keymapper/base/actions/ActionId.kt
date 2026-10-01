@@ -168,4 +168,6 @@ enum class ActionId {
     MODIFY_SETTING,
 
     TALKBACK_GESTURE,
+
+    SET_VARIABLE,
 }

@@ -22,4 +22,5 @@ enum class ConstraintDependency {
     NOTIFICATION_PANEL_STATE,
     POSTED_NOTIFICATIONS,
     DISPLAY_RESOLUTIONS,
+    VARIABLES,
 }

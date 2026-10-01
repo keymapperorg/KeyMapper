@@ -11,12 +11,12 @@ import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.volume.RingerMode
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -27,11 +27,11 @@ import kotlinx.serialization.json.Json
  * [io.github.sds100.keymapper.base.actions.CreateActionDelegate] for actions.
  */
 class CreateConstraintDelegate(
-    private val coroutineScope: CoroutineScope,
     private val useCase: CreateConstraintUseCase,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
@@ -42,6 +42,10 @@ class CreateConstraintDelegate(
 
     var displayResolutionState: DisplayResolutionSheetState? by mutableStateOf(null)
         private set
+
+    val variableDelegate = VariableConstraintDelegate(variablesUseCase) { constraint ->
+        constraintResult.update { constraint }
+    }
 
     fun onSelectDisplayResolution(resolution: SizeKM) {
         displayResolutionState = displayResolutionState?.copy(
@@ -214,6 +218,11 @@ class CreateConstraintDelegate(
                     endHour = 0,
                     endMinute = 0,
                 )
+                return null
+            }
+
+            ConstraintId.VARIABLE -> {
+                variableDelegate.open(oldData as? ConstraintData.Variable)
                 return null
             }
         }

@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
@@ -54,6 +55,7 @@ class CreateActionDelegate(
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
     vibrateConfigDelegate: VibrateConfigDelegate,
+    variablesUseCase: VariablesUseCase,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
@@ -76,6 +78,12 @@ class CreateActionDelegate(
     var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
     var stepMediaActionBottomSheetState: StepMediaActionBottomSheetState? by mutableStateOf(null)
     var brightnessStepActionState: BrightnessStepActionBottomSheetState? by mutableStateOf(null)
+
+    val setVariableDelegate = SetVariableActionDelegate(
+        variablesUseCase,
+        resourceProvider,
+        dialogProvider,
+    ) { action -> actionResult.update { action } }
 
     init {
         coroutineScope.launch {
@@ -422,19 +430,23 @@ class CreateActionDelegate(
 
         val action = when (state.actionId) {
             ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward(durationMs)
+
             ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward(durationMs)
+
             ActionId.STEP_FORWARD_PACKAGE ->
                 ActionData.ControlMediaForApp.StepForward(
                     state.packageName!!,
                     durationMs,
                     state.appName,
                 )
+
             ActionId.STEP_BACKWARD_PACKAGE ->
                 ActionData.ControlMediaForApp.StepBackward(
                     state.packageName!!,
                     durationMs,
                     state.appName,
                 )
+
             else -> throw Exception("don't know how to create action for ${state.actionId}")
         }
 
@@ -1307,6 +1319,11 @@ class CreateActionDelegate(
             ActionId.VIBRATE -> {
                 val oldEffect = (oldData as? ActionData.Vibrate)?.effect
                 openVibrateConfig(oldEffect, DEFAULT_VIBRATE_ACTION_DURATION_MS)
+                return null
+            }
+
+            ActionId.SET_VARIABLE -> {
+                setVariableDelegate.open(oldData as? ActionData.SetVariable)
                 return null
             }
 

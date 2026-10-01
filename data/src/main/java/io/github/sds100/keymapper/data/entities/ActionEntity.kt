@@ -107,6 +107,10 @@ data class ActionEntity(
         const val VIBRATE_MODE_DURATION = "duration"
         const val VIBRATE_MODE_PREDEFINED = "predefined"
 
+        const val EXTRA_VARIABLE_NAME = "extra_variable_name"
+        const val EXTRA_VARIABLE_OPERATION = "extra_variable_operation"
+        const val EXTRA_VARIABLE_VALUE = "extra_variable_value"
+
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
         const val EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION =
@@ -225,6 +229,7 @@ data class ActionEntity(
         CREATE_NOTIFICATION,
         TOAST,
         VIBRATE,
+        SET_VARIABLE,
     }
 
     constructor(

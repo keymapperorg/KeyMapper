@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.KMError
@@ -58,6 +59,7 @@ class ConfigActionsViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ViewModel(),
     ActionOptionsBottomSheetCallback,
     ActionListCallback,
@@ -69,7 +71,15 @@ class ConfigActionsViewModel @Inject constructor(
     OnboardingTipDelegate by onboardingTipDelegate {
 
     val createActionDelegate =
-        CreateActionDelegate(viewModelScope, createAction, this, this, this, vibrateConfigDelegate)
+        CreateActionDelegate(
+            viewModelScope,
+            createAction,
+            this,
+            this,
+            this,
+            vibrateConfigDelegate,
+            variablesUseCase,
+        )
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
 
     private val _state = MutableStateFlow<State<ConfigActionsState>>(State.Loading)

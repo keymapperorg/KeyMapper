@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -11,10 +12,55 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Test
 
-/**
- * Tests for saving the screen resolution with the coordinate actions in issue #2217.
- */
 class ActionDataEntityMapperTest {
+
+    @Test
+    fun `set variable action round trips through the entity`() {
+        val action = ActionData.SetVariable(
+            name = "counter",
+            operation = VariableOperation.SUBTRACT,
+            value = -12,
+        )
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_VARIABLE_NAME).valueOrNull(),
+            `is`("counter"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `set variable action with a value that is not a number is dropped`() {
+        // A backup file can be edited by hand
+        val entity = ActionEntity(
+            type = ActionEntity.Type.SET_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "ADD"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "not a number"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
+
+    @Test
+    fun `set variable action with an unknown operation is dropped`() {
+        val entity = ActionEntity(
+            type = ActionEntity.Type.SET_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "MULTIPLY"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "2"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
 
     @Test
     fun `open app action with no app name extra is loaded with a null saved app name`() {

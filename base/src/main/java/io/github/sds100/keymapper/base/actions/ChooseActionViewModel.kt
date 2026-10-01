@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
@@ -38,6 +39,7 @@ class ChooseActionViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
@@ -58,11 +60,20 @@ class ChooseActionViewModel @Inject constructor(
             ActionCategory.TELEPHONY,
             ActionCategory.NOTIFICATIONS,
             ActionCategory.SPECIAL,
+            ActionCategory.VARIABLES,
         )
     }
 
     val createActionDelegate =
-        CreateActionDelegate(viewModelScope, useCase, this, this, this, vibrateConfigDelegate)
+        CreateActionDelegate(
+            viewModelScope,
+            useCase,
+            this,
+            this,
+            this,
+            vibrateConfigDelegate,
+            variablesUseCase,
+        )
 
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 

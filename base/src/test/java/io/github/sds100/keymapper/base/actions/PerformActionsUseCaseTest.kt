@@ -94,6 +94,7 @@ class PerformActionsUseCaseTest {
             notificationAdapter = mock(),
             settingsAdapter = mock(),
             vibratorAdapter = mock(),
+            variablesUseCase = mock(),
         )
     }
 

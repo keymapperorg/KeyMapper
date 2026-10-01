@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.vibrate
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
@@ -124,6 +125,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val settingsAdapter: SettingsAdapter,
     private val vibratorAdapter: VibratorAdapter,
+    private val variablesUseCase: VariablesUseCase,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -1044,6 +1046,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is ActionData.Vibrate -> {
                 vibratorAdapter.vibrate(action.effect)
                 result = success()
+            }
+
+            is ActionData.SetVariable -> {
+                result = variablesUseCase.apply(action.name, action.operation, action.value)
             }
 
             ActionData.AnswerCall -> {

@@ -956,6 +956,7 @@
     <string name="error_invalid_number">Invalid number!</string>
     <string name="error_number_too_small">Must be at least %s!</string>
     <string name="error_number_too_big">Must be at most %s!</string>
+    <string name="error_number_overflow">The variable is too big or too small to store!</string>
     <string name="error_battery_optimisation_enabled">Battery optimization is turned on! Turn this off because this can randomly stop Key Mapper from working.</string>
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
@@ -1374,6 +1375,35 @@
     <string name="action_modify_setting">Modify setting</string>
     <string name="action_talkback_gesture">TalkBack gesture</string>
     <string name="action_talkback_gesture_formatted">TalkBack: %s</string>
+
+    <!-- Variables -->
+    <string name="action_cat_variables">Variables</string>
+    <string name="constraint_cat_variables">Variables</string>
+    <string name="action_set_variable">Set variable</string>
+    <string name="action_set_variable_add">Add %2$s to %1$s</string>
+    <string name="action_set_variable_subtract">Subtract %2$s from %1$s</string>
+    <string name="action_set_variable_set">Set %1$s to %2$s</string>
+    <string name="constraint_variable">Variable</string>
+    <string name="constraint_variable_equals">%1$s is %2$s</string>
+    <string name="constraint_variable_not_equals">%1$s is not %2$s</string>
+    <string name="constraint_variable_greater_than">%1$s is greater than %2$s</string>
+    <string name="constraint_variable_not_greater_than">%1$s is not greater than %2$s</string>
+    <string name="constraint_variable_less_than">%1$s is less than %2$s</string>
+    <string name="constraint_variable_not_less_than">%1$s is not less than %2$s</string>
+    <string name="variable_name_label">Name</string>
+    <string name="variable_value_label">Value</string>
+    <string name="variable_chip_label">%1$s = %2$s</string>
+    <string name="variable_reset_content_description">Reset %1$s</string>
+    <string name="variable_suggestions">Current variables</string>
+    <string name="variable_reset_all">Reset all values</string>
+    <string name="variable_name_error">Enter a name!</string>
+    <string name="variable_operation_add">Add</string>
+    <string name="variable_operation_subtract">Subtract</string>
+    <string name="variable_operation_set">Set</string>
+    <string name="variable_comparison_equals">Is</string>
+    <string name="variable_comparison_greater_than">Greater than</string>
+    <string name="variable_comparison_less_than">Less than</string>
+    <string name="variable_apply_content_description">Apply to the variable now</string>
     <string name="pick_talkback_gesture_title">Choose TalkBack gesture</string>
     <string name="talkback_gesture_choice_label">%1$s (%2$s)</string>
     <string name="talkback_gesture_section_1_finger">1-finger gestures</string>

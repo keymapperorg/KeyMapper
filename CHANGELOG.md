@@ -4,6 +4,7 @@
 
 ## Added
 
+- #711 new action to add to, subtract from or set a variable, and a new constraint for comparing a variable to a value.
 - #1493 the brightness increment for the increase/decrease brightness actions can now be configured, from 1% to 50% (default 10%).
 - #2075 enable/disable/toggle a group by sending a broadcast intent, configurable from Power user options in Settings.
 - #2263 constraints can now be edited in place from the constraints list instead of being deleted and re-added.

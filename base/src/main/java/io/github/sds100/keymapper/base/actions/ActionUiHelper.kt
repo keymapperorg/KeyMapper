@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
@@ -835,6 +836,16 @@ class ActionUiHelper(
         is ActionData.TalkBackGesture -> {
             val actionLabel = getString(TalkBackGestureStrings.getActionLabel(action.gesture))
             getString(R.string.action_talkback_gesture_formatted, actionLabel)
+        }
+
+        is ActionData.SetVariable -> {
+            val stringRes = when (action.operation) {
+                VariableOperation.ADD -> R.string.action_set_variable_add
+                VariableOperation.SUBTRACT -> R.string.action_set_variable_subtract
+                VariableOperation.SET -> R.string.action_set_variable_set
+            }
+
+            getString(stringRes, arrayOf(action.name, action.value.toString()))
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
@@ -1138,6 +1139,24 @@ sealed class ActionData : Comparable<ActionData> {
 
         override fun compareTo(other: ActionData) = when (other) {
             is TalkBackGesture -> gesture.compareTo(other.gesture)
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class SetVariable(val name: String, val operation: VariableOperation, val value: Long) :
+        ActionData() {
+        override val id: ActionId = ActionId.SET_VARIABLE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SetVariable -> compareValuesBy(
+                this,
+                other,
+                { it.name },
+                { it.operation },
+                { it.value },
+            )
+
             else -> super.compareTo(other)
         }
     }

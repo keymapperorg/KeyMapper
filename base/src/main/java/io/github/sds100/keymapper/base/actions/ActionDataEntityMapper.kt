@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.util.Base64
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
@@ -76,6 +77,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.TOAST -> ActionId.TOAST
 
             ActionEntity.Type.VIBRATE -> ActionId.VIBRATE
+
+            ActionEntity.Type.SET_VARIABLE -> ActionId.SET_VARIABLE
         }
 
         return when (actionId) {
@@ -791,6 +794,27 @@ object ActionDataEntityMapper {
                 ActionData.Vibrate(effect = effect)
             }
 
+            ActionId.SET_VARIABLE -> {
+                val name = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_NAME)
+                    .valueOrNull() ?: return null
+
+                val operationString = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_OPERATION)
+                    .valueOrNull() ?: return null
+
+                val operation = try {
+                    VariableOperation.valueOf(operationString)
+                } catch (_: IllegalArgumentException) {
+                    return null
+                }
+
+                // toLongOrNull rather than toLong because this can come from a backup file that
+                // was edited by hand.
+                val value = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_VALUE)
+                    .valueOrNull()?.toLongOrNull() ?: return null
+
+                ActionData.SetVariable(name = name, operation = operation, value = value)
+            }
+
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
 
             ActionId.END_PHONE_CALL -> ActionData.EndCall
@@ -1065,6 +1089,7 @@ object ActionDataEntityMapper {
             is ActionData.CreateNotification -> ActionEntity.Type.CREATE_NOTIFICATION
             is ActionData.Toast -> ActionEntity.Type.TOAST
             is ActionData.Vibrate -> ActionEntity.Type.VIBRATE
+            is ActionData.SetVariable -> ActionEntity.Type.SET_VARIABLE
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -1155,6 +1180,8 @@ object ActionDataEntityMapper {
         is ActionData.Toast -> data.message
 
         is ActionData.Vibrate -> ""
+
+        is ActionData.SetVariable -> ""
 
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
@@ -1542,6 +1569,12 @@ object ActionDataEntityMapper {
 
         is ActionData.TalkBackGesture -> listOf(
             EntityExtra(ActionEntity.EXTRA_TALKBACK_GESTURE_TYPE, data.gesture.name),
+        )
+
+        is ActionData.SetVariable -> listOf(
+            EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, data.name),
+            EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, data.operation.name),
+            EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, data.value.toString()),
         )
 
         else -> emptyList()
