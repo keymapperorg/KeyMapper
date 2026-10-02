@@ -19,7 +19,6 @@ import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material.icons.rounded.MoreTime
 import androidx.compose.material.icons.rounded.Pinch
 import androidx.compose.material.icons.rounded.Timelapse
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -136,36 +135,10 @@ private fun ActionsScreen(
     onDelayChange: (String, Int) -> Unit = { _, _ -> },
     onRenameAction: (String, String) -> Unit = { _, _ -> },
 ) {
-    var actionToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var actionToRename by rememberSaveable { mutableStateOf<String?>(null) }
     var actionToSetDelay by rememberSaveable { mutableStateOf<String?>(null) }
 
     val actions = ((state as? State.Data)?.data as? ConfigActionsState.Loaded)?.actions.orEmpty()
-
-    if (actionToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { actionToDelete = null },
-            title = {
-                Text(stringResource(R.string.action_list_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.action_list_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveClick(actionToDelete!!)
-                        actionToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.action_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { actionToDelete = null }) {
-                    Text(stringResource(R.string.action_list_delete_cancel))
-                }
-            },
-        )
-    }
 
     val renameModel = actions.find { it.id == actionToRename }
 
@@ -207,7 +180,7 @@ private fun ActionsScreen(
                     state = state.data,
                     tipModel = tipModel,
                     callback = callback,
-                    onRemoveClick = { actionToDelete = it },
+                    onRemoveClick = onRemoveClick,
                     onDelayClick = { actionToSetDelay = it },
                     onRenameClick = { actionToRename = it },
                 )

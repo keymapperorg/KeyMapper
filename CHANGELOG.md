@@ -17,6 +17,7 @@
 
 ## Changed
 
+- #2280 removed the confirmation dialogs when deleting actions, constraints and constraint groups because changes can now be undone.
 - #2252 redesigned the app bar when configuring a key map. Changes are saved automatically so there is no Done button, and the help button was removed.
 - Show side-by-side view when creating a key map on more devices
 - #2273 Constraints that the device can't support (e.g. no Bluetooth or hinge sensor) are now shown as unsupported when choosing a constraint.

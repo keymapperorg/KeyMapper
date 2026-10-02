@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.rounded.FlashlightOn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
@@ -24,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -113,59 +111,7 @@ private fun ConstraintsScreen(
     onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit = { _, _ -> },
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
 ) {
-    var constraintToDelete by rememberSaveable { mutableStateOf<String?>(null) }
-    var groupToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var groupToRename by rememberSaveable { mutableStateOf<String?>(null) }
-
-    if (constraintToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { constraintToDelete = null },
-            title = {
-                Text(stringResource(R.string.constraint_list_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.constraint_list_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveClick(constraintToDelete!!)
-                        constraintToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.constraint_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { constraintToDelete = null }) {
-                    Text(stringResource(R.string.constraint_list_delete_cancel))
-                }
-            },
-        )
-    }
-
-    if (groupToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { groupToDelete = null },
-            title = {
-                Text(stringResource(R.string.constraint_group_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.constraint_group_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveGroupClick(groupToDelete!!)
-                        groupToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.constraint_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { groupToDelete = null }) {
-                    Text(stringResource(R.string.constraint_list_delete_cancel))
-                }
-            },
-        )
-    }
 
     val groups = ((state as? State.Data)?.data as? ConfigConstraintsState.Loaded)
         ?.groups
@@ -232,8 +178,8 @@ private fun ConstraintsScreen(
                             modifier = Modifier.weight(1f),
                             state = data,
                             onAddToGroupClick = onAddToGroupClick,
-                            onRemoveClick = { constraintToDelete = it },
-                            onRemoveGroupClick = { groupToDelete = it },
+                            onRemoveClick = onRemoveClick,
+                            onRemoveGroupClick = onRemoveGroupClick,
                             onNotClick = onNotClick,
                             onEditClick = onEditClick,
                             onFixErrorClick = onFixErrorClick,
