@@ -270,6 +270,9 @@ class BackupManagerImpl @Inject constructor(
 
                     // Do nothing. Adds the nullable name column to key maps.
                     JsonMigration(23, 24) { json -> json },
+
+                    // Do nothing. Adds the variables table.
+                    JsonMigration(24, 25) { json -> json },
                 )
 
                 if (keyMapListJsonArray != null) {
