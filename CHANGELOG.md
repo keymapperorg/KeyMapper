@@ -28,6 +28,7 @@
 - #2268 use trampoline when launching device assistant and settings apps when the device is locked so the lock screen dismisses.
 - #2271 brightness actions match brightness slider on Android 16.1+.
 - #1739 support multiple displays better.
+- #2276 Bottom key maps are obscured by selection bottom sheet.
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
