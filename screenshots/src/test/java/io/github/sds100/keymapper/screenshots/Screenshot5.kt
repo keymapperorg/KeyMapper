@@ -3,16 +3,13 @@ package io.github.sds100.keymapper.screenshots
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.automirrored.outlined.ShortText
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 import io.github.sds100.keymapper.base.home.KeyMapAppBarState
@@ -21,7 +18,6 @@ import io.github.sds100.keymapper.base.home.KeyMapListAppBar
 import io.github.sds100.keymapper.base.home.KeyMapListHeader
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.State
@@ -34,7 +30,7 @@ import org.robolectric.annotation.GraphicsMode
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w540dp-h960dp-xxhdpi", sdk = [35])
-class KeyMapListScreenshot {
+class Screenshot5 {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
@@ -105,37 +101,6 @@ class KeyMapListScreenshot {
                     chip("Repeat KEYCODE_SPACE", Icons.Rounded.Abc),
                 ),
             ),
-        )
-    }
-
-    private fun keyMap(
-        uid: String,
-        triggerKeys: List<String>,
-        actions: List<ComposeChipModel>,
-        constraints: List<ComposeChipModel> = emptyList(),
-        options: List<String> = emptyList(),
-    ): KeyMapListItemModel {
-        return KeyMapListItemModel(
-            isSelected = false,
-            KeyMapListItemModel.Content(
-                uid = uid,
-                triggerKeys = triggerKeys,
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = actions,
-                constraintMode = ConstraintMode.AND,
-                constraints = constraints,
-                options = options,
-                isEnabled = true,
-                hasError = false,
-            ),
-        )
-    }
-
-    private fun chip(text: String, icon: ImageVector): ComposeChipModel {
-        return ComposeChipModel.Normal(
-            id = text,
-            icon = ComposeIconInfo.Vector(icon),
-            text = text,
         )
     }
 }
