@@ -5,11 +5,11 @@ import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.automirrored.outlined.ShortText
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Fullscreen
-import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.State
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,19 +39,21 @@ class KeyMapListScreenshot {
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
     fun keyMapList() {
-        val appBarState = KeyMapAppBarState.RootGroup(
-            subGroups = listOf(
-                GroupListItemModel(
-                    uid = "0",
-                    name = "Navigation",
-                    icon = ComposeIconInfo.Vector(Icons.Outlined.Map),
-                ),
-                GroupListItemModel(uid = "1", name = "Lockscreen"),
-                GroupListItemModel(uid = "2", name = "Gaming"),
-            ),
-        )
-
         captureRoboImage("../fastlane/metadata/android/en-US/images/phoneScreenshots/5.png") {
+            val ctx = LocalContext.current
+
+            val appBarState = KeyMapAppBarState.RootGroup(
+                subGroups = listOf(
+                    GroupListItemModel(
+                        uid = "0",
+                        name = "Navigation",
+                        icon = ComposeIconInfo.Drawable(ctx.drawable(R.drawable.google_maps)),
+                    ),
+                    GroupListItemModel(uid = "1", name = "Lockscreen"),
+                    GroupListItemModel(uid = "2", name = "Gaming"),
+                ),
+            )
+
             KeyMapperTheme(darkTheme = false) {
                 StoreScreenshotFrame(
                     headline = "Works with your device",
