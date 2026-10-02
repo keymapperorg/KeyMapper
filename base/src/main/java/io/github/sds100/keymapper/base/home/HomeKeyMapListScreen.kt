@@ -217,7 +217,6 @@ fun HomeKeyMapListScreen(
                         onNotConstraintClick = viewModel::onNotGroupConstraintClick,
                         onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
                         onFixClick = viewModel::onFixGroupConstraintsClick,
-                        onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                     )
                 },
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
@@ -247,6 +246,7 @@ fun HomeKeyMapListScreen(
                 },
                 onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
+                onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                 onBackClick = {
                     if (!viewModel.onBackClick()) {
                         finishActivity()

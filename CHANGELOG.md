@@ -22,6 +22,7 @@
 - Show side-by-side view when creating a key map on more devices
 - #2273 Constraints that the device can't support (e.g. no Bluetooth or hinge sensor) are now shown as unsupported when choosing a constraint.
 - Rename "app in foreground" constraint to "app is open".
+- #2282 moved the group enable switch into the top app bar to save vertical space.
 
 ## Fixed
 

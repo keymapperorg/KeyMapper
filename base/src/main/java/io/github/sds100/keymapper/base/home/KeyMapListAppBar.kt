@@ -47,11 +47,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -66,6 +72,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,6 +109,7 @@ fun KeyMapListAppBar(
     onEditGroupNameClick: () -> Unit = {},
     onDeleteGroupClick: () -> Unit = {},
     onReportBugClick: () -> Unit = {},
+    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -235,33 +244,40 @@ fun KeyMapListAppBar(
                     AnimatedVisibility(!state.isEditingGroupName) {
                         var expandedDropdown by rememberSaveable { mutableStateOf(false) }
 
-                        AppBarActions(
-                            showWhatsNew = false,
-                            onWhatsNewClick,
-                            onMenuClick = { expandedDropdown = true },
-                            dropdownMenuContent = {
-                                ChildGroupDropdownMenu(
-                                    expanded = expandedDropdown,
-                                    onSortClick = {
-                                        expandedDropdown = false
-                                        onSortClick()
-                                    },
-                                    onSettingsClick = {
-                                        expandedDropdown = false
-                                        onSettingsClick()
-                                    },
-                                    onAboutClick = {
-                                        expandedDropdown = false
-                                        onAboutClick()
-                                    },
-                                    onDismissRequest = { expandedDropdown = false },
-                                    onDeleteGroupClick = {
-                                        expandedDropdown = false
-                                        showDeleteGroupDialog = true
-                                    },
-                                )
-                            },
-                        )
+                        Row {
+                            KeyMapsEnabledSwitch(
+                                state = state.keyMapsEnabled,
+                                onChange = onKeyMapsEnabledChange,
+                            )
+
+                            AppBarActions(
+                                showWhatsNew = false,
+                                onWhatsNewClick,
+                                onMenuClick = { expandedDropdown = true },
+                                dropdownMenuContent = {
+                                    ChildGroupDropdownMenu(
+                                        expanded = expandedDropdown,
+                                        onSortClick = {
+                                            expandedDropdown = false
+                                            onSortClick()
+                                        },
+                                        onSettingsClick = {
+                                            expandedDropdown = false
+                                            onSettingsClick()
+                                        },
+                                        onAboutClick = {
+                                            expandedDropdown = false
+                                            onAboutClick()
+                                        },
+                                        onDismissRequest = { expandedDropdown = false },
+                                        onDeleteGroupClick = {
+                                            expandedDropdown = false
+                                            showDeleteGroupDialog = true
+                                        },
+                                    )
+                                },
+                            )
+                        }
                     }
                 },
             )
@@ -400,6 +416,38 @@ private fun SelectingAppBar(
         },
         colors = primaryAppBarColors(),
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun KeyMapsEnabledSwitch(state: SelectedKeyMapsEnabled?, onChange: (Boolean) -> Unit) {
+    val text = when (state) {
+        SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
+        SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
+        SelectedKeyMapsEnabled.NONE, null -> stringResource(
+            R.string.home_enabled_key_maps_disabled,
+        )
+    }
+    val tooltipState = rememberTooltipState()
+    val scope = rememberCoroutineScope()
+
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below,
+        ),
+        tooltip = { PlainTooltip { Text(text) } },
+        state = tooltipState,
+    ) {
+        Switch(
+            modifier = Modifier.semantics { contentDescription = text },
+            checked = state == SelectedKeyMapsEnabled.ALL,
+            onCheckedChange = {
+                onChange(it)
+                scope.launch { tooltipState.show() }
+            },
+            enabled = state != null,
+        )
+    }
 }
 
 @Composable
