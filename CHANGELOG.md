@@ -12,10 +12,12 @@
 - #2252 undo and redo changes when configuring a key map.
 - #2155 the Expert Mode setup wizard now detects Samsung Auto Blocker and guides how to disable it, since it can silently block wireless debugging from staying enabled.
 - #2127 shut down and restart device actions.
+- #2281 action text in the key map list is more concise and the delay between actions is shown as a timer chip.
 - Show constraint icons when collapsed.
 
 ## Changed
 
+- #2280 removed the confirmation dialogs when deleting actions, constraints and constraint groups because changes can now be undone.
 - #2252 redesigned the app bar when configuring a key map. Changes are saved automatically so there is no Done button, and the help button was removed.
 - Show side-by-side view when creating a key map on more devices
 - #2273 Constraints that the device can't support (e.g. no Bluetooth or hinge sensor) are now shown as unsupported when choosing a constraint.
@@ -26,6 +28,7 @@
 - #2268 use trampoline when launching device assistant and settings apps when the device is locked so the lock screen dismisses.
 - #2271 brightness actions match brightness slider on Android 16.1+.
 - #1739 support multiple displays better.
+- #2276 Bottom key maps are obscured by selection bottom sheet.
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 

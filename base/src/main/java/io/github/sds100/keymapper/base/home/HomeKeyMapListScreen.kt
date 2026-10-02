@@ -40,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -173,7 +172,11 @@ fun HomeKeyMapListScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val ctx = LocalContext.current
 
-    var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
+    val keyMapListBottomPadding = if (state.appBarState is KeyMapAppBarState.Selecting) {
+        300.dp
+    } else {
+        100.dp
+    }
     val lazyListState = rememberLazyListState()
 
     HomeKeyMapListScreen(
