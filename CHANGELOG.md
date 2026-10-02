@@ -12,6 +12,7 @@
 - #2252 undo and redo changes when configuring a key map.
 - #2155 the Expert Mode setup wizard now detects Samsung Auto Blocker and guides how to disable it, since it can silently block wireless debugging from staying enabled.
 - #2127 shut down and restart device actions.
+- #2281 action text in the key map list is more concise and the delay between actions is shown as a timer chip.
 - Show constraint icons when collapsed.
 
 ## Changed

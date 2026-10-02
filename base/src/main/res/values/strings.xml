@@ -79,6 +79,16 @@
 
     <string name="action_title_wait_ms">Wait %sms</string>
     <string name="action_title_wait_secs">Wait %ss</string>
+    <string name="action_chip_delay_ms">%sms</string>
+    <string name="action_chip_delay_secs">%ss</string>
+    <string name="action_chip_repeat">Repeat</string>
+    <string name="action_chip_repeat_limit">Repeat %dx</string>
+    <string name="action_chip_toggle_repeat">Toggle repeat</string>
+    <string name="action_chip_hold">Hold</string>
+    <string name="action_chip_toggle_hold">Toggle hold</string>
+    <string name="action_chip_hold_repeat">Hold &amp; repeat</string>
+    <string name="action_chip_hold_repeat_limit">Hold &amp; repeat %dx</string>
+    <string name="action_chip_toggle_hold_repeat">Toggle hold &amp; repeat</string>
 
     <string name="action_title_intent_start_activity">Start activity: %s</string>
     <string name="action_title_intent_start_service">Start service: %s</string>

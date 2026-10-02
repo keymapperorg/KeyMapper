@@ -64,6 +64,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.TimeUtils
 import io.github.sds100.keymapper.system.camera.CameraLens
 import kotlinx.coroutines.flow.update
 
@@ -450,12 +451,10 @@ private fun ActionLinkRow(
                     if (delayBeforeNextAction < 1000) {
                         Text(stringResource(R.string.action_title_wait_ms, delayBeforeNextAction))
                     } else {
-                        val seconds = delayBeforeNextAction / 1000f
-                        val secondsText = if (seconds % 1f == 0f) {
-                            seconds.toInt().toString()
-                        } else {
-                            String.format(LocalLocale.current.platformLocale, "%.1f", seconds)
-                        }
+                        val secondsText = TimeUtils.formatSeconds(
+                            delayBeforeNextAction,
+                            LocalLocale.current.platformLocale,
+                        )
 
                         Text(
                             stringResource(
