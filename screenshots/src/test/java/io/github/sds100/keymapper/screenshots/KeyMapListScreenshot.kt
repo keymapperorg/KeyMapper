@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
@@ -31,7 +32,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(qualifiers = "w400dp-h800dp-xxhdpi", sdk = [35])
+@Config(qualifiers = "w540dp-h960dp-xxhdpi", sdk = [35])
 class KeyMapListScreenshot {
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -49,23 +50,29 @@ class KeyMapListScreenshot {
             ),
         )
 
-        captureRoboImage("output/key_map_list.png") {
-            KeyMapperTheme {
-                HomeKeyMapListScreen(
-                    appBarContent = { KeyMapListAppBar(state = appBarState) },
-                    listContent = {
-                        KeyMapList(
-                            listItems = State.Data(keyMaps()),
-                            header = {
-                                KeyMapListHeader(state = appBarState, extraContent = {})
-                            },
-                        )
-                    },
-                    floatingActionButton = {
-                        CollapsableFloatingActionButton(text = "New key map", showText = true)
-                    },
-                    selectionBottomSheet = {},
-                )
+        captureRoboImage("../fastlane/metadata/android/en-US/images/phoneScreenshots/5.png") {
+            KeyMapperTheme(darkTheme = false) {
+                StoreScreenshotFrame(
+                    headline = "Works with your device",
+                    subtitle = "Use gamepads, keyboards and whatever you can connect",
+                    statusBarColor = MaterialTheme.colorScheme.surface,
+                ) {
+                    HomeKeyMapListScreen(
+                        appBarContent = { KeyMapListAppBar(state = appBarState) },
+                        listContent = {
+                            KeyMapList(
+                                listItems = State.Data(keyMaps()),
+                                header = {
+                                    KeyMapListHeader(state = appBarState, extraContent = {})
+                                },
+                            )
+                        },
+                        floatingActionButton = {
+                            CollapsableFloatingActionButton(text = "New key map", showText = true)
+                        },
+                        selectionBottomSheet = {},
+                    )
+                }
             }
         }
     }
@@ -92,7 +99,7 @@ class KeyMapListScreenshot {
                 uid = "2",
                 triggerKeys = listOf("Button A (Wireless Controller)"),
                 actions = listOf(
-                    chip("Input KEYCODE_SPACE • Repeat", Icons.Rounded.Abc),
+                    chip("Repeat KEYCODE_SPACE", Icons.Rounded.Abc),
                 ),
             ),
         )
