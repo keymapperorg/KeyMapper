@@ -65,7 +65,7 @@ fun StoreScreenshotFrame(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(top = 48.dp),
+            .padding(top = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -87,7 +87,7 @@ fun StoreScreenshotFrame(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(32.dp))
 
         // The phone is taller than the remaining space so it bleeds off the bottom.
         Box(

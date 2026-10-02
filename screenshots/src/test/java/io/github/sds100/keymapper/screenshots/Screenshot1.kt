@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.screenshots
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BluetoothConnected
-import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.RingVolume
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,7 +72,6 @@ class Screenshot1 {
                     triggerKeys = listOf("Side key/power button"),
                     actions = listOf(
                         chip("Driving", maps),
-                        chip("Increase display brightness", Icons.Outlined.BrightnessHigh),
                     ),
                 ),
             )
