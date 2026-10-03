@@ -87,7 +87,7 @@ fun ChooseActionScreen(modifier: Modifier = Modifier, viewModel: ChooseActionVie
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChooseActionScreen(
+fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     state: State<List<SimpleListItemGroup>>,
     query: String? = null,
