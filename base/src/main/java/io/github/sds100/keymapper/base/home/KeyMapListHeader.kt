@@ -212,7 +212,7 @@ private fun ChildGroupHeader(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -225,16 +225,11 @@ private fun ChildGroupHeader(
                     )
 
                     AnimatedVisibility(visible = state.constraints.size > 1) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            ConstraintModeButtons(
-                                mode = state.constraintMode,
-                                onSelectMode = onConstraintModeChanged,
-                                colors = modeColors,
-                            )
-                        }
+                        ConstraintModeButtons(
+                            mode = state.constraintMode,
+                            onSelectMode = onConstraintModeChanged,
+                            colors = modeColors,
+                        )
                     }
                 }
             }
