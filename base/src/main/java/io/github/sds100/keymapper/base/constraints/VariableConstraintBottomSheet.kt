@@ -114,6 +114,7 @@ private fun VariableConstraintBottomSheet(
             onResetAllClick = onResetAllClick,
             nameError = nameError,
             onCycleOperationClick = onCycleComparisonClick,
+            operationLabel = getComparisonLabel(state.comparison),
             operationIcon = {
                 Icon(
                     imageVector = getComparisonIcon(state.comparison),

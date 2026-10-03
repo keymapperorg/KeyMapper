@@ -17,16 +17,23 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,8 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun VariableConfigContent(
     modifier: Modifier = Modifier,
@@ -53,6 +61,7 @@ fun VariableConfigContent(
     onResetAllClick: () -> Unit = {},
     onCycleOperationClick: () -> Unit = {},
     operationIcon: (@Composable () -> Unit)? = null,
+    operationLabel: String = "",
 ) {
     Column(
         modifier = modifier,
@@ -88,13 +97,28 @@ fun VariableConfigContent(
 
             if (operationIcon != null) {
                 // One button that cycles through the operations rather than a row of them.
-                FilledTonalIconButton(
+                val tooltipState = rememberTooltipState()
+                val scope = rememberCoroutineScope()
+
+                TooltipBox(
                     // Material text fields expose no baseline, so centre the button on the 56dp
                     // field's text line instead. Top alignment keeps it put when error text shows.
                     modifier = Modifier.padding(top = 12.dp),
-                    onClick = onCycleOperationClick,
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Above,
+                    ),
+                    tooltip = { PlainTooltip { Text(operationLabel) } },
+                    state = tooltipState,
                 ) {
-                    operationIcon()
+                    FilledTonalIconButton(
+                        onClick = {
+                            onCycleOperationClick()
+                            // Show the newly selected operation after each cycle.
+                            scope.launch { tooltipState.show() }
+                        },
+                    ) {
+                        operationIcon()
+                    }
                 }
             }
 
@@ -191,6 +215,7 @@ private fun Preview(
                     contentDescription = "Add",
                 )
             },
+            operationLabel = "Add",
         )
     }
 }

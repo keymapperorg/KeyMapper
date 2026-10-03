@@ -1411,7 +1411,7 @@
     <string name="variable_operation_add">Add</string>
     <string name="variable_operation_subtract">Subtract</string>
     <string name="variable_operation_set">Set</string>
-    <string name="variable_comparison_equals">Is</string>
+    <string name="variable_comparison_equals">Equals</string>
     <string name="variable_comparison_greater_than">Greater than</string>
     <string name="variable_comparison_less_than">Less than</string>
     <string name="variable_apply_content_description">Apply to the variable now</string>

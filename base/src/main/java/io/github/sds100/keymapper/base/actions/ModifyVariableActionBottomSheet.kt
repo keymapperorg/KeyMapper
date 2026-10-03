@@ -111,6 +111,7 @@ private fun ModifyVariableActionBottomSheet(
             onResetAllClick = onResetAllClick,
             onCycleOperationClick = onCycleOperationClick,
             nameError = nameError,
+            operationLabel = getOperationLabel(state.operation),
             operationIcon = {
                 Icon(
                     imageVector = getOperationIcon(state.operation),
