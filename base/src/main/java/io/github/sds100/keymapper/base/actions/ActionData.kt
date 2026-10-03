@@ -1144,12 +1144,28 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class SetVariable(val name: String, val operation: VariableOperation, val value: Long) :
-        ActionData() {
+    data class SetVariable(val name: String, val value: Long) : ActionData() {
         override val id: ActionId = ActionId.SET_VARIABLE
 
         override fun compareTo(other: ActionData) = when (other) {
             is SetVariable -> compareValuesBy(
+                this,
+                other,
+                { it.name },
+                { it.value },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class ModifyVariable(val name: String, val operation: VariableOperation, val value: Long) :
+        ActionData() {
+        override val id: ActionId = ActionId.MODIFY_VARIABLE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ModifyVariable -> compareValuesBy(
                 this,
                 other,
                 { it.name },

@@ -63,6 +63,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     VibrateActionBottomSheet(delegate)
     StepMediaActionBottomSheet(delegate)
     SetVariableActionBottomSheet(delegate.setVariableDelegate)
+    ModifyVariableActionBottomSheet(delegate.modifyVariableDelegate)
     BrightnessStepActionBottomSheet(delegate)
     PickTalkBackGestureDialog(delegate)
 }

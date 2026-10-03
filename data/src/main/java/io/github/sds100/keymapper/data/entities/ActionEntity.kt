@@ -230,6 +230,7 @@ data class ActionEntity(
         TOAST,
         VIBRATE,
         SET_VARIABLE,
+        MODIFY_VARIABLE,
     }
 
     constructor(

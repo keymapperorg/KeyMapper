@@ -1049,7 +1049,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SetVariable -> {
-                result = variablesUseCase.apply(action.name, action.operation, action.value)
+                result = variablesUseCase.setValue(action.name, action.value)
+            }
+
+            is ActionData.ModifyVariable -> {
+                result = variablesUseCase.modify(action.name, action.operation, action.value)
             }
 
             ActionData.AnswerCall -> {

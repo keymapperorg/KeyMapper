@@ -262,6 +262,7 @@ object ActionUtils {
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
         ActionId.TALKBACK_GESTURE -> ActionCategory.INTERFACE
         ActionId.SET_VARIABLE -> ActionCategory.VARIABLES
+        ActionId.MODIFY_VARIABLE -> ActionCategory.VARIABLES
     }
 
     @StringRes
@@ -545,6 +546,7 @@ object ActionUtils {
 
         ActionId.TALKBACK_GESTURE -> R.string.action_talkback_gesture
         ActionId.SET_VARIABLE -> R.string.action_set_variable
+        ActionId.MODIFY_VARIABLE -> R.string.action_modify_variable
     }
 
     @DrawableRes
@@ -1141,6 +1143,7 @@ object ActionUtils {
         ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
         ActionId.TALKBACK_GESTURE -> Icons.Outlined.Accessibility
         ActionId.SET_VARIABLE -> Icons.Outlined.Calculate
+        ActionId.MODIFY_VARIABLE -> Icons.Outlined.Calculate
     }
 }
 
@@ -1198,6 +1201,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ModifySetting,
     is ActionData.TalkBackGesture,
     is ActionData.SetVariable,
+    is ActionData.ModifyVariable,
         -> true
 
     else -> false

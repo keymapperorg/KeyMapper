@@ -825,11 +825,16 @@ class ActionUiHelper(
             getString(R.string.action_talkback_gesture_formatted, actionLabel)
         }
 
-        is ActionData.SetVariable -> {
+        is ActionData.SetVariable ->
+            getString(
+                R.string.action_set_variable_set,
+                arrayOf(action.name, action.value.toString()),
+            )
+
+        is ActionData.ModifyVariable -> {
             val stringRes = when (action.operation) {
                 VariableOperation.ADD -> R.string.action_set_variable_add
                 VariableOperation.SUBTRACT -> R.string.action_set_variable_subtract
-                VariableOperation.SET -> R.string.action_set_variable_set
             }
 
             getString(stringRes, arrayOf(action.name, action.value.toString()))

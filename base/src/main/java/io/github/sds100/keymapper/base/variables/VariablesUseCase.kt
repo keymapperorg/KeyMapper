@@ -33,11 +33,13 @@ interface VariablesUseCase {
 
     fun getValues(): Map<String, Long>
 
+    fun setValue(name: String, value: Long): KMResult<Long>
+
     /**
      * Reads the variable, does the operation, then stores the result. A variable that has never
      * been set counts as 0.
      */
-    fun apply(name: String, operation: VariableOperation, value: Long): KMResult<Long>
+    fun modify(name: String, operation: VariableOperation, value: Long): KMResult<Long>
 
     fun reset(name: String)
     fun resetAll()
@@ -68,7 +70,13 @@ class VariablesUseCaseImpl @Inject constructor(
         return variableRepository.values.value
     }
 
-    override fun apply(name: String, operation: VariableOperation, value: Long): KMResult<Long> {
+    override fun setValue(name: String, value: Long): KMResult<Long> {
+        variableRepository.set(name, value)
+
+        return Success(value)
+    }
+
+    override fun modify(name: String, operation: VariableOperation, value: Long): KMResult<Long> {
         val current = variableRepository.values.value[name] ?: 0L
 
         val newValue = try {
@@ -78,8 +86,6 @@ class VariablesUseCaseImpl @Inject constructor(
                 VariableOperation.ADD -> Math.addExact(current, value)
 
                 VariableOperation.SUBTRACT -> Math.subtractExact(current, value)
-
-                VariableOperation.SET -> value
             }
         } catch (e: ArithmeticException) {
             return KMError.NumberOverflow
@@ -107,8 +113,7 @@ class VariablesUseCaseImpl @Inject constructor(
 
             val actionNames = keyMap.actionList
                 .map { it.data }
-                .filterIsInstance<ActionData.SetVariable>()
-                .map { it.name }
+                .mapNotNull { it.variableNameOrNull() }
 
             val constraintNames = keyMap.constraintState.allConstraints
                 .map { it.data }
@@ -126,8 +131,7 @@ class VariablesUseCaseImpl @Inject constructor(
                     val actionNames = keyMap.actionList
                         .filterNotNull()
                         .mapNotNull { ActionDataEntityMapper.fromEntity(it) }
-                        .filterIsInstance<ActionData.SetVariable>()
-                        .map { it.name }
+                        .mapNotNull { it.variableNameOrNull() }
 
                     val constraintNames = keyMap.constraintList
                         .map { ConstraintEntityMapper.fromEntity(it).data }
@@ -139,5 +143,13 @@ class VariablesUseCaseImpl @Inject constructor(
                 .distinct()
                 .sorted()
         }
+    }
+}
+
+private fun ActionData.variableNameOrNull(): String? {
+    return when (this) {
+        is ActionData.SetVariable -> name
+        is ActionData.ModifyVariable -> name
+        else -> null
     }
 }

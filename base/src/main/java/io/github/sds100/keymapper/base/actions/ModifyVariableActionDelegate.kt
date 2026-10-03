@@ -5,27 +5,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.variables.VariableSuggestion
 import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.variables.filterVariableValue
 import kotlinx.coroutines.flow.Flow
 
-class SetVariableActionDelegate(
+class ModifyVariableActionDelegate(
     private val variablesUseCase: VariablesUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
-    private val onResult: (ActionData.SetVariable) -> Unit,
+    private val onResult: (ActionData.ModifyVariable) -> Unit,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider {
 
-    var state: SetVariableActionBottomSheetState? by mutableStateOf(null)
+    var state: ModifyVariableActionBottomSheetState? by mutableStateOf(null)
         private set
 
     val suggestions: Flow<List<VariableSuggestion>> = variablesUseCase.suggestions
 
-    fun open(oldAction: ActionData.SetVariable?) {
-        state = SetVariableActionBottomSheetState(
+    fun open(oldAction: ActionData.ModifyVariable?) {
+        state = ModifyVariableActionBottomSheetState(
             name = oldAction?.name ?: "",
+            operation = oldAction?.operation ?: VariableOperation.ADD,
             value = oldAction?.value?.toString() ?: "1",
         )
     }
@@ -42,6 +44,16 @@ class SetVariableActionDelegate(
         state = state?.copy(value = value.filterVariableValue())
     }
 
+    fun onCycleOperationClick() {
+        state = state?.let {
+            val operation = when (it.operation) {
+                VariableOperation.ADD -> VariableOperation.SUBTRACT
+                else -> VariableOperation.ADD
+            }
+            it.copy(operation = operation)
+        }
+    }
+
     fun onResetClick(name: String) {
         variablesUseCase.reset(name)
     }
@@ -52,8 +64,9 @@ class SetVariableActionDelegate(
 
     fun onDoneClick() {
         val state = state ?: return
-        val action = ActionData.SetVariable(
+        val action = ActionData.ModifyVariable(
             name = state.name,
+            operation = state.operation,
             value = state.value.toLongOrNull() ?: 0L,
         )
 

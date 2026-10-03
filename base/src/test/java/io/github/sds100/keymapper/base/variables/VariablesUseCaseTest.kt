@@ -71,31 +71,31 @@ class VariablesUseCaseTest {
 
     @Test
     fun `a variable that has never been set counts as zero`() {
-        assertThat(useCase.apply("counter", VariableOperation.ADD, 1).valueOrNull(), `is`(1L))
+        assertThat(useCase.modify("counter", VariableOperation.ADD, 1).valueOrNull(), `is`(1L))
     }
 
     @Test
     fun `adding and subtracting change the stored value`() {
-        useCase.apply("counter", VariableOperation.SET, 10)
-        useCase.apply("counter", VariableOperation.ADD, 5)
-        useCase.apply("counter", VariableOperation.SUBTRACT, 3)
+        useCase.setValue("counter", 10)
+        useCase.modify("counter", VariableOperation.ADD, 5)
+        useCase.modify("counter", VariableOperation.SUBTRACT, 3)
 
         assertThat(useCase.getValues()["counter"], `is`(12L))
     }
 
     @Test
     fun `setting replaces the value rather than combining with it`() {
-        useCase.apply("mode", VariableOperation.SET, 7)
-        useCase.apply("mode", VariableOperation.SET, 2)
+        useCase.setValue("mode", 7)
+        useCase.setValue("mode", 2)
 
         assertThat(useCase.getValues()["mode"], `is`(2L))
     }
 
     @Test
     fun `adding past the maximum is an error and leaves the value alone`() {
-        useCase.apply("counter", VariableOperation.SET, Long.MAX_VALUE)
+        useCase.setValue("counter", Long.MAX_VALUE)
 
-        val result = useCase.apply("counter", VariableOperation.ADD, 1)
+        val result = useCase.modify("counter", VariableOperation.ADD, 1)
 
         assertThat(result, `is`(KMError.NumberOverflow))
         assertThat(useCase.getValues()["counter"], `is`(Long.MAX_VALUE))
@@ -103,9 +103,9 @@ class VariablesUseCaseTest {
 
     @Test
     fun `subtracting past the minimum is an error and leaves the value alone`() {
-        useCase.apply("counter", VariableOperation.SET, Long.MIN_VALUE)
+        useCase.setValue("counter", Long.MIN_VALUE)
 
-        val result = useCase.apply("counter", VariableOperation.SUBTRACT, 1)
+        val result = useCase.modify("counter", VariableOperation.SUBTRACT, 1)
 
         assertThat(result, `is`(KMError.NumberOverflow))
         assertThat(useCase.getValues()["counter"], `is`(Long.MIN_VALUE))
@@ -113,17 +113,17 @@ class VariablesUseCaseTest {
 
     @Test
     fun `resetting a variable makes it read as zero again`() {
-        useCase.apply("counter", VariableOperation.SET, 9)
+        useCase.setValue("counter", 9)
 
         useCase.reset("counter")
 
         assertThat(useCase.getValues()["counter"], `is`(nullValue()))
-        assertThat(useCase.apply("counter", VariableOperation.ADD, 1), `is`(Success(1L)))
+        assertThat(useCase.modify("counter", VariableOperation.ADD, 1), `is`(Success(1L)))
     }
 
     @Test
     fun `resetting everything clears a variable that no key map refers to`() {
-        useCase.apply("orphan", VariableOperation.SET, 5)
+        useCase.setValue("orphan", 5)
 
         useCase.resetAll()
 
@@ -137,7 +137,7 @@ class VariablesUseCaseTest {
             keyMapEntity(constraints = listOf(variableConstraint("mode"))),
         )
 
-        useCase.apply("counter", VariableOperation.SET, 3)
+        useCase.setValue("counter", 3)
 
         assertThat(
             useCase.suggestions.first(),
@@ -147,7 +147,7 @@ class VariablesUseCaseTest {
 
     @Test
     fun `a variable no key map refers to is not suggested but is still stored`() = runTest {
-        useCase.apply("orphan", VariableOperation.SET, 5)
+        useCase.setValue("orphan", 5)
 
         assertThat(useCase.suggestions.first().isEmpty(), `is`(true))
         assertThat(useCase.getValues()["orphan"], `is`(5L))
@@ -164,7 +164,7 @@ class VariablesUseCaseTest {
     }
 
     private fun setVariable(name: String): ActionData {
-        return ActionData.SetVariable(name, VariableOperation.ADD, 1)
+        return ActionData.SetVariable(name, 1)
     }
 
     private fun variableConstraint(name: String): ConstraintData {

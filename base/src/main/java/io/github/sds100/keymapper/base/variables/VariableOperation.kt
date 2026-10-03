@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 enum class VariableOperation {
     ADD,
     SUBTRACT,
-    SET,
     ;
 
     fun next(): VariableOperation {

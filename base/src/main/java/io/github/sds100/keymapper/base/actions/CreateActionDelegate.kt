@@ -85,6 +85,12 @@ class CreateActionDelegate(
         dialogProvider,
     ) { action -> actionResult.update { action } }
 
+    val modifyVariableDelegate = ModifyVariableActionDelegate(
+        variablesUseCase,
+        resourceProvider,
+        dialogProvider,
+    ) { action -> actionResult.update { action } }
+
     init {
         coroutineScope.launch {
             useCase.isFlashlightEnabled().collectLatest { enabled ->
@@ -1324,6 +1330,11 @@ class CreateActionDelegate(
 
             ActionId.SET_VARIABLE -> {
                 setVariableDelegate.open(oldData as? ActionData.SetVariable)
+                return null
+            }
+
+            ActionId.MODIFY_VARIABLE -> {
+                modifyVariableDelegate.open(oldData as? ActionData.ModifyVariable)
                 return null
             }
 

@@ -16,11 +16,7 @@ class ActionDataEntityMapperTest {
 
     @Test
     fun `set variable action round trips through the entity`() {
-        val action = ActionData.SetVariable(
-            name = "counter",
-            operation = VariableOperation.SUBTRACT,
-            value = -12,
-        )
+        val action = ActionData.SetVariable(name = "counter", value = -12)
 
         val entity = ActionDataEntityMapper.toEntity(action)
 
@@ -32,6 +28,35 @@ class ActionDataEntityMapperTest {
     }
 
     @Test
+    fun `modify variable action round trips through the entity`() {
+        val action = ActionData.ModifyVariable(
+            name = "counter",
+            operation = VariableOperation.SUBTRACT,
+            value = -12,
+        )
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(entity.type, `is`(ActionEntity.Type.MODIFY_VARIABLE))
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `modify variable action with the set operation is dropped`() {
+        val entity = ActionEntity(
+            type = ActionEntity.Type.MODIFY_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "SET"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "2"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
+
+    @Test
     fun `set variable action with a value that is not a number is dropped`() {
         // A backup file can be edited by hand
         val entity = ActionEntity(
@@ -39,7 +64,6 @@ class ActionDataEntityMapperTest {
             data = "",
             extras = listOf(
                 EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
-                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "ADD"),
                 EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "not a number"),
             ),
         )
@@ -48,9 +72,9 @@ class ActionDataEntityMapperTest {
     }
 
     @Test
-    fun `set variable action with an unknown operation is dropped`() {
+    fun `modify variable action with an unknown operation is dropped`() {
         val entity = ActionEntity(
-            type = ActionEntity.Type.SET_VARIABLE,
+            type = ActionEntity.Type.MODIFY_VARIABLE,
             data = "",
             extras = listOf(
                 EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),

@@ -170,4 +170,5 @@ enum class ActionId {
     TALKBACK_GESTURE,
 
     SET_VARIABLE,
+    MODIFY_VARIABLE,
 }

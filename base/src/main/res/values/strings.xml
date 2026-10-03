@@ -1390,6 +1390,7 @@
     <string name="action_cat_variables">Variables</string>
     <string name="constraint_cat_variables">Variables</string>
     <string name="action_set_variable">Set variable</string>
+    <string name="action_modify_variable">Modify variable</string>
     <string name="action_set_variable_add">Add %2$s to %1$s</string>
     <string name="action_set_variable_subtract">Subtract %2$s from %1$s</string>
     <string name="action_set_variable_set">Set %1$s to %2$s</string>

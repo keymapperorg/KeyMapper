@@ -52,7 +52,7 @@ fun VariableConfigContent(
     onResetClick: (String) -> Unit = {},
     onResetAllClick: () -> Unit = {},
     onCycleOperationClick: () -> Unit = {},
-    operationIcon: @Composable () -> Unit,
+    operationIcon: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier,
@@ -86,14 +86,16 @@ fun VariableConfigContent(
                 ),
             )
 
-            // One button that cycles through the operations rather than a row of them.
-            FilledTonalIconButton(
-                // Material text fields expose no baseline, so centre the button on the 56dp
-                // field's text line instead. Top alignment keeps it put when error text shows.
-                modifier = Modifier.padding(top = 12.dp),
-                onClick = onCycleOperationClick,
-            ) {
-                operationIcon()
+            if (operationIcon != null) {
+                // One button that cycles through the operations rather than a row of them.
+                FilledTonalIconButton(
+                    // Material text fields expose no baseline, so centre the button on the 56dp
+                    // field's text line instead. Top alignment keeps it put when error text shows.
+                    modifier = Modifier.padding(top = 12.dp),
+                    onClick = onCycleOperationClick,
+                ) {
+                    operationIcon()
+                }
             }
 
             OutlinedTextField(

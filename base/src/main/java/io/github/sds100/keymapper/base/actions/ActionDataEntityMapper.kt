@@ -79,6 +79,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.VIBRATE -> ActionId.VIBRATE
 
             ActionEntity.Type.SET_VARIABLE -> ActionId.SET_VARIABLE
+
+            ActionEntity.Type.MODIFY_VARIABLE -> ActionId.MODIFY_VARIABLE
         }
 
         return when (actionId) {
@@ -798,6 +800,18 @@ object ActionDataEntityMapper {
                 val name = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_NAME)
                     .valueOrNull() ?: return null
 
+                // toLongOrNull rather than toLong because this can come from a backup file that
+                // was edited by hand.
+                val value = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_VALUE)
+                    .valueOrNull()?.toLongOrNull() ?: return null
+
+                ActionData.SetVariable(name = name, value = value)
+            }
+
+            ActionId.MODIFY_VARIABLE -> {
+                val name = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_NAME)
+                    .valueOrNull() ?: return null
+
                 val operationString = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_OPERATION)
                     .valueOrNull() ?: return null
 
@@ -812,7 +826,7 @@ object ActionDataEntityMapper {
                 val value = entity.extras.getData(ActionEntity.EXTRA_VARIABLE_VALUE)
                     .valueOrNull()?.toLongOrNull() ?: return null
 
-                ActionData.SetVariable(name = name, operation = operation, value = value)
+                ActionData.ModifyVariable(name = name, operation = operation, value = value)
             }
 
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
@@ -1090,6 +1104,7 @@ object ActionDataEntityMapper {
             is ActionData.Toast -> ActionEntity.Type.TOAST
             is ActionData.Vibrate -> ActionEntity.Type.VIBRATE
             is ActionData.SetVariable -> ActionEntity.Type.SET_VARIABLE
+            is ActionData.ModifyVariable -> ActionEntity.Type.MODIFY_VARIABLE
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -1182,6 +1197,8 @@ object ActionDataEntityMapper {
         is ActionData.Vibrate -> ""
 
         is ActionData.SetVariable -> ""
+
+        is ActionData.ModifyVariable -> ""
 
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
@@ -1572,6 +1589,11 @@ object ActionDataEntityMapper {
         )
 
         is ActionData.SetVariable -> listOf(
+            EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, data.name),
+            EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, data.value.toString()),
+        )
+
+        is ActionData.ModifyVariable -> listOf(
             EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, data.name),
             EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, data.operation.name),
             EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, data.value.toString()),
