@@ -125,7 +125,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 }
 
 @Composable
-private fun ActionsScreen(
+fun ActionsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigActionsState>,
     tipModel: OnboardingTipModel? = null,

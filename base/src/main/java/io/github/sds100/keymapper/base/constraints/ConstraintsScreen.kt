@@ -94,7 +94,7 @@ fun ConstraintsScreen(
 }
 
 @Composable
-private fun ConstraintsScreen(
+fun ConstraintsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigConstraintsState>,
     onAddClick: () -> Unit = {},

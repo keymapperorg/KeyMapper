@@ -76,135 +76,152 @@ fun ActionOptionsBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-        val uriHandler = LocalUriHandler.current
-        val ctx = LocalContext.current
-        val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
         val scope = rememberCoroutineScope()
-        var showCustomNameDialog by rememberSaveable { mutableStateOf(false) }
 
-        if (showCustomNameDialog) {
-            TextFieldDialog(
-                title = stringResource(R.string.action_options_custom_name_dialog_title),
-                submitButtonText = stringResource(R.string.pos_save),
-                initialText = state.title,
-                onSubmitClick = { newText ->
-                    callback.onCustomNameChanged(newText)
-                    null
-                },
-                onDismissRequest = { showCustomNameDialog = false },
-            )
-        }
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 56.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f, fill = false),
-                        textAlign = TextAlign.Center,
-                        text = state.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        softWrap = false,
-                    )
-
-                    IconButton(onClick = { showCustomNameDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = stringResource(
-                                R.string.action_options_custom_name_dialog_title,
-                            ),
-                        )
-                    }
+        ActionOptionsContent(
+            state = state,
+            callback = callback,
+            onDoneClick = {
+                scope.launch {
+                    sheetState.hide()
+                    onDismissRequest()
                 }
+            },
+        )
+    }
+}
 
-                IconButton(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(horizontal = 8.dp),
-                    onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
-                        contentDescription = null,
-                    )
-                }
-            }
+/**
+ * The content of [ActionOptionsBottomSheet] without the sheet window so it can be drawn directly.
+ */
+@Composable
+fun ActionOptionsContent(
+    modifier: Modifier = Modifier,
+    state: ActionOptionsState,
+    callback: ActionOptionsBottomSheetCallback,
+    onDoneClick: () -> Unit = {},
+) {
+    val uriHandler = LocalUriHandler.current
+    val ctx = LocalContext.current
+    val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
+    var showCustomNameDialog by rememberSaveable { mutableStateOf(false) }
 
-            Spacer(modifier = Modifier.height(16.dp))
+    if (showCustomNameDialog) {
+        TextFieldDialog(
+            title = stringResource(R.string.action_options_custom_name_dialog_title),
+            submitButtonText = stringResource(R.string.pos_save),
+            initialText = state.title,
+            onSubmitClick = { newText ->
+                callback.onCustomNameChanged(newText)
+                null
+            },
+            onDismissRequest = { showCustomNameDialog = false },
+        )
+    }
 
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = state.actionTypeIcon,
-                text = stringResource(R.string.action_options_type_header, state.actionTypeTitle),
-            )
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (state.showEditButton) {
-                    FilledTonalButton(onClick = callback::onEditClick) {
-                        Text(stringResource(R.string.action_options_customize))
-                    }
-                }
-
-                FilledTonalButton(onClick = callback::onReplaceClick) {
-                    Text(stringResource(R.string.action_options_swap))
-                }
-            }
-
-            if (state.showRepeat) {
-                Spacer(modifier = Modifier.height(16.dp))
-                RepeatOptions(state = state, callback = callback)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            BurstOptions(state = state, callback = callback)
-
-            if (state.showHoldDown) {
-                Spacer(modifier = Modifier.height(16.dp))
-                HoldDownOptions(state = state, callback = callback)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+        Box(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.End,
+                    .align(Alignment.Center)
+                    .padding(horizontal = 56.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Button(
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
-                        }
-                    },
-                ) {
+                Text(
+                    modifier = Modifier.weight(1f, fill = false),
+                    textAlign = TextAlign.Center,
+                    text = state.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = false,
+                )
+
+                IconButton(onClick = { showCustomNameDialog = true }) {
                     Icon(
-                        modifier = Modifier.size(ButtonDefaults.IconSize),
-                        imageVector = Icons.Rounded.Check,
-                        contentDescription = null,
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = stringResource(
+                            R.string.action_options_custom_name_dialog_title,
+                        ),
                     )
-                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                    Text(stringResource(R.string.button_done))
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            IconButton(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(horizontal = 8.dp),
+                onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+                    contentDescription = null,
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            icon = state.actionTypeIcon,
+            text = stringResource(R.string.action_options_type_header, state.actionTypeTitle),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (state.showEditButton) {
+                FilledTonalButton(onClick = callback::onEditClick) {
+                    Text(stringResource(R.string.action_options_customize))
+                }
+            }
+
+            FilledTonalButton(onClick = callback::onReplaceClick) {
+                Text(stringResource(R.string.action_options_swap))
+            }
+        }
+
+        if (state.showRepeat) {
+            Spacer(modifier = Modifier.height(16.dp))
+            RepeatOptions(state = state, callback = callback)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        BurstOptions(state = state, callback = callback)
+
+        if (state.showHoldDown) {
+            Spacer(modifier = Modifier.height(16.dp))
+            HoldDownOptions(state = state, callback = callback)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Button(onClick = onDoneClick) {
+                Icon(
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    imageVector = Icons.Rounded.Check,
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                Text(stringResource(R.string.button_done))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
