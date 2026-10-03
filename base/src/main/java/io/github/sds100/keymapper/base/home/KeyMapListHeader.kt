@@ -179,8 +179,7 @@ private fun ChildGroupHeader(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (state.constraints.isNotEmpty()) {
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -226,7 +225,10 @@ private fun ChildGroupHeader(
                     )
 
                     AnimatedVisibility(visible = state.constraints.size > 1) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
                             ConstraintModeButtons(
                                 mode = state.constraintMode,
                                 onSelectMode = onConstraintModeChanged,
