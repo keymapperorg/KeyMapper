@@ -359,6 +359,8 @@ private fun ChildGroupAppBar(
                 )
             }
 
+            Spacer(Modifier.width(4.dp))
+
             EditableAppBarTextField(
                 modifier = Modifier.weight(1f),
                 value = groupName,
@@ -371,6 +373,8 @@ private fun ChildGroupAppBar(
                 confirmContentDescription = stringResource(R.string.home_app_bar_save_group_name),
                 editContentDescription = stringResource(R.string.home_app_bar_edit_group_name),
             )
+
+            Spacer(Modifier.width(4.dp))
 
             AnimatedVisibility(visible = !isEditingGroupName) {
                 actions()
