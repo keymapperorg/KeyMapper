@@ -50,7 +50,7 @@ fun KMBottomSheet(
 
     ModalBottomSheet(
         modifier = modifier
-            .widthIn(max = 400.dp)
+            .widthIn(max = 450.dp)
             // When the bottom sheet fills the whole screen, scrolling pushes the top
             // underneath the status bar, but the content stays below the status bar. This gives
             // it an ugly forehead so make sure the bottom sheet never goes under the status bar.
