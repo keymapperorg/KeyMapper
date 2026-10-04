@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.VibrateConfigDelegate
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
@@ -54,6 +55,7 @@ class CreateActionDelegate(
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
     vibrateConfigDelegate: VibrateConfigDelegate,
+    variablesUseCase: VariablesUseCase,
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
@@ -75,6 +77,19 @@ class CreateActionDelegate(
         by mutableStateOf(null)
     var toastActionBottomSheetState: ToastActionBottomSheetState? by mutableStateOf(null)
     var stepMediaActionBottomSheetState: StepMediaActionBottomSheetState? by mutableStateOf(null)
+    var brightnessStepActionState: BrightnessStepActionBottomSheetState? by mutableStateOf(null)
+
+    val setVariableDelegate = SetVariableActionDelegate(
+        variablesUseCase,
+        resourceProvider,
+        dialogProvider,
+    ) { action -> actionResult.update { action } }
+
+    val modifyVariableDelegate = ModifyVariableActionDelegate(
+        variablesUseCase,
+        resourceProvider,
+        dialogProvider,
+    ) { action -> actionResult.update { action } }
 
     init {
         coroutineScope.launch {
@@ -421,23 +436,45 @@ class CreateActionDelegate(
 
         val action = when (state.actionId) {
             ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward(durationMs)
+
             ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward(durationMs)
+
             ActionId.STEP_FORWARD_PACKAGE ->
                 ActionData.ControlMediaForApp.StepForward(
                     state.packageName!!,
                     durationMs,
                     state.appName,
                 )
+
             ActionId.STEP_BACKWARD_PACKAGE ->
                 ActionData.ControlMediaForApp.StepBackward(
                     state.packageName!!,
                     durationMs,
                     state.appName,
                 )
+
             else -> throw Exception("don't know how to create action for ${state.actionId}")
         }
 
         stepMediaActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onBrightnessStepPercentChange(stepPercent: Int) {
+        brightnessStepActionState = brightnessStepActionState?.copy(stepPercent = stepPercent)
+    }
+
+    fun onDoneBrightnessStepClick() {
+        val state = brightnessStepActionState ?: return
+        val stepPercent = state.stepPercent.takeIf { it != DEFAULT_BRIGHTNESS_STEP_PERCENT }
+
+        val action = when (state.actionId) {
+            ActionId.INCREASE_BRIGHTNESS -> ActionData.Brightness.Increase(stepPercent)
+            ActionId.DECREASE_BRIGHTNESS -> ActionData.Brightness.Decrease(stepPercent)
+            else -> throw Exception("don't know how to create action for ${state.actionId}")
+        }
+
+        brightnessStepActionState = null
         actionResult.update { action }
     }
 
@@ -1100,9 +1137,22 @@ class CreateActionDelegate(
 
             ActionId.ENABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.EnableAuto
 
-            ActionId.INCREASE_BRIGHTNESS -> return ActionData.Brightness.Increase
+            ActionId.INCREASE_BRIGHTNESS,
+            ActionId.DECREASE_BRIGHTNESS,
+                -> {
+                val oldStepPercent = when (oldData) {
+                    is ActionData.Brightness.Increase -> oldData.stepPercent
+                    is ActionData.Brightness.Decrease -> oldData.stepPercent
+                    else -> null
+                }
 
-            ActionId.DECREASE_BRIGHTNESS -> return ActionData.Brightness.Decrease
+                brightnessStepActionState = BrightnessStepActionBottomSheetState(
+                    actionId = actionId,
+                    stepPercent = oldStepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT,
+                )
+
+                return null
+            }
 
             ActionId.TOGGLE_NIGHT_SHIFT -> return ActionData.NightShift.Toggle
 
@@ -1240,6 +1290,10 @@ class CreateActionDelegate(
 
             ActionId.SHOW_POWER_MENU -> return ActionData.ShowPowerMenu
 
+            ActionId.SHUTDOWN_DEVICE -> return ActionData.ShutdownDevice
+
+            ActionId.REBOOT_DEVICE -> return ActionData.RebootDevice
+
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
 
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
@@ -1271,6 +1325,16 @@ class CreateActionDelegate(
             ActionId.VIBRATE -> {
                 val oldEffect = (oldData as? ActionData.Vibrate)?.effect
                 openVibrateConfig(oldEffect, DEFAULT_VIBRATE_ACTION_DURATION_MS)
+                return null
+            }
+
+            ActionId.SET_VARIABLE -> {
+                setVariableDelegate.open(oldData as? ActionData.SetVariable)
+                return null
+            }
+
+            ActionId.MODIFY_VARIABLE -> {
+                modifyVariableDelegate.open(oldData as? ActionData.ModifyVariable)
                 return null
             }
 

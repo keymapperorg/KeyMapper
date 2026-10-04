@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
+import io.github.sds100.keymapper.data.db.dao.VariableDao
 import javax.inject.Singleton
 
 @Module
@@ -59,6 +60,11 @@ internal class AppDatabaseModule {
     @Provides
     fun provideAccessibilityNodeDao(database: AppDatabase): AccessibilityNodeDao {
         return database.accessibilityNodeDao()
+    }
+
+    @Provides
+    fun provideVariableDao(database: AppDatabase): VariableDao {
+        return database.variableDao()
     }
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(

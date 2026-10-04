@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Assistant
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.BrightnessLow
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.CameraAlt
@@ -53,6 +54,7 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.SelectAll
@@ -79,6 +81,7 @@ import androidx.compose.material.icons.rounded.BluetoothDisabled
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
@@ -88,6 +91,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.InstantMix
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyboardPreviousLanguage
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.MatchWord
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.NfcOff
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TextSelectEnd
@@ -113,6 +117,7 @@ object ActionUtils {
         ActionCategory.DISPLAY -> R.string.action_cat_display
         ActionCategory.NOTIFICATIONS -> R.string.action_cat_notifications
         ActionCategory.SPECIAL -> R.string.action_cat_special
+        ActionCategory.VARIABLES -> R.string.action_cat_variables
     }
 
     fun getCategory(id: ActionId): ActionCategory = when (id) {
@@ -235,6 +240,8 @@ object ActionUtils {
         ActionId.CYCLE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
+        ActionId.SHUTDOWN_DEVICE -> ActionCategory.INTERFACE
+        ActionId.REBOOT_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.SHOW_POWER_MENU -> ActionCategory.INTERFACE
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
@@ -254,6 +261,8 @@ object ActionUtils {
         ActionId.MODIFY_SETTING -> ActionCategory.APPS
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
         ActionId.TALKBACK_GESTURE -> ActionCategory.INTERFACE
+        ActionId.SET_VARIABLE -> ActionCategory.VARIABLES
+        ActionId.MODIFY_VARIABLE -> ActionCategory.VARIABLES
     }
 
     @StringRes
@@ -469,6 +478,8 @@ object ActionUtils {
         ActionId.OPEN_SETTINGS -> R.string.action_open_settings
 
         ActionId.SHOW_POWER_MENU -> R.string.action_show_power_menu
+        ActionId.SHUTDOWN_DEVICE -> R.string.action_shutdown_device
+        ActionId.REBOOT_DEVICE -> R.string.action_reboot_device
 
         ActionId.APP -> R.string.action_open_app
 
@@ -534,6 +545,8 @@ object ActionUtils {
         ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
 
         ActionId.TALKBACK_GESTURE -> R.string.action_talkback_gesture
+        ActionId.SET_VARIABLE -> R.string.action_set_variable
+        ActionId.MODIFY_VARIABLE -> R.string.action_modify_variable
     }
 
     @DrawableRes
@@ -816,6 +829,8 @@ object ActionUtils {
                 Build.VERSION.SDK_INT >=
                     Build.VERSION_CODES.Q
 
+            ActionId.SHUTDOWN_DEVICE, ActionId.REBOOT_DEVICE -> true
+
             else -> false
         }
     }
@@ -1077,9 +1092,9 @@ object ActionUtils {
         ActionId.SELECT_WORD_AT_CURSOR -> KeyMapperIcons.MatchWord
         ActionId.SELECT_ALL_TEXT -> Icons.Outlined.SelectAll
         ActionId.PERFORM_IME_ACTION -> Icons.Outlined.Keyboard
-        ActionId.SWITCH_KEYBOARD -> Icons.Outlined.Keyboard
-        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Outlined.Keyboard
-        ActionId.CYCLE_KEYBOARD -> Icons.Outlined.Keyboard
+        ActionId.SWITCH_KEYBOARD -> KeyMapperIcons.KeyboardPreviousLanguage
+        ActionId.CYCLE_KEYBOARD_LANGUAGE -> Icons.Rounded.Language
+        ActionId.CYCLE_KEYBOARD -> KeyMapperIcons.KeyboardPreviousLanguage
         ActionId.TOGGLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.ENABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeActive
         ActionId.DISABLE_AIRPLANE_MODE -> Icons.Outlined.AirplanemodeInactive
@@ -1093,6 +1108,8 @@ object ActionUtils {
         ActionId.CONSUME_KEY_EVENT -> Icons.Outlined.Cancel
         ActionId.OPEN_SETTINGS -> Icons.Outlined.Settings
         ActionId.SHOW_POWER_MENU -> Icons.Outlined.PowerSettingsNew
+        ActionId.SHUTDOWN_DEVICE -> Icons.Outlined.PowerSettingsNew
+        ActionId.REBOOT_DEVICE -> Icons.Outlined.RestartAlt
         ActionId.APP -> Icons.Rounded.Android
         ActionId.APP_SHORTCUT -> Icons.AutoMirrored.Outlined.OpenInNew
         ActionId.KEY_CODE -> Icons.Rounded.Abc
@@ -1125,6 +1142,8 @@ object ActionUtils {
         ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
         ActionId.TALKBACK_GESTURE -> Icons.Outlined.Accessibility
+        ActionId.SET_VARIABLE -> Icons.Outlined.Calculate
+        ActionId.MODIFY_VARIABLE -> Icons.Outlined.Calculate
     }
 }
 
@@ -1175,10 +1194,14 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.CreateNotification,
     is ActionData.Toast,
     is ActionData.Vibrate,
+    is ActionData.Brightness.Increase,
+    is ActionData.Brightness.Decrease,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
     is ActionData.ModifySetting,
     is ActionData.TalkBackGesture,
+    is ActionData.SetVariable,
+    is ActionData.ModifyVariable,
         -> true
 
     else -> false

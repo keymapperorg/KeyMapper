@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.vibrate
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
@@ -49,6 +50,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.DisplayInfo
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
@@ -123,6 +125,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val settingsAdapter: SettingsAdapter,
     private val vibratorAdapter: VibratorAdapter,
+    private val variablesUseCase: VariablesUseCase,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -255,7 +258,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
-                    val currentOrientation = displayAdapter.cachedOrientation
+                    val currentOrientation = getActiveDisplay()!!.rotation
 
                     val index = action.orientations.indexOf(currentOrientation)
 
@@ -376,7 +379,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
 
@@ -384,7 +387,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwipeScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val start = scaleCoordinate(
                     action.xStart,
                     action.yStart,
@@ -406,7 +409,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.PinchScreen -> {
-                val displaySize = displayAdapter.size
+                val displaySize = getActiveDisplay()!!.activeSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
                 val distance =
@@ -544,11 +547,19 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Brightness.Increase -> {
-                result = displayAdapter.increaseBrightness()
+                val stepPercent = action.stepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT
+                result = displayAdapter.increaseBrightness(
+                    stepPercent / 100f,
+                    service.getActiveDisplayId(),
+                )
             }
 
             is ActionData.Brightness.Decrease -> {
-                result = displayAdapter.decreaseBrightness()
+                val stepPercent = action.stepPercent ?: DEFAULT_BRIGHTNESS_STEP_PERCENT
+                result = displayAdapter.decreaseBrightness(
+                    stepPercent / 100f,
+                    service.getActiveDisplayId(),
+                )
             }
 
             is ActionData.Rotation.ToggleAuto -> {
@@ -578,8 +589,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                if (displayAdapter.cachedOrientation == Orientation.ORIENTATION_180 ||
-                    displayAdapter.cachedOrientation == Orientation.ORIENTATION_0
+                val currentOrientation = getActiveDisplay()!!.rotation
+
+                if (currentOrientation == Orientation.ORIENTATION_180 ||
+                    currentOrientation == Orientation.ORIENTATION_0
                 ) {
                     result = displayAdapter.setOrientation(Orientation.ORIENTATION_90)
                 } else {
@@ -1035,6 +1048,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = success()
             }
 
+            is ActionData.SetVariable -> {
+                result = variablesUseCase.setValue(action.name, action.value)
+            }
+
+            is ActionData.ModifyVariable -> {
+                result = variablesUseCase.modify(action.name, action.operation, action.value)
+            }
+
             ActionData.AnswerCall -> {
                 phoneAdapter.answerCall()
                 result = success()
@@ -1085,6 +1106,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                             )
                         },
                     ).otherwise { KMError.UiElementNotFound }
+                }
+            }
+
+            ActionData.ShutdownDevice -> {
+                result = systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.shutdownDevice()
+                }
+            }
+
+            ActionData.RebootDevice -> {
+                result = systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.rebootDevice()
                 }
             }
 
@@ -1267,6 +1300,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private fun <T> compareIfNonNull(a: T?, b: T?): Boolean {
         return a != null && b != null && a == b
     }
+
+    private fun getActiveDisplay(): DisplayInfo? =
+        displayAdapter.getDisplay(service.getActiveDisplayId())
 }
 
 /**

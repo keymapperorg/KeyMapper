@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
@@ -346,6 +347,53 @@ class ConstraintEntityMapperTest {
             `is`("Example"),
         )
         assertThat(ConstraintEntityMapper.fromEntity(entity), `is`(constraint))
+    }
+
+    @Test
+    fun `variable constraint round trips through the entity`() {
+        val constraint = Constraint(
+            uid = UID,
+            data = ConstraintData.Variable(
+                name = "counter",
+                comparison = VariableComparison.GREATER_THAN,
+                value = -5,
+            ),
+        )
+
+        val entity = ConstraintEntityMapper.toEntity(constraint)
+
+        assertThat(
+            entity.extras.getData(ConstraintEntity.EXTRA_VARIABLE_NAME).valueOrNull(),
+            `is`("counter"),
+        )
+        assertThat(ConstraintEntityMapper.fromEntity(entity), `is`(constraint))
+    }
+
+    @Test
+    fun `variable constraint with a value that is not a number falls back to zero`() {
+        // A backup file can be edited by hand, and throwing while a key is being handled would
+        // take down the accessibility service.
+        val entity = ConstraintEntity(
+            uid = UID,
+            type = ConstraintEntity.VARIABLE,
+            EntityExtra(ConstraintEntity.EXTRA_VARIABLE_NAME, "counter"),
+            EntityExtra(ConstraintEntity.EXTRA_VARIABLE_COMPARISON, "GREATER_THAN"),
+            EntityExtra(ConstraintEntity.EXTRA_VARIABLE_VALUE, "not a number"),
+        )
+
+        assertThat(
+            ConstraintEntityMapper.fromEntity(entity),
+            `is`(
+                Constraint(
+                    uid = UID,
+                    data = ConstraintData.Variable(
+                        name = "counter",
+                        comparison = VariableComparison.GREATER_THAN,
+                        value = 0,
+                    ),
+                ),
+            ),
+        )
     }
 
     private fun assertMigratedToNot(entity: ConstraintEntity, expectedData: ConstraintData) {

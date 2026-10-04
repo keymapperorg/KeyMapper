@@ -66,4 +66,8 @@ interface ISystemBridge {
     * seconds and releasing it kills the system bridge). Defaults to enabled.
     */
    void setEmergencyStopEnabled(boolean enabled) = 27;
+
+   void rebootDevice() = 28;
+
+   void shutdownDevice() = 29;
 }

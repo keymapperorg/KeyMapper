@@ -40,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -173,7 +172,11 @@ fun HomeKeyMapListScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val ctx = LocalContext.current
 
-    var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
+    val keyMapListBottomPadding = if (state.appBarState is KeyMapAppBarState.Selecting) {
+        300.dp
+    } else {
+        100.dp
+    }
     val lazyListState = rememberLazyListState()
 
     HomeKeyMapListScreen(
@@ -214,7 +217,6 @@ fun HomeKeyMapListScreen(
                         onNotConstraintClick = viewModel::onNotGroupConstraintClick,
                         onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
                         onFixClick = viewModel::onFixGroupConstraintsClick,
-                        onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                     )
                 },
                 footerText = stringResource(R.string.home_key_map_list_footer_text),
@@ -244,6 +246,7 @@ fun HomeKeyMapListScreen(
                 },
                 onInputMethodPickerClick = viewModel::showInputMethodPicker,
                 onTogglePausedClick = viewModel::onTogglePausedClick,
+                onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
                 onBackClick = {
                     if (!viewModel.onBackClick()) {
                         finishActivity()
@@ -466,6 +469,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
             isSelected = true,
             KeyMapListItemModel.Content(
                 uid = "0",
+                name = "Custom key map name",
                 triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
                 triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
                 actions = listOf(
@@ -542,7 +546,7 @@ fun sameKeyMapListItems(): List<KeyMapListItemModel> {
                     "Vibrate when keys are initially pressed and again when long pressed",
                 ),
                 isEnabled = true,
-                hasError = false,
+                hasError = true,
             ),
         ),
         KeyMapListItemModel(

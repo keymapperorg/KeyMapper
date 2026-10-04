@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
@@ -54,24 +55,11 @@ class ActionUiHelper(
         is ActionData.AppShortcut -> action.shortcutTitle
 
         is ActionData.InputKeyEvent -> {
-            val keyCodeString = if (action.keyCode > KeyEvent.getMaxKeyCode()) {
-                "Key Code ${action.keyCode}"
-            } else {
-                KeyEvent.keyCodeToString(action.keyCode)
-            }
+            val keyCodeString = getKeyCodeString(action)
 
             // only a key code can be inputted through the shell
 
-            val metaStateString = buildString {
-                for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
-                    val modifier = label.key
-                    val labelRes = label.value
-
-                    if (action.metaState.hasFlag(modifier)) {
-                        append("${getString(labelRes)} + ")
-                    }
-                }
-            }
+            val metaStateString = getMetaStateString(action)
 
             if (action.device != null) {
                 val name = action.device.name.ifBlank {
@@ -489,13 +477,23 @@ class ActionUiHelper(
 
         ActionData.Bluetooth.Toggle -> getString(R.string.action_toggle_bluetooth)
 
-        ActionData.Brightness.Decrease -> getString(R.string.action_decrease_brightness)
+        is ActionData.Brightness.Decrease ->
+            if (action.stepPercent != null) {
+                getString(R.string.action_decrease_brightness_with_percent, action.stepPercent)
+            } else {
+                getString(R.string.action_decrease_brightness)
+            }
 
         ActionData.Brightness.DisableAuto -> getString(R.string.action_disable_auto_brightness)
 
         ActionData.Brightness.EnableAuto -> getString(R.string.action_enable_auto_brightness)
 
-        ActionData.Brightness.Increase -> getString(R.string.action_increase_brightness)
+        is ActionData.Brightness.Increase ->
+            if (action.stepPercent != null) {
+                getString(R.string.action_increase_brightness_with_percent, action.stepPercent)
+            } else {
+                getString(R.string.action_increase_brightness)
+            }
 
         ActionData.Brightness.ToggleAuto -> getString(R.string.action_toggle_auto_brightness)
 
@@ -758,6 +756,10 @@ class ActionUiHelper(
 
         ActionData.ForceStopApp -> getString(R.string.action_force_stop_app)
 
+        ActionData.ShutdownDevice -> getString(R.string.action_shutdown_device)
+
+        ActionData.RebootDevice -> getString(R.string.action_reboot_device)
+
         is ActionData.ComposeSms -> getString(
             R.string.action_compose_sms_description,
             arrayOf(action.message, action.number),
@@ -821,6 +823,21 @@ class ActionUiHelper(
         is ActionData.TalkBackGesture -> {
             val actionLabel = getString(TalkBackGestureStrings.getActionLabel(action.gesture))
             getString(R.string.action_talkback_gesture_formatted, actionLabel)
+        }
+
+        is ActionData.SetVariable ->
+            getString(
+                R.string.action_set_variable_set,
+                arrayOf(action.name, action.value.toString()),
+            )
+
+        is ActionData.ModifyVariable -> {
+            val stringRes = when (action.operation) {
+                VariableOperation.ADD -> R.string.action_set_variable_add
+                VariableOperation.SUBTRACT -> R.string.action_set_variable_subtract
+            }
+
+            getString(stringRes, arrayOf(action.name, action.value.toString()))
         }
     }
 
@@ -895,22 +912,68 @@ class ActionUiHelper(
         }
     }
 
-    fun getOptionLabels(keyMap: KeyMap, action: Action) = buildList {
-        getRepeatDescription(keyMap, action)?.let { add(it) }
-
-        if (keyMap.isHoldingDownActionAllowed(action) &&
-            action.holdDown &&
-            !action.stopHoldDownWhenTriggerPressedAgain
-        ) {
-            add(getString(R.string.flag_hold_down))
+    private fun getKeyCodeString(action: ActionData.InputKeyEvent): String =
+        if (action.keyCode > KeyEvent.getMaxKeyCode()) {
+            "Key Code ${action.keyCode}"
+        } else {
+            KeyEvent.keyCodeToString(action.keyCode)
         }
 
-        if (keyMap.isHoldingDownActionAllowed(action) &&
-            action.holdDown &&
-            action.stopHoldDownWhenTriggerPressedAgain
-        ) {
-            add(getString(R.string.flag_hold_down_until_pressed_again))
+    private fun getMetaStateString(action: ActionData.InputKeyEvent): String = buildString {
+        for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
+            if (action.metaState.hasFlag(label.key)) {
+                append("${getString(label.value)} + ")
+            }
         }
+    }
+
+    /**
+     * A concise title for the key map list that describes the repeat and hold down options in the
+     * name itself, e.g. "Repeat KEYCODE_0" instead of "Input KEYCODE_0 • Repeat until released".
+     * The repeat rate/delay and hold down duration are omitted.
+     */
+    fun getChipTitle(keyMap: KeyMap, action: Action, showDeviceDescriptors: Boolean): String {
+        val repeat = keyMap.isRepeatingActionsAllowed() && action.repeat
+        val holdDown = keyMap.isHoldingDownActionAllowed(action) && action.holdDown
+        val toggle = action.stopHoldDownWhenTriggerPressedAgain
+        val pressedAgain = action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+        val limit = when {
+            action.repeatLimit != null -> action.repeatLimit
+            action.repeatMode == RepeatMode.LIMIT_REACHED -> 1
+            else -> null
+        }
+
+        val verb = when {
+            repeat && holdDown && pressedAgain -> getString(R.string.action_chip_toggle_hold_repeat)
+
+            repeat && holdDown && limit != null ->
+                getString(R.string.action_chip_hold_repeat_limit, limit)
+
+            repeat && holdDown -> getString(R.string.action_chip_hold_repeat)
+
+            repeat && pressedAgain -> getString(R.string.action_chip_toggle_repeat)
+
+            repeat && limit != null -> getString(R.string.action_chip_repeat_limit, limit)
+
+            repeat -> getString(R.string.action_chip_repeat)
+
+            holdDown && toggle -> getString(R.string.action_chip_toggle_hold)
+
+            holdDown -> getString(R.string.action_chip_hold)
+
+            else -> return getTitle(action, showDeviceDescriptors)
+        }
+
+        // Replace the "Input" verb with the repeat/hold verb for key events.
+        val title = if (action.customName.isNullOrBlank() &&
+            action.data is ActionData.InputKeyEvent
+        ) {
+            getMetaStateString(action.data) + getKeyCodeString(action.data)
+        } else {
+            getTitle(action, showDeviceDescriptors)
+        }
+
+        return "$verb $title"
     }
 
     /**

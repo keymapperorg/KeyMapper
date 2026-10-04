@@ -50,6 +50,7 @@ fun EnableByIntentScreen(
             label = stringResource(R.string.intent_screen_label_class),
             code = ENABLE_RECEIVER_CLASS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         Text(
@@ -62,18 +63,21 @@ fun EnableByIntentScreen(
             label = stringResource(R.string.intent_screen_label_action_enable),
             code = ACTION_ENABLE_KEY_MAP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_action_disable),
             code = ACTION_DISABLE_KEY_MAP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_action_toggle),
             code = ACTION_TOGGLE_KEY_MAP,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         Text(
@@ -86,6 +90,7 @@ fun EnableByIntentScreen(
             label = stringResource(R.string.intent_screen_label_extra_name),
             code = EXTRA_KEYMAP_UID,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
@@ -99,7 +104,8 @@ fun EnableByIntentScreen(
                 packageName = packageName,
                 receiverClass = ENABLE_RECEIVER_CLASS,
                 action = ACTION_TOGGLE_KEY_MAP,
-                keyMapUid = keyMapUid,
+                extraName = EXTRA_KEYMAP_UID,
+                extraValue = keyMapUid,
             ),
         )
     }

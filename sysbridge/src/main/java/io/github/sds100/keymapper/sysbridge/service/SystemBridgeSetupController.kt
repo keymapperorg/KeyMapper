@@ -127,6 +127,14 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override fun startWithAdb() {
         launchStartJob {
             connectionManager.startWithAdb()
+
+            // Wait for the service to connect before turning off wireless debugging
+            withTimeoutOrNull(10000L) {
+                connectionManager.awaitConnected()
+            }
+
+            // Disable wireless debugging when done
+            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
         }
     }
 
@@ -298,7 +306,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
 
         // Wait for the next result
-        return isAdbPairedResult.filterNotNull().first()
+        val result = isAdbPairedResult.filterNotNull().first()
+
+        return result
     }
 
     /**
@@ -368,6 +378,27 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
             null,
         )
+    }
+
+    override fun openAutoBlockerSettings() {
+        val autoBlockerIntent = Intent().apply {
+            component = ComponentName(
+                "com.samsung.android.rampart",
+                "com.samsung.android.rampart.ui.MainSettingActivity",
+            )
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val fallback = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        try {
+            ctx.startActivity(autoBlockerIntent)
+        } catch (_: ActivityNotFoundException) {
+            ctx.startActivity(fallback)
+        } catch (_: SecurityException) {
+            ctx.startActivity(fallback)
+        }
     }
 
     fun invalidateSettings() {
@@ -455,6 +486,8 @@ interface SystemBridgeSetupController {
     val xiaomiAdbSecuritySettingsEnabled: StateFlow<Boolean>
 
     fun launchDeveloperOptions()
+
+    fun openAutoBlockerSettings()
 
     suspend fun getShellStartCommand(): KMResult<String>
 }

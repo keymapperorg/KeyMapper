@@ -7,7 +7,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.view.Display
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
@@ -38,6 +40,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
+import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
@@ -105,6 +108,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var configKeyMapState: ConfigKeyMapStateImpl
+
+    @Inject
+    lateinit var displayAdapter: AndroidDisplayAdapter
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -205,6 +211,11 @@ abstract class BaseMainActivity : AppCompatActivity() {
         onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
     }
 
+    override fun onPause() {
+        configKeyMapState.save()
+        super.onPause()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         configKeyMapState.saveState(outState)
 
@@ -217,6 +228,16 @@ abstract class BaseMainActivity : AppCompatActivity() {
         viewModel.previousNightMode = currentNightMode
         unregisterReceiver(broadcastReceiver)
         super.onDestroy()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+
+        displayAdapter.activityDisplayId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display?.displayId
+        } else {
+            Display.DEFAULT_DISPLAY
+        }
     }
 
     /**

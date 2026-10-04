@@ -1,4 +1,4 @@
-! Group constraints | Organize constraints into groups with their own AND/OR logic
+! Constraint groups | Organize constraints into groups with their own AND/OR logic
 ! Vibrate action | New action with custom duration or haptic effects like Click and Tick
 + • Cycle enabled keyboards action
 + • Notification constraint

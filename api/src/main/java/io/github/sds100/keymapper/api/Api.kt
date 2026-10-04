@@ -13,4 +13,9 @@ object Api {
     const val ACTION_ENABLE_KEY_MAP = "io.github.sds100.keymapper.ACTION_ENABLE_KEY_MAP"
     const val ACTION_DISABLE_KEY_MAP = "io.github.sds100.keymapper.ACTION_DISABLE_KEY_MAP"
     const val ACTION_TOGGLE_KEY_MAP = "io.github.sds100.keymapper.ACTION_TOGGLE_KEY_MAP"
+
+    const val ACTION_ENABLE_GROUP = "io.github.sds100.keymapper.ACTION_ENABLE_GROUP"
+    const val ACTION_DISABLE_GROUP = "io.github.sds100.keymapper.ACTION_DISABLE_GROUP"
+    const val ACTION_TOGGLE_GROUP = "io.github.sds100.keymapper.ACTION_TOGGLE_GROUP"
+    const val EXTRA_GROUP_UID = "io.github.sds100.keymapper.EXTRA_GROUP_UID"
 }

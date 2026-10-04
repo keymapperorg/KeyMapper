@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Battery2Bar
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.FlashlightOff
@@ -33,6 +34,10 @@ import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo.Vector
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.DualScreen
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.Mobile
 
 object ConstraintUtils {
 
@@ -51,6 +56,7 @@ object ConstraintUtils {
         ConstraintCategory.DEVICE -> R.string.constraint_cat_device
         ConstraintCategory.NOTIFICATIONS -> R.string.constraint_cat_notifications
         ConstraintCategory.TIME -> R.string.constraint_cat_time
+        ConstraintCategory.VARIABLES -> R.string.constraint_cat_variables
     }
 
     fun getCategory(constraintId: ConstraintId): ConstraintCategory = when (constraintId) {
@@ -109,127 +115,129 @@ object ConstraintUtils {
             -> ConstraintCategory.NOTIFICATIONS
 
         ConstraintId.TIME -> ConstraintCategory.TIME
+        ConstraintId.VARIABLE -> ConstraintCategory.VARIABLES
     }
 
     fun getIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
         ConstraintId.APP_IN_FOREGROUND,
         ConstraintId.APP_PLAYING_MEDIA,
-            -> ComposeIconInfo.Vector(Icons.Rounded.Android)
+            -> Vector(Icons.Rounded.Android)
 
-        ConstraintId.MEDIA_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.PlayArrow)
+        ConstraintId.MEDIA_PLAYING -> Vector(Icons.Outlined.PlayArrow)
 
-        ConstraintId.BT_DEVICE_CONNECTED -> ComposeIconInfo.Vector(
+        ConstraintId.BT_DEVICE_CONNECTED -> Vector(
             Icons.Outlined.BluetoothConnected,
         )
 
         ConstraintId.DISPLAY_ORIENTATION_0,
         ConstraintId.DISPLAY_ORIENTATION_180,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+            -> Vector(Icons.Outlined.StayCurrentPortrait)
 
         ConstraintId.DISPLAY_ORIENTATION_90,
         ConstraintId.DISPLAY_ORIENTATION_270,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+            -> Vector(Icons.Outlined.StayCurrentLandscape)
 
-        ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> ComposeIconInfo.Vector(
+        ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> Vector(
             Icons.Outlined.StayCurrentLandscape,
         )
 
-        ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> ComposeIconInfo.Vector(
+        ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> Vector(
             Icons.Outlined.StayCurrentPortrait,
         )
 
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+            -> Vector(Icons.Outlined.StayCurrentPortrait)
 
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
-            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+            -> Vector(Icons.Outlined.StayCurrentLandscape)
 
-        ConstraintId.SCREEN_ON -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+        ConstraintId.SCREEN_ON -> Vector(Icons.Outlined.StayCurrentPortrait)
 
-        ConstraintId.DISPLAY_RESOLUTION -> ComposeIconInfo.Vector(Icons.Outlined.AspectRatio)
+        ConstraintId.DISPLAY_RESOLUTION -> Vector(Icons.Outlined.AspectRatio)
 
-        ConstraintId.FLASHLIGHT_ON -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn)
+        ConstraintId.FLASHLIGHT_ON -> Vector(Icons.Outlined.FlashlightOn)
 
-        ConstraintId.WIFI_CONNECTED -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
+        ConstraintId.WIFI_CONNECTED -> Vector(Icons.Outlined.Wifi)
 
-        ConstraintId.WIFI_ON -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
+        ConstraintId.WIFI_ON -> Vector(Icons.Outlined.Wifi)
 
-        ConstraintId.IME_CHOSEN -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
+        ConstraintId.IME_CHOSEN -> Vector(Icons.Outlined.Keyboard)
 
-        ConstraintId.KEYBOARD_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
+        ConstraintId.KEYBOARD_SHOWING -> Vector(Icons.Outlined.Keyboard)
 
-        ConstraintId.DEVICE_IS_LOCKED -> ComposeIconInfo.Vector(Icons.Outlined.Lock)
+        ConstraintId.DEVICE_IS_LOCKED -> Vector(Icons.Outlined.Lock)
 
-        ConstraintId.IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.Call)
+        ConstraintId.IN_PHONE_CALL -> Vector(Icons.Outlined.Call)
 
-        ConstraintId.NOT_IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
+        ConstraintId.NOT_IN_PHONE_CALL -> Vector(Icons.Outlined.CallEnd)
 
-        ConstraintId.PHONE_RINGING -> ComposeIconInfo.Vector(Icons.Outlined.RingVolume)
+        ConstraintId.PHONE_RINGING -> Vector(Icons.Outlined.RingVolume)
 
-        ConstraintId.RINGER_MODE_NORMAL -> ComposeIconInfo.Vector(Icons.Outlined.Notifications)
+        ConstraintId.RINGER_MODE_NORMAL -> Vector(Icons.Outlined.Notifications)
 
-        ConstraintId.RINGER_MODE_VIBRATE -> ComposeIconInfo.Vector(Icons.Outlined.Vibration)
+        ConstraintId.RINGER_MODE_VIBRATE -> Vector(Icons.Outlined.Vibration)
 
-        ConstraintId.RINGER_MODE_SILENT -> ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
+        ConstraintId.RINGER_MODE_SILENT -> Vector(Icons.Outlined.NotificationsOff)
 
-        ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
+        ConstraintId.CHARGING -> Vector(Icons.Outlined.BatteryChargingFull)
 
-        ConstraintId.HINGE_CLOSED -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+        ConstraintId.HINGE_CLOSED -> Vector(KeyMapperIcons.Mobile)
 
-        ConstraintId.HINGE_OPEN -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+        ConstraintId.HINGE_OPEN -> Vector(KeyMapperIcons.DualScreen)
 
-        ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(
+        ConstraintId.LOCK_SCREEN_SHOWING -> Vector(
             Icons.Outlined.ScreenLockPortrait,
         )
 
         ConstraintId.NOTIFICATION_PANEL_SHOWING ->
-            ComposeIconInfo.Vector(Icons.Outlined.Notifications)
+            Vector(Icons.Outlined.Notifications)
 
         ConstraintId.NOTIFICATION_POSTED ->
-            ComposeIconInfo.Vector(Icons.Outlined.NotificationsActive)
+            Vector(Icons.Outlined.NotificationsActive)
 
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
+        ConstraintId.VARIABLE -> ComposeIconInfo.Vector(Icons.Outlined.Calculate)
     }
 
     fun getNotIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
-        ConstraintId.MEDIA_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.StopCircle)
+        ConstraintId.MEDIA_PLAYING -> Vector(Icons.Outlined.StopCircle)
 
-        ConstraintId.BT_DEVICE_CONNECTED -> ComposeIconInfo.Vector(
+        ConstraintId.BT_DEVICE_CONNECTED -> Vector(
             Icons.Outlined.BluetoothDisabled,
         )
 
-        ConstraintId.SCREEN_ON -> ComposeIconInfo.Vector(Icons.Outlined.MobileOff)
+        ConstraintId.SCREEN_ON -> Vector(Icons.Outlined.MobileOff)
 
-        ConstraintId.FLASHLIGHT_ON -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOff)
+        ConstraintId.FLASHLIGHT_ON -> Vector(Icons.Outlined.FlashlightOff)
 
-        ConstraintId.WIFI_CONNECTED -> ComposeIconInfo.Vector(
+        ConstraintId.WIFI_CONNECTED -> Vector(
             Icons.Outlined.SignalWifiStatusbarNull,
         )
 
-        ConstraintId.WIFI_ON -> ComposeIconInfo.Vector(Icons.Outlined.WifiOff)
+        ConstraintId.WIFI_ON -> Vector(Icons.Outlined.WifiOff)
 
-        ConstraintId.KEYBOARD_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.KeyboardHide)
+        ConstraintId.KEYBOARD_SHOWING -> Vector(Icons.Outlined.KeyboardHide)
 
-        ConstraintId.DEVICE_IS_LOCKED -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
+        ConstraintId.DEVICE_IS_LOCKED -> Vector(Icons.Outlined.LockOpen)
 
-        ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
+        ConstraintId.LOCK_SCREEN_SHOWING -> Vector(Icons.Outlined.LockOpen)
 
-        ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
+        ConstraintId.CHARGING -> Vector(Icons.Outlined.Battery2Bar)
 
-        ConstraintId.NOTIFICATION_PANEL_SHOWING -> ComposeIconInfo.Vector(
+        ConstraintId.NOTIFICATION_PANEL_SHOWING -> Vector(
             Icons.Outlined.NotificationsOff,
         )
 
-        ConstraintId.IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
+        ConstraintId.IN_PHONE_CALL -> Vector(Icons.Outlined.CallEnd)
 
-        ConstraintId.NOT_IN_PHONE_CALL -> ComposeIconInfo.Vector(Icons.Outlined.Call)
+        ConstraintId.NOT_IN_PHONE_CALL -> Vector(Icons.Outlined.Call)
 
-        ConstraintId.PHONE_RINGING -> ComposeIconInfo.Vector(Icons.Outlined.CallEnd)
+        ConstraintId.PHONE_RINGING -> Vector(Icons.Outlined.CallEnd)
 
         ConstraintId.NOTIFICATION_POSTED ->
-            ComposeIconInfo.Vector(Icons.Outlined.NotificationsOff)
+            Vector(Icons.Outlined.NotificationsOff)
 
         else -> getIcon(constraintId)
     }
@@ -310,6 +318,7 @@ object ConstraintUtils {
         ConstraintId.NOTIFICATION_POSTED -> R.string.constraint_notification_posted
 
         ConstraintId.TIME -> R.string.constraint_time
+        ConstraintId.VARIABLE -> R.string.constraint_variable
     }
 
     @StringRes
@@ -385,6 +394,26 @@ object ConstraintUtils {
 
             is ConstraintData.NotificationPosted ->
                 setOf(ConstraintDependency.POSTED_NOTIFICATIONS)
+
+            is ConstraintData.Variable -> setOf(ConstraintDependency.VARIABLES)
         }
     }
+}
+
+fun ConstraintData.isEditable(): Boolean = when (this) {
+    is ConstraintData.AppInForeground,
+    is ConstraintData.AppPlayingMedia,
+    is ConstraintData.BtDeviceConnected,
+    is ConstraintData.OrientationCustom,
+    is ConstraintData.PhysicalOrientation,
+    is ConstraintData.DisplayResolution,
+    is ConstraintData.FlashlightOn,
+    is ConstraintData.WifiConnected,
+    is ConstraintData.ImeChosen,
+    is ConstraintData.NotificationPosted,
+    is ConstraintData.Time,
+    is ConstraintData.Variable,
+        -> true
+
+    else -> false
 }

@@ -1,18 +1,5 @@
 package io.github.sds100.keymapper.base.expertmode
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Accessibility
-import androidx.compose.material.icons.rounded.BugReport
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.CheckCircleOutline
-import androidx.compose.material.icons.rounded.Lan
-import androidx.compose.material.icons.rounded.Link
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.PlayArrow
-import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.SignalWifiNotConnected
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
@@ -25,14 +12,13 @@ import kotlinx.coroutines.flow.stateIn
 abstract class SystemBridgeSetupDelegateImpl(
     val viewModelScope: CoroutineScope,
     private val useCase: SystemBridgeSetupUseCase,
-    private val resourceProvider: ResourceProvider,
-) : SystemBridgeSetupDelegate,
-    ResourceProvider by resourceProvider {
+) : SystemBridgeSetupDelegate {
     override val setupState: StateFlow<State<ExpertModeSetupState>> =
         combine(
             useCase.nextSetupStep,
             useCase.isSetupAssistantEnabled,
             useCase.isSystemBridgeStarting,
+            useCase.hasSamsungAutoBlocker,
             ::buildState,
         ).stateIn(
             viewModelScope,
@@ -43,19 +29,21 @@ abstract class SystemBridgeSetupDelegateImpl(
     override fun onSetupStepButtonClick() {
         // Do not check the latest value in the use case because there is significant latency
         // when it is checking whether it is paired
-        val currentStep = setupState.value.dataOrNull()?.step ?: return
+        val currentState = setupState.value.dataOrNull() ?: return
 
-        when (currentStep) {
-            SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
-            SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
-            SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION ->
+        when (currentState) {
+            is ExpertModeSetupState.AccessibilityService -> useCase.enableAccessibilityService()
+            is ExpertModeSetupState.NotificationPermission ->
+                useCase.requestNotificationPermission()
+            is ExpertModeSetupState.LocalNetworkPermission ->
                 useCase.requestLocalNetworkPermission()
-            SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.enableDeveloperOptions()
-            SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
-            SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
-            SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
-            SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
-            SystemBridgeSetupStep.STARTED -> onFinishClick()
+            is ExpertModeSetupState.SamsungAutoBlocker -> useCase.openSamsungAutoBlockerSettings()
+            is ExpertModeSetupState.DeveloperOptions -> useCase.enableDeveloperOptions()
+            is ExpertModeSetupState.WifiNetwork -> useCase.connectWifiNetwork()
+            is ExpertModeSetupState.WirelessDebugging -> useCase.enableWirelessDebugging()
+            is ExpertModeSetupState.AdbPairing -> useCase.pairWirelessAdb()
+            is ExpertModeSetupState.StartService -> useCase.startSystemBridgeWithAdb()
+            is ExpertModeSetupState.Started -> onFinishClick()
         }
     }
 
@@ -65,155 +53,93 @@ abstract class SystemBridgeSetupDelegateImpl(
         useCase.toggleSetupAssistant()
     }
 
-    override fun getStepContent(step: SystemBridgeSetupStep): StepContent {
-        return when (step) {
-            SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_enable_accessibility_service_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_enable_accessibility_service_description,
-                ),
-                icon = Icons.Rounded.Accessibility,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_enable_accessibility_service_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_enable_notification_permission_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_enable_notification_permission_description,
-                ),
-                icon = Icons.Rounded.Notifications,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_enable_notification_permission_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_local_network_permission_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_local_network_permission_description,
-                ),
-                icon = Icons.Rounded.Lan,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_local_network_permission_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_enable_developer_options_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_enable_developer_options_description,
-                ),
-                icon = Icons.Rounded.Build,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_go_to_settings_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.WIFI_NETWORK -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_connect_wifi_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_connect_wifi_description,
-                ),
-                icon = KeyMapperIcons.SignalWifiNotConnected,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_go_to_settings_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_enable_wireless_debugging_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_enable_wireless_debugging_description,
-                ),
-                icon = Icons.Rounded.BugReport,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_go_to_settings_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_pair_wireless_debugging_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_pair_wireless_debugging_description,
-                ),
-                icon = Icons.Rounded.Link,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_go_to_settings_button,
-                ),
-            )
-
-            SystemBridgeSetupStep.START_SERVICE -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_start_service_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_start_service_description,
-                ),
-                icon = Icons.Rounded.PlayArrow,
-                buttonText = getString(
-                    R.string.expert_mode_root_detected_button_start_service,
-                ),
-            )
-
-            SystemBridgeSetupStep.STARTED -> StepContent(
-                title = getString(
-                    R.string.expert_mode_setup_wizard_complete_title,
-                ),
-                message = getString(
-                    R.string.expert_mode_setup_wizard_complete_text,
-                ),
-                icon = Icons.Rounded.CheckCircleOutline,
-                buttonText = getString(
-                    R.string.expert_mode_setup_wizard_complete_button,
-                ),
-            )
-        }
+    override fun onSamsungAutoBlockerWarningClick() {
+        useCase.openSamsungAutoBlockerSettings()
     }
 
     private fun buildState(
         step: SystemBridgeSetupStep,
         isSetupAssistantUserEnabled: Boolean,
         isStarting: Boolean,
+        hasSamsungAutoBlocker: Boolean,
     ): State.Data<ExpertModeSetupState> {
-        // Uncheck the setup assistant if the accessibility service is disabled since it is
-        // required for the setup assistant to work
-        val isSetupAssistantChecked = if (step == SystemBridgeSetupStep.ACCESSIBILITY_SERVICE) {
-            false
-        } else {
-            isSetupAssistantUserEnabled
+        val stepNumber = step.stepIndex + 1
+        val stepCount = SystemBridgeSetupStep.entries.size
+
+        val state = when (step) {
+            SystemBridgeSetupStep.ACCESSIBILITY_SERVICE ->
+                ExpertModeSetupState.AccessibilityService(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                )
+
+            SystemBridgeSetupStep.NOTIFICATION_PERMISSION ->
+                ExpertModeSetupState.NotificationPermission(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION ->
+                ExpertModeSetupState.LocalNetworkPermission(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.SAMSUNG_AUTO_BLOCKER ->
+                ExpertModeSetupState.SamsungAutoBlocker(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.DEVELOPER_OPTIONS ->
+                ExpertModeSetupState.DeveloperOptions(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.WIFI_NETWORK ->
+                ExpertModeSetupState.WifiNetwork(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.WIRELESS_DEBUGGING ->
+                ExpertModeSetupState.WirelessDebugging(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                    showSamsungAutoBlockerWarning = hasSamsungAutoBlocker,
+                )
+
+            SystemBridgeSetupStep.ADB_PAIRING ->
+                ExpertModeSetupState.AdbPairing(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
+
+            SystemBridgeSetupStep.START_SERVICE ->
+                ExpertModeSetupState.StartService(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                    isStarting = isStarting,
+                )
+
+            SystemBridgeSetupStep.STARTED ->
+                ExpertModeSetupState.Started(
+                    stepNumber = stepNumber,
+                    stepCount = stepCount,
+                    isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                )
         }
 
-        val stepContent = getStepContent(step)
-
-        return State.Data(
-            ExpertModeSetupState(
-                stepNumber = step.stepIndex + 1,
-                stepCount = SystemBridgeSetupStep.entries.size,
-                step = step,
-                stepContent = stepContent,
-                isSetupAssistantChecked = isSetupAssistantChecked,
-                isSetupAssistantButtonEnabled =
-                step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE &&
-                    step != SystemBridgeSetupStep.STARTED,
-                isStarting = isStarting,
-            ),
-        )
+        return State.Data(state)
     }
 }
 
@@ -221,5 +147,5 @@ interface SystemBridgeSetupDelegate {
     val setupState: StateFlow<State<ExpertModeSetupState>>
     fun onSetupStepButtonClick()
     fun onSetupAssistantClick()
-    fun getStepContent(step: SystemBridgeSetupStep): StepContent
+    fun onSamsungAutoBlockerWarningClick()
 }
