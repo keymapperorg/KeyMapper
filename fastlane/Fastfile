@@ -27,7 +27,8 @@ lane :production do
     prompt(text: "Did you write whats new?")
 
     Dir.chdir("..") do
-      gradle(task: ":screenshots:recordRoborazziDebug")      prompt(text: "Check the new screenshots")
+      gradle(task: ":screenshots:recordRoborazziDebug")
+      prompt(text: "Check the new screenshots")
     end
 
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
