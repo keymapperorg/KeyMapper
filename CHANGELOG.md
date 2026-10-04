@@ -30,6 +30,7 @@
 - #2271 brightness actions match brightness slider on Android 16.1+.
 - #1739 support multiple displays better.
 - #2276 Bottom key maps are obscured by selection bottom sheet.
+- Disable Wireless Debugging after manually starting Expert Mode.
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 

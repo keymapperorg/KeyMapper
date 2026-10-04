@@ -127,6 +127,14 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override fun startWithAdb() {
         launchStartJob {
             connectionManager.startWithAdb()
+
+            // Wait for the service to connect before turning off wireless debugging
+            withTimeoutOrNull(10000L) {
+                connectionManager.awaitConnected()
+            }
+
+            // Disable wireless debugging when done
+            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
         }
     }
 
@@ -298,7 +306,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
 
         // Wait for the next result
-        return isAdbPairedResult.filterNotNull().first()
+        val result = isAdbPairedResult.filterNotNull().first()
+
+        return result
     }
 
     /**
