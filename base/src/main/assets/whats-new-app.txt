@@ -1,7 +1,9 @@
-! Constraint groups | Organize constraints into groups with their own AND/OR logic
-! Vibrate action | New action with custom duration or haptic effects like Click and Tick
-+ • Cycle enabled keyboards action
-+ • Notification constraint
-* • Turn off, duplicate and rename actions
-* • Redesigned action, constraint and trigger screens
+! Variables | Add to, subtract from or set variables
+! Undo and redo | Undo and redo changes when configuring a key map
++ • Custom key map names
+* • Edit constraints in place
++ • Shut down and restart device actions
++ • Configurable brightness increment
++ • Group enable/disable by broadcast intent
+* • More concise action text with delay timer chips
 - • Many other bug fixes and improvements
