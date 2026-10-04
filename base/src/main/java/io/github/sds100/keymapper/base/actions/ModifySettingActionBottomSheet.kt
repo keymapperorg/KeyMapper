@@ -1,20 +1,16 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
@@ -33,13 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.compose.KMBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.filledTonalButtonColorsError
 import io.github.sds100.keymapper.common.utils.KMError
@@ -101,8 +97,6 @@ private fun ModifySettingActionBottomSheet(
     onRequestPermissionClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
-
     val settingKeyEmptyErrorString = stringResource(R.string.modify_setting_key_empty_error)
     val settingValueEmptyErrorString = stringResource(R.string.modify_setting_value_empty_error)
 
@@ -119,192 +113,161 @@ private fun ModifySettingActionBottomSheet(
         }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+    KMBottomSheet(
+        title = stringResource(R.string.modify_setting_bottom_sheet_title),
+        negButtonText = stringResource(R.string.neg_cancel),
+        posButtonText = stringResource(R.string.pos_done),
+        onPosButtonClick = {
+            if (state.settingKey.isBlank()) {
+                settingKeyError = settingKeyEmptyErrorString
+            }
+
+            if (state.value.isBlank()) {
+                settingValueError = settingValueEmptyErrorString
+            }
+
+            if (settingKeyError == null && settingValueError == null) {
+                onDoneClick()
+            }
+        },
         sheetState = sheetState,
-        dragHandle = null,
+        onDismissRequest = onDismissRequest,
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                textAlign = TextAlign.Center,
-                text = stringResource(R.string.modify_setting_bottom_sheet_title),
-                style = MaterialTheme.typography.headlineMedium,
-            )
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = listOf(
+                SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
+                SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
+                SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
+            ),
+            selectedState = state.settingType,
+            onStateSelected = onSelectSettingType,
+        )
 
-            KeyMapperSegmentedButtonRow(
+        if (!state.isPermissionGranted) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            FilledTonalButton(
                 modifier = Modifier.fillMaxWidth(),
-                buttonStates = listOf(
-                    SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
-                    SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
-                    SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
-                ),
-                selectedState = state.settingType,
-                onStateSelected = onSelectSettingType,
-            )
-
-            if (!state.isPermissionGranted) {
-                FilledTonalButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onRequestPermissionClick,
-                    colors = ButtonDefaults.filledTonalButtonColorsError(),
-                ) {
-                    Text(stringResource(R.string.modify_setting_grant_permission_button))
-                }
-            }
-
-            Button(
-                onClick = onChooseExistingClick,
-                modifier = Modifier.fillMaxWidth(),
+                onClick = onRequestPermissionClick,
+                colors = ButtonDefaults.filledTonalButtonColorsError(),
             ) {
-                Text(stringResource(R.string.choose_existing_setting))
-            }
-
-            OutlinedTextField(
-                value = state.settingKey,
-                onValueChange = onSettingKeyChange,
-                label = { Text(stringResource(R.string.modify_setting_key_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    fontFamily = FontFamily.Monospace,
-                ),
-                isError = settingKeyError != null,
-                supportingText = {
-                    if (settingKeyError != null) {
-                        Text(
-                            text = settingKeyError!!,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
-            )
-
-            OutlinedTextField(
-                value = state.value,
-                onValueChange = onSettingValueChange,
-                label = { Text(stringResource(R.string.modify_setting_value_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    fontFamily = FontFamily.Monospace,
-                ),
-                isError = settingValueError != null,
-                supportingText = {
-                    if (settingValueError != null) {
-                        Text(
-                            text = settingValueError!!,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-            ) {
-                if (state.testResult != null) {
-                    val resultText: String = when (state.testResult) {
-                        is Success -> stringResource(R.string.test_modify_setting_result_ok)
-                        is KMError -> state.testResult.getFullMessage(LocalContext.current)
-                    }
-
-                    val textColor = when (state.testResult) {
-                        is Success -> LocalCustomColorsPalette.current.green
-                        is KMError -> MaterialTheme.colorScheme.error
-                    }
-
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = resultText,
-                        color = textColor,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                OutlinedButton(
-                    onClick = {
-                        var hasError = false
-
-                        if (state.settingKey.isBlank()) {
-                            settingKeyError = settingKeyEmptyErrorString
-                            hasError = true
-                        }
-
-                        if (state.value.isBlank()) {
-                            settingValueError = settingValueEmptyErrorString
-                            hasError = true
-                        }
-
-                        if (!hasError) {
-                            onTestClick()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.button_test_modify_setting))
-                }
-            }
-
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.modify_setting_disclaimer),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (state.settingKey.isBlank()) {
-                            settingKeyError = settingKeyEmptyErrorString
-                        }
-
-                        if (state.value.isBlank()) {
-                            settingValueError = settingValueEmptyErrorString
-                        }
-
-                        if (settingKeyError == null && settingValueError == null) {
-                            onDoneClick()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.pos_done))
-                }
+                Text(stringResource(R.string.modify_setting_grant_permission_button))
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onChooseExistingClick,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.choose_existing_setting))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = state.settingKey,
+            onValueChange = onSettingKeyChange,
+            label = { Text(stringResource(R.string.modify_setting_key_label)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = FontFamily.Monospace,
+            ),
+            isError = settingKeyError != null,
+            supportingText = {
+                if (settingKeyError != null) {
+                    Text(
+                        text = settingKeyError!!,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = state.value,
+            onValueChange = onSettingValueChange,
+            label = { Text(stringResource(R.string.modify_setting_value_label)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = FontFamily.Monospace,
+            ),
+            isError = settingValueError != null,
+            supportingText = {
+                if (settingValueError != null) {
+                    Text(
+                        text = settingValueError!!,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            if (state.testResult != null) {
+                val resultText: String = when (state.testResult) {
+                    is Success -> stringResource(R.string.test_modify_setting_result_ok)
+                    is KMError -> state.testResult.getFullMessage(LocalContext.current)
+                }
+
+                val textColor = when (state.testResult) {
+                    is Success -> LocalCustomColorsPalette.current.green
+                    is KMError -> MaterialTheme.colorScheme.error
+                }
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = resultText,
+                    color = textColor,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            OutlinedButton(
+                onClick = {
+                    var hasError = false
+
+                    if (state.settingKey.isBlank()) {
+                        settingKeyError = settingKeyEmptyErrorString
+                        hasError = true
+                    }
+
+                    if (state.value.isBlank()) {
+                        settingValueError = settingValueEmptyErrorString
+                        hasError = true
+                    }
+
+                    if (!hasError) {
+                        onTestClick()
+                    }
+                },
+            ) {
+                Text(stringResource(R.string.button_test_modify_setting))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.modify_setting_disclaimer),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

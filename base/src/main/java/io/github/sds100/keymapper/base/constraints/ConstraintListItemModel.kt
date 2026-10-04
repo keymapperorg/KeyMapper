@@ -7,12 +7,14 @@ data class ConstraintListItemModel(
     val icon: ComposeIconInfo,
     val text: String,
     val isNot: Boolean = false,
+    val isEditable: Boolean = false,
     val error: String? = null,
     val isErrorFixable: Boolean = true,
 )
 
 data class ConstraintGroupListItemModel(
     val uid: String,
+    val icon: ComposeIconInfo,
     val name: String? = null,
     val mode: ConstraintMode,
     val constraints: List<ConstraintListItemModel>,

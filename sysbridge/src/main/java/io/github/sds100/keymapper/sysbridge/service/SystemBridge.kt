@@ -30,6 +30,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.IPowerManager
 import android.os.Looper
 import android.os.Process
 import android.os.RemoteException
@@ -357,6 +358,11 @@ class SystemBridge : ISystemBridge.Stub() {
     private val usbManager: IUsbManager? by lazy {
         waitSystemService(Context.USB_SERVICE)
         IUsbManager.Stub.asInterface(ServiceManager.getService(Context.USB_SERVICE))
+    }
+
+    private val powerManager: IPowerManager by lazy {
+        waitSystemService(Context.POWER_SERVICE)
+        IPowerManager.Stub.asInterface(ServiceManager.getService(Context.POWER_SERVICE))
     }
 
     private val processPackageName: String = when (Process.myUid()) {
@@ -777,6 +783,14 @@ class SystemBridge : ISystemBridge.Stub() {
         tasks.filterNotNull()
             .filter { it.baseActivity?.packageName == packageName }
             .forEach { activityManager.removeTask(it.taskId) }
+    }
+
+    override fun rebootDevice() {
+        powerManager.reboot(false, "keymapper", false)
+    }
+
+    override fun shutdownDevice() {
+        powerManager.shutdown(false, "keymapper", false)
     }
 
     override fun setRingerMode(ringerMode: Int) {

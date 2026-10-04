@@ -52,6 +52,29 @@ class ConfigNotificationConstraintViewModel @Inject constructor(
             null
         }
 
+    fun loadOldData(old: ConstraintData.NotificationPosted) {
+        isEditing = true
+
+        when (old) {
+            is ConstraintData.NotificationPosted.FromApp -> {
+                selectedField = NotificationField.PACKAGE
+                value = old.packageName
+            }
+
+            is ConstraintData.NotificationPosted.Title -> {
+                selectedField = NotificationField.TITLE
+                matchMode = old.matchMode
+                value = old.text
+            }
+
+            is ConstraintData.NotificationPosted.Text -> {
+                selectedField = NotificationField.TEXT
+                matchMode = old.matchMode
+                value = old.text
+            }
+        }
+    }
+
     fun onSelectField(field: NotificationField) {
         selectedField = field
 

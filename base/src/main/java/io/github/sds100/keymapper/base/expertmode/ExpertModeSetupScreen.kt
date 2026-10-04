@@ -26,10 +26,13 @@ import androidx.compose.material.icons.rounded.Lan
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -47,7 +50,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,7 +61,6 @@ import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.SignalWifiNotConnected
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 
 @Composable
 fun ExpertModeSetupScreen(viewModel: ExpertModeSetupViewModel) {
@@ -71,6 +72,7 @@ fun ExpertModeSetupScreen(viewModel: ExpertModeSetupViewModel) {
         onAssistantClick = viewModel::onSetupAssistantClick,
         onWatchTutorialClick = { },
         onBackClick = viewModel::onBackClick,
+        onSamsungAutoBlockerWarningClick = viewModel::onSamsungAutoBlockerWarningClick,
     )
 }
 
@@ -82,6 +84,7 @@ fun ExpertModeSetupScreen(
     onStepButtonClick: () -> Unit = {},
     onAssistantClick: () -> Unit = {},
     onWatchTutorialClick: () -> Unit = {},
+    onSamsungAutoBlockerWarningClick: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -106,6 +109,7 @@ fun ExpertModeSetupScreen(
             onAssistantClick,
             onWatchTutorialClick,
             onStepButtonClick,
+            onSamsungAutoBlockerWarningClick,
         )
     }
 }
@@ -117,6 +121,7 @@ fun ExpertModeSetupScreenContent(
     onAssistantClick: () -> Unit,
     onWatchTutorialClick: () -> Unit,
     onStepButtonClick: () -> Unit,
+    onSamsungAutoBlockerWarningClick: () -> Unit = {},
 ) {
     when (state) {
         State.Loading -> {
@@ -129,11 +134,12 @@ fun ExpertModeSetupScreenContent(
         }
 
         is State.Data -> {
-            val stepContent = state.data.stepContent
+            val stepData = state.data
+            val stepContent = getStepContent(stepData)
 
             // Create animated progress for entrance and updates
             val progressAnimatable = remember { Animatable(0f) }
-            val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount)
+            val targetProgress = stepData.stepNumber.toFloat() / (stepData.stepCount)
 
             // Animate progress when it changes
             LaunchedEffect(targetProgress) {
@@ -177,8 +183,8 @@ fun ExpertModeSetupScreenContent(
                     Text(
                         text = stringResource(
                             R.string.expert_mode_setup_wizard_step_n,
-                            state.data.stepNumber,
-                            state.data.stepCount,
+                            stepData.stepNumber,
+                            stepData.stepCount,
                         ),
                         style = MaterialTheme.typography.titleLarge,
                     )
@@ -191,16 +197,23 @@ fun ExpertModeSetupScreenContent(
 
                 AssistantCheckBoxRow(
                     modifier = Modifier.fillMaxWidth(),
-                    isEnabled = state.data.isSetupAssistantButtonEnabled,
-                    isChecked = state.data.isSetupAssistantChecked,
+                    isEnabled = stepData.isSetupAssistantButtonEnabled,
+                    isChecked = stepData.isSetupAssistantChecked,
                     onAssistantClick = onAssistantClick,
                 )
 
-                val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
+                val iconTint = if (stepData is ExpertModeSetupState.Started) {
                     LocalCustomColorsPalette.current.green
                 } else {
                     MaterialTheme.colorScheme.onSurface
                 }
+
+                val isStarting = stepData is ExpertModeSetupState.StartService &&
+                    stepData.isStarting
+
+                val showSamsungAutoBlockerWarning =
+                    stepData is ExpertModeSetupState.WirelessDebugging &&
+                        stepData.showSamsungAutoBlockerWarning
 
                 StepContent(
                     modifier = Modifier
@@ -211,7 +224,16 @@ fun ExpertModeSetupScreenContent(
                     onWatchTutorialClick = onWatchTutorialClick,
                     onButtonClick = onStepButtonClick,
                     iconTint = iconTint,
-                    isLoading = state.data.isStarting,
+                    isLoading = isStarting,
+                    warningContent = if (showSamsungAutoBlockerWarning) {
+                        {
+                            SamsungAutoBlockerWarningCard(
+                                onClick = onSamsungAutoBlockerWarningClick,
+                            )
+                        }
+                    } else {
+                        null
+                    },
                 )
             }
         }
@@ -226,6 +248,7 @@ private fun StepContent(
     onButtonClick: () -> Unit,
     iconTint: Color = Color.Unspecified,
     isLoading: Boolean = false,
+    warningContent: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier,
@@ -266,6 +289,11 @@ private fun StepContent(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
             )
+
+            if (warningContent != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                warningContent()
+            }
         }
 
         Spacer(Modifier.height(32.dp))
@@ -283,6 +311,59 @@ private fun StepContent(
                 enabled = !isLoading,
             ) {
                 Text(text = stepContent.buttonText)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SamsungAutoBlockerWarningCard(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    SetupWarningCard(
+        modifier = modifier,
+        title = stringResource(
+            R.string.expert_mode_setup_wizard_samsung_auto_blocker_warning_title,
+        ),
+        description = stringResource(
+            R.string.expert_mode_setup_wizard_samsung_auto_blocker_warning_description,
+        ),
+        buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
+        onButtonClick = onClick,
+    )
+}
+
+@Composable
+private fun SetupWarningCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    description: String,
+    buttonText: String,
+    onButtonClick: () -> Unit,
+) {
+    ElevatedCard(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            FilledTonalButton(onClick = onButtonClick) {
+                Text(buttonText)
             }
         }
     }
@@ -343,112 +424,107 @@ private fun AssistantCheckBoxRow(
 }
 
 @Composable
-private fun getIconForStep(step: SystemBridgeSetupStep): ImageVector {
-    return when (step) {
-        SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> Icons.Rounded.Accessibility
-        SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> Icons.Rounded.Notifications
-        SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> Icons.Rounded.Lan
-        SystemBridgeSetupStep.DEVELOPER_OPTIONS -> Icons.Rounded.Build
-        SystemBridgeSetupStep.WIFI_NETWORK -> KeyMapperIcons.SignalWifiNotConnected
-        SystemBridgeSetupStep.WIRELESS_DEBUGGING -> Icons.Rounded.BugReport
-        SystemBridgeSetupStep.ADB_PAIRING -> Icons.Rounded.Link
-        SystemBridgeSetupStep.START_SERVICE -> Icons.Rounded.PlayArrow
-        SystemBridgeSetupStep.STARTED -> Icons.Rounded.CheckCircleOutline
-    }
-}
-
-@Composable
-private fun createPreviewStepContent(step: SystemBridgeSetupStep): StepContent {
-    val icon = getIconForStep(step)
-    return when (step) {
-        SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> StepContent(
+private fun getStepContent(state: ExpertModeSetupState): StepContent {
+    return when (state) {
+        is ExpertModeSetupState.AccessibilityService -> StepContent(
             title = stringResource(
                 R.string.expert_mode_setup_wizard_enable_accessibility_service_title,
             ),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_enable_accessibility_service_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.Accessibility,
             buttonText = stringResource(
                 R.string.expert_mode_setup_wizard_enable_accessibility_service_button,
             ),
         )
 
-        SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
+        is ExpertModeSetupState.NotificationPermission -> StepContent(
             title = stringResource(
                 R.string.expert_mode_setup_wizard_enable_notification_permission_title,
             ),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_enable_notification_permission_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.Notifications,
             buttonText = stringResource(
                 R.string.expert_mode_setup_wizard_enable_notification_permission_button,
             ),
         )
 
-        SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION -> StepContent(
+        is ExpertModeSetupState.LocalNetworkPermission -> StepContent(
             title = stringResource(
                 R.string.expert_mode_setup_wizard_local_network_permission_title,
             ),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_local_network_permission_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.Lan,
             buttonText = stringResource(
                 R.string.expert_mode_setup_wizard_local_network_permission_button,
             ),
         )
 
-        SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
+        is ExpertModeSetupState.SamsungAutoBlocker -> StepContent(
+            title = stringResource(
+                R.string.expert_mode_setup_wizard_disable_samsung_auto_blocker_title,
+            ),
+            message = stringResource(
+                R.string.expert_mode_setup_wizard_disable_samsung_auto_blocker_description,
+            ),
+            icon = Icons.Rounded.Security,
+            buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
+        )
+
+        is ExpertModeSetupState.DeveloperOptions -> StepContent(
             title = stringResource(
                 R.string.expert_mode_setup_wizard_enable_developer_options_title,
             ),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_enable_developer_options_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.Build,
             buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
         )
 
-        SystemBridgeSetupStep.WIFI_NETWORK -> StepContent(
+        is ExpertModeSetupState.WifiNetwork -> StepContent(
             title = stringResource(R.string.expert_mode_setup_wizard_connect_wifi_title),
             message = stringResource(R.string.expert_mode_setup_wizard_connect_wifi_description),
-            icon = icon,
+            icon = KeyMapperIcons.SignalWifiNotConnected,
             buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
         )
 
-        SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
+        is ExpertModeSetupState.WirelessDebugging -> StepContent(
             title = stringResource(
                 R.string.expert_mode_setup_wizard_enable_wireless_debugging_title,
             ),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_enable_wireless_debugging_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.BugReport,
             buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
         )
 
-        SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
+        is ExpertModeSetupState.AdbPairing -> StepContent(
             title = stringResource(R.string.expert_mode_setup_wizard_pair_wireless_debugging_title),
             message = stringResource(
                 R.string.expert_mode_setup_wizard_pair_wireless_debugging_description,
             ),
-            icon = icon,
+            icon = Icons.Rounded.Link,
             buttonText = stringResource(R.string.expert_mode_setup_wizard_go_to_settings_button),
         )
 
-        SystemBridgeSetupStep.START_SERVICE -> StepContent(
+        is ExpertModeSetupState.StartService -> StepContent(
             title = stringResource(R.string.expert_mode_setup_wizard_start_service_title),
             message = stringResource(R.string.expert_mode_setup_wizard_start_service_description),
-            icon = icon,
+            icon = Icons.Rounded.PlayArrow,
             buttonText = stringResource(R.string.expert_mode_root_detected_button_start_service),
         )
 
-        SystemBridgeSetupStep.STARTED -> StepContent(
+        is ExpertModeSetupState.Started -> StepContent(
             title = stringResource(R.string.expert_mode_setup_wizard_complete_title),
             message = stringResource(R.string.expert_mode_setup_wizard_complete_text),
-            icon = icon,
+            icon = Icons.Rounded.CheckCircleOutline,
             buttonText = stringResource(R.string.expert_mode_setup_wizard_complete_button),
         )
     }
@@ -458,17 +534,11 @@ private fun createPreviewStepContent(step: SystemBridgeSetupStep): StepContent {
 @Composable
 private fun ExpertModeSetupScreenAccessibilityServicePreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
+                ExpertModeSetupState.AccessibilityService(
                     stepNumber = 1,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = false,
-                    isStarting = false,
+                    stepCount = 10,
                 ),
             ),
         )
@@ -479,17 +549,12 @@ private fun ExpertModeSetupScreenAccessibilityServicePreview() {
 @Composable
 private fun ExpertModeSetupScreenNotificationPermissionPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
+                ExpertModeSetupState.NotificationPermission(
                     stepNumber = 2,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                    stepCount = 10,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
                 ),
             ),
         )
@@ -500,17 +565,28 @@ private fun ExpertModeSetupScreenNotificationPermissionPreview() {
 @Composable
 private fun ExpertModeSetupScreenLocalNetworkPermissionPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
+                ExpertModeSetupState.LocalNetworkPermission(
                     stepNumber = 3,
-                    stepCount = 9,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                    stepCount = 10,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(name = "Samsung Auto Blocker Step")
+@Composable
+private fun ExpertModeSetupScreenSamsungAutoBlockerPreview() {
+    KeyMapperTheme {
+        ExpertModeSetupScreen(
+            state = State.Data(
+                ExpertModeSetupState.SamsungAutoBlocker(
+                    stepNumber = 4,
+                    stepCount = 10,
+                    isSetupAssistantChecked = false,
                 ),
             ),
         )
@@ -521,17 +597,12 @@ private fun ExpertModeSetupScreenLocalNetworkPermissionPreview() {
 @Composable
 private fun ExpertModeSetupScreenDeveloperOptionsPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.DEVELOPER_OPTIONS
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 2,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.DeveloperOptions(
+                    stepNumber = 5,
+                    stepCount = 10,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
                 ),
             ),
         )
@@ -542,17 +613,12 @@ private fun ExpertModeSetupScreenDeveloperOptionsPreview() {
 @Composable
 private fun ExpertModeSetupScreenWifiNetworkPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.WIFI_NETWORK
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 3,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.WifiNetwork(
+                    stepNumber = 6,
+                    stepCount = 10,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
                 ),
             ),
         )
@@ -563,17 +629,30 @@ private fun ExpertModeSetupScreenWifiNetworkPreview() {
 @Composable
 private fun ExpertModeSetupScreenWirelessDebuggingPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.WIRELESS_DEBUGGING
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 4,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.WirelessDebugging(
+                    stepNumber = 7,
+                    stepCount = 10,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
+                    showSamsungAutoBlockerWarning = false,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(name = "Wireless Debugging Step (Auto Blocker Warning)")
+@Composable
+private fun ExpertModeSetupScreenWirelessDebuggingAutoBlockerWarningPreview() {
+    KeyMapperTheme {
+        ExpertModeSetupScreen(
+            state = State.Data(
+                ExpertModeSetupState.WirelessDebugging(
+                    stepNumber = 7,
+                    stepCount = 10,
+                    isSetupAssistantChecked = false,
+                    showSamsungAutoBlockerWarning = true,
                 ),
             ),
         )
@@ -584,17 +663,12 @@ private fun ExpertModeSetupScreenWirelessDebuggingPreview() {
 @Composable
 private fun ExpertModeSetupScreenAdbPairingPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.ADB_PAIRING
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 5,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.AdbPairing(
+                    stepNumber = 8,
+                    stepCount = 10,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
                 ),
             ),
         )
@@ -605,16 +679,12 @@ private fun ExpertModeSetupScreenAdbPairingPreview() {
 @Composable
 private fun ExpertModeSetupScreenStartServicePreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.START_SERVICE
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 6,
-                    stepCount = 6,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.StartService(
+                    stepNumber = 9,
+                    stepCount = 10,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
                     isStarting = false,
                 ),
             ),
@@ -626,17 +696,12 @@ private fun ExpertModeSetupScreenStartServicePreview() {
 @Composable
 private fun ExpertModeSetupScreenStartedPreview() {
     KeyMapperTheme {
-        val step = SystemBridgeSetupStep.STARTED
         ExpertModeSetupScreen(
             state = State.Data(
-                ExpertModeSetupState(
-                    stepNumber = 8,
-                    stepCount = 8,
-                    step = step,
-                    stepContent = createPreviewStepContent(step),
+                ExpertModeSetupState.Started(
+                    stepNumber = 10,
+                    stepCount = 10,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
-                    isStarting = false,
                 ),
             ),
         )

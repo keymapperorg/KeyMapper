@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.constraints
 
-import android.content.pm.PackageManager
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
@@ -15,10 +14,14 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 class LazyConstraintErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val systemFeatureAdapter: SystemFeatureAdapter,
+    systemFeatureAdapter: SystemFeatureAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val cameraAdapter: CameraAdapter,
-) : ConstraintErrorSnapshot {
+    cameraAdapter: CameraAdapter,
+) : ConstraintErrorSnapshot,
+    IsConstraintSupportedUseCase by IsConstraintSupportedUseCaseImpl(
+        systemFeatureAdapter,
+        cameraAdapter,
+    ) {
 
     private val inputMethods by lazy { inputMethodAdapter.inputMethods.value }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
@@ -35,6 +38,12 @@ class LazyConstraintErrorSnapshot(
     }
 
     override fun getError(constraint: Constraint): KMError? {
+        val isSupportedError = isSupported(constraint.id)
+
+        if (isSupportedError != null) {
+            return isSupportedError
+        }
+
         when (constraint.data) {
             is ConstraintData.AppInForeground ->
                 return getAppError(
@@ -62,10 +71,6 @@ class LazyConstraintErrorSnapshot(
             }
 
             is ConstraintData.BtDeviceConnected -> {
-                if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
-                    return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
-                }
-
                 if (!isPermissionGranted(Permission.FIND_NEARBY_DEVICES)) {
                     return SystemError.PermissionDenied(Permission.FIND_NEARBY_DEVICES)
                 }

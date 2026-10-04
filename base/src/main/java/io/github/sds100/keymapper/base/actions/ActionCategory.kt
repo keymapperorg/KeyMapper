@@ -14,4 +14,5 @@ enum class ActionCategory {
     TELEPHONY,
     NOTIFICATIONS,
     SPECIAL,
+    VARIABLES,
 }

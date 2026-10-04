@@ -23,6 +23,7 @@ interface KeyMapDao {
         const val KEY_CONSTRAINT_GROUPS = "constraint_groups"
         const val KEY_UID = "uid"
         const val KEY_GROUP_UID = "group_uid"
+        const val KEY_NAME = "name"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")
@@ -52,6 +53,11 @@ interface KeyMapDao {
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_GROUP_UID IS (:groupUid)")
     suspend fun disableKeyMapByGroup(groupUid: String?)
+
+    @Query(
+        "UPDATE $TABLE_NAME SET $KEY_ENABLED=NOT $KEY_ENABLED WHERE $KEY_GROUP_UID IS (:groupUid)",
+    )
+    suspend fun toggleKeyMapByGroup(groupUid: String?)
 
     @Query("UPDATE $TABLE_NAME SET $KEY_ENABLED=0 WHERE $KEY_UID in (:uid)")
     suspend fun disableKeyMapByUid(vararg uid: String)

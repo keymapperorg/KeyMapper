@@ -31,6 +31,8 @@ import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCase
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationUseCase
 import io.github.sds100.keymapper.base.expertmode.xiaomi.XiaomiOptimizationUseCaseImpl
+import io.github.sds100.keymapper.base.groups.SelectGroupUseCase
+import io.github.sds100.keymapper.base.groups.SelectGroupUseCaseImpl
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
@@ -84,6 +86,10 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindListKeyMapsUseCase(impl: ListKeyMapsUseCaseImpl): ListKeyMapsUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindSelectGroupUseCase(impl: SelectGroupUseCaseImpl): SelectGroupUseCase
 
     @Binds
     @ViewModelScoped

@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.base.keymaps
 import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.UndoRedo
+import io.github.sds100.keymapper.common.utils.UndoRedoState
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
@@ -30,12 +32,17 @@ class ConfigKeyMapStateImpl @Inject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
 ) : ConfigKeyMapState {
+
     private var originalKeyMap: KeyMap? = null
 
     private val _keyMap: MutableStateFlow<State<KeyMap>> = MutableStateFlow(State.Loading)
     override val keyMap: StateFlow<State<KeyMap>> = _keyMap.asStateFlow()
 
     override val floatingButtonToUse: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    private val undoRedo: UndoRedo<KeyMap> = UndoRedo()
+
+    override val undoRedoState: StateFlow<UndoRedoState> = undoRedo.state
 
     init {
         // Update button data in the key map whenever the floating buttons changes.
@@ -53,15 +60,6 @@ class ConfigKeyMapStateImpl @Inject constructor(
         }
     }
 
-    /**
-     * Whether any changes were made to the key map.
-     */
-    override val isEdited: Boolean
-        get() = when (val keyMap = keyMap.value) {
-            is State.Data<KeyMap> -> originalKeyMap?.let { it != keyMap.data } ?: false
-            State.Loading -> false
-        }
-
     override suspend fun loadKeyMap(uid: String) {
         _keyMap.update { State.Loading }
         val entity = keyMapRepository.get(uid) ?: return
@@ -73,22 +71,28 @@ class ConfigKeyMapStateImpl @Inject constructor(
         val keyMap = KeyMapEntityMapper.fromEntity(entity, floatingButtons)
         _keyMap.update { State.Data(keyMap) }
         originalKeyMap = keyMap
+        undoRedo.reset(keyMap)
     }
 
     override fun loadNewKeyMap(groupUid: String?) {
         val keyMap = KeyMap(groupUid = groupUid)
         _keyMap.update { State.Data(keyMap) }
         originalKeyMap = keyMap
+        undoRedo.reset(keyMap)
     }
 
     // Useful for testing
     fun setKeyMap(keyMap: KeyMap) {
         _keyMap.update { State.Data(keyMap) }
         originalKeyMap = keyMap
+        undoRedo.reset(keyMap)
     }
 
     override fun save() {
         val keyMap = keyMap.value.dataOrNull() ?: return
+
+        // save() is called from several lifecycle points so skip redundant writes.
+        if (keyMap == originalKeyMap) return
 
         if (keyMap.dbId == null) {
             val entity = KeyMapEntityMapper.toEntity(keyMap, 0)
@@ -100,6 +104,8 @@ class ConfigKeyMapStateImpl @Inject constructor(
         } else {
             keyMapRepository.update(KeyMapEntityMapper.toEntity(keyMap, keyMap.dbId))
         }
+
+        originalKeyMap = keyMap
     }
 
     fun saveState(bundle: Bundle) {
@@ -112,21 +118,40 @@ class ConfigKeyMapStateImpl @Inject constructor(
         if (bundle.containsKey("ConfigKeyMapState.key_map")) {
             val json = bundle.getString("ConfigKeyMapState.key_map") ?: return
 
-            _keyMap.update { State.Data(Json.decodeFromString(json)) }
+            val keyMap = Json.decodeFromString<KeyMap>(json)
+            _keyMap.update { State.Data(keyMap) }
+            undoRedo.reset(keyMap)
         }
     }
 
     override fun update(block: (keyMap: KeyMap) -> KeyMap): State<KeyMap> {
-        return _keyMap.updateAndGet { value -> value.mapData { block.invoke(it) } }
+        val old = _keyMap.value
+        val new = _keyMap.updateAndGet { value -> value.mapData { block.invoke(it) } }
+
+        if (new is State.Data && new != old) {
+            undoRedo.record(new.data)
+        }
+
+        return new
+    }
+
+    override fun undo() {
+        undoRedo.undo()?.also { keyMap -> _keyMap.update { State.Data(keyMap) } }
+    }
+
+    override fun redo() {
+        undoRedo.redo()?.also { keyMap -> _keyMap.update { State.Data(keyMap) } }
     }
 }
 
 interface ConfigKeyMapState {
     val keyMap: StateFlow<State<KeyMap>>
-    val isEdited: Boolean
+    val undoRedoState: StateFlow<UndoRedoState>
 
     fun update(block: (keyMap: KeyMap) -> KeyMap): State<KeyMap>
     fun save()
+    fun undo()
+    fun redo()
 
     suspend fun loadKeyMap(uid: String)
     fun loadNewKeyMap(groupUid: String?)

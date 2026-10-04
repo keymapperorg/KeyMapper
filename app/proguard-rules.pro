@@ -82,6 +82,8 @@
 -keep class android.hardware.usb.IUsbManager { *; }
 -keep class android.hardware.usb.IUsbManager$Stub { *; }
 -keep class android.net.* { *; }
+-keep class android.os.IPowerManager { *; }
+-keep class android.os.IPowerManager$Stub { *; }
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations

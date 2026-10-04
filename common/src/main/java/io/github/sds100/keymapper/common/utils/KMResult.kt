@@ -24,6 +24,11 @@ abstract class KMError : KMResult<Nothing>() {
     data object InvalidNumber : KMError()
     data class NumberTooBig(val max: Int) : KMError()
     data class NumberTooSmall(val min: Int) : KMError()
+
+    /**
+     * A variable went outside the range of a signed Long.
+     */
+    data object NumberOverflow : KMError()
     data object EmptyText : KMError()
     data object NoIncompatibleKeyboardsInstalled : KMError()
     data object NoMediaSessions : KMError()

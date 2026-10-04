@@ -151,6 +151,9 @@ class AndroidPackageManagerAdapter @Inject constructor(
         try {
             Intent(Intent.ACTION_VOICE_COMMAND).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                // DO NOT use trampoline activity. The voice assistant app
+                // should be able to launch without unlocking.
                 ctx.startActivity(this)
             }
 
@@ -164,7 +167,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         try {
             Intent(Intent.ACTION_ASSIST).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                ctx.startActivity(this)
+                startActivityWithTrampoline(this)
             }
 
             return Success(Unit)
@@ -257,31 +260,35 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 return KMError.AppNotFound(packageName)
             }
         } else {
-            // Use a trampoline activity that will dismiss the keyguard when it is locked.
-            val intent = if (keyguardManager.isKeyguardLocked) {
-                Intent(ctx, TrampolineActivity::class.java).apply {
-                    putExtra(TrampolineActivity.EXTRA_INTENT, packageIntent)
-                }
-            } else {
-                packageIntent
-            }
-
-            val pendingIntent =
-                PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val bundle = ActivityOptions.makeBasic()
-                    .setPendingIntentBackgroundActivityStartMode(
-                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
-                    )
-                    .toBundle()
-
-                pendingIntent.send(bundle)
-            } else {
-                pendingIntent.send()
-            }
+            startActivityWithTrampoline(packageIntent)
 
             return Success(Unit)
+        }
+    }
+
+    private fun startActivityWithTrampoline(intent: Intent) {
+        // Use a trampoline activity that will dismiss the keyguard when it is locked.
+        val intent = if (keyguardManager.isKeyguardLocked) {
+            Intent(ctx, TrampolineActivity::class.java).apply {
+                putExtra(TrampolineActivity.EXTRA_INTENT, intent)
+            }
+        } else {
+            intent
+        }
+
+        val pendingIntent =
+            PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val bundle = ActivityOptions.makeBasic()
+                .setPendingIntentBackgroundActivityStartMode(
+                    ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                )
+                .toBundle()
+
+            pendingIntent.send(bundle)
+        } else {
+            pendingIntent.send()
         }
     }
 
@@ -303,6 +310,9 @@ class AndroidPackageManagerAdapter @Inject constructor(
              */
             Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                // DO NOT use trampoline activity. The camera app should be able to launch without
+                // unlocking.
                 ctx.startActivity(this)
             }
 
@@ -312,6 +322,9 @@ class AndroidPackageManagerAdapter @Inject constructor(
             try {
                 Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                    // DO NOT use trampoline activity. The camera app should be able to launch
+                    // without unlocking.
                     ctx.startActivity(this)
                 }
 
@@ -326,7 +339,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         try {
             Intent(Settings.ACTION_SETTINGS).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                ctx.startActivity(this)
+                startActivityWithTrampoline(this)
             }
 
             return Success(Unit)

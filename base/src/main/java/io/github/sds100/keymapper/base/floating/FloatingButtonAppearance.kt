@@ -18,6 +18,8 @@ data class FloatingButtonAppearance(
     }
 
     fun isInvisible(): Boolean {
-        return text.isBlank() && borderOpacity == 0f && backgroundOpacity == 0f
+        // See issue #2285. It is still invisible if the background is opaque because it is
+        // black.
+        return text.isBlank() && borderOpacity == 0f
     }
 }

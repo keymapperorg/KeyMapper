@@ -147,6 +147,8 @@ data class ConstraintEntity(
 
         const val TIME = "time"
 
+        const val VARIABLE = "constraint_variable"
+
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_APP_NAME = "extra_app_name"
         const val EXTRA_BT_ADDRESS = "extra_bluetooth_device_address"
@@ -168,6 +170,10 @@ data class ConstraintEntity(
          */
         const val EXTRA_START_TIME = "extra_start_time"
         const val EXTRA_END_TIME = "extra_end_time"
+
+        const val EXTRA_VARIABLE_NAME = "extra_variable_name"
+        const val EXTRA_VARIABLE_COMPARISON = "extra_variable_comparison"
+        const val EXTRA_VARIABLE_VALUE = "extra_variable_value"
 
         val DESERIALIZER = jsonDeserializer {
             val type by it.json.byString(NAME_TYPE)

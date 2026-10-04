@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.home
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.rounded.Timelapse
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
@@ -35,6 +36,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.TimeUtils
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,
@@ -107,6 +109,7 @@ class KeyMapListItemCreator(
             options = options,
             isEnabled = keyMap.isEnabled,
             hasError = hasError,
+            name = keyMap.name,
         )
     }
 
@@ -117,44 +120,18 @@ class KeyMapListItemCreator(
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
     ): List<ComposeChipModel> = sequence {
-        val midDot = getString(R.string.middot)
-
         val actionErrors = if (keyMap.isEnabled) {
             errorSnapshot.getErrors(keyMap.actionList.map { it.data })
         } else {
             emptyMap()
         }
 
-        for (action in keyMap.actionList) {
-            val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${actionUiHelper.getTitle(action, showDeviceDescriptors)}"
+        for ((index, action) in keyMap.actionList.withIndex()) {
+            val title = actionUiHelper.getChipTitle(keyMap, action, showDeviceDescriptors)
+            val chipText = if (action.multiplier != null) {
+                "${action.multiplier}x $title"
             } else {
-                actionUiHelper.getTitle(action, showDeviceDescriptors)
-            }
-
-            val chipText = buildString {
-                append(actionTitle)
-
-                actionUiHelper.getOptionLabels(keyMap, action).forEach { label ->
-                    append(" $midDot ")
-
-                    append(label)
-                }
-
-                if (keyMap.isDelayBeforeNextActionAllowed() &&
-                    action.delayBeforeNextAction != null
-                ) {
-                    if (this@buildString.isNotBlank()) {
-                        append(" $midDot ")
-                    }
-
-                    append(
-                        getString(
-                            R.string.action_title_wait_ms,
-                            action.delayBeforeNextAction,
-                        ),
-                    )
-                }
+                title
             }
 
             val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
@@ -173,8 +150,29 @@ class KeyMapListItemCreator(
             }
 
             yield(chip)
+
+            // A delay after the last action does nothing so do not show it.
+            if (keyMap.isDelayBeforeNextActionAllowed() &&
+                action.delayBeforeNextAction != null &&
+                index < keyMap.actionList.lastIndex
+            ) {
+                yield(
+                    ComposeChipModel.Normal(
+                        id = "${action.uid}-delay",
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Timelapse),
+                        text = delayText(action.delayBeforeNextAction),
+                        isEnabled = keyMap.isEnabled && action.isEnabled,
+                    ),
+                )
+            }
         }
     }.toList()
+
+    private fun delayText(ms: Int): String = if (ms < 1000) {
+        getString(R.string.action_chip_delay_ms, ms)
+    } else {
+        getString(R.string.action_chip_delay_secs, TimeUtils.formatSeconds(ms))
+    }
 
     fun buildConstraintChipList(
         constraintState: ConstraintState,

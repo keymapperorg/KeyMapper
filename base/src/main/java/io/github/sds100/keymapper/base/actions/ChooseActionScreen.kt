@@ -62,6 +62,9 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     ToastActionBottomSheet(delegate)
     VibrateActionBottomSheet(delegate)
     StepMediaActionBottomSheet(delegate)
+    SetVariableActionBottomSheet(delegate.setVariableDelegate)
+    ModifyVariableActionBottomSheet(delegate.modifyVariableDelegate)
+    BrightnessStepActionBottomSheet(delegate)
     PickTalkBackGestureDialog(delegate)
 }
 
@@ -85,7 +88,7 @@ fun ChooseActionScreen(modifier: Modifier = Modifier, viewModel: ChooseActionVie
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChooseActionScreen(
+fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     state: State<List<SimpleListItemGroup>>,
     query: String? = null,

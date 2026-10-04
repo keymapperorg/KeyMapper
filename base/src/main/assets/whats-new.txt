@@ -1,8 +1,10 @@
-• Group constraints with their own AND/OR logic
-• New vibrate action with custom duration or haptic effects
-• Cycle enabled keyboards action
-• Notification constraint
-• Turn off, duplicate and rename actions
+• Variables: add to, subtract from or set variables
+• Undo and redo changes when configuring a key map
+• Custom key map names
+• Edit constraints in place
+• Shut down and restart device actions
+• Configurable brightness increment
+• Group enable/disable by broadcast intent
 • Many other bug fixes and improvements
 
 📖 View the complete changelog at: http://keymapper.app/changelog

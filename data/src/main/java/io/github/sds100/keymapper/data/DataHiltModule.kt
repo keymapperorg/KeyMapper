@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.RoomGroupRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
+import io.github.sds100.keymapper.data.repositories.VariableRepository
+import io.github.sds100.keymapper.data.repositories.VariableRepositoryImpl
 import javax.inject.Singleton
 
 @Module
@@ -56,4 +58,8 @@ abstract class DataHiltModule {
     abstract fun provideFloatingLayoutRepository(
         impl: RoomFloatingLayoutRepository,
     ): FloatingLayoutRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideVariableRepository(impl: VariableRepositoryImpl): VariableRepository
 }

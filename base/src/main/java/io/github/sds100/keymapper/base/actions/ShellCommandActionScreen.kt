@@ -102,7 +102,7 @@ fun ShellCommandActionScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ShellCommandActionScreen(
+fun ShellCommandActionScreen(
     modifier: Modifier = Modifier,
     state: ShellCommandActionState,
     onDescriptionChanged: (String) -> Unit = {},

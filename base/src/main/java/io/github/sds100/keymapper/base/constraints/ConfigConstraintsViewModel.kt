@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -41,15 +42,28 @@ import kotlinx.coroutines.launch
 class ConfigConstraintsViewModel @Inject constructor(
     private val config: ConfigConstraintsUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
+    createConstraint: CreateConstraintUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
+    variablesUseCase: VariablesUseCase,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
+
+    val createConstraintDelegate =
+        CreateConstraintDelegate(
+            createConstraint,
+            this,
+            this,
+            this,
+            variablesUseCase,
+        )
+
+    private var editedConstraintUid: String? = null
 
     private val _state: MutableStateFlow<State<ConfigConstraintsState>> =
         MutableStateFlow(State.Loading)
@@ -75,6 +89,13 @@ class ConfigConstraintsViewModel @Inject constructor(
     private val knownGroupUids: MutableSet<String> = mutableSetOf()
 
     init {
+        viewModelScope.launch {
+            createConstraintDelegate.constraintResult.filterNotNull().collect { data ->
+                val uid = editedConstraintUid ?: return@collect
+                config.setConstraintData(uid, data)
+            }
+        }
+
         viewModelScope.launch {
             config.keyMap
                 .map { state -> state.dataOrNull()?.constraintState?.groups }
@@ -119,6 +140,21 @@ class ConfigConstraintsViewModel @Inject constructor(
             if (group != null) {
                 expandedGroups.update { set -> set.plus(group.uid) }
             }
+        }
+    }
+
+    fun onEditClick(constraintUid: String) {
+        viewModelScope.launch {
+            val constraint = config.keyMap
+                .firstOrNull()
+                ?.dataOrNull()
+                ?.constraintState
+                ?.allConstraints
+                ?.find { it.uid == constraintUid }
+                ?: return@launch
+
+            editedConstraintUid = constraintUid
+            createConstraintDelegate.editConstraint(constraint.data)
         }
     }
 
@@ -235,6 +271,7 @@ class ConfigConstraintsViewModel @Inject constructor(
                         icon = uiHelper.getIcon(constraint),
                         text = uiHelper.getTitle(constraint),
                         isNot = constraint.isNot,
+                        isEditable = constraint.data.isEditable(),
                         error = error?.getFullMessage(this),
                         isErrorFixable = error?.isFixable ?: true,
                     )
@@ -247,6 +284,7 @@ class ConfigConstraintsViewModel @Inject constructor(
 
                 ConstraintGroupListItemModel(
                     uid = group.uid,
+                    icon = uiHelper.getIcon(group.constraints.first()),
                     name = group.name,
                     mode = group.mode,
                     constraints = constraints,

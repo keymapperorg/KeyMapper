@@ -5,6 +5,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -38,6 +39,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val foldableAdapter: FoldableAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val notificationAdapter: NotificationAdapter,
+    private val variablesUseCase: VariablesUseCase,
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -59,6 +61,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         foldableAdapter,
         volumeAdapter,
         notificationAdapter,
+        variablesUseCase,
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -79,7 +82,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
 
             ConstraintDependency.DISPLAY_ORIENTATION ->
-                displayAdapter.orientation.map { dependency }
+                displayAdapter.displays.map { dependency }
 
             ConstraintDependency.PHYSICAL_ORIENTATION ->
                 displayAdapter.physicalOrientation.map { dependency }
@@ -127,9 +130,11 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.POSTED_NOTIFICATIONS ->
                 notificationAdapter.activeNotifications.map { dependency }
 
-            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.supportedResolutions.map {
+            ConstraintDependency.DISPLAY_RESOLUTIONS -> displayAdapter.displays.map {
                 dependency
             }
+
+            ConstraintDependency.VARIABLES -> variablesUseCase.values.map { dependency }
         }
     }
 }

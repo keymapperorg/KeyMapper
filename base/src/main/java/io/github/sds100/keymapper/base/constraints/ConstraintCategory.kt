@@ -14,4 +14,5 @@ enum class ConstraintCategory {
     DEVICE,
     NOTIFICATIONS,
     TIME,
+    VARIABLES,
 }

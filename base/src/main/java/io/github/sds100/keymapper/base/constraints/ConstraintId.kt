@@ -57,4 +57,6 @@ enum class ConstraintId {
     NOTIFICATION_POSTED,
 
     TIME,
+
+    VARIABLE,
 }

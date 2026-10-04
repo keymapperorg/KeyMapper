@@ -19,7 +19,6 @@ import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material.icons.rounded.MoreTime
 import androidx.compose.material.icons.rounded.Pinch
 import androidx.compose.material.icons.rounded.Timelapse
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
@@ -64,6 +63,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.utils.ui.compose.TextFieldDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.TimeUtils
 import io.github.sds100.keymapper.system.camera.CameraLens
 import kotlinx.coroutines.flow.update
 
@@ -125,7 +125,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 }
 
 @Composable
-private fun ActionsScreen(
+fun ActionsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigActionsState>,
     tipModel: OnboardingTipModel? = null,
@@ -135,36 +135,10 @@ private fun ActionsScreen(
     onDelayChange: (String, Int) -> Unit = { _, _ -> },
     onRenameAction: (String, String) -> Unit = { _, _ -> },
 ) {
-    var actionToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var actionToRename by rememberSaveable { mutableStateOf<String?>(null) }
     var actionToSetDelay by rememberSaveable { mutableStateOf<String?>(null) }
 
     val actions = ((state as? State.Data)?.data as? ConfigActionsState.Loaded)?.actions.orEmpty()
-
-    if (actionToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { actionToDelete = null },
-            title = {
-                Text(stringResource(R.string.action_list_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.action_list_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveClick(actionToDelete!!)
-                        actionToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.action_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { actionToDelete = null }) {
-                    Text(stringResource(R.string.action_list_delete_cancel))
-                }
-            },
-        )
-    }
 
     val renameModel = actions.find { it.id == actionToRename }
 
@@ -206,7 +180,7 @@ private fun ActionsScreen(
                     state = state.data,
                     tipModel = tipModel,
                     callback = callback,
-                    onRemoveClick = { actionToDelete = it },
+                    onRemoveClick = onRemoveClick,
                     onDelayClick = { actionToSetDelay = it },
                     onRenameClick = { actionToRename = it },
                 )
@@ -450,12 +424,10 @@ private fun ActionLinkRow(
                     if (delayBeforeNextAction < 1000) {
                         Text(stringResource(R.string.action_title_wait_ms, delayBeforeNextAction))
                     } else {
-                        val seconds = delayBeforeNextAction / 1000f
-                        val secondsText = if (seconds % 1f == 0f) {
-                            seconds.toInt().toString()
-                        } else {
-                            String.format(LocalLocale.current.platformLocale, "%.1f", seconds)
-                        }
+                        val secondsText = TimeUtils.formatSeconds(
+                            delayBeforeNextAction,
+                            LocalLocale.current.platformLocale,
+                        )
 
                         Text(
                             stringResource(

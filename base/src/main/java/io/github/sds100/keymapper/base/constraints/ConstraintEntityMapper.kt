@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.getKey
@@ -248,6 +249,27 @@ object ConstraintEntityMapper {
                     endHour = endHour,
                     endMinute = endMin,
                 )
+            }
+
+            ConstraintEntity.VARIABLE -> {
+                val name = entity.extras.getData(ConstraintEntity.EXTRA_VARIABLE_NAME)
+                    .valueOrNull() ?: ""
+
+                val comparisonString =
+                    entity.extras.getData(ConstraintEntity.EXTRA_VARIABLE_COMPARISON).valueOrNull()
+
+                val comparison = try {
+                    VariableComparison.valueOf(comparisonString.orEmpty())
+                } catch (_: IllegalArgumentException) {
+                    VariableComparison.EQUALS
+                }
+
+                // toLongOrNull rather than toLong because a backup file can be edited by hand,
+                // and throwing here would happen while a key is being handled.
+                val value = entity.extras.getData(ConstraintEntity.EXTRA_VARIABLE_VALUE)
+                    .valueOrNull()?.toLongOrNull() ?: 0L
+
+                ConstraintData.Variable(name = name, comparison = comparison, value = value)
             }
 
             else -> throw Exception(
@@ -540,6 +562,20 @@ object ConstraintEntityMapper {
                 EntityExtra(
                     ConstraintEntity.EXTRA_END_TIME,
                     "${constraint.data.endHour}:${constraint.data.endMinute}",
+                ),
+            )
+
+            is ConstraintData.Variable -> ConstraintEntity(
+                uid = constraint.uid,
+                type = ConstraintEntity.VARIABLE,
+                EntityExtra(ConstraintEntity.EXTRA_VARIABLE_NAME, constraint.data.name),
+                EntityExtra(
+                    ConstraintEntity.EXTRA_VARIABLE_COMPARISON,
+                    constraint.data.comparison.name,
+                ),
+                EntityExtra(
+                    ConstraintEntity.EXTRA_VARIABLE_VALUE,
+                    constraint.data.value.toString(),
                 ),
             )
         }

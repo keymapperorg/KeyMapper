@@ -395,6 +395,9 @@ abstract class BaseAccessibilityService :
 
         strokeDescription.let {
             val gestureDescription = GestureDescription.Builder().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    setDisplayId(getActiveDisplayId())
+                }
                 addStroke(it)
             }.build()
 
@@ -431,6 +434,10 @@ abstract class BaseAccessibilityService :
         val pEnd = Point(xEnd, yEnd)
 
         val gestureBuilder = GestureDescription.Builder()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            gestureBuilder.setDisplayId(getActiveDisplayId())
+        }
 
         if (fingerCount == 1) {
             val p = Path()
@@ -482,7 +489,7 @@ abstract class BaseAccessibilityService :
                         angle,
                     )
 
-                // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
+                // create a path for each finger, move the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                 val p = Path()
                 p.moveTo(
                     startFingerCoordinateWithOffset.x.toFloat(),
@@ -523,6 +530,11 @@ abstract class BaseAccessibilityService :
         }
 
         val gestureBuilder = GestureDescription.Builder()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            gestureBuilder.setDisplayId(getActiveDisplayId())
+        }
+
         val distributedPoints: List<Point> =
             MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
 
@@ -634,5 +646,9 @@ abstract class BaseAccessibilityService :
 
     override fun performTalkBackGesture(gesture: TalkBackGestureType): KMResult<*> {
         return TalkbackGesturePerformer.performTalkBackGesture(this, gesture, gestureHandler)
+    }
+
+    override fun getActiveDisplayId(): Int {
+        return getActiveDisplayIdExt()
     }
 }

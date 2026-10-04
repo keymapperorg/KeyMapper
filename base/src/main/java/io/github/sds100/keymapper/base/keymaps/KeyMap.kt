@@ -28,6 +28,7 @@ data class KeyMap(
     val constraintState: ConstraintState = ConstraintState(),
     val isEnabled: Boolean = true,
     val groupUid: String? = null,
+    val name: String = "",
 ) {
 
     val showToast: Boolean
@@ -139,6 +140,7 @@ object KeyMapEntityMapper {
             constraintState = constraintState,
             isEnabled = entity.isEnabled,
             groupUid = entity.groupUid,
+            name = entity.name ?: "",
         )
     }
 
@@ -157,6 +159,7 @@ object KeyMapEntityMapper {
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,
             groupUid = keyMap.groupUid,
+            name = keyMap.name.ifBlank { null },
         )
     }
 }

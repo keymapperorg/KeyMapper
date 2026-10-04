@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.groups.GroupWithState
+import io.github.sds100.keymapper.base.groups.SelectGroupUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
@@ -54,15 +55,16 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
     private val backupManager: BackupManager,
     private val backupRestoreMappingsUseCase: BackupRestoreMappingsUseCase,
     private val resourceProvider: ResourceProvider,
+    selectGroupUseCase: SelectGroupUseCase,
     displayKeyMapUseCase: DisplayKeyMapUseCase,
 ) : ListKeyMapsUseCase,
+    SelectGroupUseCase by selectGroupUseCase,
     DisplayKeyMapUseCase by displayKeyMapUseCase {
     private val keyMapListGroupUid = MutableStateFlow<String?>(null)
-    private val selectionGroupUid = MutableStateFlow<String?>(null)
 
-    private fun setCurrentGroup(groupUid: String?) {
+    private suspend fun setCurrentGroup(groupUid: String?) {
         keyMapListGroupUid.update { groupUid }
-        selectionGroupUid.update { groupUid }
+        openSelectionGroup(groupUid)
     }
 
     private suspend fun getGroupFamily(groupUid: String?): Flow<GroupFamily> {
@@ -160,20 +162,6 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
             isEnabled = isEnabled,
             isError = hasOwnConstraintError || hasEnabledKeyMapError,
         )
-    }
-
-    override val selectionGroupFamily: Flow<GroupFamily> =
-        selectionGroupUid.flatMapLatest(::getGroupFamily)
-
-    override suspend fun openSelectionGroup(uid: String?) {
-        if (uid == null) {
-            // If null then open the root group.
-            selectionGroupUid.update { null }
-        } else {
-            // Check if the group exists.
-            val group = groupRepository.getGroup(uid) ?: return
-            selectionGroupUid.update { group.uid }
-        }
     }
 
     private suspend fun getParentsRecursively(groupUid: String?): List<Group> {
@@ -469,7 +457,9 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
     }
 }
 
-interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
+interface ListKeyMapsUseCase :
+    DisplayKeyMapUseCase,
+    SelectGroupUseCase {
     val keyMapGroup: Flow<KeyMapGroup>
 
     suspend fun newGroup()
@@ -485,8 +475,6 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     fun enableGroupKeyMaps()
     fun disableGroupKeyMaps()
 
-    val selectionGroupFamily: Flow<GroupFamily>
-    suspend fun openSelectionGroup(uid: String?)
     fun moveKeyMapsToGroup(groupUid: String?, vararg keyMapUids: String)
     fun moveKeyMapsToSelectedGroup(vararg keyMapUids: String)
     suspend fun moveKeyMapsToNewGroup(vararg keyMapUids: String)

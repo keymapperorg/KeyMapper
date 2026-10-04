@@ -16,6 +16,8 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.apps.isAppInstalledFlow
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -24,6 +26,7 @@ import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -42,6 +45,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val networkAdapter: NetworkAdapter,
+    private val packageManagerAdapter: PackageManagerAdapter,
     private val clock: Clock,
 ) : SystemBridgeSetupUseCase {
 
@@ -51,6 +55,23 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
          * FUNCTION_NONE in that file.
          */
         private const val USB_FUNCTION_NONE = 0
+
+        /**
+         * Samsung One UI's Auto Blocker security feature. If installed it can silently
+         * prevent Wireless Debugging from staying enabled.
+         */
+        private const val SAMSUNG_AUTO_BLOCKER_PACKAGE = "com.samsung.android.rampart"
+    }
+
+    override val hasSamsungAutoBlocker: Flow<Boolean> =
+        packageManagerAdapter.isAppInstalledFlow(SAMSUNG_AUTO_BLOCKER_PACKAGE)
+
+    // Not persisted. The user should be re-prompted every time they open the setup wizard.
+    private val isSamsungAutoBlockerDismissed = MutableStateFlow(false)
+
+    override fun openSamsungAutoBlockerSettings() {
+        isSamsungAutoBlockerDismissed.value = true
+        systemBridgeSetupController.openAutoBlockerSettings()
     }
 
     override val isWarningUnderstood: Flow<Boolean> =
@@ -139,27 +160,35 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     private fun getNextStepFlow(): Flow<SystemBridgeSetupStep> =
         accessibilityServiceAdapter.state.flatMapLatest { accessibilityServiceState ->
-            combine(
-                isNotificationPermissionGranted,
-                isLocalNetworkPermissionGranted,
-                systemBridgeSetupController.isDeveloperOptionsEnabled,
-                networkAdapter.isWifiConnected,
-                systemBridgeSetupController.isWirelessDebuggingEnabled,
-            ) {
-                    isNotificationGranted,
-                    isLocalNetworkGranted,
-                    isDeveloperOptionsEnabled,
-                    isWifiConnected,
-                    isWirelessDebuggingEnabled,
+            combine(hasSamsungAutoBlocker, isSamsungAutoBlockerDismissed) {
+                    hasAutoBlocker,
+                    isDismissed,
                 ->
-                getNextStep(
-                    accessibilityServiceState = accessibilityServiceState,
-                    isNotificationPermissionGranted = isNotificationGranted,
-                    isLocalNetworkPermissionGranted = isLocalNetworkGranted,
-                    isDeveloperOptionsEnabled = isDeveloperOptionsEnabled,
-                    isWifiConnected = isWifiConnected,
-                    isWirelessDebuggingEnabled = isWirelessDebuggingEnabled,
-                )
+                hasAutoBlocker && !isDismissed
+            }.flatMapLatest { needsSamsungAutoBlockerStep ->
+                combine(
+                    isNotificationPermissionGranted,
+                    isLocalNetworkPermissionGranted,
+                    systemBridgeSetupController.isDeveloperOptionsEnabled,
+                    networkAdapter.isWifiConnected,
+                    systemBridgeSetupController.isWirelessDebuggingEnabled,
+                ) {
+                        isNotificationGranted,
+                        isLocalNetworkGranted,
+                        isDeveloperOptionsEnabled,
+                        isWifiConnected,
+                        isWirelessDebuggingEnabled,
+                    ->
+                    getNextStep(
+                        accessibilityServiceState = accessibilityServiceState,
+                        needsSamsungAutoBlockerStep = needsSamsungAutoBlockerStep,
+                        isNotificationPermissionGranted = isNotificationGranted,
+                        isLocalNetworkPermissionGranted = isLocalNetworkGranted,
+                        isDeveloperOptionsEnabled = isDeveloperOptionsEnabled,
+                        isWifiConnected = isWifiConnected,
+                        isWirelessDebuggingEnabled = isWirelessDebuggingEnabled,
+                    )
+                }
             }
         }
 
@@ -321,6 +350,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
+        needsSamsungAutoBlockerStep: Boolean,
         isNotificationPermissionGranted: Boolean,
         isLocalNetworkPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
@@ -335,6 +365,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
             !isLocalNetworkPermissionGranted ->
                 SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION
+
+            needsSamsungAutoBlockerStep -> SystemBridgeSetupStep.SAMSUNG_AUTO_BLOCKER
 
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
 
@@ -386,6 +418,9 @@ interface SystemBridgeSetupUseCase {
 
     val isLocalNetworkPermissionGranted: Flow<Boolean>
     fun requestLocalNetworkPermission()
+
+    val hasSamsungAutoBlocker: Flow<Boolean>
+    fun openSamsungAutoBlockerSettings()
 
     fun stopSystemBridge()
     fun enableAccessibilityService()

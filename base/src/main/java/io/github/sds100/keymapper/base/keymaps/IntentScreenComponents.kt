@@ -120,8 +120,14 @@ internal fun buildAdbCommand(
     packageName: String,
     receiverClass: String,
     action: String,
-    keyMapUid: String,
+    extraName: String? = null,
+    extraValue: String? = null,
 ): String {
-    return "adb shell am broadcast -n $packageName/$receiverClass " +
-        "-a $action --es $EXTRA_KEYMAP_UID $keyMapUid"
+    val extraArg = if (extraName != null && extraValue != null) {
+        " --es $extraName $extraValue"
+    } else {
+        ""
+    }
+
+    return "adb shell am broadcast -n $packageName/$receiverClass -a $action$extraArg"
 }

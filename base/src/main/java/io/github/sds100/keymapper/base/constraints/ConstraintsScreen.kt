@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.rounded.FlashlightOn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
@@ -24,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,6 +63,8 @@ fun ConstraintsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    HandleConstraintBottomSheets(viewModel.createConstraintDelegate)
+
     if (viewModel.showDuplicateConstraintsSnackbar) {
         val message = stringResource(R.string.error_duplicate_constraint)
 
@@ -82,6 +82,7 @@ fun ConstraintsScreen(
         onRemoveClick = viewModel::onRemoveClick,
         onRemoveGroupClick = viewModel::onRemoveGroupClick,
         onNotClick = viewModel::onNotClick,
+        onEditClick = viewModel::onEditClick,
         onFixErrorClick = viewModel::onFixError,
         onClickShortcut = viewModel::onClickShortcut,
         onSelectMode = viewModel::onSelectMode,
@@ -93,7 +94,7 @@ fun ConstraintsScreen(
 }
 
 @Composable
-private fun ConstraintsScreen(
+fun ConstraintsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigConstraintsState>,
     onAddClick: () -> Unit = {},
@@ -101,6 +102,7 @@ private fun ConstraintsScreen(
     onRemoveClick: (String) -> Unit = {},
     onRemoveGroupClick: (String) -> Unit = {},
     onNotClick: (String) -> Unit = {},
+    onEditClick: (String) -> Unit = {},
     onFixErrorClick: (String) -> Unit = {},
     onClickShortcut: (ConstraintData) -> Unit = {},
     onSelectMode: (ConstraintMode) -> Unit = {},
@@ -109,59 +111,7 @@ private fun ConstraintsScreen(
     onExpandedChange: (groupUid: String, expanded: Boolean) -> Unit = { _, _ -> },
     onMoveGroup: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
 ) {
-    var constraintToDelete by rememberSaveable { mutableStateOf<String?>(null) }
-    var groupToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var groupToRename by rememberSaveable { mutableStateOf<String?>(null) }
-
-    if (constraintToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { constraintToDelete = null },
-            title = {
-                Text(stringResource(R.string.constraint_list_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.constraint_list_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveClick(constraintToDelete!!)
-                        constraintToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.constraint_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { constraintToDelete = null }) {
-                    Text(stringResource(R.string.constraint_list_delete_cancel))
-                }
-            },
-        )
-    }
-
-    if (groupToDelete != null) {
-        AlertDialog(
-            onDismissRequest = { groupToDelete = null },
-            title = {
-                Text(stringResource(R.string.constraint_group_delete_dialog_title))
-            },
-            text = { Text(stringResource(R.string.constraint_group_delete_dialog_text)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onRemoveGroupClick(groupToDelete!!)
-                        groupToDelete = null
-                    },
-                ) {
-                    Text(stringResource(R.string.constraint_list_delete_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { groupToDelete = null }) {
-                    Text(stringResource(R.string.constraint_list_delete_cancel))
-                }
-            },
-        )
-    }
 
     val groups = ((state as? State.Data)?.data as? ConfigConstraintsState.Loaded)
         ?.groups
@@ -228,9 +178,10 @@ private fun ConstraintsScreen(
                             modifier = Modifier.weight(1f),
                             state = data,
                             onAddToGroupClick = onAddToGroupClick,
-                            onRemoveClick = { constraintToDelete = it },
-                            onRemoveGroupClick = { groupToDelete = it },
+                            onRemoveClick = onRemoveClick,
+                            onRemoveGroupClick = onRemoveGroupClick,
                             onNotClick = onNotClick,
+                            onEditClick = onEditClick,
                             onFixErrorClick = onFixErrorClick,
                             onClickShortcut = onClickShortcut,
                             onSelectGroupMode = onSelectGroupMode,
@@ -294,6 +245,7 @@ private fun ConstraintGroupList(
     onRemoveClick: (String) -> Unit,
     onRemoveGroupClick: (String) -> Unit,
     onNotClick: (String) -> Unit,
+    onEditClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
     onClickShortcut: (ConstraintData) -> Unit,
     onSelectGroupMode: (String, ConstraintMode) -> Unit,
@@ -362,6 +314,7 @@ private fun ConstraintGroupList(
                         onRemoveConstraintClick = onRemoveClick,
                         onFixConstraintClick = onFixErrorClick,
                         onNotClick = onNotClick,
+                        onEditConstraintClick = onEditClick,
                         onMoveUp = if (index > 0) {
                             { onMoveGroup(index, index - 1) }
                         } else {
@@ -472,12 +425,14 @@ private fun LoadedPreview() {
                     groups = listOf(
                         ConstraintGroupListItemModel(
                             uid = "group1",
+                            icon = flashlightConstraint.icon,
                             mode = ConstraintMode.AND,
                             constraints = listOf(flashlightConstraint, appConstraint),
                             description = "Flashlight is not on AND Key Mapper is in foreground",
                         ),
                         ConstraintGroupListItemModel(
                             uid = "group2",
+                            icon = appConstraint.icon,
                             name = "Foreground or wifi",
                             mode = ConstraintMode.OR,
                             constraints = listOf(appConstraint, wifiConstraint),
@@ -485,6 +440,7 @@ private fun LoadedPreview() {
                         ),
                         ConstraintGroupListItemModel(
                             uid = "group3",
+                            icon = wifiConstraint.icon,
                             mode = ConstraintMode.AND,
                             constraints = listOf(wifiConstraint),
                             description = "Wi-Fi is on",

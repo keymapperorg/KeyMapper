@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.NotificationConstraintMatcher
+import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
@@ -41,6 +42,7 @@ class TestConstraintSnapshot(
     val isNotificationPanelShowing: Boolean = false,
     val displaySize: SizeKM = SizeKM(1080, 1920),
     val postedNotifications: List<PostedNotification> = emptyList(),
+    val variables: Map<String, Long> = emptyMap(),
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
@@ -137,6 +139,16 @@ class TestConstraintSnapshot(
                 hingeState is HingeState.Available && hingeState.isOpen()
 
             ConstraintData.NotificationPanelShowing -> isNotificationPanelShowing
+
+            is ConstraintData.Variable -> {
+                val currentValue = variables[data.name] ?: 0L
+
+                when (data.comparison) {
+                    VariableComparison.EQUALS -> currentValue == data.value
+                    VariableComparison.GREATER_THAN -> currentValue > data.value
+                    VariableComparison.LESS_THAN -> currentValue < data.value
+                }
+            }
         } != constraint.isNot
 
         if (isSatisfied) {

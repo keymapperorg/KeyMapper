@@ -79,6 +79,10 @@ data class KeyMapEntity(
     @SerializedName(NAME_GROUP_UID)
     @ColumnInfo(name = KeyMapDao.KEY_GROUP_UID)
     val groupUid: String? = null,
+
+    @SerializedName(NAME_NAME)
+    @ColumnInfo(name = KeyMapDao.KEY_NAME)
+    val name: String? = null,
 ) : Parcelable {
     companion object {
 
@@ -93,6 +97,7 @@ data class KeyMapEntity(
         const val NAME_IS_ENABLED = "isEnabled"
         const val NAME_UID = "uid"
         const val NAME_GROUP_UID = "group_uid"
+        const val NAME_NAME = "name"
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
@@ -115,6 +120,7 @@ data class KeyMapEntity(
             val isEnabled by it.json.byBool(NAME_IS_ENABLED)
             val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
             val groupUid by it.json.byNullableString(NAME_GROUP_UID)
+            val name by it.json.byNullableString(NAME_NAME)
 
             KeyMapEntity(
                 id = 0,
@@ -127,6 +133,7 @@ data class KeyMapEntity(
                 isEnabled = isEnabled,
                 uid = uid,
                 groupUid = groupUid,
+                name = name,
             )
         }
     }

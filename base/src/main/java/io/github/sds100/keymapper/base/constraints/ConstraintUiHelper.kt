@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.TimeUtils
@@ -162,6 +163,32 @@ class ConstraintUiHelper(
                 timeFormatter.format(constraint.data.endTime),
             ),
         )
+
+        is ConstraintData.Variable -> getVariableTitle(constraint.data, isNot = false)
+    }
+
+    private fun getVariableTitle(data: ConstraintData.Variable, isNot: Boolean): String {
+        val stringRes = when (data.comparison) {
+            VariableComparison.EQUALS -> if (isNot) {
+                R.string.constraint_variable_not_equals
+            } else {
+                R.string.constraint_variable_equals
+            }
+
+            VariableComparison.GREATER_THAN -> if (isNot) {
+                R.string.constraint_variable_not_greater_than
+            } else {
+                R.string.constraint_variable_greater_than
+            }
+
+            VariableComparison.LESS_THAN -> if (isNot) {
+                R.string.constraint_variable_not_less_than
+            } else {
+                R.string.constraint_variable_less_than
+            }
+        }
+
+        return getString(stringRes, arrayOf(data.name, data.value.toString()))
     }
 
     private fun getNotTitle(constraint: Constraint): String = when (constraint.data) {
@@ -255,6 +282,8 @@ class ConstraintUiHelper(
                 timeFormatter.format(constraint.data.endTime),
             ),
         )
+
+        is ConstraintData.Variable -> getVariableTitle(constraint.data, isNot = true)
 
         is ConstraintData.OrientationCustom -> {
             val resId = when (constraint.data.orientation) {

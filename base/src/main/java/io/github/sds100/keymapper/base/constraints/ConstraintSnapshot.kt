@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.base.constraints
 import android.media.AudioManager
 import android.os.Build
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.variables.VariableComparison
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SizeKM
@@ -11,6 +13,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.DisplayInfo
 import io.github.sds100.keymapper.system.foldable.FoldableAdapter
 import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
@@ -32,10 +35,10 @@ import java.time.LocalTime
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
 class LazyConstraintSnapshot(
-    accessibilityService: IAccessibilityService,
+    private val accessibilityService: IAccessibilityService,
     mediaAdapter: MediaAdapter,
     devicesAdapter: DevicesAdapter,
-    displayAdapter: DisplayAdapter,
+    private val displayAdapter: DisplayAdapter,
     networkAdapter: NetworkAdapter,
     private val cameraAdapter: CameraAdapter,
     inputMethodAdapter: InputMethodAdapter,
@@ -45,17 +48,21 @@ class LazyConstraintSnapshot(
     private val foldableAdapter: FoldableAdapter,
     volumeAdapter: VolumeAdapter,
     notificationAdapter: NotificationAdapter,
+    variablesUseCase: VariablesUseCase,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
         devicesAdapter.connectedBluetoothDevices.value
     }
-    private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
+    private val orientation: Orientation by lazy { getActiveDisplay()!!.rotation }
     private val physicalOrientation: PhysicalOrientation by lazy {
         displayAdapter.cachedPhysicalOrientation
     }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
-    private val displaySize: SizeKM by lazy { displayAdapter.size }
+    private val displaySize: SizeKM by lazy {
+        getActiveDisplay()!!.activeSize
+    }
+
     private val appsPlayingMedia: List<String> by lazy {
         mediaAdapter.getActiveMediaSessionPackages()
     }
@@ -91,6 +98,8 @@ class LazyConstraintSnapshot(
     private val activeNotifications: List<PostedNotification> by lazy {
         notificationAdapter.activeNotifications.value
     }
+
+    private val variables: Map<String, Long> by lazy { variablesUseCase.getValues() }
 
     private val localTime = LocalTime.now()
 
@@ -227,9 +236,24 @@ class LazyConstraintSnapshot(
                     localTime.isAfter(constraint.data.startTime) &&
                         localTime.isBefore(constraint.data.endTime)
                 }
+
+            is ConstraintData.Variable -> {
+                // A variable that has never been set counts as 0.
+                val currentValue = variables[constraint.data.name] ?: 0L
+
+                when (constraint.data.comparison) {
+                    VariableComparison.EQUALS -> currentValue == constraint.data.value
+                    VariableComparison.GREATER_THAN -> currentValue > constraint.data.value
+                    VariableComparison.LESS_THAN -> currentValue < constraint.data.value
+                }
+            }
         }
 
         return isSatisfied != constraint.isNot
+    }
+
+    private fun getActiveDisplay(): DisplayInfo? {
+        return displayAdapter.getDisplay(accessibilityService.getActiveDisplayId())
     }
 }
 

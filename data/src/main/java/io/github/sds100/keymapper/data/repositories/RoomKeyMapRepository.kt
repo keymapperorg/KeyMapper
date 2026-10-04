@@ -121,6 +121,12 @@ class RoomKeyMapRepository @Inject constructor(
         }
     }
 
+    override fun toggleByGroup(groupUid: String?) {
+        coroutineScope.launch(dispatchers.io()) {
+            keyMapDao.toggleKeyMapByGroup(groupUid)
+        }
+    }
+
     override fun disableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {

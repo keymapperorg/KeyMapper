@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.talkback.TalkBackGestureType
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.base.vibration.VibrateEffect
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
@@ -776,12 +777,12 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data object Increase : Brightness() {
+        data class Increase(val stepPercent: Int? = null) : Brightness() {
             override val id = ActionId.INCREASE_BRIGHTNESS
         }
 
         @Serializable
-        data object Decrease : Brightness() {
+        data class Decrease(val stepPercent: Int? = null) : Brightness() {
             override val id = ActionId.DECREASE_BRIGHTNESS
         }
     }
@@ -981,6 +982,16 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data object ShutdownDevice : ActionData() {
+        override val id = ActionId.SHUTDOWN_DEVICE
+    }
+
+    @Serializable
+    data object RebootDevice : ActionData() {
+        override val id = ActionId.REBOOT_DEVICE
+    }
+
+    @Serializable
     data object DismissLastNotification : ActionData() {
         override val id: ActionId = ActionId.DISMISS_MOST_RECENT_NOTIFICATION
     }
@@ -1128,6 +1139,40 @@ sealed class ActionData : Comparable<ActionData> {
 
         override fun compareTo(other: ActionData) = when (other) {
             is TalkBackGesture -> gesture.compareTo(other.gesture)
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class SetVariable(val name: String, val value: Long) : ActionData() {
+        override val id: ActionId = ActionId.SET_VARIABLE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SetVariable -> compareValuesBy(
+                this,
+                other,
+                { it.name },
+                { it.value },
+            )
+
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class ModifyVariable(val name: String, val operation: VariableOperation, val value: Long) :
+        ActionData() {
+        override val id: ActionId = ActionId.MODIFY_VARIABLE
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ModifyVariable -> compareValuesBy(
+                this,
+                other,
+                { it.name },
+                { it.operation },
+                { it.value },
+            )
+
             else -> super.compareTo(other)
         }
     }

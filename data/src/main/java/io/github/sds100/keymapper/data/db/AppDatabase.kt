@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
+import io.github.sds100.keymapper.data.db.dao.VariableDao
 import io.github.sds100.keymapper.data.db.typeconverter.ActionListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ConstraintListTypeConverter
 import io.github.sds100.keymapper.data.db.typeconverter.ExtraListTypeConverter
@@ -28,6 +29,7 @@ import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.data.entities.VariableEntity
 import io.github.sds100.keymapper.data.migration.AutoMigration14To15
 import io.github.sds100.keymapper.data.migration.AutoMigration15To16
 import io.github.sds100.keymapper.data.migration.AutoMigration16To17
@@ -36,6 +38,7 @@ import io.github.sds100.keymapper.data.migration.AutoMigration19To20
 import io.github.sds100.keymapper.data.migration.AutoMigration20To21
 import io.github.sds100.keymapper.data.migration.AutoMigration21To22
 import io.github.sds100.keymapper.data.migration.AutoMigration22To23
+import io.github.sds100.keymapper.data.migration.AutoMigration23To24
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -53,6 +56,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         KeyMapEntity::class, FingerprintMapEntity::class,
         LogEntryEntity::class, FloatingLayoutEntity::class,
         FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class,
+        VariableEntity::class,
     ],
     version = DATABASE_VERSION,
     exportSchema = true,
@@ -73,6 +77,10 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 21, to = 22, spec = AutoMigration21To22::class),
         // Adds the constraint_groups column to key maps
         AutoMigration(from = 22, to = 23, spec = AutoMigration22To23::class),
+        // Adds the name column to key maps
+        AutoMigration(from = 23, to = 24, spec = AutoMigration23To24::class),
+        // Adds the variables table
+        AutoMigration(from = 24, to = 25),
     ],
 )
 @TypeConverters(
@@ -85,7 +93,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 23
+        const val DATABASE_VERSION = 25
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -184,4 +192,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun floatingButtonDao(): FloatingButtonDao
     abstract fun groupDao(): GroupDao
     abstract fun accessibilityNodeDao(): AccessibilityNodeDao
+    abstract fun variableDao(): VariableDao
 }

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.graphics.Bitmap
+import android.view.Display
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -37,7 +38,12 @@ class ScreenshotPickerDelegate(
     fun selectedScreenshot(newBitmap: Bitmap) {
         val newBitmapSize = SizeKM(newBitmap.width, newBitmap.height)
 
-        if (!displayAdapter.size.hasSameAspectRatio(newBitmapSize)) {
+        val matchingAspectRatio =
+            displayAdapter.displays.value
+                .flatMap { it.supportedSizes }
+                .any { it.hasSameAspectRatio(newBitmapSize) }
+
+        if (!matchingAspectRatio) {
             coroutineScope.launch {
                 val snackBar = DialogModel.SnackBar(
                     message = getString(R.string.toast_incorrect_screenshot_resolution),
@@ -63,8 +69,12 @@ class ScreenshotPickerDelegate(
      * action on a device that has since changed resolution does not stamp the wrong one on
      * unchanged coordinates.
      */
-    fun screenResolution(): SizeKM =
-        screenshotResolution.value ?: loadedResolution.value ?: displayAdapter.size
+    fun screenResolution(): SizeKM {
+        val activeDisplay =
+            displayAdapter.getDisplay(displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY)!!
+
+        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.activeSize
+    }
 
     fun recycle() {
         _bitmap.value?.recycle()

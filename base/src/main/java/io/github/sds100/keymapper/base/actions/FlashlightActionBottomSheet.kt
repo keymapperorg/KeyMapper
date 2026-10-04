@@ -4,32 +4,24 @@ import android.os.Build
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.CameraFront
 import androidx.compose.material.icons.rounded.FlashlightOff
 import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material.icons.rounded.RestartAlt
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
@@ -47,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.compose.KMBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSliderThumb
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
@@ -105,7 +98,6 @@ private fun EnableFlashlightActionBottomSheet(
         onDoneClick = onDoneClick,
     ) {
         OptionsHeaderRow(
-            modifier = Modifier.padding(horizontal = 16.dp),
             icon = Icons.Rounded.BrightnessMedium,
             text = stringResource(R.string.action_config_flashlight_brightness),
         )
@@ -122,7 +114,6 @@ private fun EnableFlashlightActionBottomSheet(
 
         if (errorText != null) {
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
                 text = errorText,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
@@ -134,7 +125,6 @@ private fun EnableFlashlightActionBottomSheet(
         val sliderMax = state.lensData[state.selectedLens]!!.maxStrength.toFloat()
 
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Slider(
@@ -164,7 +154,7 @@ private fun EnableFlashlightActionBottomSheet(
         }
 
         if (errorText == null) {
-            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Row {
                 Box(modifier = Modifier.weight(1f)) {
                     TextButton(
                         modifier = Modifier.align(Alignment.TopStart),
@@ -203,7 +193,6 @@ private fun EnableFlashlightActionBottomSheet(
 
         if (errorText == null) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -287,7 +276,6 @@ private fun ChangeFlashlightStrengthActionBottomSheet(
         onDoneClick = onDoneClick,
     ) {
         OptionsHeaderRow(
-            modifier = Modifier.padding(horizontal = 16.dp),
             icon = Icons.Rounded.BrightnessMedium,
             text = stringResource(R.string.action_config_flashlight_brightness_factor),
         )
@@ -295,7 +283,6 @@ private fun ChangeFlashlightStrengthActionBottomSheet(
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val interactionSource = remember { MutableInteractionSource() }
@@ -346,93 +333,44 @@ private fun FlashlightActionBottomSheet(
     onDoneClick: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
-
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+    KMBottomSheet(
+        title = title,
+        negButtonText = stringResource(R.string.neg_cancel),
+        posButtonText = stringResource(R.string.pos_done),
+        onPosButtonClick = onDoneClick,
         sheetState = sheetState,
-        dragHandle = null,
+        onDismissRequest = onDismissRequest,
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                textAlign = TextAlign.Center,
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
+        if (availableLenses.size > 1) {
+            OptionsHeaderRow(
+                icon = Icons.Rounded.CameraFront,
+                text = stringResource(R.string.action_config_flashlight_choose_side),
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (availableLenses.size > 1) {
-                OptionsHeaderRow(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    icon = Icons.Rounded.CameraFront,
-                    text = stringResource(R.string.action_config_flashlight_choose_side),
+            Row {
+                RadioButtonText(
+                    modifier = Modifier,
+                    text = stringResource(R.string.lens_front),
+                    isSelected = selectedLens == CameraLens.FRONT,
+                    onSelected = { onSelectLens(CameraLens.FRONT) },
+                    isEnabled = availableLenses.contains(CameraLens.FRONT),
                 )
 
-                Row(modifier = Modifier.padding(horizontal = 8.dp)) {
-                    RadioButtonText(
-                        modifier = Modifier,
-                        text = stringResource(R.string.lens_front),
-                        isSelected = selectedLens == CameraLens.FRONT,
-                        onSelected = { onSelectLens(CameraLens.FRONT) },
-                        isEnabled = availableLenses.contains(CameraLens.FRONT),
-                    )
-
-                    RadioButtonText(
-                        modifier = Modifier,
-                        text = stringResource(R.string.lens_back),
-                        isSelected = selectedLens == CameraLens.BACK,
-                        onSelected = { onSelectLens(CameraLens.BACK) },
-                        isEnabled = availableLenses.contains(CameraLens.BACK),
-                    )
-                }
+                RadioButtonText(
+                    modifier = Modifier,
+                    text = stringResource(R.string.lens_back),
+                    isSelected = selectedLens == CameraLens.BACK,
+                    onSelected = { onSelectLens(CameraLens.BACK) },
+                    isEnabled = availableLenses.contains(CameraLens.BACK),
+                )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            content()
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
-                    }
-                },
-            ) {
-                Text(stringResource(R.string.neg_cancel))
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick = onDoneClick,
-            ) {
-                Text(stringResource(R.string.pos_done))
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
+        content()
     }
 }
 

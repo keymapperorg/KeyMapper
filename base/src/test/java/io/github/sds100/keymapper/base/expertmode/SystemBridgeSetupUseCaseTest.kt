@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -15,6 +16,7 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -24,6 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -41,6 +44,7 @@ class SystemBridgeSetupUseCaseTest {
     private lateinit var mockPermissionAdapter: PermissionAdapter
     private lateinit var mockAccessibilityServiceAdapter: AccessibilityServiceAdapter
     private lateinit var mockNetworkAdapter: NetworkAdapter
+    private lateinit var mockPackageManagerAdapter: PackageManagerAdapter
 
     @Before
     fun init() {
@@ -52,6 +56,9 @@ class SystemBridgeSetupUseCaseTest {
         mockPermissionAdapter = mock()
         mockAccessibilityServiceAdapter = mock()
         mockNetworkAdapter = mock()
+        mockPackageManagerAdapter = mock()
+        whenever(mockPackageManagerAdapter.onPackagesChanged).thenReturn(emptyFlow())
+        whenever(mockPackageManagerAdapter.isAppInstalled(any())).thenReturn(false)
 
         useCase = SystemBridgeSetupUseCaseImpl(
             preferences = fakePreferences,
@@ -62,6 +69,7 @@ class SystemBridgeSetupUseCaseTest {
             permissionAdapter = mockPermissionAdapter,
             accessibilityServiceAdapter = mockAccessibilityServiceAdapter,
             networkAdapter = mockNetworkAdapter,
+            packageManagerAdapter = mockPackageManagerAdapter,
             clock = mock(),
         )
     }
@@ -173,6 +181,7 @@ class SystemBridgeSetupUseCaseTest {
                 permissionAdapter = mockPermissionAdapter,
                 accessibilityServiceAdapter = mockAccessibilityServiceAdapter,
                 networkAdapter = mockNetworkAdapter,
+                packageManagerAdapter = mockPackageManagerAdapter,
                 clock = mock(),
             )
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
+import android.os.Build
 import android.provider.Settings
 import android.view.Display
 import android.view.OrientationEventListener
@@ -19,15 +20,14 @@ import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.getRealDisplaySize
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 /**
@@ -44,11 +44,6 @@ class AndroidDisplayAdapter @Inject constructor(
     private val coroutineScope: CoroutineScope,
 ) : DisplayAdapter {
     companion object {
-
-        /**
-         * How much to change the brightness by.
-         */
-        private const val BRIGHTNESS_CHANGE_STEP = 20
 
         /**
          * Tolerance in degrees for orientation detection.
@@ -88,24 +83,18 @@ class AndroidDisplayAdapter @Inject constructor(
 
     private val displayManager: DisplayManager = ctx.getSystemService()!!
 
-    private val _orientation = MutableStateFlow(getDisplayOrientation())
-    override val orientation: Flow<Orientation> = _orientation
-    override val cachedOrientation: Orientation
-        get() = _orientation.value
-
     private val _physicalOrientation = MutableStateFlow(PhysicalOrientation.PORTRAIT)
     override val physicalOrientation: Flow<PhysicalOrientation> = _physicalOrientation
     override val cachedPhysicalOrientation: PhysicalOrientation
         get() = _physicalOrientation.value
 
-    override val size: SizeKM
-        get() = ctx.getRealDisplaySize()
+    override var activityDisplayId: Int? = null
 
     override val isAmbientDisplayEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(isAodEnabled())
 
-    override val supportedResolutions: MutableStateFlow<Set<SizeKM>> =
-        MutableStateFlow(getSupportedResolutions())
+    override val displays: MutableStateFlow<List<DisplayInfo>> =
+        MutableStateFlow(fetchAllDisplayInfo())
 
     private val orientationEventListener = object : OrientationEventListener(ctx) {
         override fun onOrientationChanged(orientationDegrees: Int) {
@@ -203,59 +192,47 @@ class AndroidDisplayAdapter @Inject constructor(
         Settings.System.SCREEN_BRIGHTNESS_MODE,
     ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
 
-    override fun increaseBrightness(): KMResult<*> {
+    override fun increaseBrightness(stepPercent: Float, display: Int): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        val currentBrightness =
-            SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.SCREEN_BRIGHTNESS)
-
-        var newBrightness = if (currentBrightness != null) {
-            currentBrightness + BRIGHTNESS_CHANGE_STEP
-        } else {
-            255
-        }
-
-        // the brightness must be between 0 and 255
-        if (newBrightness > 255) {
-            newBrightness = 255
-        }
-
-        val success =
-            SettingsUtils.putSystemSetting(ctx, Settings.System.SCREEN_BRIGHTNESS, newBrightness)
-
-        return if (success) {
-            Success(Unit)
-        } else {
-            KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
-        }
+        return setBrightness(stepPercent, display)
     }
 
-    override fun decreaseBrightness(): KMResult<*> {
+    override fun decreaseBrightness(stepPercent: Float, display: Int): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
-        val currentBrightness =
-            SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.SCREEN_BRIGHTNESS)
+        return setBrightness(-stepPercent, display)
+    }
 
-        var newBrightness = if (currentBrightness != null) {
-            currentBrightness - BRIGHTNESS_CHANGE_STEP
+    private fun setBrightness(delta: Float, display: Int): KMResult<*> {
+        val currentBrightness = getDisplayBrightness(display)
+
+        val newBrightness: Float = (currentBrightness + delta).coerceIn(0f, 1f)
+
+        if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            displayManager.setBrightness(
+                display,
+                newBrightness * 100,
+                DisplayManager.BRIGHTNESS_UNIT_PERCENTAGE,
+            )
+
+            return Success(Unit)
         } else {
-            255
-        }
+            val rawBrightness: Int = (newBrightness * 255).roundToInt().coerceIn(1, 255)
 
-        // the brightness must be between 0 and 255
-        if (newBrightness < 0) {
-            newBrightness = 0
-        }
+            val success = SettingsUtils.putSystemSetting(
+                ctx,
+                Settings.System.SCREEN_BRIGHTNESS,
+                rawBrightness,
+            )
 
-        val success =
-            SettingsUtils.putSystemSetting(ctx, Settings.System.SCREEN_BRIGHTNESS, newBrightness)
-
-        return if (success) {
-            Success(Unit)
-        } else {
-            KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
+            return if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
+            }
         }
     }
 
@@ -276,26 +253,31 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    override fun fetchOrientation(): Orientation {
-        return _orientation.updateAndGet { getDisplayOrientation() }
-    }
+    private fun getDisplayBrightness(displayId: Int): Float {
+        return if (Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            displayManager.getBrightness(
+                displayId,
+                DisplayManager.BRIGHTNESS_UNIT_PERCENTAGE,
+            ) / 100f
+        } else {
+            val rawBrightness =
+                SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.SCREEN_BRIGHTNESS)
+                    ?: return 255f
 
-    private fun getDisplayOrientation(): Orientation =
-        when (val sdkRotation = displayManager.displays[0].rotation) {
-            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
-            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+            rawBrightness / 255f
         }
+    }
 
     private fun isAodEnabled(): Boolean {
         return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
     }
 
     private fun onDisplaysChanged() {
-        _orientation.update { getDisplayOrientation() }
-        supportedResolutions.update { getSupportedResolutions() }
+        displays.value = fetchAllDisplayInfo()
+    }
+
+    override fun getDisplay(id: Int): DisplayInfo? {
+        return displayManager.getDisplay(id)?.let { buildDisplayInfo(it) }
     }
 
     /**
@@ -334,9 +316,33 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    private fun getSupportedResolutions(): Set<SizeKM> {
-        val display = displayManager.displays.firstOrNull() ?: return emptySet()
+    private fun fetchAllDisplayInfo(): List<DisplayInfo> {
+        return displayManager.displays?.filterNotNull()?.map(::buildDisplayInfo) ?: emptyList()
+    }
 
+    private fun buildDisplayInfo(display: Display): DisplayInfo {
+        return DisplayInfo(
+            id = display.displayId,
+            activeSize = SizeKM(
+                width = display.mode.physicalWidth,
+                height = display.mode.physicalHeight,
+            ),
+            rotation = getDisplayOrientation(display),
+            supportedSizes = getSupportedResolutions(display),
+        )
+    }
+
+    private fun getDisplayOrientation(display: Display): Orientation {
+        return when (val sdkRotation = display.rotation) {
+            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+        }
+    }
+
+    private fun getSupportedResolutions(display: Display): Set<SizeKM> {
         return display.supportedModes
             .map { mode -> SizeKM(mode.physicalWidth, mode.physicalHeight) }
             .toSet()

@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
-import android.content.pm.PackageManager
-import android.os.Build
-import io.github.sds100.keymapper.common.utils.KMError
+import android.view.Display
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -12,6 +10,7 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -23,29 +22,12 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val cameraAdapter: CameraAdapter,
     private val displayAdapter: DisplayAdapter,
-) : CreateConstraintUseCase {
-
-    override fun isSupported(constraint: ConstraintId): KMError? {
-        when (constraint) {
-            ConstraintId.FLASHLIGHT_ON -> {
-                if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
-                    cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
-                ) {
-                    return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
-                }
-            }
-
-            ConstraintId.HINGE_CLOSED, ConstraintId.HINGE_OPEN -> {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                    return KMError.SdkVersionTooLow(Build.VERSION_CODES.R)
-                }
-            }
-
-            else -> Unit
-        }
-
-        return null
-    }
+    systemFeatureAdapter: SystemFeatureAdapter,
+) : CreateConstraintUseCase,
+    IsConstraintSupportedUseCase by IsConstraintSupportedUseCaseImpl(
+        systemFeatureAdapter,
+        cameraAdapter,
+    ) {
 
     override fun getKnownWiFiSSIDs(): List<String> = networkAdapter.getKnownWifiSSIDs()
 
@@ -80,13 +62,17 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
     }
 
-    override fun getSupportedResolutions(): Set<SizeKM> = displayAdapter.supportedResolutions.value
+    override fun getSupportedResolutions(): Set<SizeKM> =
+        displayAdapter.displays.value.flatMap { it.supportedSizes }.toSet()
 
-    override fun getCurrentResolution(): SizeKM = displayAdapter.size
+    override fun getCurrentResolution(): SizeKM {
+        return displayAdapter.getDisplay(
+            displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY,
+        )!!.activeSize
+    }
 }
 
-interface CreateConstraintUseCase {
-    fun isSupported(constraint: ConstraintId): KMError?
+interface CreateConstraintUseCase : IsConstraintSupportedUseCase {
     fun getKnownWiFiSSIDs(): List<String>
     fun getEnabledInputMethods(): List<ImeInfo>
 

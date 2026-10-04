@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.base.variables.VariableOperation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -11,10 +12,79 @@ import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Test
 
-/**
- * Tests for saving the screen resolution with the coordinate actions in issue #2217.
- */
 class ActionDataEntityMapperTest {
+
+    @Test
+    fun `set variable action round trips through the entity`() {
+        val action = ActionData.SetVariable(name = "counter", value = -12)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_VARIABLE_NAME).valueOrNull(),
+            `is`("counter"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `modify variable action round trips through the entity`() {
+        val action = ActionData.ModifyVariable(
+            name = "counter",
+            operation = VariableOperation.SUBTRACT,
+            value = -12,
+        )
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(entity.type, `is`(ActionEntity.Type.MODIFY_VARIABLE))
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `modify variable action with the set operation is dropped`() {
+        val entity = ActionEntity(
+            type = ActionEntity.Type.MODIFY_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "SET"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "2"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
+
+    @Test
+    fun `set variable action with a value that is not a number is dropped`() {
+        // A backup file can be edited by hand
+        val entity = ActionEntity(
+            type = ActionEntity.Type.SET_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "not a number"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
+
+    @Test
+    fun `modify variable action with an unknown operation is dropped`() {
+        val entity = ActionEntity(
+            type = ActionEntity.Type.MODIFY_VARIABLE,
+            data = "",
+            extras = listOf(
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_NAME, "counter"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_OPERATION, "MULTIPLY"),
+                EntityExtra(ActionEntity.EXTRA_VARIABLE_VALUE, "2"),
+            ),
+        )
+
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(nullValue()))
+    }
 
     @Test
     fun `open app action with no app name extra is loaded with a null saved app name`() {
@@ -187,5 +257,79 @@ class ActionDataEntityMapperTest {
             assertThat(malformedValue, (action as ActionData.TapScreen).x, `is`(540))
             assertThat(malformedValue, action.screenResolution, `is`(nullValue()))
         }
+    }
+
+    @Test
+    fun `increase brightness action with a non-default step round trips through the entity`() {
+        val action = ActionData.Brightness.Increase(stepPercent = 25)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`("25"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `dont save an extra when the increase brightness action has no custom step`() {
+        val action = ActionData.Brightness.Increase(stepPercent = null)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `load no brightness step for an increase brightness action saved before it existed`() {
+        // GIVEN an entity saved by an older version of the app, with no extra at all.
+        val entity =
+            ActionEntity(type = ActionEntity.Type.SYSTEM_ACTION, data = "increase_brightness")
+
+        val action = ActionDataEntityMapper.fromEntity(entity)
+
+        assertThat((action as ActionData.Brightness.Increase).stepPercent, `is`(nullValue()))
+    }
+
+    @Test
+    fun `decrease brightness action with a non-default step round trips through the entity`() {
+        val action = ActionData.Brightness.Decrease(stepPercent = 25)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`("25"),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `dont save an extra when the decrease brightness action has no custom step`() {
+        val action = ActionData.Brightness.Decrease(stepPercent = null)
+
+        val entity = ActionDataEntityMapper.toEntity(action)
+
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_BRIGHTNESS_STEP_PERCENT).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `load no brightness step for a decrease brightness action saved before it existed`() {
+        // GIVEN an entity saved by an older version of the app, with no extra at all.
+        val entity =
+            ActionEntity(type = ActionEntity.Type.SYSTEM_ACTION, data = "decrease_brightness")
+
+        val action = ActionDataEntityMapper.fromEntity(entity)
+
+        assertThat((action as ActionData.Brightness.Decrease).stepPercent, `is`(nullValue()))
     }
 }
