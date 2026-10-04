@@ -30,9 +30,9 @@ class AndroidFoldableAdapter @Inject constructor(
 
     private val sensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent?) {
-            event?.let {
-                if (it.sensor.type == Sensor.TYPE_HINGE_ANGLE && it.values.isNotEmpty()) {
-                    val angle = it.values[0]
+            event?.let { event ->
+                if (event.sensor.type == Sensor.TYPE_HINGE_ANGLE && event.values.isNotEmpty()) {
+                    val angle = event.values[0]
                     _hingeState.value = HingeState.Available(angle)
                 }
             }

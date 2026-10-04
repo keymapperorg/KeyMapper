@@ -1,26 +1,14 @@
 package io.github.sds100.keymapper.base.actions
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,16 +16,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.KMBottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -97,106 +84,54 @@ private fun VolumeActionBottomSheet(
     onToggleShowVolumeUi: (Boolean) -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
-    val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
-
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+    KMBottomSheet(
+        title = title,
+        negButtonText = stringResource(R.string.neg_cancel),
+        posButtonText = stringResource(R.string.pos_done),
+        onPosButtonClick = onDoneClick,
         sheetState = sheetState,
-        dragHandle = null,
+        onDismissRequest = onDismissRequest,
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
+        OptionsHeaderRow(
+            icon = Icons.AutoMirrored.Outlined.VolumeUp,
+            text = stringResource(R.string.action_config_volume_stream),
+        )
 
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                textAlign = TextAlign.Center,
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-            )
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+        // Default stream option (null means use system default)
+        RadioButtonText(
+            modifier = Modifier.padding(start = 8.dp),
+            text = stringResource(R.string.action_config_volume_stream_default),
+            isSelected = state.volumeStream == null,
+            onSelected = { onSelectStream(null) },
+        )
 
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.AutoMirrored.Outlined.VolumeUp,
-                text = stringResource(R.string.action_config_volume_stream),
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Default stream option (null means use system default)
+        // Individual stream options
+        VolumeStream.entries.forEach { stream ->
             RadioButtonText(
                 modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(R.string.action_config_volume_stream_default),
-                isSelected = state.volumeStream == null,
-                onSelected = { onSelectStream(null) },
+                text = stringResource(VolumeStreamStrings.getLabel(stream)),
+                isSelected = state.volumeStream == stream,
+                onSelected = { onSelectStream(stream) },
             )
-
-            // Individual stream options
-            VolumeStream.entries.forEach { stream ->
-                RadioButtonText(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = stringResource(VolumeStreamStrings.getLabel(stream)),
-                    isSelected = state.volumeStream == stream,
-                    onSelected = { onSelectStream(stream) },
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.Outlined.Visibility,
-                text = stringResource(R.string.action_config_volume_options),
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            CheckBoxText(
-                modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(R.string.flag_show_volume_dialog),
-                isChecked = state.showVolumeUi,
-                onCheckedChange = onToggleShowVolumeUi,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = onDoneClick,
-                ) {
-                    Text(stringResource(R.string.pos_done))
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OptionsHeaderRow(
+            icon = Icons.Outlined.Visibility,
+            text = stringResource(R.string.action_config_volume_options),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        CheckBoxText(
+            modifier = Modifier.padding(start = 8.dp),
+            text = stringResource(R.string.flag_show_volume_dialog),
+            isChecked = state.showVolumeUi,
+            onCheckedChange = onToggleShowVolumeUi,
+        )
     }
 }
 

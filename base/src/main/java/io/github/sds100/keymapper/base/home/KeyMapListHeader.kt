@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -69,7 +67,6 @@ fun KeyMapListHeader(
     onNotConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixClick: () -> Unit = {},
-    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
 ) {
     // This is taken from the AppBar color code so the header is the same color as the app bar
     // above it.
@@ -114,7 +111,6 @@ fun KeyMapListHeader(
             onNotConstraintClick = onNotConstraintClick,
             onConstraintModeChanged = onConstraintModeChanged,
             onFixClick = onFixClick,
-            onKeyMapsEnabledChange = onKeyMapsEnabledChange,
         )
 
         // The groups and breadcrumbs are shown in the selection bottom sheet instead.
@@ -170,7 +166,6 @@ private fun ChildGroupHeader(
     onNotConstraintClick: (String) -> Unit,
     onConstraintModeChanged: (ConstraintMode) -> Unit,
     onFixClick: () -> Unit,
-    onKeyMapsEnabledChange: (Boolean) -> Unit,
 ) {
     val enabled = !state.isEditingGroupName
 
@@ -184,8 +179,7 @@ private fun ChildGroupHeader(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (state.constraints.isNotEmpty()) {
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -218,7 +212,7 @@ private fun ChildGroupHeader(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(bottom = 8.dp, start = 8.dp, end = 8.dp),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -231,42 +225,12 @@ private fun ChildGroupHeader(
                     )
 
                     AnimatedVisibility(visible = state.constraints.size > 1) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            ConstraintModeButtons(
-                                mode = state.constraintMode,
-                                onSelectMode = onConstraintModeChanged,
-                                colors = modeColors,
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.width(16.dp))
-
-                    val text = when (state.keyMapsEnabled) {
-                        SelectedKeyMapsEnabled.ALL -> stringResource(
-                            R.string.home_enabled_key_maps_enabled,
-                        )
-
-                        SelectedKeyMapsEnabled.MIXED -> stringResource(
-                            R.string.home_enabled_key_maps_mixed,
-                        )
-
-                        SelectedKeyMapsEnabled.NONE, null -> stringResource(
-                            R.string.home_enabled_key_maps_disabled,
+                        ConstraintModeButtons(
+                            mode = state.constraintMode,
+                            onSelectMode = onConstraintModeChanged,
+                            colors = modeColors,
                         )
                     }
-
-                    Switch(
-                        checked = state.keyMapsEnabled == SelectedKeyMapsEnabled.ALL,
-                        onCheckedChange = onKeyMapsEnabledChange,
-                        enabled = state.keyMapsEnabled != null,
-                    )
-
-                    Spacer(Modifier.width(16.dp))
-
-                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
-
-                    Spacer(Modifier.width(16.dp))
                 }
             }
         }

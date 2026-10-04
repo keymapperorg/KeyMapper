@@ -20,6 +20,8 @@ import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
+import io.github.sds100.keymapper.base.keymaps.EnableGroupUseCase
+import io.github.sds100.keymapper.base.keymaps.EnableGroupUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.EnableKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.EnableKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
@@ -55,6 +57,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
+import io.github.sds100.keymapper.base.variables.VariablesUseCase
+import io.github.sds100.keymapper.base.variables.VariablesUseCaseImpl
 import io.github.sds100.keymapper.common.utils.Clock
 import io.github.sds100.keymapper.common.utils.ClockImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
@@ -201,6 +205,10 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
+    abstract fun bindEnableGroupUseCase(impl: EnableGroupUseCaseImpl): EnableGroupUseCase
+
+    @Binds
+    @Singleton
     abstract fun bindSetupAccessibilityServiceDelegate(
         impl: SetupAccessibilityServiceDelegateImpl,
     ): SetupAccessibilityServiceDelegate
@@ -208,4 +216,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindClock(impl: ClockImpl): Clock
+
+    @Binds
+    @Singleton
+    abstract fun bindVariablesUseCase(impl: VariablesUseCaseImpl): VariablesUseCase
 }

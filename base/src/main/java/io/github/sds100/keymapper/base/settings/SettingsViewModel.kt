@@ -182,6 +182,18 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onPauseResumeByIntentClick() {
+        viewModelScope.launch {
+            navigate("pause_resume_by_intent", NavDestination.PauseResumeByIntent)
+        }
+    }
+
+    fun onEnableDisableGroupsByIntentClick() {
+        viewModelScope.launch {
+            navigate("enable_group_by_intent", NavDestination.EnableGroupByIntent)
+        }
+    }
+
     fun onAutomaticChangeImeClick() {
         viewModelScope.launch {
             navigate("automatic_change_ime", NavDestination.AutomaticChangeImeSettings)

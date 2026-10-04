@@ -2,21 +2,15 @@ package io.github.sds100.keymapper.base.actions
 
 import android.telephony.SmsManager
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
@@ -35,18 +29,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.compose.KMBottomSheet
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
-import kotlinx.coroutines.launch
 
 sealed class SmsActionBottomSheetState {
     abstract val number: String
@@ -108,9 +101,6 @@ private fun SmsActionBottomSheet(
     onMessageChanged: (String) -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
-    val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
-
     val numberEmptyErrorString = stringResource(R.string.error_cant_be_empty)
     val messageEmptyErrorString = stringResource(R.string.error_cant_be_empty)
 
@@ -122,183 +112,130 @@ private fun SmsActionBottomSheet(
         is SmsActionBottomSheetState.ComposeSms -> stringResource(R.string.action_compose_sms)
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        dragHandle = null,
-    ) {
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
+    KMBottomSheet(
+        title = title,
+        negButtonText = stringResource(R.string.neg_cancel),
+        posButtonText = stringResource(R.string.pos_done),
+        onPosButtonClick = {
+            var hasError = false
 
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                textAlign = TextAlign.Center,
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                value = state.number,
-                label = { Text(stringResource(R.string.hint_create_sms_action_number)) },
-                onValueChange = {
-                    numberError = null
-                    onNumberChanged(it)
-                },
-                maxLines = 1,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                ),
-                isError = numberError != null,
-                supportingText = {
-                    if (numberError != null) {
-                        Text(
-                            text = numberError!!,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                value = state.message,
-                label = { Text(stringResource(R.string.hint_create_sms_action_message)) },
-                onValueChange = {
-                    messageError = null
-                    onMessageChanged(it)
-                },
-                minLines = 3,
-                maxLines = 5,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    keyboardType = KeyboardType.Text,
-                ),
-                isError = messageError != null,
-                supportingText = {
-                    if (messageError != null) {
-                        Text(
-                            text = messageError!!,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                text = stringResource(R.string.warning_sms_charges),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelMedium,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (state is SmsActionBottomSheetState.SendSms) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    when (state.testResult) {
-                        is State.Data -> {
-                            val result = state.testResult.data
-
-                            val resultText: String = when (result) {
-                                is Success -> stringResource(R.string.test_sms_result_ok)
-                                is KMError -> result.getFullMessage(LocalContext.current)
-                            }
-
-                            val textColor = when (result) {
-                                is Success -> LocalCustomColorsPalette.current.green
-                                is KMError -> MaterialTheme.colorScheme.error
-                            }
-
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                text = resultText,
-                                color = textColor,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-
-                        State.Loading -> {
-                            CircularProgressIndicator()
-                        }
-
-                        null -> {}
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    OutlinedButton(
-                        onClick = {
-                            var hasError = false
-
-                            if (state.number.isBlank()) {
-                                numberError = numberEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (state.message.isBlank()) {
-                                messageError = messageEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (!hasError) {
-                                onTestClick()
-                            }
-                        },
-                    ) {
-                        Text(stringResource(R.string.button_test_sms))
-                    }
-                }
+            if (state.number.isBlank()) {
+                numberError = numberEmptyErrorString
+                hasError = true
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (state.message.isBlank()) {
+                messageError = messageEmptyErrorString
+                hasError = true
+            }
 
+            if (!hasError) {
+                onDoneClick()
+            }
+        },
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.number,
+            label = { Text(stringResource(R.string.hint_create_sms_action_number)) },
+            onValueChange = {
+                numberError = null
+                onNumberChanged(it)
+            },
+            maxLines = 1,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+            ),
+            isError = numberError != null,
+            supportingText = {
+                if (numberError != null) {
+                    Text(
+                        text = numberError!!,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.message,
+            label = { Text(stringResource(R.string.hint_create_sms_action_message)) },
+            onValueChange = {
+                messageError = null
+                onMessageChanged(it)
+            },
+            minLines = 3,
+            maxLines = 5,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                keyboardType = KeyboardType.Text,
+            ),
+            isError = messageError != null,
+            supportingText = {
+                if (messageError != null) {
+                    Text(
+                        text = messageError!!,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.warning_sms_charges),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (state is SmsActionBottomSheetState.SendSms) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
             ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
+                when (state.testResult) {
+                    is State.Data -> {
+                        val result = state.testResult.data
+
+                        val resultText: String = when (result) {
+                            is Success -> stringResource(R.string.test_sms_result_ok)
+                            is KMError -> result.getFullMessage(LocalContext.current)
                         }
-                    },
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
+
+                        val textColor = when (result) {
+                            is Success -> LocalCustomColorsPalette.current.green
+                            is KMError -> MaterialTheme.colorScheme.error
+                        }
+
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = resultText,
+                            color = textColor,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    State.Loading -> {
+                        CircularProgressIndicator()
+                    }
+
+                    null -> {}
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Button(
-                    modifier = Modifier.weight(1f),
+                OutlinedButton(
                     onClick = {
                         var hasError = false
 
@@ -313,15 +250,13 @@ private fun SmsActionBottomSheet(
                         }
 
                         if (!hasError) {
-                            onDoneClick()
+                            onTestClick()
                         }
                     },
                 ) {
-                    Text(stringResource(R.string.pos_done))
+                    Text(stringResource(R.string.button_test_sms))
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

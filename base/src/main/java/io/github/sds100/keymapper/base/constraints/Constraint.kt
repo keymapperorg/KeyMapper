@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.volume.RingerMode as SystemRingerMode
@@ -200,6 +201,12 @@ sealed class ConstraintData {
 
         val startTime: LocalTime by lazy { LocalTime.of(startHour, startMinute) }
         val endTime: LocalTime by lazy { LocalTime.of(endHour, endMinute) }
+    }
+
+    @Serializable
+    data class Variable(val name: String, val comparison: VariableComparison, val value: Long) :
+        ConstraintData() {
+        override val id: ConstraintId = ConstraintId.VARIABLE
     }
 }
 

@@ -1,3 +1,39 @@
+## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
+
+#### TO BE RELEASED
+
+## Added
+
+- #711 new action to add to, subtract from or set a variable, and a new constraint for comparing a variable to a value.
+- #1493 the brightness increment for the increase/decrease brightness actions can now be configured, from 1% to 50% (default 10%).
+- #2075 enable/disable/toggle a group by sending a broadcast intent, configurable from Power user options in Settings.
+- #2263 constraints can now be edited in place from the constraints list instead of being deleted and re-added.
+- #2254 you can now give a key map a custom name, which is shown in the key map list.
+- #2252 undo and redo changes when configuring a key map.
+- #2155 the Expert Mode setup wizard now detects Samsung Auto Blocker and guides how to disable it, since it can silently block wireless debugging from staying enabled.
+- #2127 shut down and restart device actions.
+- #2281 action text in the key map list is more concise and the delay between actions is shown as a timer chip.
+- Show constraint icons when collapsed.
+
+## Changed
+
+- #2280 removed the confirmation dialogs when deleting actions, constraints and constraint groups because changes can now be undone.
+- #2252 redesigned the app bar when configuring a key map. Changes are saved automatically so there is no Done button, and the help button was removed.
+- Show side-by-side view when creating a key map on more devices
+- #2273 Constraints that the device can't support (e.g. no Bluetooth or hinge sensor) are now shown as unsupported when choosing a constraint.
+- Rename "app in foreground" constraint to "app is open".
+- #2282 moved the group enable switch into the top app bar to save vertical space.
+
+## Fixed
+
+- #2268 use trampoline when launching device assistant and settings apps when the device is locked so the lock screen dismisses.
+- #2271 brightness actions match brightness slider on Android 16.1+.
+- #1739 support multiple displays better.
+- #2276 Bottom key maps are obscured by selection bottom sheet.
+- Disable Wireless Debugging after manually starting Expert Mode.
+- #2285 show floating button border when configuring even if background is not transparent.
+- #2283 only show side key app in the launcher if the assistant trigger is used by a key map
+
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
 #### 21 September 2026

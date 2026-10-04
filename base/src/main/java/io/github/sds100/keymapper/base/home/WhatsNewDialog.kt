@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -69,7 +69,7 @@ fun WhatsNewDialogContent(
     val uriHandler = LocalUriHandler.current
     val changelogUrl = stringResource(R.string.url_changelog)
 
-    Column {
+    Column(modifier = modifier.widthIn(max = 400.dp)) {
         Spacer(Modifier.height(16.dp))
 
         Column(
@@ -125,7 +125,7 @@ fun WhatsNewDialogContent(
 @Composable
 private fun WhatsNewHeader(modifier: Modifier = Modifier, versionName: String) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {

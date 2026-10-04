@@ -17,5 +17,6 @@ data class KeyMapListItemModel(val isSelected: Boolean, val content: Content) {
         val options: List<String>,
         val isEnabled: Boolean,
         val hasError: Boolean,
+        val name: String = "",
     )
 }

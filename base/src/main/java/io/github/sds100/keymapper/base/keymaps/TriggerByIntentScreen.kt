@@ -44,18 +44,21 @@ fun TriggerByIntentScreen(
             label = stringResource(R.string.intent_screen_label_class),
             code = IntentApi.TRIGGER_RECEIVER_CLASS,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_action),
             code = IntentApi.ACTION_TRIGGER_KEYMAP_BY_UID,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
             label = stringResource(R.string.intent_screen_label_extra_name),
             code = EXTRA_KEYMAP_UID,
             clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
         )
 
         CodeBlock(
@@ -69,7 +72,8 @@ fun TriggerByIntentScreen(
                 packageName = packageName,
                 receiverClass = IntentApi.TRIGGER_RECEIVER_CLASS,
                 action = IntentApi.ACTION_TRIGGER_KEYMAP_BY_UID,
-                keyMapUid = keyMapUid,
+                extraName = EXTRA_KEYMAP_UID,
+                extraValue = keyMapUid,
             ),
         )
     }

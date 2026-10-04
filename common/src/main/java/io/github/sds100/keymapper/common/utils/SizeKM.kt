@@ -18,10 +18,13 @@ data class SizeKM(val width: Int, val height: Int) {
             return false
         }
 
-        val ratio = width.toFloat() / height
-        val otherRatio = other.width.toFloat() / other.height
+        val ratio = aspectRatio
+        val otherRatio = other.aspectRatio
         val otherRotatedRatio = other.height.toFloat() / other.width
 
         return abs(ratio - otherRatio) <= epsilon || abs(ratio - otherRotatedRatio) <= epsilon
     }
 }
+
+val SizeKM.aspectRatio: Float
+    get() = width.toFloat() / height

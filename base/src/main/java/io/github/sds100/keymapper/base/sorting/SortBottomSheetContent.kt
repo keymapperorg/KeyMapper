@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -35,7 +34,6 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.HorizontalRule
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -198,7 +196,7 @@ private fun SortBottomSheetContent(
                 modifier = Modifier.align(Alignment.Center),
                 text = stringResource(R.string.dialog_message_sort_sort_by),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleLarge,
             )
 
             TextButton(
@@ -243,13 +241,6 @@ private fun SortBottomSheetContent(
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.error,
-                ),
             ) {
                 Text(stringResource(R.string.neg_cancel))
             }

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import android.content.pm.PackageManager
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -23,6 +24,7 @@ class ConstraintErrorSnapshotTest {
     private lateinit var mockPackageManagerAdapter: PackageManagerAdapter
     private lateinit var mockPermissionAdapter: PermissionAdapter
     private lateinit var mockInputMethodAdapter: InputMethodAdapter
+    private lateinit var mockSystemFeatureAdapter: SystemFeatureAdapter
     private lateinit var snapshot: ConstraintErrorSnapshot
 
     @Before
@@ -30,7 +32,7 @@ class ConstraintErrorSnapshotTest {
         mockPackageManagerAdapter = mock()
         mockPermissionAdapter = mock()
         mockInputMethodAdapter = mock()
-        val mockSystemFeatureAdapter: SystemFeatureAdapter = mock()
+        mockSystemFeatureAdapter = mock()
         val mockCameraAdapter: CameraAdapter = mock()
 
         snapshot = LazyConstraintErrorSnapshot(
@@ -112,6 +114,21 @@ class ConstraintErrorSnapshotTest {
         assertThat(
             snapshot.getError(constraint),
             `is`(KMError.AppNotFound("com.uninstalled", "Example") as KMError?),
+        )
+    }
+
+    @Test
+    fun `unsupported constraint returns supported error before permission error`() {
+        whenever(mockSystemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH))
+            .thenReturn(false)
+
+        val constraint = Constraint(
+            data = ConstraintData.BtDeviceConnected("00:11:22:33:44:55", "Headphones"),
+        )
+
+        assertThat(
+            snapshot.getError(constraint),
+            `is`(KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH) as KMError?),
         )
     }
 }

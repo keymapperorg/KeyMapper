@@ -32,6 +32,7 @@ import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -96,6 +97,32 @@ fun KeyMapListItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 10.dp, end = 16.dp, bottom = 10.dp),
             ) {
+                val showName = model.content.name.isNotBlank()
+
+                if (showName) {
+                    Row(
+                        modifier = Modifier.heightIn(min = chipHeight),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
+                            text = model.content.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+
+                        if (model.content.isEnabled && model.content.hasError) {
+                            CompactErrorButton(onClick = onFixClick) {
+                                Text(stringResource(R.string.button_fix))
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+
                 Row(
                     modifier = Modifier.heightIn(min = chipHeight),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -108,7 +135,7 @@ fun KeyMapListItem(
                         separator = model.content.triggerSeparatorIcon,
                     )
 
-                    if (model.content.isEnabled && model.content.hasError) {
+                    if (!showName && model.content.isEnabled && model.content.hasError) {
                         CompactErrorButton(onClick = onFixClick) {
                             Text(stringResource(R.string.button_fix))
                         }
