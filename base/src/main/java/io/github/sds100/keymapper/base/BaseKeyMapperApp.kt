@@ -166,7 +166,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         }
     }
 
-    private fun init() {
+    open fun init() {
         Log.i(tag, "KeyMapperApp: Init")
 
         val intentFilter = IntentFilter().apply {

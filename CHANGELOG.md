@@ -32,6 +32,7 @@
 - #2276 Bottom key maps are obscured by selection bottom sheet.
 - Disable Wireless Debugging after manually starting Expert Mode.
 - #2285 show floating button border when configuring even if background is not transparent.
+- #2283 only show side key app in the launcher if the assistant trigger is used by a key map
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
