@@ -31,6 +31,7 @@
 - #1739 support multiple displays better.
 - #2276 Bottom key maps are obscured by selection bottom sheet.
 - Disable Wireless Debugging after manually starting Expert Mode.
+- #2285 show floating button border when configuring even if background is not transparent.
 
 ## [4.5.0](https://github.com/sds100/KeyMapper/releases/tag/v4.5.0)
 
