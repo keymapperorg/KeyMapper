@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Fixed
+
+- Remove button is visible on key map group constraints with long text.
+
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 
 #### 4 October 2026
