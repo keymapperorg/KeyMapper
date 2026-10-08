@@ -1,10 +1,11 @@
-## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
+## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
 #### TO BE RELEASED
 
 ## Fixed
 
 - Remove button is visible on key map group constraints with long text.
+- #2290 Place floating buttons correctly when the display is rotated.
 
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 
