@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import android.os.Build
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
@@ -57,6 +58,10 @@ abstract class SystemBridgeSetupDelegateImpl(
         useCase.openSamsungAutoBlockerSettings()
     }
 
+    override fun onSkipDeveloperOptionsClick() {
+        useCase.skipDeveloperOptionsStep()
+    }
+
     private fun buildState(
         step: SystemBridgeSetupStep,
         isSetupAssistantUserEnabled: Boolean,
@@ -99,6 +104,9 @@ abstract class SystemBridgeSetupDelegateImpl(
                     stepNumber = stepNumber,
                     stepCount = stepCount,
                     isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                    // See issue #2289. The developer options setting can be redacted on Android 17+.
+                    showRedactedWarning =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN,
                 )
 
             SystemBridgeSetupStep.WIFI_NETWORK ->
@@ -148,4 +156,5 @@ interface SystemBridgeSetupDelegate {
     fun onSetupStepButtonClick()
     fun onSetupAssistantClick()
     fun onSamsungAutoBlockerWarningClick()
+    fun onSkipDeveloperOptionsClick()
 }

@@ -2128,6 +2128,9 @@
     <string name="expert_mode_setup_wizard_disable_samsung_auto_blocker_description">Samsung Auto Blocker prevents Key Mapper from enabling the features it needs on your device.</string>
     <string name="expert_mode_setup_wizard_samsung_auto_blocker_warning_title">Not working?</string>
     <string name="expert_mode_setup_wizard_samsung_auto_blocker_warning_description">Samsung Auto Blocker might be turned on. Turn it off before you continue.</string>
+    <string name="expert_mode_setup_wizard_developer_options_redacted_warning_title">Already enabled?</string>
+    <string name="expert_mode_setup_wizard_developer_options_redacted_warning_description">Some Android 17 devices hide whether developer options are on from apps. If you already turned them on, you can skip this step.</string>
+    <string name="expert_mode_setup_wizard_developer_options_redacted_warning_button">Skip</string>
 
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
     <string name="expert_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that Expert Mode is not killed every time you lock your device.</string>

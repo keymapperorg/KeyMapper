@@ -190,4 +190,74 @@ class SystemBridgeSetupUseCaseTest {
                 `is`(SystemBridgeSetupStep.ACCESS_LOCAL_NETWORK_PERMISSION),
             )
         }
+
+    @Test
+    fun `next step skips DEVELOPER_OPTIONS when wireless debugging is enabled`() = runTest {
+        val useCase = createUseCaseAfterLocalNetworkStep(
+            isDeveloperOptionsEnabled = false,
+            isWirelessDebuggingEnabled = true,
+        )
+
+        assertThat(useCase.nextSetupStep.first(), `is`(SystemBridgeSetupStep.WIFI_NETWORK))
+    }
+
+    @Test
+    fun `next step skips DEVELOPER_OPTIONS when the user skips it`() = runTest {
+        val useCase = createUseCaseAfterLocalNetworkStep(
+            isDeveloperOptionsEnabled = false,
+            isWirelessDebuggingEnabled = false,
+        )
+
+        assertThat(
+            useCase.nextSetupStep.first(),
+            `is`(SystemBridgeSetupStep.DEVELOPER_OPTIONS),
+        )
+
+        useCase.skipDeveloperOptionsStep()
+
+        assertThat(useCase.nextSetupStep.first(), `is`(SystemBridgeSetupStep.WIFI_NETWORK))
+    }
+
+    /**
+     * Create a use case where every step before developer options is complete and WiFi
+     * is not connected.
+     */
+    private fun createUseCaseAfterLocalNetworkStep(
+        isDeveloperOptionsEnabled: Boolean,
+        isWirelessDebuggingEnabled: Boolean,
+    ): SystemBridgeSetupUseCaseImpl {
+        whenever(mockAccessibilityServiceAdapter.state)
+            .thenReturn(MutableStateFlow(AccessibilityServiceState.ENABLED))
+        whenever(mockPermissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS))
+            .thenReturn(flowOf(true))
+        whenever(mockPermissionAdapter.isGrantedFlow(Permission.ACCESS_LOCAL_NETWORK))
+            .thenReturn(flowOf(true))
+        whenever(mockNetworkAdapter.isWifiConnected).thenReturn(flowOf(false))
+        whenever(mockSystemBridgeSetupController.isDeveloperOptionsEnabled)
+            .thenReturn(flowOf(isDeveloperOptionsEnabled))
+        whenever(mockSystemBridgeSetupController.isWirelessDebuggingEnabled)
+            .thenReturn(flowOf(isWirelessDebuggingEnabled))
+        whenever(mockSystemBridgeConnectionManager.connectionState)
+            .thenReturn(
+                MutableStateFlow(
+                    SystemBridgeConnectionState.Disconnected(
+                        time = 0L,
+                        isStoppedByUser = false,
+                    ),
+                ),
+            )
+
+        return SystemBridgeSetupUseCaseImpl(
+            preferences = fakePreferences,
+            suAdapter = mockSuAdapter,
+            systemBridgeSetupController = mockSystemBridgeSetupController,
+            systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
+            shizukuAdapter = mockShizukuAdapter,
+            permissionAdapter = mockPermissionAdapter,
+            accessibilityServiceAdapter = mockAccessibilityServiceAdapter,
+            networkAdapter = mockNetworkAdapter,
+            packageManagerAdapter = mockPackageManagerAdapter,
+            clock = mock(),
+        )
+    }
 }
