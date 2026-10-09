@@ -5,7 +5,7 @@
 ## Fixed
 
 - Remove button is visible on key map group constraints with long text.
-- #2290 Place floating buttons correctly when the display is rotated.
+- #2290 Regression in 4.6. Place floating buttons correctly and tap actions when the display is rotated or resolution is changed.
 
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 
