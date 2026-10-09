@@ -6,6 +6,7 @@
 
 - Remove button is visible on key map group constraints with long text.
 - #2290 Regression in 4.6. Place floating buttons correctly and tap actions when the display is rotated or resolution is changed.
+- #2287 Key maps that launch different apps open the same app when the device is locked.
 
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 
