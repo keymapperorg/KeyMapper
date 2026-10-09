@@ -6,11 +6,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -69,11 +72,16 @@ fun WhatsNewDialogContent(
     val uriHandler = LocalUriHandler.current
     val changelogUrl = stringResource(R.string.url_changelog)
 
-    Column(modifier = modifier.widthIn(max = 400.dp)) {
+    Column(
+        modifier = modifier
+            .width(IntrinsicSize.Max).widthIn(max = 400.dp),
+    ) {
         Spacer(Modifier.height(16.dp))
 
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false),
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .weight(1f, fill = false),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             WhatsNewHeader(
@@ -167,7 +175,10 @@ private fun WhatsNewSection(
         return
     }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         OptionsHeaderRow(
             modifier = Modifier.padding(horizontal = 24.dp),
             icon = icon,
@@ -177,7 +188,9 @@ private fun WhatsNewSection(
         for (item in items) {
             if (item.isSpotlight) {
                 Surface(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     border = BorderStroke(
                         width = 1.dp,
@@ -224,6 +237,11 @@ private val previewState = WhatsNewState(
             WhatsNewItem(
                 title = "Cycle keyboard language",
                 description = "Switch between your keyboard's languages with a key press",
+                isSpotlight = true,
+            ),
+            WhatsNewItem(
+                title = "New action",
+                description = "Short text",
                 isSpotlight = true,
             ),
             WhatsNewItem("Sort key maps by enabled/disabled", null),
