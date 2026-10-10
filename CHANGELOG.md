@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Changed
+
+- #2260 the "Do not remap" trigger key option is now called "Passthrough key events".
+
 ## Fixed
 
 - Remove button is visible on key map group constraints with long text.
