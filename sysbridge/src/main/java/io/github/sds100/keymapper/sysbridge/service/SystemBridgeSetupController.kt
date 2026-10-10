@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.sysbridge.manager.awaitConnected
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl.Companion.START_TIMEOUT_MS
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
@@ -129,12 +130,14 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             connectionManager.startWithAdb()
 
             // Wait for the service to connect before turning off wireless debugging
-            withTimeoutOrNull(10000L) {
+            val isConnected = withTimeoutOrNull(10000L) {
                 connectionManager.awaitConnected()
             }
 
-            // Disable wireless debugging when done
-            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            if (isConnected != null && canWriteGlobalSettings()) {
+                // Disable wireless debugging when done
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            }
         }
     }
 
@@ -199,11 +202,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
                 SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
 
-                try {
-                    withTimeout(5000L) { isDeveloperOptionsEnabled.first { it } }
-                } catch (_: TimeoutCancellationException) {
-                    return@launch
-                }
+                // Do not abort if this times out. Android 17 can redact the developer options
+                // setting so it always reads as disabled. See issue #2289.
+                withTimeoutOrNull(5000L.milliseconds) { isDeveloperOptionsEnabled.first { it } }
 
                 if (isAdbPaired()) {
                     // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
@@ -214,7 +215,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
                     // Wait for wireless debugging to be enabled before starting with ADB
                     try {
-                        withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
+                        withTimeout(5000L.milliseconds) { isWirelessDebuggingEnabled.first { it } }
                     } catch (_: TimeoutCancellationException) {
                         return@launch
                     }
@@ -222,7 +223,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                     connectionManager.startWithAdb()
 
                     // Wait for the service to connect before turning off wireless debugging
-                    withTimeoutOrNull(10000L) {
+                    withTimeoutOrNull(10000L.milliseconds) {
                         connectionManager.awaitConnected()
                     }
 

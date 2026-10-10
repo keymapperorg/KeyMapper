@@ -304,8 +304,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     ) {
         val notification = NotificationModel(
             // Use the same notification id for all so they overwrite each other.
-            id = NotificationController.Companion.ID_SETUP_ASSISTANT,
-            channel = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
+            id = NotificationController.ID_SETUP_ASSISTANT,
+            channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
             title = title,
             text = text,
             icon = R.drawable.offline_bolt_24px,
@@ -322,7 +322,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     private fun dismissNotification() {
-        manageNotifications.dismiss(NotificationController.Companion.ID_SETUP_ASSISTANT)
+        manageNotifications.dismiss(NotificationController.ID_SETUP_ASSISTANT)
     }
 
     private fun findPairingCodeText(rootNode: AccessibilityNodeInfo): String? {

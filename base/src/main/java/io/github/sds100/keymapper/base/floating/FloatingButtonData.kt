@@ -27,14 +27,23 @@ data class FloatingButtonData(
      */
     @Serializable
     data class Location(
+        /**
+         * The location in the orientation that the display was when this
+         * floating button was created.
+         */
         val x: Int,
+        /**
+         * The location in the orientation that the display was when this
+         * floating button was created.
+         */
         val y: Int,
         /**
          * The orientation the screen was in when the user picked the location of the button.
          */
         val orientation: Orientation,
         /**
-         * The size of the display this button was placed on.
+         * The size of the display in the orientation this button was placed in,
+         * not the natural size.
          */
         val displaySize: SizeKM,
     )

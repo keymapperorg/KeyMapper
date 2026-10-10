@@ -68,7 +68,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     override fun getCurrentResolution(): SizeKM {
         return displayAdapter.getDisplay(
             displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY,
-        )!!.activeSize
+        )!!.physicalSize
     }
 }
 
