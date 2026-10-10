@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -73,6 +74,7 @@ fun ExpertModeSetupScreen(viewModel: ExpertModeSetupViewModel) {
         onWatchTutorialClick = { },
         onBackClick = viewModel::onBackClick,
         onSamsungAutoBlockerWarningClick = viewModel::onSamsungAutoBlockerWarningClick,
+        onSkipDeveloperOptionsClick = viewModel::onSkipDeveloperOptionsClick,
     )
 }
 
@@ -85,6 +87,7 @@ fun ExpertModeSetupScreen(
     onAssistantClick: () -> Unit = {},
     onWatchTutorialClick: () -> Unit = {},
     onSamsungAutoBlockerWarningClick: () -> Unit = {},
+    onSkipDeveloperOptionsClick: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -110,6 +113,7 @@ fun ExpertModeSetupScreen(
             onWatchTutorialClick,
             onStepButtonClick,
             onSamsungAutoBlockerWarningClick,
+            onSkipDeveloperOptionsClick,
         )
     }
 }
@@ -122,6 +126,7 @@ fun ExpertModeSetupScreenContent(
     onWatchTutorialClick: () -> Unit,
     onStepButtonClick: () -> Unit,
     onSamsungAutoBlockerWarningClick: () -> Unit = {},
+    onSkipDeveloperOptionsClick: () -> Unit = {},
 ) {
     when (state) {
         State.Loading -> {
@@ -211,10 +216,6 @@ fun ExpertModeSetupScreenContent(
                 val isStarting = stepData is ExpertModeSetupState.StartService &&
                     stepData.isStarting
 
-                val showSamsungAutoBlockerWarning =
-                    stepData is ExpertModeSetupState.WirelessDebugging &&
-                        stepData.showSamsungAutoBlockerWarning
-
                 StepContent(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -225,14 +226,26 @@ fun ExpertModeSetupScreenContent(
                     onButtonClick = onStepButtonClick,
                     iconTint = iconTint,
                     isLoading = isStarting,
-                    warningContent = if (showSamsungAutoBlockerWarning) {
-                        {
-                            SamsungAutoBlockerWarningCard(
-                                onClick = onSamsungAutoBlockerWarningClick,
-                            )
+                    warningContent = when {
+                        stepData is ExpertModeSetupState.WirelessDebugging &&
+                            stepData.showSamsungAutoBlockerWarning -> {
+                            {
+                                SamsungAutoBlockerWarningCard(
+                                    onClick = onSamsungAutoBlockerWarningClick,
+                                )
+                            }
                         }
-                    } else {
-                        null
+
+                        stepData is ExpertModeSetupState.DeveloperOptions &&
+                            stepData.showRedactedWarning -> {
+                            {
+                                DeveloperOptionsRedactedWarningCard(
+                                    onClick = onSkipDeveloperOptionsClick,
+                                )
+                            }
+                        }
+
+                        else -> null
                     },
                 )
             }
@@ -332,6 +345,26 @@ private fun SamsungAutoBlockerWarningCard(modifier: Modifier = Modifier, onClick
 }
 
 @Composable
+private fun DeveloperOptionsRedactedWarningCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    SetupWarningCard(
+        modifier = modifier,
+        title = stringResource(
+            R.string.expert_mode_setup_wizard_developer_options_redacted_warning_title,
+        ),
+        description = stringResource(
+            R.string.expert_mode_setup_wizard_developer_options_redacted_warning_description,
+        ),
+        buttonText = stringResource(
+            R.string.expert_mode_setup_wizard_developer_options_redacted_warning_button,
+        ),
+        onButtonClick = onClick,
+    )
+}
+
+@Composable
 private fun SetupWarningCard(
     modifier: Modifier = Modifier,
     title: String,
@@ -343,6 +376,7 @@ private fun SetupWarningCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 400.dp)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -603,6 +637,7 @@ private fun ExpertModeSetupScreenDeveloperOptionsPreview() {
                     stepNumber = 5,
                     stepCount = 10,
                     isSetupAssistantChecked = false,
+                    showRedactedWarning = true,
                 ),
             ),
         )

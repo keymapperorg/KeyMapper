@@ -110,7 +110,8 @@ private fun CompactChipContent(
         }
 
         Text(
-            text,
+            modifier = Modifier.weight(1f, fill = false),
+            text = text,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelLarge,

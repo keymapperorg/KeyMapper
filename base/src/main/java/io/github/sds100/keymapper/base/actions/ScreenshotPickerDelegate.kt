@@ -73,7 +73,7 @@ class ScreenshotPickerDelegate(
         val activeDisplay =
             displayAdapter.getDisplay(displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY)!!
 
-        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.activeSize
+        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.logicalSize
     }
 
     fun recycle() {

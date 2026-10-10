@@ -277,7 +277,12 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
 
         val pendingIntent =
-            PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getActivity(
+                ctx,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val bundle = ActivityOptions.makeBasic()

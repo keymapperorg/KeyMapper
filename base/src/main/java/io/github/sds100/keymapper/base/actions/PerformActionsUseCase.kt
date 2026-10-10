@@ -379,7 +379,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay()!!.logicalSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
 
@@ -387,7 +387,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwipeScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay()!!.logicalSize
                 val start = scaleCoordinate(
                     action.xStart,
                     action.yStart,
@@ -409,7 +409,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.PinchScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay()!!.logicalSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
                 val distance =

@@ -60,7 +60,7 @@ class LazyConstraintSnapshot(
     }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val displaySize: SizeKM by lazy {
-        getActiveDisplay()!!.activeSize
+        getActiveDisplay()!!.physicalSize
     }
 
     private val appsPlayingMedia: List<String> by lazy {

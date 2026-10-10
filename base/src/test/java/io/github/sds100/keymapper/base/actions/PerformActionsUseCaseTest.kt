@@ -125,7 +125,8 @@ class PerformActionsUseCaseTest {
         whenever(mockDisplayAdapter.getDisplay(any())).doReturn(
             DisplayInfo(
                 id = 0,
-                activeSize = size,
+                physicalSize = size,
+                logicalSize = size,
                 rotation = Orientation.ORIENTATION_0,
                 supportedSizes = setOf(size),
             ),
