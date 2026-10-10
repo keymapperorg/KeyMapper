@@ -10,10 +10,13 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -127,7 +130,7 @@ internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
         )
 
         try {
-            withTimeout(10000L) {
+            withTimeout(10.seconds) {
                 while (port == null) {
                     val service = serviceDiscoveredChannel?.receive()
                     nsdManager.resolveService(service, resolveListener)
@@ -149,6 +152,10 @@ internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
                     if (isLocalNetwork && isPortAvailable(resolvedService.port)) {
                         Timber.d("Discovered ADB port: ${resolvedService.port}")
                         port = resolvedService.port
+                    } else if (service != null) {
+                        Timber.d("Stale ADB port ${resolvedService.port}, resolving again")
+                        delay(500.milliseconds)
+                        serviceDiscoveredChannel?.trySend(service)
                     }
                 }
             }

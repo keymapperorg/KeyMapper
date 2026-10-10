@@ -152,9 +152,12 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 // doesn't send a death message
                 systemBridge.asBinder().linkToDeath(deathRecipient, 0)
 
-                this.systemBridgeFlow.update { systemBridge }
-
                 preventSystemBridgeKilling(systemBridge)
+
+                // Only expose the system bridge to others once all killing has
+                // been prevented. Otherwise, there can be race conditions with
+                // granting or checking the permissions in preventSystemBridgeKilling().
+                this.systemBridgeFlow.update { systemBridge }
 
                 connectionState.update {
                     SystemBridgeConnectionState.Connected(

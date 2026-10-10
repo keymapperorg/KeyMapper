@@ -13,6 +13,7 @@
 - #2287 Key maps that launch different apps open the same app when the device is locked.
 - #2289 Expert Mode setup and auto start no longer get stuck on Android 17 devices that hide whether developer options are enabled.
 - Do not crash if WRITE_SECURE_SETTINGS permission not granted and disabling wireless debugging after starting system bridge.
+- #2294 On Android 17 QPR1 enabling USB debugging while Wireless Debugging is enabled kills the Expert Mode system bridge on startup.
 
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 

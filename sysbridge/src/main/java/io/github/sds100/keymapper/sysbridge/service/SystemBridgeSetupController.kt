@@ -130,11 +130,11 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             connectionManager.startWithAdb()
 
             // Wait for the service to connect before turning off wireless debugging
-            withTimeoutOrNull(10000L) {
+            val isConnected = withTimeoutOrNull(10000L) {
                 connectionManager.awaitConnected()
             }
 
-            if (canWriteGlobalSettings()) {
+            if (isConnected != null && canWriteGlobalSettings()) {
                 // Disable wireless debugging when done
                 SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
             }
