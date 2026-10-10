@@ -134,8 +134,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 connectionManager.awaitConnected()
             }
 
-            // Disable wireless debugging when done
-            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            if (canWriteGlobalSettings()) {
+                // Disable wireless debugging when done
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            }
         }
     }
 
