@@ -38,4 +38,18 @@ interface NetworkAdapter {
         body: String,
         authorizationHeader: String,
     ): KMResult<*>
+
+    suspend fun fetchHomeAssistantEntities(
+        serverUrl: String,
+        accessToken: String,
+    ): KMResult<List<HomeAssistantEntity>>
+
+    suspend fun callHomeAssistantService(
+        serverUrl: String,
+        accessToken: String,
+        domain: String,
+        service: String,
+        entityId: String,
+        serviceData: String,
+    ): KMResult<*>
 }

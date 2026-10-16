@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 object Keys {
+    val homeAssistantConnection = stringPreferencesKey("home_assistant_connection")
+
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
 
     /**

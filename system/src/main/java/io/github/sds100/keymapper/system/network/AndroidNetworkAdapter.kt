@@ -14,6 +14,7 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.SystemClock
 import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
@@ -27,6 +28,7 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
@@ -35,12 +37,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.EventListener
+import okhttp3.Handshake
 import okhttp3.Headers
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
 import okio.use
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import timber.log.Timber
 
 @Singleton
@@ -55,6 +64,56 @@ class AndroidNetworkAdapter @Inject constructor(
     private val connectivityManager: ConnectivityManager by lazy { ctx.getSystemService()!! }
 
     private val httpClient: OkHttpClient by lazy { OkHttpClient() }
+    private val homeAssistantRequestIds = AtomicInteger()
+
+    private val homeAssistantHttpClient: OkHttpClient by lazy {
+        httpClient.newBuilder().eventListenerFactory {
+            object : EventListener() {
+                override fun dnsStart(call: Call, domainName: String) {
+                    Timber.tag(
+                        "HomeAssistant",
+                    ).d("Fetch #%s: resolving DNS", call.request().tag(Int::class.javaObjectType))
+                }
+
+                override fun connectStart(
+                    call: Call,
+                    inetSocketAddress: java.net.InetSocketAddress,
+                    proxy: java.net.Proxy,
+                ) {
+                    Timber.tag(
+                        "HomeAssistant",
+                    ).d("Fetch #%s: connecting", call.request().tag(Int::class.javaObjectType))
+                }
+
+                override fun secureConnectStart(call: Call) {
+                    Timber.tag(
+                        "HomeAssistant",
+                    ).d(
+                        "Fetch #%s: starting TLS handshake",
+                        call.request().tag(Int::class.javaObjectType),
+                    )
+                }
+
+                override fun secureConnectEnd(call: Call, handshake: Handshake?) {
+                    Timber.tag(
+                        "HomeAssistant",
+                    ).d(
+                        "Fetch #%s: TLS handshake complete",
+                        call.request().tag(Int::class.javaObjectType),
+                    )
+                }
+
+                override fun responseHeadersStart(call: Call) {
+                    Timber.tag(
+                        "HomeAssistant",
+                    ).d(
+                        "Fetch #%s: waiting for response headers",
+                        call.request().tag(Int::class.javaObjectType),
+                    )
+                }
+            }
+        }.build()
+    }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         @Suppress("DEPRECATION")
@@ -304,6 +363,154 @@ class AndroidNetworkAdapter @Inject constructor(
             return KMError.UnknownIOError
         } catch (e: IllegalArgumentException) {
             return KMError.MalformedUrl
+        }
+    }
+
+    override suspend fun fetchHomeAssistantEntities(
+        serverUrl: String,
+        accessToken: String,
+    ): KMResult<List<HomeAssistantEntity>> {
+        val requestId = homeAssistantRequestIds.incrementAndGet()
+        val startedAt = SystemClock.elapsedRealtime()
+        Timber.tag("HomeAssistant").d("Fetch #%d: GET /api/states started", requestId)
+        try {
+            val request = Request.Builder()
+                .url("${serverUrl.trim().trimEnd('/')}/api/states")
+                .get()
+                .tag(Int::class.javaObjectType, requestId)
+                .addHeader("Authorization", "Bearer ${accessToken.trim()}")
+                .addHeader("Content-Type", "application/json")
+                .build()
+
+            val responseBody = withContext(Dispatchers.IO) {
+                homeAssistantHttpClient.newCall(request).execute().use { response ->
+                    Timber.tag("HomeAssistant").d(
+                        "Fetch #%d: HTTP %d after %d ms",
+                        requestId,
+                        response.code,
+                        SystemClock.elapsedRealtime() - startedAt,
+                    )
+                    if (!response.isSuccessful) {
+                        Timber.tag("HomeAssistant").e(
+                            "Fetch #%d failed: HTTP %d%s",
+                            requestId,
+                            response.code,
+                            if (response.code == 401 ||
+                                response.code == 403
+                            ) {
+                                " (authentication rejected)"
+                            } else {
+                                ""
+                            },
+                        )
+                        return@withContext null
+                    }
+                    response.body?.string().also {
+                        if (it.isNullOrBlank()) {
+                            Timber.tag(
+                                "HomeAssistant",
+                            ).e("Fetch #%d: empty response body", requestId)
+                        }
+                    }
+                }
+            } ?: return KMError.UnknownIOError
+
+            val jsonArray = JSONArray(responseBody)
+            val entities = mutableListOf<HomeAssistantEntity>()
+
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+                val entityId = obj.getString("entity_id")
+                val domain = entityId.substringBefore(".")
+                val attributes = obj.optJSONObject("attributes")
+                val friendlyName = attributes?.optString("friendly_name", entityId) ?: entityId
+                val state = obj.optString("state", "unknown")
+
+                entities.add(
+                    HomeAssistantEntity(
+                        entityId = entityId,
+                        friendlyName = friendlyName,
+                        domain = domain,
+                        state = state,
+                    ),
+                )
+            }
+
+            Timber.tag("HomeAssistant").d(
+                "Fetch #%d completed: %d entities in %d ms",
+                requestId,
+                entities.size,
+                SystemClock.elapsedRealtime() - startedAt,
+            )
+            return Success(entities)
+        } catch (e: IOException) {
+            // Exception messages can include URLs or response data; log only their types.
+            Timber.tag("HomeAssistant").e(
+                "Fetch #%d failed after %d ms: %s (cause: %s)",
+                requestId,
+                SystemClock.elapsedRealtime() - startedAt,
+                e.javaClass.simpleName,
+                e.cause?.javaClass?.simpleName ?: "none",
+            )
+            return KMError.UnknownIOError
+        } catch (e: IllegalArgumentException) {
+            Timber.tag(
+                "HomeAssistant",
+            ).e("Fetch #%d failed: malformed server URL or request", requestId)
+            return KMError.MalformedUrl
+        } catch (e: JSONException) {
+            Timber.tag("HomeAssistant").e(
+                "Fetch #%d failed: response is not a valid Home Assistant entity list (%s)",
+                requestId,
+                e.javaClass.simpleName,
+            )
+            return KMError.UnknownIOError
+        }
+    }
+
+    override suspend fun callHomeAssistantService(
+        serverUrl: String,
+        accessToken: String,
+        domain: String,
+        service: String,
+        entityId: String,
+        serviceData: String,
+    ): KMResult<*> {
+        try {
+            val jsonBody = if (serviceData.isBlank()) {
+                JSONObject().apply {
+                    put("entity_id", entityId)
+                }.toString()
+            } else {
+                val dataObj = JSONObject(serviceData)
+                dataObj.put("entity_id", entityId)
+                dataObj.toString()
+            }
+
+            val request = Request.Builder()
+                .url("${serverUrl.trim().trimEnd('/')}/api/services/$domain/$service")
+                .post(jsonBody.toRequestBody("application/json".toMediaType()))
+                .addHeader("Authorization", "Bearer ${accessToken.trim()}")
+                .build()
+
+            withContext(Dispatchers.IO) { httpClient.newCall(request).execute() }
+                .use { response ->
+                    Timber.d(response.toString())
+
+                    if (!response.isSuccessful) {
+                        return KMError.UnknownIOError
+                    }
+
+                    return Success(Unit)
+                }
+        } catch (e: IOException) {
+            Timber.e(e)
+            return KMError.UnknownIOError
+        } catch (e: IllegalArgumentException) {
+            return KMError.MalformedUrl
+        } catch (e: JSONException) {
+            Timber.e(e)
+            return KMError.UnknownIOError
         }
     }
 

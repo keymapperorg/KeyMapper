@@ -1315,6 +1315,27 @@
     <string name="action_http_request_authorization_label">Authorization header (optional)</string>
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
 
+    <string name="action_home_assistant_service">Home Assistant service</string>
+    <string name="action_ha_description_label">Description</string>
+    <string name="action_ha_description_empty_error">Can not be empty!</string>
+    <string name="action_ha_server_url_label">Server URL</string>
+    <string name="action_ha_server_url_empty_error">Can not be empty!</string>
+    <string name="action_ha_server_url_supporting_text">e.g. http://192.168.1.100:8123</string>
+    <string name="action_ha_access_token_label">Long-Lived Access Token</string>
+    <string name="action_ha_access_token_empty_error">Can not be empty!</string>
+    <string name="action_ha_entity_label">Entity</string>
+    <string name="action_ha_entity_empty_error">Can not be empty!</string>
+    <string name="action_ha_service_label">Service</string>
+    <string name="action_ha_service_data_label">Service data JSON (optional)</string>
+    <string name="action_ha_fetch_entities">Fetch entities</string>
+    <string name="action_ha_fetching_entities">Fetching entities…</string>
+    <string name="action_ha_fetch_error">Failed to fetch entities. Check URL and token.</string>
+    <string name="action_ha_test_connection">Test</string>
+    <string name="action_ha_test_success">Connection successful!</string>
+    <string name="action_ha_test_error">Connection failed!</string>
+    <string name="action_ha_malformed_url_error">Malformed URL. Did you forget the http://?</string>
+    <string name="action_ha_no_entities">No entities found</string>
+
     <string name="action_shell_command">Shell command</string>
     <string name="action_shell_command_title">Shell command action</string>
     <string name="action_shell_command_command_label">Script</string>
@@ -2376,4 +2397,22 @@
     <string name="select_group_by_intent_title">Select a group</string>
     <string name="select_group_by_intent_summary">Choose which group this intent controls</string>
 
+    <string name="action_ha_search_entities">Search entities</string>
+    <string name="action_ha_selected_entity">Selected entity: %1$s</string>
+    <string name="action_ha_selected">Selected</string>
+    <string name="action_ha_service_help">Enter a service supported by this entity, e.g. toggle, press, or open_cover. Sensors only report state.</string>
+    <string name="action_ha_turn_on">Turn on</string>
+    <string name="action_ha_turn_off">Turn off</string>
+    <string name="action_ha_toggle">Toggle</string>
+    <string name="home_assistant_settings_title">Home Assistant</string>
+    <string name="home_assistant_settings_summary">Configure the server URL and access token once for your Home Assistant shortcuts.</string>
+    <string name="home_assistant_using_saved_connection">Using the Home Assistant connection from app settings.</string>
+    <string name="home_assistant_edit_connection">Edit connection</string>
+    <string name="home_assistant_save_connection_hint">This connection will be saved in app settings for future shortcuts.</string>
+    <string name="home_assistant_save_error">Could not securely save the connection. Please try again.</string>
+    <string name="home_assistant_verify">Verify connection</string>
+    <string name="home_assistant_verifying">Verifying…</string>
+    <string name="home_assistant_verify_success">Connection verified. Entities available: %1$d</string>
+    <string name="home_assistant_verify_failure">Verification failed. Check the URL, access token, and network connection.</string>
+    <string name="home_assistant_service_selection">Service: %1$s</string>
 </resources>

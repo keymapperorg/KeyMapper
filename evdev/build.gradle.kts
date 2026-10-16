@@ -57,7 +57,7 @@ cargo {
 
     module = "src/main/rust/evdev_manager"
     libname = "evdev_manager"
-    targets = if (isDebug) {
+    targets = providers.gradleProperty("keymapperRustTargets").orNull?.split(",") ?: if (isDebug) {
         // Only building for one target saves some time when developing
         listOf("arm64")
     } else {

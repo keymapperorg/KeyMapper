@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.OfflineBolt
 import androidx.compose.material.icons.rounded.Code
@@ -82,6 +83,21 @@ private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CO
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val state by viewModel.mainScreenState.collectAsStateWithLifecycle()
+    val homeAssistantConnection by viewModel.homeAssistantConnection.collectAsStateWithLifecycle(
+        initialValue = null,
+    )
+    var showHomeAssistantSettings by remember { mutableStateOf(false) }
+    if (showHomeAssistantSettings) {
+        HomeAssistantConnectionDialog(
+            connection = homeAssistantConnection,
+            onVerify = viewModel::verifyHomeAssistantConnection,
+            onSave = {
+                viewModel.saveHomeAssistantConnection(it)
+                showHomeAssistantSettings = false
+            },
+            onDismiss = { showHomeAssistantSettings = false },
+        )
+    }
     val snackbarHostState = SnackbarHostState()
     var showAutomaticBackupDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -146,6 +162,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
     ) {
         Content(
             state = state,
+            onHomeAssistantClick = { showHomeAssistantSettings = true },
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
@@ -230,6 +247,7 @@ private fun SettingsScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     state: MainSettingsState,
+    onHomeAssistantClick: () -> Unit = {},
     onThemeSelected: (Theme) -> Unit = { },
     onPauseResumeNotificationClick: () -> Unit = { },
     onDefaultOptionsClick: () -> Unit = { },
@@ -253,6 +271,13 @@ private fun Content(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
+
+        OptionPageButton(
+            title = stringResource(R.string.home_assistant_settings_title),
+            text = stringResource(R.string.home_assistant_settings_summary),
+            icon = Icons.Outlined.Home,
+            onClick = onHomeAssistantClick,
+        )
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),

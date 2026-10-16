@@ -80,6 +80,7 @@ class PerformActionsUseCaseTest {
             mediaAdapter = mock(),
             airplaneModeAdapter = mock(),
             networkAdapter = mock(),
+            homeAssistantConfig = mock(),
             bluetoothAdapter = mock(),
             nfcAdapter = mock(),
             openUrlAdapter = mock(),

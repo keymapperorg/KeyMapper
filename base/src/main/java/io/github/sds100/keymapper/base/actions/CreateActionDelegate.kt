@@ -68,6 +68,7 @@ class CreateActionDelegate(
     )
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
+    var homeAssistantBottomSheetState: ActionData.HomeAssistantService? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
     var talkBackGestureDialogState: TalkBackGestureDialogState? by mutableStateOf(null)
@@ -130,6 +131,14 @@ class CreateActionDelegate(
                 }
         }
     }
+
+    val homeAssistantConnection get() = useCase.homeAssistantConnection
+
+    fun saveHomeAssistantConnection(connection: HomeAssistantConnection) =
+        useCase.saveHomeAssistantConnection(connection)
+
+    suspend fun fetchHomeAssistantEntities(serverUrl: String, accessToken: String) =
+        useCase.fetchHomeAssistantEntities(serverUrl, accessToken)
 
     fun onDoneConfigEnableFlashlightClick() {
         enableFlashlightActionState?.also { state ->
@@ -1355,6 +1364,24 @@ class CreateActionDelegate(
                     )
                 } else {
                     httpRequestBottomSheetState = oldData as? ActionData.HttpRequest
+                }
+                return null
+            }
+
+            ActionId.HOME_ASSISTANT_SERVICE -> {
+                if (oldData == null) {
+                    homeAssistantBottomSheetState = ActionData.HomeAssistantService(
+                        description = "",
+                        serverUrl = "http://",
+                        accessToken = "",
+                        domain = "",
+                        service = "turn_on",
+                        entityId = "",
+                        serviceData = "",
+                    )
+                } else {
+                    homeAssistantBottomSheetState =
+                        oldData as? ActionData.HomeAssistantService
                 }
                 return null
             }
