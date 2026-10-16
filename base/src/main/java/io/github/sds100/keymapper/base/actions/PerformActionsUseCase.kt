@@ -113,6 +113,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val mediaAdapter: MediaAdapter,
     private val airplaneModeAdapter: AirplaneModeAdapter,
     private val networkAdapter: NetworkAdapter,
+    private val homeAssistantConfig: HomeAssistantConfigRepository,
     private val bluetoothAdapter: BluetoothAdapter,
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
@@ -1082,6 +1083,22 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     body = action.body,
                     authorizationHeader = action.authorizationHeader,
                 )
+            }
+
+            is ActionData.HomeAssistantService -> {
+                val connection = homeAssistantConfig.resolve(action)
+                result = if (connection == null) {
+                    KMError.MalformedUrl
+                } else {
+                    networkAdapter.callHomeAssistantService(
+                        serverUrl = connection.serverUrl,
+                        accessToken = connection.accessToken,
+                        domain = action.domain,
+                        service = action.service,
+                        entityId = action.entityId,
+                        serviceData = action.serviceData,
+                    )
+                }
             }
 
             is ActionData.ShellCommand -> {

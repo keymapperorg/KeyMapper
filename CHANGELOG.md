@@ -1,3 +1,13 @@
+## Unreleased
+
+## Added
+
+- Home Assistant service actions with a searchable entity picker, shared encrypted connection settings, and connection verification.
+
+## Fixed
+
+- Android TV remote navigation in Home Assistant forms: focus fields before editing and reach Done after selecting a service.
+
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
 #### 10 October 2026

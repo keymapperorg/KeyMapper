@@ -9,6 +9,8 @@ import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.network.HomeAssistantEntity
+import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -30,12 +32,25 @@ class CreateActionUseCaseImpl @Inject constructor(
     private val phoneAdapter: PhoneAdapter,
     private val settingsAdapter: SettingsAdapter,
     private val notificationAdapter: NotificationAdapter,
+    private val networkAdapter: NetworkAdapter,
+    private val homeAssistantConfig: HomeAssistantConfigRepository,
 ) : CreateActionUseCase,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
         cameraAdapter,
         permissionAdapter,
     ) {
+    override val homeAssistantConnection = homeAssistantConfig.connection
+
+    override fun saveHomeAssistantConnection(connection: HomeAssistantConnection) =
+        homeAssistantConfig.save(connection)
+
+    override suspend fun fetchHomeAssistantEntities(
+        serverUrl: String,
+        accessToken: String,
+    ): KMResult<List<HomeAssistantEntity>> =
+        networkAdapter.fetchHomeAssistantEntities(serverUrl.trim().trimEnd('/'), accessToken.trim())
+
     override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
 
     override fun getFlashlightLenses(): Set<CameraLens> {
@@ -117,6 +132,14 @@ class CreateActionUseCaseImpl @Inject constructor(
 }
 
 interface CreateActionUseCase : IsActionSupportedUseCase {
+    val homeAssistantConnection: Flow<HomeAssistantConnection?>
+    fun saveHomeAssistantConnection(connection: HomeAssistantConnection)
+
+    suspend fun fetchHomeAssistantEntities(
+        serverUrl: String,
+        accessToken: String,
+    ): KMResult<List<HomeAssistantEntity>>
+
     suspend fun getInputMethods(): List<ImeInfo>
 
     fun isFlashlightEnabled(): Flow<Boolean>

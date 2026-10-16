@@ -137,6 +137,7 @@ object ActionUtils {
         ActionId.URL -> ActionCategory.APPS
         ActionId.HTTP_REQUEST -> ActionCategory.APPS
         ActionId.SHELL_COMMAND -> ActionCategory.APPS
+        ActionId.HOME_ASSISTANT_SERVICE -> ActionCategory.CONNECTIVITY
         ActionId.TOGGLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_WIFI -> ActionCategory.CONNECTIVITY
@@ -527,6 +528,8 @@ object ActionUtils {
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
 
         ActionId.HTTP_REQUEST -> R.string.action_http_request
+
+        ActionId.HOME_ASSISTANT_SERVICE -> R.string.action_home_assistant_service
 
         ActionId.SHELL_COMMAND -> R.string.action_shell_command
 
@@ -995,6 +998,12 @@ object ActionUtils {
                 return listOf(Permission.ACCESS_LOCAL_NETWORK)
             }
 
+            ActionId.HOME_ASSISTANT_SERVICE -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.CINNAMON_BUN
+            ) {
+                return listOf(Permission.ACCESS_LOCAL_NETWORK)
+            }
+
             else -> return emptyList()
         }
 
@@ -1133,6 +1142,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
         ActionId.HTTP_REQUEST -> Icons.Outlined.Http
+        ActionId.HOME_ASSISTANT_SERVICE -> Icons.Outlined.Home
         ActionId.SHELL_COMMAND -> Icons.Rounded.Terminal
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
@@ -1190,6 +1200,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.SendSms,
     is ActionData.ComposeSms,
     is ActionData.HttpRequest,
+    is ActionData.HomeAssistantService,
     is ActionData.ShellCommand,
     is ActionData.CreateNotification,
     is ActionData.Toast,
