@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -56,7 +57,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     companion object {
         private const val DEVELOPER_OPTIONS_SETTING = "development_settings_enabled"
         private const val ADB_WIRELESS_SETTING = "adb_wifi_enabled"
+        private const val ADB_USB_SETTING = "adb_enabled"
         private const val START_TIMEOUT_MS = 60_000L
+        private const val ENABLE_USB_DEBUGGING_ATTEMPTS = 3
     }
 
     private val activityManager: ActivityManager by lazy { ctx.getSystemService()!! }
@@ -127,6 +130,20 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
         launchStartJob {
+            // See issue #2294.
+            // Enabling USB debugging on Android 17 QPR1+ resets ADB entirely and kills Shell processes
+            // even if Wireless Debugging is turned on. Previously, preventSystemBridgeKilling()
+            // would enable USB debugging AFTER the system bridge has started, but this now
+            // kills it. So, enable USB debugging before starting the system bridge.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN &&
+
+                // MUST use ADB to check because adb_enabled is a redacted value on
+                // some Android 17 builds. See #2289
+                !isUsbDebuggingEnabledOverAdb()
+            ) {
+                enableUsbDebuggingWithAdb()
+            }
+
             connectionManager.startWithAdb()
 
             // Wait for the service to connect before turning off wireless debugging
@@ -284,6 +301,25 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 setupAssistantStep.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun isUsbDebuggingEnabledOverAdb(): Boolean {
+        return adbManager.executeCommand("settings get global $ADB_USB_SETTING")
+            .valueOrNull() == "1"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun enableUsbDebuggingWithAdb() {
+        repeat(ENABLE_USB_DEBUGGING_ATTEMPTS) {
+            // Do not do anything with a failure result. This command
+            // will kill the ADB process so it may return an error, which is expected.
+            if (adbManager.executeCommand("settings put global $ADB_USB_SETTING 1").isSuccess) {
+                return
+            }
+        }
+
+        Timber.w("Failed to enable USB debugging over ADB.")
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
