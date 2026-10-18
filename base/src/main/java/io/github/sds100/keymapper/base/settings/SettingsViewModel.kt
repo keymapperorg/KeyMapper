@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.HomeAssistantConfigRepository
+import io.github.sds100.keymapper.base.actions.HomeAssistantConnection
 import io.github.sds100.keymapper.base.logging.ShareLogcatUseCase
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
@@ -34,6 +36,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
+    private val homeAssistantConfig: HomeAssistantConfigRepository,
     private val resourceProvider: ResourceProvider,
     private val shareLogcatUseCase: ShareLogcatUseCase,
     dialogProvider: DialogProvider,
@@ -43,6 +46,14 @@ class SettingsViewModel @Inject constructor(
     ResourceProvider by resourceProvider,
     NavigationProvider by navigationProvider,
     DefaultOptionsSettingsCallback {
+
+    val homeAssistantConnection = homeAssistantConfig.connection
+
+    suspend fun verifyHomeAssistantConnection(connection: HomeAssistantConnection) =
+        useCase.verifyHomeAssistantConnection(connection)
+
+    fun saveHomeAssistantConnection(connection: HomeAssistantConnection) =
+        homeAssistantConfig.save(connection)
 
     val defaultLongPressDelay: Flow<Int> = useCase.defaultLongPressDelay
     val defaultDoublePressDelay: Flow<Int> = useCase.defaultDoublePressDelay

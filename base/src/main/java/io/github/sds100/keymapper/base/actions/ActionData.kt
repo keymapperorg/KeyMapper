@@ -1065,6 +1065,24 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class HomeAssistantService(
+        val description: String,
+        val serverUrl: String,
+        val accessToken: String,
+        val domain: String,
+        val service: String,
+        val entityId: String,
+        val serviceData: String,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.HOME_ASSISTANT_SERVICE
+
+        override fun toString(): String {
+            // Do not leak sensitive server URL or access token info to logs.
+            return "HomeAssistantService(description=$description, entity=$entityId)"
+        }
+    }
+
+    @Serializable
     data class ShellCommand(
         val description: String,
         val command: String,

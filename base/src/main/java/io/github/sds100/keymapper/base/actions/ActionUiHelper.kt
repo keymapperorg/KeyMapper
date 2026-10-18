@@ -733,6 +733,8 @@ class ActionUiHelper(
 
         is ActionData.HttpRequest -> action.description
 
+        is ActionData.HomeAssistantService -> action.description
+
         is ActionData.ShellCommand -> when (action.executionMode) {
             ShellExecutionMode.ROOT -> getString(
                 R.string.action_shell_command_description_with_root,

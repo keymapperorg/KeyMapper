@@ -862,6 +862,43 @@ object ActionDataEntityMapper {
                 )
             }
 
+            ActionId.HOME_ASSISTANT_SERVICE -> {
+                val description =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_DESCRIPTION).valueOrNull()
+                        ?: return null
+
+                val serverUrl =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_SERVER_URL).valueOrNull() ?: ""
+
+                val accessToken =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_ACCESS_TOKEN).valueOrNull() ?: ""
+
+                val domain =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_DOMAIN).valueOrNull()
+                        ?: return null
+
+                val service =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_SERVICE).valueOrNull()
+                        ?: return null
+
+                val entityId =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_ENTITY_ID).valueOrNull()
+                        ?: return null
+
+                val serviceData =
+                    entity.extras.getData(ActionEntity.EXTRA_HA_SERVICE_DATA).valueOrNull() ?: ""
+
+                ActionData.HomeAssistantService(
+                    description = description,
+                    serverUrl = serverUrl,
+                    accessToken = accessToken,
+                    domain = domain,
+                    service = service,
+                    entityId = entityId,
+                    serviceData = serviceData,
+                )
+            }
+
             ActionId.INTERACT_UI_ELEMENT -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
@@ -1202,6 +1239,8 @@ object ActionDataEntityMapper {
 
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
+        is ActionData.HomeAssistantService -> SYSTEM_ACTION_ID_MAP[data.id]!!
+
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
 
         is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
@@ -1463,6 +1502,20 @@ object ActionDataEntityMapper {
                 data.authorizationHeader,
             ),
         )
+
+        is ActionData.HomeAssistantService -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_HA_DESCRIPTION, data.description))
+            if (data.serverUrl.isNotBlank()) {
+                add(EntityExtra(ActionEntity.EXTRA_HA_SERVER_URL, data.serverUrl))
+            }
+            if (data.accessToken.isNotBlank()) {
+                add(EntityExtra(ActionEntity.EXTRA_HA_ACCESS_TOKEN, data.accessToken))
+            }
+            add(EntityExtra(ActionEntity.EXTRA_HA_DOMAIN, data.domain))
+            add(EntityExtra(ActionEntity.EXTRA_HA_SERVICE, data.service))
+            add(EntityExtra(ActionEntity.EXTRA_HA_ENTITY_ID, data.entityId))
+            add(EntityExtra(ActionEntity.EXTRA_HA_SERVICE_DATA, data.serviceData))
+        }
 
         is ActionData.InteractUiElement -> buildList {
             add(
@@ -1785,6 +1838,7 @@ object ActionDataEntityMapper {
         ActionId.END_PHONE_CALL to "end_phone_call",
         ActionId.DEVICE_CONTROLS to "device_controls",
         ActionId.HTTP_REQUEST to "http_request",
+        ActionId.HOME_ASSISTANT_SERVICE to "home_assistant_service",
         ActionId.FORCE_STOP_APP to "force_stop_app",
         ActionId.CLEAR_RECENT_APP to "clear_recent_app",
 

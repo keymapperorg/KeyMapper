@@ -44,6 +44,7 @@ fun KMBottomSheet(
     posButtonEnabled: Boolean = true,
     negButtonText: String? = null,
     onNegButtonClick: (() -> Unit)? = null,
+    posButtonModifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -111,7 +112,7 @@ fun KMBottomSheet(
                 }
 
                 Button(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).then(posButtonModifier),
                     enabled = posButtonEnabled,
                     onClick = onPosButtonClick,
                 ) {

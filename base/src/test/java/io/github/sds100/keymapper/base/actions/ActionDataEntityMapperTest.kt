@@ -15,6 +15,47 @@ import org.junit.Test
 class ActionDataEntityMapperTest {
 
     @Test
+    fun `shared home assistant action does not store credentials in mapping data`() {
+        val action = ActionData.HomeAssistantService(
+            description = "Light",
+            serverUrl = "",
+            accessToken = "",
+            domain = "light",
+            service = "toggle",
+            entityId = "light.living_room",
+            serviceData = "",
+        )
+        val entity = ActionDataEntityMapper.toEntity(action)
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_HA_ACCESS_TOKEN).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(
+            entity.extras.getData(ActionEntity.EXTRA_HA_SERVER_URL).valueOrNull(),
+            `is`(nullValue()),
+        )
+        assertThat(ActionDataEntityMapper.fromEntity(entity), `is`(action))
+    }
+
+    @Test
+    fun `home assistant action preserves its target and service data`() {
+        val action = ActionData.HomeAssistantService(
+            description = "Living room light",
+            serverUrl = "http://homeassistant.local:8123",
+            accessToken = "test-token",
+            domain = "light",
+            service = "turn_on",
+            entityId = "light.living_room",
+            serviceData = "{\"brightness\":128}",
+        )
+
+        assertThat(
+            ActionDataEntityMapper.fromEntity(ActionDataEntityMapper.toEntity(action)),
+            `is`(action),
+        )
+    }
+
+    @Test
     fun `set variable action round trips through the entity`() {
         val action = ActionData.SetVariable(name = "counter", value = -12)
 

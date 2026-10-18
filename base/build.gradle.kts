@@ -150,6 +150,8 @@ dependencies {
 
     // Tests
 
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     testImplementation(libs.junit)
     testImplementation(libs.hamcrest.all)
     testImplementation(libs.androidx.junit.ktx) // androidx.test.ext:junit-ktx
@@ -164,6 +166,7 @@ dependencies {
     testDebugImplementation(libs.androidx.fragment.testing)
 
     // Dependencies for Android instrumented tests
+    androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit) // androidx.test.ext:junit
     androidTestImplementation(libs.junit) // Repeated, fine
     androidTestImplementation(libs.androidx.navigation.testing)

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.settings
 
 import androidx.datastore.preferences.core.Preferences
+import io.github.sds100.keymapper.base.actions.HomeAssistantConnection
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
@@ -17,6 +18,8 @@ import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.network.HomeAssistantEntity
+import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -42,7 +45,15 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val devicesAdapter: DevicesAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val notificationAdapter: NotificationAdapter,
+    private val networkAdapter: NetworkAdapter,
 ) : ConfigSettingsUseCase {
+
+    override suspend fun verifyHomeAssistantConnection(
+        connection: HomeAssistantConnection,
+    ): KMResult<List<HomeAssistantEntity>> = networkAdapter.fetchHomeAssistantEntities(
+        connection.serverUrl.trim().trimEnd('/'),
+        connection.accessToken.trim(),
+    )
 
     private val imeHelper by lazy {
         KeyMapperImeHelper(
@@ -197,6 +208,10 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
 }
 
 interface ConfigSettingsUseCase {
+    suspend fun verifyHomeAssistantConnection(
+        connection: HomeAssistantConnection,
+    ): KMResult<List<HomeAssistantEntity>>
+
     fun <T> getPreference(key: Preferences.Key<T>): Flow<T?>
     fun <T> setPreference(key: Preferences.Key<T>, value: T?)
 

@@ -55,6 +55,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     EnableFlashlightActionBottomSheet(delegate)
     ChangeFlashlightStrengthActionBottomSheet(delegate)
     HttpRequestBottomSheet(delegate)
+    HomeAssistantBottomSheet(delegate)
     SmsActionBottomSheet(delegate)
     VolumeActionBottomSheet(delegate)
     ModifySettingActionBottomSheet(delegate)
