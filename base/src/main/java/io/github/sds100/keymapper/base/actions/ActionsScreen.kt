@@ -81,11 +81,11 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
     val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
     val actionTipModel by viewModel.actionsTip.collectAsStateWithLifecycle()
 
-    if (optionsState != null) {
+    optionsState?.let { optionsState ->
         ActionOptionsBottomSheet(
             modifier = Modifier.systemBarsPadding(),
             sheetState = sheetState,
-            state = optionsState!!,
+            state = optionsState,
             onDismissRequest = { viewModel.actionOptionsUid.update { null } },
             callback = viewModel,
         )
@@ -93,10 +93,10 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 
     val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
 
-    if (fixKeyEventActionState != null) {
+    fixKeyEventActionState?.let { fixKeyEventActionState ->
         FixKeyEventActionBottomSheet(
             modifier = Modifier.systemBarsPadding(),
-            state = fixKeyEventActionState!!,
+            state = fixKeyEventActionState,
             sheetState = sheetState,
             onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
