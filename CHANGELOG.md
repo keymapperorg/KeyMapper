@@ -1,3 +1,11 @@
+## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
+
+#### TO BE RELEASED
+
+## Fixed
+
+- #2069 dpad triggers work reliably again.
+
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
 #### 10 October 2026

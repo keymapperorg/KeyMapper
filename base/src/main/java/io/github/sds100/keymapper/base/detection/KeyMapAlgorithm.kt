@@ -581,46 +581,48 @@ class KeyMapAlgorithm(
         }
     }
 
-    fun onMotionEvent(event: KMGamePadEvent): Boolean {
-        if (!detectKeyMaps) return false
-
-        // See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
-        // Some controllers send motion events as well as key events when DPAD buttons
-        // are pressed, while others just send key events.
-        // The motion events must be consumed but this means the following key events are also
-        // consumed so one must rely on converting these motion events oneself.
-
-        val convertedKeyEvents = dpadMotionEventTracker.convertMotionEvent(event)
-
-        var consume = false
-
-        for (keyEvent in convertedKeyEvents) {
-            if (onKeyEventPostFilter(keyEvent)) {
-                consume = true
-            }
-        }
-
-        return consume
-    }
-
     /**
      * @return whether to consume the [KeyEvent].
      */
     fun onInputEvent(event: KMInputEvent): Boolean {
         if (!detectKeyMaps) return false
 
-        if (event is KMKeyEvent) {
-            if (dpadMotionEventTracker.onKeyEvent(event)) {
-                return true
+        when (event) {
+            is KMKeyEvent -> {
+                if (dpadMotionEventTracker.onKeyEvent(event)) {
+                    return true
+                }
+
+                val device = event.device
+
+                if ((device.isExternal && !detectExternalEvents) ||
+                    (!device.isExternal && !detectInternalEvents)
+                ) {
+                    return false
+                }
             }
 
-            val device = event.device
+            is KMGamePadEvent -> {
+                // See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
+                // Some controllers send motion events as well as key events when DPAD buttons
+                // are pressed, while others just send key events.
+                // The motion events must be consumed but this means the following key events are also
+                // consumed so one must rely on converting these motion events oneself.
 
-            if ((device.isExternal && !detectExternalEvents) ||
-                (!device.isExternal && !detectInternalEvents)
-            ) {
-                return false
+                val convertedKeyEvents = dpadMotionEventTracker.convertMotionEvent(event)
+
+                var consume = false
+
+                for (keyEvent in convertedKeyEvents) {
+                    if (onKeyEventPostFilter(keyEvent)) {
+                        consume = true
+                    }
+                }
+
+                return consume
             }
+
+            is KMEvdevEvent -> {}
         }
 
         return onKeyEventPostFilter(event)
@@ -1036,8 +1038,10 @@ class KeyMapAlgorithm(
 
                         val vibrateEffect = when {
                             trigger.vibrate -> resolveVibrateEffect(trigger)
+
                             forceVibrate.value ->
                                 VibrateEffect.CustomDuration(defaultVibrateDuration.value)
+
                             else -> null
                         }
 
