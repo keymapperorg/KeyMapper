@@ -12,6 +12,7 @@
 - Creating answer and end call does not crash.
 - Crash if unable to find app to open Discord server link in Other trigger setup bottom sheet.
 - Crash if copying system bridge starter files blocked for too long.
+- Do not intentionally crash when a component registered while already registered in InputEventHub.
 
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
