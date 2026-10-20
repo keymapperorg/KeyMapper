@@ -375,15 +375,13 @@ private fun ExpandedContent(
                             contentDescription = stringResource(
                                 R.string.action_list_item_duplicate,
                             ),
-                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
 
-                    IconButton(onClick = onTestClick) {
+                    IconButton(onClick = onTestClick, enabled = model.error == null) {
                         Icon(
                             imageVector = Icons.Outlined.PlayArrow,
                             contentDescription = stringResource(R.string.action_list_item_test),
-                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
 
@@ -391,7 +389,6 @@ private fun ExpandedContent(
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.action_list_item_edit),
-                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
 
