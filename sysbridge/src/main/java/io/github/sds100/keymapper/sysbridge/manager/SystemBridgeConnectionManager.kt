@@ -317,7 +317,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         return starter.getStartCommand()
     }
 
-    override fun canStartSystemBridge(): Boolean {
+    override suspend fun canStartSystemBridge(): Boolean {
         return starter.canStartSystemBridge()
     }
 }
@@ -346,7 +346,7 @@ interface SystemBridgeConnectionManager {
      * nowhere to copy the starter files to because the shared storage is unavailable, which can
      * happen at any point while the device is running.
      */
-    fun canStartSystemBridge(): Boolean
+    suspend fun canStartSystemBridge(): Boolean
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {
