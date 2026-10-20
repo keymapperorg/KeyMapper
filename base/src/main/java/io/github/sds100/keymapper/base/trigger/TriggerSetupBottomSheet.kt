@@ -641,13 +641,14 @@ private fun OtherTriggerSetupBottomSheet(
             style = MaterialTheme.typography.bodyMedium,
         )
 
+        val ctx = LocalContext.current
         val uriHandler = LocalUriHandler.current
         val helpUrl = stringResource(R.string.url_discord_server_invite)
 
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-                uriHandler.openUri(helpUrl)
+                uriHandler.openUriSafe(ctx, helpUrl)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = LocalCustomColorsPalette.current.discord,

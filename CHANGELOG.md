@@ -10,6 +10,7 @@
 - Fix input dispatching time out ANR when dispatching accessibility service gestures.
 - Fix crash fetching subgroups if parent group does not exist in database.
 - Creating answer and end call does not crash.
+- Crash if unable to find app to open Discord server link in Other trigger setup bottom sheet.
 
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
