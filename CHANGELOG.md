@@ -9,6 +9,7 @@
 - Crash navigating to new key map with TriggerSetupShortcut that was not serializable.
 - Fix input dispatching time out ANR when dispatching accessibility service gestures.
 - Fix crash fetching subgroups if parent group does not exist in database.
+- Creating answer and end call does not crash.
 
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
