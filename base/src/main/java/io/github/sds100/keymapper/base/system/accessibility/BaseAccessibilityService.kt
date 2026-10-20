@@ -12,8 +12,6 @@ import android.content.res.Configuration
 import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
-import android.os.Handler
-import android.os.HandlerThread
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -185,12 +183,6 @@ abstract class BaseAccessibilityService :
 
     abstract fun getController(): BaseAccessibilityServiceController?
 
-    /**
-     * Use a separate thread for dispatching gestures so they do not cause an ANR.
-     */
-    private val gestureHandlerThread: HandlerThread = HandlerThread("gesture_thread")
-    private var gestureHandler: Handler? = null
-
     override fun onCreate() {
         super.onCreate()
         Timber.i("Accessibility service: onCreate")
@@ -245,13 +237,6 @@ abstract class BaseAccessibilityService :
         fingerprintGestureCallback?.let {
             fingerprintGestureController.registerFingerprintGestureCallback(it, null)
         }
-
-        try {
-            gestureHandlerThread.start()
-            gestureHandler = Handler(gestureHandlerThread.looper)
-        } catch (_: IllegalThreadStateException) {
-            // do nothing if onServiceConnected is called again
-        }
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -263,8 +248,6 @@ abstract class BaseAccessibilityService :
 
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-
-        gestureHandlerThread.quit()
 
         fingerprintGestureController
             .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
@@ -401,7 +384,7 @@ abstract class BaseAccessibilityService :
                 addStroke(it)
             }.build()
 
-            val success = dispatchGesture(gestureDescription, null, gestureHandler)
+            val success = dispatchGesture(gestureDescription, null, null)
 
             return if (success) {
                 Success(Unit)
@@ -504,7 +487,7 @@ abstract class BaseAccessibilityService :
             }
         }
 
-        val success = dispatchGesture(gestureBuilder.build(), null, gestureHandler)
+        val success = dispatchGesture(gestureBuilder.build(), null, null)
 
         return if (success) {
             Success(Unit)
@@ -557,7 +540,7 @@ abstract class BaseAccessibilityService :
             gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
         }
 
-        val success = dispatchGesture(gestureBuilder.build(), null, gestureHandler)
+        val success = dispatchGesture(gestureBuilder.build(), null, null)
 
         return if (success) {
             Success(Unit)
@@ -645,7 +628,7 @@ abstract class BaseAccessibilityService :
     }
 
     override fun performTalkBackGesture(gesture: TalkBackGestureType): KMResult<*> {
-        return TalkbackGesturePerformer.performTalkBackGesture(this, gesture, gestureHandler)
+        return TalkbackGesturePerformer.performTalkBackGesture(this, gesture, null)
     }
 
     override fun getActiveDisplayId(): Int {
