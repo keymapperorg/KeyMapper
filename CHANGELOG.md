@@ -5,6 +5,7 @@
 ## Fixed
 
 - #2069 dpad triggers work reliably again.
+- Crash when creating launcher shortcut with empty text because the new text field dialog permitted it.
 
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 

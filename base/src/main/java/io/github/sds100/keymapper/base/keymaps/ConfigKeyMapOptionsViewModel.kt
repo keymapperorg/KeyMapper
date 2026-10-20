@@ -162,7 +162,7 @@ class ConfigKeyMapOptionsViewModel(
         }
     }
 
-    suspend fun onConfirmCreateShortcut(name: String): String? {
+    fun onConfirmCreateShortcut(name: String): String? {
         val dialogState = createShortcutDialogState ?: return null
 
         val result = createKeyMapShortcut.pinShortcut(dialogState.keyMapUid, name, dialogState.icon)
