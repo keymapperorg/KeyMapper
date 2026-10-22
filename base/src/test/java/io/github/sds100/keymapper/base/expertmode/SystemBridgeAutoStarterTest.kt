@@ -110,7 +110,7 @@ class SystemBridgeAutoStarterTest {
 
         mockConnectionManager = mock {
             on { connectionState } doReturn connectionStateFlow
-            on { canStartSystemBridge() } doReturn true
+            onBlocking { canStartSystemBridge() } doReturn true
         }
 
         mockSetupController = mock()

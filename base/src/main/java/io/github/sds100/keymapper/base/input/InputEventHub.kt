@@ -209,9 +209,6 @@ class InputEventHubImpl @Inject constructor(
         evdevEventTypes: List<Int>,
     ) {
         Timber.d("InputEventHub: Registering client $clientId")
-        if (clients.containsKey(clientId)) {
-            throw IllegalArgumentException("This client already has a callback registered!")
-        }
 
         clients[clientId] = ClientContext(callback, emptySet(), evdevEventTypes.toSet())
         invalidateGrabbedDevices()

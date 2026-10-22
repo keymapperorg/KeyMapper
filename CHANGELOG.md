@@ -1,3 +1,20 @@
+## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
+
+#### 22 October 2026
+
+## Fixed
+
+- #2069 dpad triggers work reliably again.
+- Crash when creating launcher shortcut with empty text because the new text field dialog permitted it.
+- Crash navigating to new key map with TriggerSetupShortcut that was not serializable.
+- Fix input dispatching time out ANR when dispatching accessibility service gestures.
+- Fix crash fetching subgroups if parent group does not exist in database.
+- Creating answer and end call does not crash.
+- Crash if unable to find app to open Discord server link in Other trigger setup bottom sheet.
+- Crash if copying system bridge starter files blocked for too long.
+- Do not intentionally crash when a component registered while already registered in InputEventHub.
+- Do not crash when testing actions with an error.
+
 ## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
 
 #### 10 October 2026

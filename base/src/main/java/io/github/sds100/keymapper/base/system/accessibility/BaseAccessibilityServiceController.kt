@@ -429,11 +429,7 @@ abstract class BaseAccessibilityServiceController(
         Timber.d("Service received event from UI: $event")
 
         when (event) {
-            is TestActionEvent -> service.lifecycleScope.launch {
-                performActionsUseCase.perform(
-                    event.action,
-                )
-            }
+            is TestActionEvent -> testAction(event)
 
             is AccessibilityServiceEvent.Ping -> service.lifecycleScope.launch {
                 outputEvents.emit(AccessibilityServiceEvent.Pong(event.key))
@@ -478,6 +474,16 @@ abstract class BaseAccessibilityServiceController(
             }
 
             else -> Unit
+        }
+    }
+
+    private fun testAction(event: TestActionEvent) {
+        service.lifecycleScope.launch {
+            val errorSnapshot = performActionsUseCase.getErrorSnapshot()
+
+            if (errorSnapshot.getError(event.action) == null) {
+                performActionsUseCase.perform(event.action)
+            }
         }
     }
 

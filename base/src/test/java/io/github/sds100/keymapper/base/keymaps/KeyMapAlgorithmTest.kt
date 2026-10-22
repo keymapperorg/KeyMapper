@@ -1557,19 +1557,19 @@ class KeyMapAlgorithmTest {
             )
 
             var motionEvent = createMotionEvent(axisHatY = 1.0f)
-            val consumeDown1 = controller.onMotionEvent(motionEvent)
+            val consumeDown1 = controller.onInputEvent(motionEvent)
             assertThat(consumeDown1, `is`(false))
 
             motionEvent = motionEvent.copy(axisHatX = -1.0f)
-            val consumeDown2 = controller.onMotionEvent(motionEvent)
+            val consumeDown2 = controller.onInputEvent(motionEvent)
             assertThat(consumeDown2, `is`(true))
 
             motionEvent = motionEvent.copy(axisHatX = 0.0f)
-            val consumeUp2 = controller.onMotionEvent(motionEvent)
+            val consumeUp2 = controller.onInputEvent(motionEvent)
             assertThat(consumeUp2, `is`(true))
 
             motionEvent = motionEvent.copy(axisHatY = 0.0f)
-            val consumeUp1 = controller.onMotionEvent(motionEvent)
+            val consumeUp1 = controller.onInputEvent(motionEvent)
             assertThat(consumeUp1, `is`(false))
 
             verify(performActionsUseCase, times(1)).perform(
@@ -5253,7 +5253,7 @@ class KeyMapAlgorithmTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
-    ): Boolean = controller.onMotionEvent(
+    ): Boolean = controller.onInputEvent(
         KMGamePadEvent(
             metaState = 0,
             device = device,

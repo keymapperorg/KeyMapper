@@ -17,10 +17,8 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.R
@@ -73,8 +71,6 @@ class SystemBridgeStarter @Inject constructor(
          * assuming it failed (e.g. due to the OEM bug on Xiaomi/MediaTek devices).
          */
         private const val SHIZUKU_USER_SERVICE_TIMEOUT_MS = 5000L
-
-        private const val ENABLE_USB_DEBUGGING_ATTEMPTS = 3
     }
 
     private fun buildShizukuUserServiceArgs(): Shizuku.UserServiceArgs {
@@ -231,40 +227,10 @@ class SystemBridgeStarter @Inject constructor(
             return KMError.Exception(IllegalStateException("User is locked"))
         }
 
-        // See issue #2294.
-        // Enabling USB debugging on Android 17 QPR1+ resets ADB entirely and kills Shell processes
-        // even if Wireless Debugging is turned on. Previously, preventSystemBridgeKilling()
-        // would enable USB debugging AFTER the system bridge has started, but this now
-        // kills it. So, enable USB debugging before starting the system bridge.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN &&
-
-            // MUST use ADB to check because adb_enabled is a redacted value on
-            // some Android 17 builds. See #2289
-            !isUsbDebuggingEnabledOverAdb()
-        ) {
-            enableUsbDebugging()
-        }
-
         return startSystemBridgeWithLock(commandExecutor = adbManager::executeCommand)
             .onFailure { error ->
                 Timber.e("Failed to start system bridge with ADB: $error")
             }
-    }
-
-    private suspend fun isUsbDebuggingEnabledOverAdb(): Boolean {
-        return adbManager.executeCommand("settings get global adb_enabled").valueOrNull() == "1"
-    }
-
-    private suspend fun enableUsbDebugging() {
-        repeat(ENABLE_USB_DEBUGGING_ATTEMPTS) {
-            // Do not do anything with a failure result. This command
-            // will kill the ADB process so it may return an error, which is expected.
-            if (adbManager.executeCommand("settings put global adb_enabled 1").isSuccess) {
-                return
-            }
-        }
-
-        Timber.w("Failed to enable USB debugging over ADB.")
     }
 
     suspend fun startWithRoot() {
@@ -306,7 +272,7 @@ class SystemBridgeStarter @Inject constructor(
      * nowhere to copy the starter files to because the shared storage is unavailable, which can
      * happen at any point while the device is running.
      */
-    fun canStartSystemBridge(): Boolean {
+    suspend fun canStartSystemBridge(): Boolean {
         return getStarterFilesDirectory() != null
     }
 
@@ -329,9 +295,9 @@ class SystemBridgeStarter @Inject constructor(
      * getExternalFilesDir returns null while the shared storage is not mounted, which can happen
      * at any point while the device is running and usually resolves itself within a minute.
      */
-    private fun getStarterFilesDirectory(): File? {
+    private suspend fun getStarterFilesDirectory(): File? = withContext(Dispatchers.IO) {
         if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
-            return try {
+            return@withContext try {
                 ctx.getExternalFilesDir(null)?.parentFile
             } catch (e: IOException) {
                 null
@@ -349,7 +315,7 @@ class SystemBridgeStarter @Inject constructor(
             e.printStackTrace()
         }
 
-        return protectedStorageDir
+        return@withContext protectedStorageDir
     }
 
     /**

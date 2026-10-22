@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.base.trigger
 
 import androidx.annotation.Keep
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Keep
 enum class TriggerSetupShortcut {
     VOLUME,

@@ -23,7 +23,9 @@ abstract class SystemBridgeSetupDelegateImpl(
             ::buildState,
         ).stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            // Use a timeout so it won't potentially call isAdbPaired when the app
+            // is in the background.
+            SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
             State.Loading,
         )
 
@@ -34,16 +36,25 @@ abstract class SystemBridgeSetupDelegateImpl(
 
         when (currentState) {
             is ExpertModeSetupState.AccessibilityService -> useCase.enableAccessibilityService()
+
             is ExpertModeSetupState.NotificationPermission ->
                 useCase.requestNotificationPermission()
+
             is ExpertModeSetupState.LocalNetworkPermission ->
                 useCase.requestLocalNetworkPermission()
+
             is ExpertModeSetupState.SamsungAutoBlocker -> useCase.openSamsungAutoBlockerSettings()
+
             is ExpertModeSetupState.DeveloperOptions -> useCase.enableDeveloperOptions()
+
             is ExpertModeSetupState.WifiNetwork -> useCase.connectWifiNetwork()
+
             is ExpertModeSetupState.WirelessDebugging -> useCase.enableWirelessDebugging()
+
             is ExpertModeSetupState.AdbPairing -> useCase.pairWirelessAdb()
+
             is ExpertModeSetupState.StartService -> useCase.startSystemBridgeWithAdb()
+
             is ExpertModeSetupState.Started -> onFinishClick()
         }
     }

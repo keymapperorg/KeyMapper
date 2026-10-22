@@ -77,13 +77,17 @@ import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
@@ -139,6 +143,12 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             accessibilityService: IAccessibilityService,
         ): PerformActionsUseCaseImpl
     }
+
+    // Use Dispatchers.IO because it dispatching gestures from accessibility services are
+    // blocking Binder calls. Limit the parallelism to 1 thread so they are dispatched in order.
+    // This also prevents slow Binder calls that are potentially spammed by the user's key maps
+    // from starving the thread pool.
+    private val gestureDispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
 
     private val openMenuHelper by lazy {
         OpenMenuHelper(
@@ -292,7 +302,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 switchImeInterface.switchIme(action.imeId)
 
                 // See issue #1064. Wait for the input method to finish switching before returning.
-                val chosenIme = withTimeoutOrNull(2000) {
+                val chosenIme = withTimeoutOrNull(2000.milliseconds) {
                     inputMethodAdapter.chosenIme.filterNotNull().first { it.id == action.imeId }
                 }
 
@@ -312,7 +322,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     switchImeInterface.switchIme(nextIme.id)
 
                     // See issue #1064. Wait for the input method to finish switching before returning.
-                    val chosenIme = withTimeoutOrNull(2000) {
+                    val chosenIme = withTimeoutOrNull(2000.milliseconds) {
                         inputMethodAdapter.chosenIme.filterNotNull().first { it.id == nextIme.id }
                     }
 
@@ -383,7 +393,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
 
-                result = service.tapScreen(point.x, point.y, inputEventAction)
+                result = withContext(gestureDispatcher) {
+                    service.tapScreen(point.x, point.y, inputEventAction)
+                }
             }
 
             is ActionData.SwipeScreen -> {
@@ -397,15 +409,17 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 val end =
                     scaleCoordinate(action.xEnd, action.yEnd, action.screenResolution, displaySize)
 
-                result = service.swipeScreen(
-                    start.x,
-                    start.y,
-                    end.x,
-                    end.y,
-                    action.fingerCount,
-                    action.duration,
-                    inputEventAction,
-                )
+                result = withContext(gestureDispatcher) {
+                    service.swipeScreen(
+                        start.x,
+                        start.y,
+                        end.x,
+                        end.y,
+                        action.fingerCount,
+                        action.duration,
+                        inputEventAction,
+                    )
+                }
             }
 
             is ActionData.PinchScreen -> {
@@ -415,15 +429,17 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 val distance =
                     scaleDistance(action.distance, action.screenResolution, displaySize)
 
-                result = service.pinchScreen(
-                    point.x,
-                    point.y,
-                    distance,
-                    action.pinchType,
-                    action.fingerCount,
-                    action.duration,
-                    inputEventAction,
-                )
+                result = withContext(gestureDispatcher) {
+                    service.pinchScreen(
+                        point.x,
+                        point.y,
+                        distance,
+                        action.pinchType,
+                        action.fingerCount,
+                        action.duration,
+                        inputEventAction,
+                    )
+                }
             }
 
             is ActionData.Text -> {
@@ -879,7 +895,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.SelectAllText -> {
                 result = service.performActionOnNode({ it.isFocused }) { node ->
-                    val text = node.text?.toString().orEmpty()
+                    val text = node.text.orEmpty()
                     if (text.isEmpty()) return@performActionOnNode null
 
                     val extras = mapOf(
@@ -924,7 +940,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         )
                             .onSuccess {
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
-                                delay(3000)
+                                delay(3000.milliseconds)
 
                                 toastAdapter.show(
                                     resourceProvider.getString(

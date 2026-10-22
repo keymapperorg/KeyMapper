@@ -51,6 +51,14 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             keyMap.copy(actionList = newActionList)
         }
 
+        if (data is ActionData.AnswerCall) {
+            configConstraints.addConstraint(groupUid = null, ConstraintData.PhoneRinging)
+        }
+
+        if (data is ActionData.EndCall) {
+            configConstraints.addConstraint(groupUid = null, ConstraintData.InPhoneCall)
+        }
+
         preferenceRepository.update(
             Keys.recentlyUsedActions,
             { old ->
@@ -235,7 +243,7 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         if (data is ActionData.InputKeyEvent) {
             val containsDpadKey: Boolean =
                 keyMap.trigger.keys
-                    .mapNotNull { it as? KeyEventTriggerKey }
+                    .filterIsInstance<KeyEventTriggerKey>()
                     .any { KeyEventUtils.isDpadKeyCode(it.keyCode) }
 
             if (KeyEventUtils.isModifierKey(data.keyCode) || containsDpadKey) {
@@ -254,14 +262,6 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         // the release of the trigger can not be detected.
         if (!keyMap.isRepeatUntilReleasedAllowed()) {
             repeat = false
-        }
-
-        if (data is ActionData.AnswerCall) {
-            configConstraints.addConstraint(groupUid = null, ConstraintData.PhoneRinging)
-        }
-
-        if (data is ActionData.EndCall) {
-            configConstraints.addConstraint(groupUid = null, ConstraintData.InPhoneCall)
         }
 
         return Action(

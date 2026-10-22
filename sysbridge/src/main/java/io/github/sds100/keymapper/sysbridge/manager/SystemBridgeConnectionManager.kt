@@ -69,7 +69,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
 
     override val connectionState: MutableStateFlow<SystemBridgeConnectionState> =
-        MutableStateFlow<SystemBridgeConnectionState>(
+        MutableStateFlow(
             SystemBridgeConnectionState.Disconnected(
                 time = SystemClock.elapsedRealtime(),
                 // Get whether the user previously stopped the system bridge.
@@ -251,12 +251,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         // the app process and restart it. This is normal, expected behavior and can not be
         // worked around. Do not grant any other permissions automatically here.
 
-        val isWriteSecureSettingsGranted = ContextCompat.checkSelfPermission(
-            ctx,
-            Manifest.permission.WRITE_SECURE_SETTINGS,
-        ) == PERMISSION_GRANTED
-
-        if (!isWriteSecureSettingsGranted) {
+        if (!isWriteSecureSettingsGranted()) {
             grantWriteSecureSettings(systemBridge)
         }
 
@@ -264,7 +259,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
         // Only turn on the ADB options to prevent killing if it is running under
         // the ADB shell user
-        if (isWriteSecureSettingsGranted && isShellProcess) {
+        if (isShellProcess && isWriteSecureSettingsGranted()) {
             // Disable automatic revoking of ADB pairings
             SettingsUtils.putGlobalSetting(
                 ctx,
@@ -284,10 +279,15 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         val isMiuiOptimisationEnabled =
             SettingsUtils.getGlobalSetting<Int>(ctx, MIUI_OPTIMIZATION_SETTING) == 1
 
-        if (isWriteSecureSettingsGranted && isMiuiOptimisationEnabled) {
+        if (isMiuiOptimisationEnabled && isWriteSecureSettingsGranted()) {
             SettingsUtils.putGlobalSetting(ctx, MIUI_OPTIMIZATION_SETTING, 0)
         }
     }
+
+    private fun isWriteSecureSettingsGranted(): Boolean = ContextCompat.checkSelfPermission(
+        ctx,
+        Manifest.permission.WRITE_SECURE_SETTINGS,
+    ) == PERMISSION_GRANTED
 
     private fun grantWriteSecureSettings(systemBridge: ISystemBridge) {
         val deviceId: Int =
@@ -317,7 +317,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         return starter.getStartCommand()
     }
 
-    override fun canStartSystemBridge(): Boolean {
+    override suspend fun canStartSystemBridge(): Boolean {
         return starter.canStartSystemBridge()
     }
 }
@@ -346,7 +346,7 @@ interface SystemBridgeConnectionManager {
      * nowhere to copy the starter files to because the shared storage is unavailable, which can
      * happen at any point while the device is running.
      */
-    fun canStartSystemBridge(): Boolean
+    suspend fun canStartSystemBridge(): Boolean
 }
 
 fun SystemBridgeConnectionManager.isConnected(): Boolean {

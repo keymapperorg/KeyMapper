@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
@@ -79,7 +80,11 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         } else {
             val parents = getParentsRecursively(groupUid)
 
-            return groupRepository.getGroupWithChildren(groupUid).map { groupWithChildren ->
+            return groupRepository.getGroupWithChildren(groupUid).mapNotNull { groupWithChildren ->
+                if (groupWithChildren == null) {
+                    return@mapNotNull null
+                }
+
                 val group = GroupEntityMapper.fromEntity(groupWithChildren.group)
                 val children = groupWithChildren.children.map(GroupEntityMapper::fromEntity)
 

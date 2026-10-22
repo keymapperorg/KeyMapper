@@ -76,7 +76,7 @@ fun KeyMapOptionsScreen(modifier: Modifier = Modifier, viewModel: ConfigKeyMapOp
             title = stringResource(R.string.key_map_options_create_shortcut_title),
             submitButtonText = stringResource(R.string.pos_save),
             initialText = createShortcutDialogState.defaultName,
-            onSubmitClick = { newText -> viewModel.onConfirmCreateShortcut(newText) },
+            onSubmitClick = viewModel::onConfirmCreateShortcut,
             onDismissRequest = viewModel::onDismissCreateShortcutDialog,
         )
     }
