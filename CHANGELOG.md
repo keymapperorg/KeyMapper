@@ -1,6 +1,6 @@
 ## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
 
-#### TO BE RELEASED
+#### 22 October 2026
 
 ## Fixed
 
