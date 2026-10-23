@@ -78,6 +78,11 @@ lane :production do
 
     apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + "-foss.apk"
 
+    # Ask if the store listing assets should be uploaded. This is asked because even if
+    # the assets didn't change, Google Play will think they did and this could lead
+    # to a longer review time.
+    upload_store_listing = UI.confirm("Did any Play Store listing assets change?")
+
     # First release to google play so any errors with the descriptions are resolved before
     # creating the git tag.
     supply(
@@ -86,6 +91,8 @@ lane :production do
         skip_upload_apk: true,
         # Skip uploading the title because F-droid should not have "Floating buttons" in its title.
         skip_upload_metadata: true,
+        skip_upload_images: !upload_store_listing,
+        skip_upload_screenshots: !upload_store_listing,
     )
 
     whats_new = File.read("../base/src/main/assets/whats-new.txt")
