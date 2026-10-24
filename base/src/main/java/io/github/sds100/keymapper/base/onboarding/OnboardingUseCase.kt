@@ -16,10 +16,12 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 @Singleton
 class OnboardingUseCaseImpl @Inject constructor(
@@ -50,9 +52,12 @@ class OnboardingUseCaseImpl @Inject constructor(
     override val appVersionName: String
         get() = buildConfigProvider.version
 
-    override fun getWhatsNewNotes(): WhatsNewNotes {
-        val text = fileAdapter.openAsset("whats-new-app.txt").bufferedReader().use { it.readText() }
-        return WhatsNewParser.parse(text)
+    override suspend fun getWhatsNewNotes(): WhatsNewNotes {
+        return withContext(Dispatchers.IO) {
+            val text =
+                fileAdapter.openAsset("whats-new-app.txt").bufferedReader().use { it.readText() }
+            WhatsNewParser.parse(text)
+        }
     }
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
@@ -133,7 +138,7 @@ interface OnboardingUseCase {
 
     fun isFreshInstall(): Boolean
 
-    fun getWhatsNewNotes(): WhatsNewNotes
+    suspend fun getWhatsNewNotes(): WhatsNewNotes
 
     val promptForShizukuPermission: Flow<Boolean>
 
