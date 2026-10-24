@@ -173,7 +173,11 @@ fun TriggerSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         // Hide drag handle because other bottom sheets don't have it
-        dragHandle = {},
+        dragHandle = null,
+        // Disable gestures so when scrolling down, the user doesn't accidentally dismiss the
+        // bottom sheet. Also, to disable the bottom sheet (not scrolling container) springing
+        // up when over-scrolling.
+        sheetGesturesEnabled = false,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -240,7 +244,7 @@ fun TriggerSetupBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamepadTriggerSetupBottomSheet(
+private fun GamepadTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = {},
     sheetState: SheetState,
@@ -252,7 +256,6 @@ fun GamepadTriggerSetupBottomSheet(
     onEnableInputMethodClick: () -> Unit = { },
     onChooseInputMethodClick: () -> Unit = { },
     onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
-    extraContent: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -282,87 +285,104 @@ fun GamepadTriggerSetupBottomSheet(
             text = stringResource(R.string.trigger_setup_status_might_remap_device),
         )
 
-        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
-
-        val buttonStates = listOf(
-            TriggerSetupState.Gamepad.Type.DPAD to
-                stringResource(R.string.trigger_setup_gamepad_type_dpad),
-            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to
-                stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
+        GamepadTriggerSetupContent(
+            state = state,
+            onSelectButtonType = onSelectButtonType,
+            onUseExpertModeCheckedChange = onUseExpertModeCheckedChange,
+            onEnableAccessibilityServiceClick = onEnableAccessibilityServiceClick,
+            onEnableInputMethodClick = onEnableInputMethodClick,
+            onChooseInputMethodClick = onChooseInputMethodClick,
+            onEnableExpertModeClick = onEnableExpertModeClick,
         )
+    }
+}
 
-        val selectedState = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
+@Composable
+fun GamepadTriggerSetupContent(
+    state: TriggerSetupState.Gamepad,
+    onSelectButtonType: (TriggerSetupState.Gamepad.Type) -> Unit,
+    onUseExpertModeCheckedChange: (Boolean) -> Unit,
+    onEnableAccessibilityServiceClick: () -> Unit,
+    onEnableInputMethodClick: () -> Unit,
+    onChooseInputMethodClick: () -> Unit,
+    onEnableExpertModeClick: () -> Unit,
+) {
+    HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
-            is TriggerSetupState.Gamepad.SimpleButtons ->
-                TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
-        }
+    val buttonStates = listOf(
+        TriggerSetupState.Gamepad.Type.DPAD to
+            stringResource(R.string.trigger_setup_gamepad_type_dpad),
+        TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to
+            stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
+    )
 
-        KeyMapperSegmentedButtonRow(
-            modifier = Modifier.fillMaxWidth(),
-            buttonStates = buttonStates,
-            selectedState = selectedState,
-            onStateSelected = onSelectButtonType,
-        )
+    val selectedState = when (state) {
+        is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
 
-        val isUseExpertModeChecked = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseExpertModeChecked
-        }
+        is TriggerSetupState.Gamepad.SimpleButtons ->
+            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
+    }
 
-        val isUseExpertModeEnabled = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> true
-        }
+    KeyMapperSegmentedButtonRow(
+        modifier = Modifier.fillMaxWidth(),
+        buttonStates = buttonStates,
+        selectedState = selectedState,
+        onStateSelected = onSelectButtonType,
+    )
 
-        CheckBoxText(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.trigger_setup_screen_off_option),
-            isChecked = isUseExpertModeChecked,
-            isEnabled = isUseExpertModeEnabled,
-            onCheckedChange = onUseExpertModeCheckedChange,
-        )
+    val isUseExpertModeChecked = when (state) {
+        is TriggerSetupState.Gamepad.Dpad -> false
+        is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseExpertModeChecked
+    }
 
-        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+    val isUseExpertModeEnabled = when (state) {
+        is TriggerSetupState.Gamepad.Dpad -> false
+        is TriggerSetupState.Gamepad.SimpleButtons -> true
+    }
 
-        AccessibilityServiceRequirementRow(
-            isServiceEnabled = state.isAccessibilityServiceEnabled,
-            onClick = onEnableAccessibilityServiceClick,
-        )
+    CheckBoxText(
+        modifier = Modifier.fillMaxWidth(),
+        text = stringResource(R.string.trigger_setup_screen_off_option),
+        isChecked = isUseExpertModeChecked,
+        isEnabled = isUseExpertModeEnabled,
+        onCheckedChange = onUseExpertModeCheckedChange,
+    )
 
-        when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> {
-                InputMethodRequirementRow(
-                    isEnabled = state.isImeEnabled,
-                    isChosen = state.isImeChosen,
-                    onEnableClick = onEnableInputMethodClick,
-                    onChooseClick = onChooseInputMethodClick,
-                    enablingRequiresUserInput = state.enablingRequiresUserInput,
-                )
-            }
+    HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
 
-            is TriggerSetupState.Gamepad.SimpleButtons -> {
-                ExpertModeRequirementRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    isVisible = state.isUseExpertModeChecked,
-                    expertModeStatus = state.expertModeStatus,
-                    onClick = onEnableExpertModeClick,
-                )
-            }
-        }
+    AccessibilityServiceRequirementRow(
+        isServiceEnabled = state.isAccessibilityServiceEnabled,
+        onClick = onEnableAccessibilityServiceClick,
+    )
 
-        if (state is TriggerSetupState.Gamepad.Dpad) {
-            HeaderText(text = stringResource(R.string.trigger_setup_information_title))
-
-            Text(
-                stringResource(R.string.trigger_setup_gamepad_information_dpad),
-                style = MaterialTheme.typography.bodyMedium,
+    when (state) {
+        is TriggerSetupState.Gamepad.Dpad -> {
+            InputMethodRequirementRow(
+                isEnabled = state.isImeEnabled,
+                isChosen = state.isImeChosen,
+                onEnableClick = onEnableInputMethodClick,
+                onChooseClick = onChooseInputMethodClick,
+                enablingRequiresUserInput = state.enablingRequiresUserInput,
             )
         }
 
-        if (extraContent != null) {
-            extraContent()
+        is TriggerSetupState.Gamepad.SimpleButtons -> {
+            ExpertModeRequirementRow(
+                modifier = Modifier.fillMaxWidth(),
+                isVisible = state.isUseExpertModeChecked,
+                expertModeStatus = state.expertModeStatus,
+                onClick = onEnableExpertModeClick,
+            )
         }
+    }
+
+    if (state is TriggerSetupState.Gamepad.Dpad) {
+        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+        Text(
+            stringResource(R.string.trigger_setup_gamepad_information_dpad),
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
