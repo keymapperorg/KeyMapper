@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -169,7 +171,12 @@ fun TriggerSetupBottomSheet(
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
-        modifier = modifier,
+        modifier = modifier
+            .widthIn(max = 450.dp)
+            // When the bottom sheet fills the whole screen, scrolling pushes the top
+            // underneath the status bar, but the content stays below the status bar. This gives
+            // it an ugly forehead so make sure the bottom sheet never goes under the status bar.
+            .statusBarsPadding(),
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         // Hide drag handle because other bottom sheets don't have it
@@ -180,7 +187,9 @@ fun TriggerSetupBottomSheet(
         sheetGesturesEnabled = false,
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp)
+                .animateContentSize()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Row(
@@ -214,9 +223,7 @@ fun TriggerSetupBottomSheet(
             }
 
             Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 content()
@@ -299,6 +306,7 @@ private fun GamepadTriggerSetupBottomSheet(
 
 @Composable
 fun GamepadTriggerSetupContent(
+    modifier: Modifier = Modifier,
     state: TriggerSetupState.Gamepad,
     onSelectButtonType: (TriggerSetupState.Gamepad.Type) -> Unit,
     onUseExpertModeCheckedChange: (Boolean) -> Unit,
@@ -307,82 +315,84 @@ fun GamepadTriggerSetupContent(
     onChooseInputMethodClick: () -> Unit,
     onEnableExpertModeClick: () -> Unit,
 ) {
-    HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
-    val buttonStates = listOf(
-        TriggerSetupState.Gamepad.Type.DPAD to
-            stringResource(R.string.trigger_setup_gamepad_type_dpad),
-        TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to
-            stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
-    )
-
-    val selectedState = when (state) {
-        is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
-
-        is TriggerSetupState.Gamepad.SimpleButtons ->
-            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
-    }
-
-    KeyMapperSegmentedButtonRow(
-        modifier = Modifier.fillMaxWidth(),
-        buttonStates = buttonStates,
-        selectedState = selectedState,
-        onStateSelected = onSelectButtonType,
-    )
-
-    val isUseExpertModeChecked = when (state) {
-        is TriggerSetupState.Gamepad.Dpad -> false
-        is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseExpertModeChecked
-    }
-
-    val isUseExpertModeEnabled = when (state) {
-        is TriggerSetupState.Gamepad.Dpad -> false
-        is TriggerSetupState.Gamepad.SimpleButtons -> true
-    }
-
-    CheckBoxText(
-        modifier = Modifier.fillMaxWidth(),
-        text = stringResource(R.string.trigger_setup_screen_off_option),
-        isChecked = isUseExpertModeChecked,
-        isEnabled = isUseExpertModeEnabled,
-        onCheckedChange = onUseExpertModeCheckedChange,
-    )
-
-    HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
-
-    AccessibilityServiceRequirementRow(
-        isServiceEnabled = state.isAccessibilityServiceEnabled,
-        onClick = onEnableAccessibilityServiceClick,
-    )
-
-    when (state) {
-        is TriggerSetupState.Gamepad.Dpad -> {
-            InputMethodRequirementRow(
-                isEnabled = state.isImeEnabled,
-                isChosen = state.isImeChosen,
-                onEnableClick = onEnableInputMethodClick,
-                onChooseClick = onChooseInputMethodClick,
-                enablingRequiresUserInput = state.enablingRequiresUserInput,
-            )
-        }
-
-        is TriggerSetupState.Gamepad.SimpleButtons -> {
-            ExpertModeRequirementRow(
-                modifier = Modifier.fillMaxWidth(),
-                isVisible = state.isUseExpertModeChecked,
-                expertModeStatus = state.expertModeStatus,
-                onClick = onEnableExpertModeClick,
-            )
-        }
-    }
-
-    if (state is TriggerSetupState.Gamepad.Dpad) {
-        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
-
-        Text(
-            stringResource(R.string.trigger_setup_gamepad_information_dpad),
-            style = MaterialTheme.typography.bodyMedium,
+        val buttonStates = listOf(
+            TriggerSetupState.Gamepad.Type.DPAD to
+                stringResource(R.string.trigger_setup_gamepad_type_dpad),
+            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to
+                stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
         )
+
+        val selectedState = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
+
+            is TriggerSetupState.Gamepad.SimpleButtons ->
+                TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
+        }
+
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = buttonStates,
+            selectedState = selectedState,
+            onStateSelected = onSelectButtonType,
+        )
+
+        val isUseExpertModeChecked = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> false
+            is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseExpertModeChecked
+        }
+
+        val isUseExpertModeEnabled = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> false
+            is TriggerSetupState.Gamepad.SimpleButtons -> true
+        }
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = isUseExpertModeChecked,
+            isEnabled = isUseExpertModeEnabled,
+            onCheckedChange = onUseExpertModeCheckedChange,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> {
+                InputMethodRequirementRow(
+                    isEnabled = state.isImeEnabled,
+                    isChosen = state.isImeChosen,
+                    onEnableClick = onEnableInputMethodClick,
+                    onChooseClick = onChooseInputMethodClick,
+                    enablingRequiresUserInput = state.enablingRequiresUserInput,
+                )
+            }
+
+            is TriggerSetupState.Gamepad.SimpleButtons -> {
+                ExpertModeRequirementRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isVisible = state.isUseExpertModeChecked,
+                    expertModeStatus = state.expertModeStatus,
+                    onClick = onEnableExpertModeClick,
+                )
+            }
+        }
+
+        if (state is TriggerSetupState.Gamepad.Dpad) {
+            HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+            Text(
+                stringResource(R.string.trigger_setup_gamepad_information_dpad),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
 
