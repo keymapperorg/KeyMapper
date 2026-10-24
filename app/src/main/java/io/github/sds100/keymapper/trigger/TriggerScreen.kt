@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.trigger.BaseTriggerScreen
+import io.github.sds100.keymapper.base.trigger.HandleTriggerSetupBottomSheet
 import io.github.sds100.keymapper.base.trigger.TriggerDiscoverScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -14,11 +15,17 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
     val showFingerprintGestures: Boolean by
         viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
-    BaseTriggerScreen(modifier, viewModel, discoverScreenContent = {
-        TriggerDiscoverScreen(
-            showFloatingButtons = true,
-            showFingerprintGestures = showFingerprintGestures,
-            onShortcutClick = viewModel::showTriggerSetup,
-        )
-    })
+    HandleTriggerSetupBottomSheet(viewModel)
+
+    BaseTriggerScreen(
+        modifier,
+        viewModel,
+        discoverScreenContent = {
+            TriggerDiscoverScreen(
+                showFloatingButtons = true,
+                showFingerprintGestures = showFingerprintGestures,
+                onShortcutClick = viewModel::showTriggerSetup,
+            )
+        },
+    )
 }

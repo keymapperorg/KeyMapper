@@ -64,8 +64,6 @@ fun BaseTriggerScreen(
     val showFingerprintGestures: Boolean by
         viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
-    HandleTriggerSetupBottomSheet(viewModel)
-
     if (viewModel.showDiscoverTriggersBottomSheet) {
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,

@@ -3,7 +3,6 @@
 package io.github.sds100.keymapper.base.trigger
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -26,7 +24,6 @@ import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -41,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -160,9 +156,91 @@ fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
     }
 }
 
+@Composable
+fun TriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    onDismissRequest: () -> Unit,
+    title: String,
+    icon: ImageVector,
+    positiveButtonContent: @Composable RowScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheet(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        // Hide drag handle because other bottom sheets don't have it
+        dragHandle = {},
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Surface(
+                    modifier = Modifier.size(48.dp),
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .animateContentSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                content()
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.neg_cancel))
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                positiveButtonContent()
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GamepadTriggerSetupBottomSheet(
+fun GamepadTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = {},
     sheetState: SheetState,
@@ -174,6 +252,7 @@ private fun GamepadTriggerSetupBottomSheet(
     onEnableInputMethodClick: () -> Unit = { },
     onChooseInputMethodClick: () -> Unit = { },
     onUseExpertModeCheckedChange: (Boolean) -> Unit = {},
+    extraContent: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -280,11 +359,15 @@ private fun GamepadTriggerSetupBottomSheet(
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+
+        if (extraContent != null) {
+            extraContent()
+        }
     }
 }
 
 @Composable
-private fun MouseTriggerSetupBottomSheet(
+fun MouseTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Mouse,
@@ -340,7 +423,7 @@ private fun MouseTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun PowerTriggerSetupBottomSheet(
+fun PowerTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Power,
@@ -403,30 +486,7 @@ private fun PowerTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapStatus) {
-    when (remapStatus) {
-        RemapStatus.UNSUPPORTED -> RemapStatusRow(
-            modifier = modifier,
-            color = MaterialTheme.colorScheme.error,
-            text = stringResource(R.string.trigger_setup_status_can_not_remap),
-        )
-
-        RemapStatus.UNCERTAIN -> RemapStatusRow(
-            modifier = modifier,
-            color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_might_remap_button),
-        )
-
-        RemapStatus.SUPPORTED -> RemapStatusRow(
-            modifier = modifier,
-            color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
-        )
-    }
-}
-
-@Composable
-private fun VolumeTriggerSetupBottomSheet(
+fun VolumeTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Volume,
@@ -488,7 +548,7 @@ private fun VolumeTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun NotDetectedSetupBottomSheet(
+fun NotDetectedSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.NotDetected,
@@ -575,7 +635,7 @@ private fun NotDetectedSetupBottomSheet(
 }
 
 @Composable
-private fun OtherTriggerSetupBottomSheet(
+fun OtherTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Other,
@@ -661,7 +721,7 @@ private fun OtherTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun KeyboardTriggerSetupBottomSheet(
+fun KeyboardTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Keyboard,
@@ -723,7 +783,7 @@ private fun KeyboardTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun FingerprintGestureSetupBottomSheet(
+fun FingerprintGestureSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.FingerprintGesture,
@@ -789,124 +849,6 @@ private fun FingerprintGestureSetupBottomSheet(
             isSelected = state.selectedType == FingerprintGestureType.SWIPE_RIGHT,
             onSelected = { onGestureTypeSelected(FingerprintGestureType.SWIPE_RIGHT) },
         )
-    }
-}
-
-@Composable
-fun RemapStatusRow(modifier: Modifier = Modifier, color: Color, text: String) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(16.dp)
-                .background(
-                    color = color,
-                    shape = CircleShape,
-                ),
-        )
-
-        Spacer(Modifier.width(16.dp))
-
-        Text(text = text, style = MaterialTheme.typography.titleMedium)
-    }
-}
-
-@Composable
-fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
-    FilledTonalButton(modifier = modifier, onClick = {}, enabled = false) {
-        Text(stringResource(R.string.trigger_setup_requirements_not_met_button))
-    }
-}
-
-@Composable
-fun AddTriggerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Button(modifier = modifier, onClick = onClick) {
-        Text(stringResource(R.string.trigger_setup_add_trigger_button))
-    }
-}
-
-@Composable
-fun TriggerSetupBottomSheet(
-    modifier: Modifier = Modifier,
-    sheetState: SheetState,
-    onDismissRequest: () -> Unit,
-    title: String,
-    icon: ImageVector,
-    positiveButtonContent: @Composable RowScope.() -> Unit,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    val scope = rememberCoroutineScope()
-
-    ModalBottomSheet(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState,
-        // Hide drag handle because other bottom sheets don't have it
-        dragHandle = {},
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Surface(
-                    modifier = Modifier.size(48.dp),
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            modifier = Modifier.size(32.dp),
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                content()
-            }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(
-                    onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onDismissRequest()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                positiveButtonContent()
-            }
-        }
     }
 }
 
