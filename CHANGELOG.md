@@ -1,3 +1,11 @@
+## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
+
+#### TO BE RELEASED
+
+## Changed
+
+- Only use one bundle paywall. The legacy one is removed.
+
 ## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
 
 #### 22 October 2026

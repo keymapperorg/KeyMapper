@@ -218,11 +218,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         override val id: String = ID_LOG
     }
 
-    /**
-     * This returns a trigger setup shortcut if an advanced trigger is used.
-     */
     @Serializable
-    data object AdvancedTriggers : NavDestination<TriggerSetupShortcut?>(isCompose = true) {
+    data object AdvancedTriggers : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_ADVANCED_TRIGGERS
     }
 

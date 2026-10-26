@@ -14,7 +14,6 @@ sealed class PurchasingError : KMError() {
         data object NetworkError : PurchasingProcessError()
         data object PaymentPending : PurchasingProcessError()
         data object PurchaseInvalid : PurchasingProcessError()
-        data object EntitlementNotGrantedAfterPurchase : PurchasingProcessError()
         data class Unexpected(val message: String) : PurchasingProcessError()
     }
 }

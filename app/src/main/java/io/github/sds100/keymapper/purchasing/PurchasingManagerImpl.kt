@@ -13,14 +13,7 @@ class PurchasingManagerImpl : PurchasingManager {
     override val state: Flow<State<KMResult<RevenueCatState>>> =
         MutableStateFlow(State.Data(PurchasingError.PurchasingNotImplemented))
 
-    override suspend fun launchPurchasingFlow(
-        packageId: String,
-        verifyEntitlements: Array<RevenueCatEntitlementId>,
-    ): KMResult<Unit> {
-        return PurchasingError.PurchasingNotImplemented
-    }
-
-    override suspend fun isPackagePurchased(packageId: String): KMResult<Boolean> {
+    override suspend fun launchPurchasingFlow(packageId: String): KMResult<Unit> {
         return PurchasingError.PurchasingNotImplemented
     }
 
