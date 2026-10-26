@@ -34,7 +34,6 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,8 +68,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate, sheetState: SheetState) {
     val triggerSetupState: TriggerSetupState? by
         delegate.triggerSetupState.collectAsStateWithLifecycle()
 

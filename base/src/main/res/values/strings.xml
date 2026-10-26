@@ -2215,7 +2215,8 @@
     <string name="trigger_discover_screen_title">Discover</string>
     <string name="trigger_discover_screen_subtitle">What do you want to remap?</string>
     <string name="trigger_discover_section_on_device_buttons">On-device buttons</string>
-    <string name="trigger_discover_section_peripherals_gaming">Peripherals &amp; gaming</string>
+    <string name="trigger_discover_section_peripherals_gaming">Peripherals</string>
+    <string name="trigger_discover_section_gaming">Gaming</string>
     <string name="trigger_discover_section_floating_buttons">Floating buttons</string>
 
     <string name="trigger_discover_shortcut_volume">Volume</string>
@@ -2226,6 +2227,10 @@
     <string name="trigger_discover_shortcut_mouse">Mouse</string>
     <string name="trigger_discover_shortcut_gamepad">Gamepad</string>
     <string name="trigger_discover_shortcut_other">Other</string>
+    <string name="trigger_discover_shortcut_joysticks">Joysticks</string>
+    <string name="trigger_discover_shortcut_triggers">Triggers</string>
+    <string name="trigger_discover_shortcut_dpad">D-pad</string>
+    <string name="trigger_discover_shortcut_mouse_movement">Mouse motion</string>
     <string name="trigger_discover_shortcut_custom">Custom</string>
     <string name="trigger_discover_shortcut_notch">Notch</string>
     <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
