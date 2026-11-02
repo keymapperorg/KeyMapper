@@ -425,6 +425,22 @@ fun MouseTriggerSetupBottomSheet(
     ) {
         RemapStatusButton(modifier = Modifier.fillMaxWidth(), remapStatus = state.remapStatus)
 
+        MouseTriggerSetupContent(
+            state = state,
+            onEnableAccessibilityServiceClick = onEnableAccessibilityServiceClick,
+            onEnableExpertModeClick = onEnableExpertModeClick,
+        )
+    }
+}
+
+@Composable
+fun MouseTriggerSetupContent(
+    modifier: Modifier = Modifier,
+    state: TriggerSetupState.Mouse,
+    onEnableAccessibilityServiceClick: () -> Unit,
+    onEnableExpertModeClick: () -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
         CheckBoxText(
@@ -611,6 +627,22 @@ fun NotDetectedSetupBottomSheet(
             text = stringResource(R.string.trigger_setup_status_might_remap_button),
         )
 
+        NotDetectedSetupContent(
+            state = state,
+            onEnableAccessibilityServiceClick = onEnableAccessibilityServiceClick,
+            onEnableExpertModeClick = onEnableExpertModeClick,
+        )
+    }
+}
+
+@Composable
+fun NotDetectedSetupContent(
+    modifier: Modifier = Modifier,
+    state: TriggerSetupState.NotDetected,
+    onEnableAccessibilityServiceClick: () -> Unit,
+    onEnableExpertModeClick: () -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
         // Must always be checked because PRO mode is always used to increase the chances
@@ -977,6 +1009,30 @@ private fun VolumeButtonDisabledPreview() {
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
                 forceExpertMode = false,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true)
+@Composable
+private fun NotDetectedPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
+            initialValue = SheetValue.Expanded,
+        )
+
+        NotDetectedSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.NotDetected(
+                isAccessibilityServiceEnabled = true,
+                expertModeStatus = ExpertModeStatus.ENABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
             ),
         )
     }
