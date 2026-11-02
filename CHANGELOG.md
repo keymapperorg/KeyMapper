@@ -6,6 +6,10 @@
 
 - Only use one bundle paywall. The legacy one is removed.
 
+## Fixed
+
+- #2183 Volume key no longer acts as the power button after single pressing a power button double press trigger in Expert Mode.
+
 ## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
 
 #### 22 October 2026

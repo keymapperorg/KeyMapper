@@ -559,6 +559,80 @@ class KeyMapAlgorithmTest {
         )
     }
 
+    /**
+     * #2183
+     */
+    @Test
+    fun `do not imitate single press of double press evdev trigger if it is not consumed`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_POWER,
+                    scanCode = Scancode.KEY_POWER,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    consumeEvent = false,
+                ),
+            )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            delay(50L)
+            inputUpEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            advanceUntilIdle()
+
+            verify(detectKeyMapsUseCase, never()).imitateEvdevEvent(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `imitate single press of double press evdev trigger if it is consumed`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_POWER,
+                    scanCode = Scancode.KEY_POWER,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    consumeEvent = true,
+                ),
+            )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            delay(50L)
+            inputUpEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            advanceUntilIdle()
+
+            verify(detectKeyMapsUseCase, times(1)).imitateEvdevEvent(
+                any(),
+                any(),
+                eq(Scancode.KEY_POWER),
+                eq(KMEvdevEvent.VALUE_DOWN),
+            )
+            verify(detectKeyMapsUseCase, times(1)).imitateEvdevEvent(
+                any(),
+                any(),
+                eq(Scancode.KEY_POWER),
+                eq(KMEvdevEvent.VALUE_UP),
+            )
+        }
+
     @Test
     fun `Scan code detection fails when device differs for evdev trigger`() =
         runTest(testDispatcher) {
