@@ -47,8 +47,10 @@ impl EvdevDevicesWatcher {
             EvdevError::from_enum(EvdevErrorCode::IoError)
         })?;
 
+        // See issue #2304. Honor Android 17 has a /dev/input/vevent folder that Shell
+        // does not have permission to read.
         watcher
-            .watch(Path::new("/dev/input"), notify::RecursiveMode::Recursive)
+            .watch(Path::new("/dev/input"), notify::RecursiveMode::NonRecursive)
             .map_err(|e| {
                 error!("Failed to watch /dev/input: {}", e);
                 EvdevError::from_enum(EvdevErrorCode::IoError)
