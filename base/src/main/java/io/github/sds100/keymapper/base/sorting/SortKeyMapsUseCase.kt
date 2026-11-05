@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapConstraintsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapEnabledComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapNameComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
 import io.github.sds100.keymapper.data.Keys
@@ -41,17 +42,14 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
 
                 val result = runCatching {
                     Json.decodeFromString<List<SortFieldOrder>>(it)
-                }.getOrDefault(defaultOrder).distinct()
+                }.getOrDefault(defaultOrder).distinctBy { sortFieldOrder -> sortFieldOrder.field }
 
-                // If the result is not the expected size it means that the preference is corrupted
-                // or there are missing fields (e.g. a new field was added). In this case, return
-                // the default order.
-
-                if (result.size != SortField.entries.size) {
-                    return@map defaultOrder
-                }
-
-                result
+                // There can be missing fields if a new field was added since the preference was
+                // saved. Add them in their default position at the start so the user's existing
+                // order is kept. They have no sort order so this doesn't change the sorting.
+                defaultOrder.filter { default ->
+                    result.none { sortFieldOrder -> sortFieldOrder.field == default.field }
+                } + result
             }
     }
 
@@ -82,11 +80,13 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
 
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
             SortField.ENABLED -> KeyMapEnabledComparator(reverseOrder)
+            SortField.NAME -> KeyMapNameComparator(reverseOrder)
         }
     }
 
     companion object {
         val defaultOrder = listOf(
+            SortFieldOrder(SortField.NAME),
             SortFieldOrder(SortField.TRIGGER),
             SortFieldOrder(SortField.ACTIONS),
             SortFieldOrder(SortField.CONSTRAINTS),

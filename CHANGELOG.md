@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #2310 Sort key maps by name. Unnamed key maps are last.
+
 ## Changed
 
 - Only use one bundle paywall. The legacy one is removed.
