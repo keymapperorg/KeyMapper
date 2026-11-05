@@ -9,6 +9,7 @@
 ## Changed
 
 - Only use one bundle paywall. The legacy one is removed.
+- #2311 Sort triggers, actions and constraints alphabetically by the text shown in the key map list.
 
 ## Fixed
 

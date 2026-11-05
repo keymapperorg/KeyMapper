@@ -1,5 +1,9 @@
 package io.github.sds100.keymapper.base.sorting
 
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapActionsComparator
@@ -8,6 +12,8 @@ import io.github.sds100.keymapper.base.sorting.comparators.KeyMapEnabledComparat
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapNameComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
+import io.github.sds100.keymapper.base.trigger.TriggerUiHelper
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import javax.inject.Inject
@@ -17,8 +23,12 @@ import kotlinx.serialization.json.Json
 
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
-    private val displayKeyMapUseCase: DisplayKeyMapUseCase,
+    displayKeyMapUseCase: DisplayKeyMapUseCase,
+    resourceProvider: ResourceProvider,
 ) : SortKeyMapsUseCase {
+    private val actionUiHelper = ActionUiHelper(displayKeyMapUseCase, resourceProvider)
+    private val constraintUiHelper = ConstraintUiHelper(displayKeyMapUseCase, resourceProvider)
+    private val triggerUiHelper = TriggerUiHelper(resourceProvider)
 
     override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }
 
@@ -71,12 +81,30 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
         val reverseOrder = sortFieldOrder.order == SortOrder.DESCENDING
 
         return when (sortFieldOrder.field) {
-            SortField.TRIGGER -> KeyMapTriggerComparator(reverseOrder)
-            SortField.ACTIONS -> KeyMapActionsComparator(displayKeyMapUseCase, reverseOrder)
-            SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
-                displayKeyMapUseCase,
+            SortField.TRIGGER -> KeyMapTriggerComparator(
+                { triggerUiHelper.getKeyNames(it, showDeviceDescriptors = false) },
                 reverseOrder,
             )
+
+            // Titles are cached because they can include an app name, which is slow to look up
+            // and would otherwise be fetched on every comparison.
+            SortField.ACTIONS -> {
+                val titles = HashMap<Action, String>()
+
+                KeyMapActionsComparator(
+                    { titles.getOrPut(it) { actionUiHelper.getTitle(it, false) } },
+                    reverseOrder,
+                )
+            }
+
+            SortField.CONSTRAINTS -> {
+                val titles = HashMap<Constraint, String>()
+
+                KeyMapConstraintsComparator(
+                    { titles.getOrPut(it) { constraintUiHelper.getTitle(it) } },
+                    reverseOrder,
+                )
+            }
 
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
             SortField.ENABLED -> KeyMapEnabledComparator(reverseOrder)
