@@ -28,9 +28,9 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -167,9 +167,16 @@ class SystemBridgeAutoStarter @Inject constructor(
     private var isAdbPaired: Boolean? = null
 
     /**
+     * Whether the system bridge can be restarted once more despite being auto started less than
+     * 5 minutes ago, because something else can kill it once while booting (see issue #2305).
+     * This is deliberately not persisted and starts as false. If a loop also kills Key Mapper's
+     * process then the new process must still be stopped by the persisted auto start time.
+     */
+    private var canQuickRetry: Boolean = false
+
+    /**
      * This must only be called once in the application lifecycle
      */
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     fun init() {
         coroutineScope.launch {
             Timber.i(
@@ -177,7 +184,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             )
 
             if (BuildConfig.DEBUG && connectionManager.isConnected()) {
-                delay(1000)
+                delay(1.seconds)
                 // This is useful when developing and need to restart the system bridge
                 // after making changes to it.
                 Timber.w("Restarting system bridge on debug build.")
@@ -187,9 +194,12 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
             // before deciding whether to start it.
-            delay(5000)
+            delay(5.seconds)
 
             handleAutoStartFromPreVersion4()
+
+            // The flow below must not start it a second time if that auto start failed.
+            canQuickRetry = false
 
             autoStartFlow
                 .distinctUntilChanged() // Must come before the filterNotNull
@@ -265,7 +275,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             return
         }
 
-        val isRooted: Boolean = withTimeoutOrNull(1000) {
+        val isRooted: Boolean = withTimeoutOrNull(1.seconds) {
             suAdapter.isRootGranted.filterNotNull().first()
         } ?: false
 
@@ -308,6 +318,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             return
         }
 
+        // This must be read before saving the new auto start time below.
+        canQuickRetry = !hasRecentAutoStart()
+
         // This must use the unix timestamp and not a time relative to the uptime of the device.
         // Otherwise, it may not autostart on reboot if it started earlier than when it last auto
         // started relative to the last boot.
@@ -348,7 +361,7 @@ class SystemBridgeAutoStarter @Inject constructor(
 
         // Wait 30 seconds for it to start, and if not then show failed notification.
         try {
-            withTimeout(30000L) {
+            withTimeout(30.seconds) {
                 connectionManager.connectionState.first {
                     it is SystemBridgeConnectionState.Connected
                 }
@@ -374,9 +387,17 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     /**
      * Whether the system bridge died less than 5 minutes after the previous time it was
-     * auto started.
+     * auto started and the one quick retry has been used.
      */
     private suspend fun isWithinAutoStartCooldown(): Boolean {
+        return hasRecentAutoStart() && !canQuickRetry
+    }
+
+    /**
+     * Whether the system bridge was auto started less than 5 minutes ago and the user has not
+     * started it manually since.
+     */
+    private suspend fun hasRecentAutoStart(): Boolean {
         val lastAutoStartTime = preferences.get(Keys.systemBridgeLastAutoStartTime).first()
         val lastManualStartTime = preferences.get(Keys.systemBridgeLastManualStartTime).first()
         val currentTime = clock.unixTimestamp()
