@@ -119,6 +119,13 @@ class AndroidPermissionAdapter @Inject constructor(
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
 
+        // The Shizuku permission can only be read while the binder is alive so check it again
+        // whenever the binder is received or dies.
+        shizukuAdapter.isStarted
+            .drop(1)
+            .onEach { onPermissionsChanged() }
+            .launchIn(coroutineScope)
+
         Shizuku.addRequestPermissionResultListener { requestCode, grantResult ->
             coroutineScope.launch {
                 if (requestCode == REQUEST_CODE_SHIZUKU_PERMISSION) {

@@ -414,8 +414,9 @@ class SystemBridgeAutoStarterTest {
         fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         // Initially Shizuku is disconnected, and is connected 50 seconds after booting
+        // The permission reads as denied until the binder is received.
         shizukuIsStartedFlow.value = false
-        shizukuPermissionGrantedFlow.value = true
+        shizukuPermissionGrantedFlow.value = false
 
         inOrder(mockConnectionManager) {
             systemBridgeAutoStarter.init()
@@ -424,6 +425,7 @@ class SystemBridgeAutoStarterTest {
 
             // Shizuku starts
             shizukuIsStartedFlow.value = true
+            shizukuPermissionGrantedFlow.value = true
 
             advanceTimeBy(20000)
             verify(mockConnectionManager).startWithShizuku()

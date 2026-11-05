@@ -10,6 +10,7 @@
 
 - #2183 Volume key no longer acts as the power button after single pressing a power button double press trigger in Expert Mode.
 - #2304 Expert Mode fails to start on Honor Android 17.
+- #2305 Expert Mode auto starts with Shizuku if Shizuku starts after Key Mapper.
 
 ## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
 
