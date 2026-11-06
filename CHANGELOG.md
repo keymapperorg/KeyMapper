@@ -5,6 +5,7 @@
 ## Added
 
 - #2310 Sort key maps by name. Unnamed key maps are last.
+- #2279 Broadcast whether mappings are paused so other apps can respond to it.
 
 ## Changed
 

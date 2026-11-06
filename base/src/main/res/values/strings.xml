@@ -2372,6 +2372,9 @@
     <string name="intent_screen_tab_pause">Pause</string>
     <string name="intent_screen_tab_resume">Resume</string>
     <string name="intent_screen_tab_toggle">Toggle</string>
+    <string name="intent_screen_listen_title">Listen for changes</string>
+    <string name="intent_screen_listen_explanation">Register a broadcast receiver for this action to keep track of whether key maps are paused. Key Mapper sends it whenever they are paused or resumed, each time Key Mapper starts, and when its accessibility service starts. The extra is true when key maps are paused.</string>
+    <string name="intent_screen_label_extra_name_boolean">Boolean extra name</string>
 
     <string name="enable_disable_group_by_intent_title">Enable/disable group by intent</string>
     <string name="intent_screen_enable_group_message">Any app that can send an intent, such as Tasker or Automate, can turn a group on and off without opening Key Mapper. Send a broadcast to Key Mapper with these settings.</string>
