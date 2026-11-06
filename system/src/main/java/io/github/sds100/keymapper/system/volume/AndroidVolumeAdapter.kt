@@ -40,8 +40,11 @@ class AndroidVolumeAdapter @Inject constructor(
     private val ringerModeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
-            if (intent.action == AudioManager.RINGER_MODE_CHANGED_ACTION) {
-                _ringerModeFlow.value = ringerMode
+            when (intent.action) {
+                AudioManager.RINGER_MODE_CHANGED_ACTION -> _ringerModeFlow.value = ringerMode
+
+                NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED ->
+                    _dndModeFlow.value = dndMode
             }
         }
     }
@@ -51,8 +54,15 @@ class AndroidVolumeAdapter @Inject constructor(
     }
     override val ringerModeFlow: StateFlow<RingerMode> by lazy { _ringerModeFlow.asStateFlow() }
 
+    private val _dndModeFlow: MutableStateFlow<DndMode?> by lazy { MutableStateFlow(dndMode) }
+    override val dndModeFlow: StateFlow<DndMode?> by lazy { _dndModeFlow.asStateFlow() }
+
     init {
-        val filter = IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
+        val filter = IntentFilter().apply {
+            addAction(AudioManager.RINGER_MODE_CHANGED_ACTION)
+            addAction(NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED)
+        }
+
         ContextCompat.registerReceiver(
             ctx,
             ringerModeReceiver,
@@ -86,6 +96,14 @@ class AndroidVolumeAdapter @Inject constructor(
                     "Don't know how to convert this ringer moder ${audioManager.ringerMode}",
                 )
             }
+        }
+
+    override val dndMode: DndMode?
+        get() = when (notificationManager.currentInterruptionFilter) {
+            NotificationManager.INTERRUPTION_FILTER_ALARMS -> DndMode.ALARMS
+            NotificationManager.INTERRUPTION_FILTER_PRIORITY -> DndMode.PRIORITY
+            NotificationManager.INTERRUPTION_FILTER_NONE -> DndMode.NONE
+            else -> null
         }
 
     override val isMicrophoneMuted: Boolean

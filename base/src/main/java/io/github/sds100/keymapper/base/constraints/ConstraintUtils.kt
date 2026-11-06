@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CallEnd
+import androidx.compose.material.icons.outlined.DoNotDisturb
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Keyboard
@@ -102,6 +103,7 @@ object ConstraintUtils {
         ConstraintId.RINGER_MODE_NORMAL,
         ConstraintId.RINGER_MODE_VIBRATE,
         ConstraintId.RINGER_MODE_SILENT,
+        ConstraintId.DND_MODE,
             -> ConstraintCategory.PHONE
 
         ConstraintId.CHARGING -> ConstraintCategory.POWER
@@ -180,6 +182,8 @@ object ConstraintUtils {
         ConstraintId.RINGER_MODE_VIBRATE -> Vector(Icons.Outlined.Vibration)
 
         ConstraintId.RINGER_MODE_SILENT -> Vector(Icons.Outlined.NotificationsOff)
+
+        ConstraintId.DND_MODE -> Vector(Icons.Outlined.DoNotDisturb)
 
         ConstraintId.CHARGING -> Vector(Icons.Outlined.BatteryChargingFull)
 
@@ -304,6 +308,8 @@ object ConstraintUtils {
 
         ConstraintId.RINGER_MODE_SILENT -> R.string.constraint_ringer_mode_silent
 
+        ConstraintId.DND_MODE -> R.string.constraint_dnd_mode
+
         ConstraintId.CHARGING -> R.string.constraint_charging
 
         ConstraintId.HINGE_CLOSED -> R.string.constraint_hinge_closed
@@ -387,6 +393,8 @@ object ConstraintUtils {
 
             is ConstraintData.RingerMode -> setOf(ConstraintDependency.RINGER_MODE)
 
+            is ConstraintData.DoNotDisturb -> setOf(ConstraintDependency.DND_MODE)
+
             ConstraintData.NotificationPanelShowing ->
                 setOf(ConstraintDependency.NOTIFICATION_PANEL_STATE)
 
@@ -407,6 +415,7 @@ fun ConstraintData.isEditable(): Boolean = when (this) {
     is ConstraintData.OrientationCustom,
     is ConstraintData.PhysicalOrientation,
     is ConstraintData.DisplayResolution,
+    is ConstraintData.DoNotDisturb,
     is ConstraintData.FlashlightOn,
     is ConstraintData.WifiConnected,
     is ConstraintData.ImeChosen,

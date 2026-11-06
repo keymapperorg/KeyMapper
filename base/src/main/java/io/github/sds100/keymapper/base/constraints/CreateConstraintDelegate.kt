@@ -40,6 +40,8 @@ class CreateConstraintDelegate(
 
     var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
 
+    var dndConstraintState: ConstraintData.DoNotDisturb? by mutableStateOf(null)
+
     var displayResolutionState: DisplayResolutionSheetState? by mutableStateOf(null)
         private set
 
@@ -87,6 +89,13 @@ class CreateConstraintDelegate(
     fun onDoneConfigTimeConstraintClick() {
         timeConstraintState?.let { constraintData ->
             timeConstraintState = null
+            constraintResult.update { constraintData }
+        }
+    }
+
+    fun onDoneConfigDndConstraintClick() {
+        dndConstraintState?.let { constraintData ->
+            dndConstraintState = null
             constraintResult.update { constraintData }
         }
     }
@@ -199,6 +208,12 @@ class CreateConstraintDelegate(
             ConstraintId.RINGER_MODE_VIBRATE -> return ConstraintData.RingerMode(RingerMode.VIBRATE)
 
             ConstraintId.RINGER_MODE_SILENT -> return ConstraintData.RingerMode(RingerMode.SILENT)
+
+            ConstraintId.DND_MODE -> {
+                dndConstraintState = oldData as? ConstraintData.DoNotDisturb
+                    ?: ConstraintData.DoNotDisturb(dndMode = null)
+                return null
+            }
 
             ConstraintId.CHARGING -> return ConstraintData.Charging
 

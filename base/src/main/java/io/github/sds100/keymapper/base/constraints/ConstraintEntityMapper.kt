@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 
 object ConstraintEntityMapper {
@@ -16,6 +17,12 @@ object ConstraintEntityMapper {
     private val LENS_MAP = mapOf(
         CameraLens.BACK to "option_lens_back",
         CameraLens.FRONT to "option_lens_front",
+    )
+
+    private val DND_MODE_MAP = mapOf(
+        DndMode.ALARMS to "do_not_disturb_alarms",
+        DndMode.PRIORITY to "do_not_disturb_priority",
+        DndMode.NONE to "do_not_disturb_none",
     )
 
     /**
@@ -189,6 +196,11 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.RINGER_MODE_SILENT ->
                 ConstraintData.RingerMode(RingerMode.SILENT)
+
+            ConstraintEntity.DND_MODE -> ConstraintData.DoNotDisturb(
+                dndMode = entity.extras.getData(ConstraintEntity.EXTRA_DND_MODE).valueOrNull()
+                    ?.let { DND_MODE_MAP.getKey(it)!! },
+            )
 
             ConstraintEntity.CHARGING,
             ConstraintEntity.DISCHARGING,
@@ -491,6 +503,16 @@ object ConstraintEntityMapper {
                     ConstraintEntity.RINGER_MODE_SILENT,
                 )
             }
+
+            is ConstraintData.DoNotDisturb -> ConstraintEntity(
+                type = ConstraintEntity.DND_MODE,
+                extras = listOfNotNull(
+                    constraint.data.dndMode?.let {
+                        EntityExtra(ConstraintEntity.EXTRA_DND_MODE, DND_MODE_MAP[it]!!)
+                    },
+                ),
+                uid = constraint.uid,
+            )
 
             is ConstraintData.Charging -> ConstraintEntity(
                 uid = constraint.uid,

@@ -7,6 +7,12 @@ interface VolumeAdapter {
     val ringerMode: RingerMode
     val ringerModeFlow: Flow<RingerMode>
 
+    /**
+     * The current Do Not Disturb mode or null if Do Not Disturb is off.
+     */
+    val dndMode: DndMode?
+    val dndModeFlow: Flow<DndMode?>
+
     fun raiseVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): KMResult<*>
     fun lowerVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): KMResult<*>
     fun muteVolume(stream: VolumeStream? = null, showVolumeUi: Boolean): KMResult<*>

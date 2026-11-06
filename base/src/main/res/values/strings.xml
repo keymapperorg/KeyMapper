@@ -350,6 +350,13 @@
     <string name="constraint_ringer_mode_not_normal">Ringer mode is not: Ring</string>
     <string name="constraint_ringer_mode_not_vibrate">Ringer mode is not: Vibrate</string>
     <string name="constraint_ringer_mode_not_silent">Ringer mode is not: Silent</string>
+    <string name="constraint_dnd_mode">Do Not Disturb</string>
+    <string name="constraint_dnd_mode_on">Do Not Disturb is on</string>
+    <string name="constraint_dnd_mode_off">Do Not Disturb is off</string>
+    <string name="constraint_dnd_mode_formatted">Do Not Disturb: %s</string>
+    <string name="constraint_dnd_mode_not_formatted">Do Not Disturb is not: %s</string>
+    <string name="constraint_dnd_mode_any">Any mode</string>
+    <string name="constraint_dnd_mode_bottom_sheet_title">Choose Do Not Disturb mode</string>
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
