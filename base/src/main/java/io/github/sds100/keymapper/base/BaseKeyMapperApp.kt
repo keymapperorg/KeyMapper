@@ -18,6 +18,7 @@ import androidx.multidex.MultiDexApplication
 import dagger.Lazy
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.expertmode.SystemBridgeConfigSync
+import io.github.sds100.keymapper.base.keymaps.MappingsStateBroadcastController
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.base.logging.SystemBridgeLogger
 import io.github.sds100.keymapper.base.settings.Theme
@@ -72,6 +73,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var autoGrantPermissionController: Lazy<AutoGrantPermissionController>
+
+    @Inject
+    lateinit var mappingsStateBroadcastController: Lazy<MappingsStateBroadcastController>
 
     @Inject
     lateinit var loggingTree: Lazy<KeyMapperLoggingTree>
@@ -228,6 +232,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         }.launchIn(appCoroutineScope.get())
 
         autoGrantPermissionController.get().start()
+        mappingsStateBroadcastController.get().start()
         keyEventRelayServiceWrapper.get().bind()
 
         if (systemBridgeConnectionManager.get().isConnected()) {

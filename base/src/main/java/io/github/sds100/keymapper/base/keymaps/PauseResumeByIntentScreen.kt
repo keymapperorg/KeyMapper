@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,10 +77,38 @@ fun PauseResumeByIntentScreen(modifier: Modifier = Modifier, onBackClick: () -> 
                 action = IntentApi.ACTION_TOGGLE_MAPPINGS,
             ),
         )
+
+        HorizontalDivider()
+
+        Text(
+            text = stringResource(R.string.intent_screen_listen_title),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            text = stringResource(R.string.intent_screen_listen_explanation),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        CodeBlock(
+            label = stringResource(R.string.intent_screen_label_action),
+            code = IntentApi.ACTION_MAPPINGS_STATE_CHANGED,
+            clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
+        )
+
+        CodeBlock(
+            label = stringResource(R.string.intent_screen_label_extra_name_boolean),
+            code = IntentApi.EXTRA_MAPPINGS_PAUSED,
+            clipboardLabel = clipboardLabel,
+            scrollToEnd = true,
+        )
     }
 }
 
-@Preview(heightDp = 1000)
+@Preview(heightDp = 1400)
 @Composable
 private fun PauseResumeByIntentScreenPreview() {
     KeyMapperTheme {
