@@ -6,6 +6,7 @@
 
 - #2310 Sort key maps by name. Unnamed key maps are last.
 - #2279 Broadcast whether mappings are paused so other apps can respond to it.
+- #2278 Do Not Disturb constraint.
 
 ## Changed
 
