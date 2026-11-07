@@ -18,11 +18,21 @@ interface InputMethodAdapter {
 
     fun getChosenIme(): ImeInfo?
 
+    fun setDefaultInputMethod(imeId: String): KMResult<Unit>
+
+    fun getEnabledSubtypes(imeId: String): KMResult<List<ImeSubtypeInfo>>
+
     /**
-     * Switches the chosen input method to the next enabled subtype (language), wrapping
-     * around to the first subtype after the last.
+     * @return The selected subtype of the chosen input method.
      */
-    fun cycleInputMethodSubtype(): KMResult<Unit>
+    fun getSelectedSubtype(): ImeSubtypeInfo?
+
+    /**
+     * @return The subtype the input method had when it was last chosen.
+     */
+    fun getLastUsedSubtype(imeId: String): ImeSubtypeInfo?
+
+    fun setSelectedSubtype(subtypeId: Int): KMResult<Unit>
 
     /**
      * Returns the input method that should become active next when cycling through all

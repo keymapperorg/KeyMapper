@@ -12,6 +12,7 @@ import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -38,6 +39,20 @@ class AndroidInputMethodAdapter @Inject constructor(
 
     companion object {
         const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
+
+        /**
+         * @param history The value of [SETTINGS_SECURE_SUBTYPE_HISTORY_KEY].
+         * @return The subtype the input method had when it was last used or null if it isn't in
+         * the history.
+         */
+        fun getSubtypeHashCodeFromHistory(history: String?, imeId: String): Int? {
+            return history
+                ?.split(':')
+                ?.map { it.split(';') }
+                ?.firstOrNull { it[0] == imeId }
+                ?.getOrNull(1)
+                ?.toIntOrNull()
+        }
     }
 
     override val inputMethodHistory: MutableStateFlow<List<ImeInfo>> by lazy {
@@ -183,36 +198,51 @@ class AndroidInputMethodAdapter @Inject constructor(
         }
     }
 
-    override fun cycleInputMethodSubtype(): KMResult<Unit> {
-        val chosenImeId = getChosenImeId()
+    override fun setDefaultInputMethod(imeId: String): KMResult<Unit> {
+        return putSecureSetting(Settings.Secure.DEFAULT_INPUT_METHOD, imeId)
+    }
 
-        val inputMethodInfo = inputMethodManager.inputMethodList.find { it.id == chosenImeId }
-            ?: return KMError.InputMethodNotFound(chosenImeId)
+    override fun getEnabledSubtypes(imeId: String): KMResult<List<ImeSubtypeInfo>> {
+        val inputMethodInfo = inputMethodManager.inputMethodList.find { it.id == imeId }
+            ?: return KMError.InputMethodNotFound(imeId)
 
-        val subtypes =
+        return Success(
             inputMethodManager.getEnabledInputMethodSubtypeList(inputMethodInfo, true)
+                .map { ImeSubtypeInfo(id = it.hashCode(), languageTag = it.languageTag) },
+        )
+    }
 
-        if (subtypes.size < 2) {
-            return KMError.NotEnoughInputMethodSubtypes
-        }
-
-        val currentSubtypeHashCode = Settings.Secure.getInt(
+    override fun getSelectedSubtype(): ImeSubtypeInfo? {
+        val subtypeId = Settings.Secure.getInt(
             ctx.contentResolver,
             Settings.Secure.SELECTED_INPUT_METHOD_SUBTYPE,
             -1,
         )
 
-        val currentIndex = subtypes.indexOfFirst { it.hashCode() == currentSubtypeHashCode }
-        val nextSubtype = subtypes[(currentIndex + 1) % subtypes.size]
+        return getEnabledSubtypes(getChosenImeId()).valueOrNull()?.find { it.id == subtypeId }
+    }
 
+    override fun getLastUsedSubtype(imeId: String): ImeSubtypeInfo? {
+        val subtypeId = getSubtypeHashCodeFromHistory(getSubtypeHistoryString(ctx), imeId)
+            ?: return null
+
+        return getEnabledSubtypes(imeId).valueOrNull()?.find { it.id == subtypeId }
+    }
+
+    override fun setSelectedSubtype(subtypeId: Int): KMResult<Unit> {
+        return putSecureSetting(Settings.Secure.SELECTED_INPUT_METHOD_SUBTYPE, subtypeId)
+    }
+
+    private inline fun <reified T> putSecureSetting(name: String, value: T): KMResult<Unit> {
         return try {
-            @Suppress("DEPRECATION")
-            inputMethodManager.currentInputMethodSubtype = nextSubtype
-
-            Success(Unit)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to cycle input method subtype")
-            KMError.CycleImeSubtypeFailed
+            if (SettingsUtils.putSecureSetting(ctx, name, value)) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(name)
+            }
+        } catch (e: SecurityException) {
+            Timber.e(e, "Failed to write secure setting $name")
+            KMError.FailedToModifySystemSetting(name)
         }
     }
 

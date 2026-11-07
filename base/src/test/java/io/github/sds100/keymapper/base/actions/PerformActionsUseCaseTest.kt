@@ -95,6 +95,9 @@ class PerformActionsUseCaseTest {
             settingsAdapter = mock(),
             vibratorAdapter = mock(),
             variablesUseCase = mock(),
+            buildConfigProvider = mock {
+                on { packageName } doReturn "io.github.sds100.keymapper"
+            },
         )
     }
 
