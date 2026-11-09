@@ -1,10 +1,9 @@
 • Variables: add to, subtract from or set variables
+• Custom key map names and sort key maps by name
+• Do Not Disturb constraint
+• Broadcast whether mappings are paused so other apps can respond
 • Undo and redo changes when configuring a key map
-• Custom key map names
-• Edit constraints in place
-• Shut down and restart device actions
-• Configurable brightness increment
-• Group enable/disable by broadcast intent
+• Expert Mode and floating button fixes
 • Many other bug fixes and improvements
 
 📖 View the complete changelog at: http://keymapper.app/changelog
