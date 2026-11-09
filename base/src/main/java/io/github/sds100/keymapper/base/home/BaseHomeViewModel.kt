@@ -18,7 +18,8 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -58,13 +59,10 @@ abstract class BaseHomeViewModel(
         )
     }
 
-    private val manuallyShowWhatsNew = MutableStateFlow(false)
+    private val showWhatsNew = MutableStateFlow(false)
 
-    val whatsNewState: StateFlow<WhatsNewState?> = combine(
-        onboarding.showWhatsNew,
-        manuallyShowWhatsNew,
-    ) { showWhatsNew, manualShow ->
-        if (showWhatsNew || manualShow) {
+    val whatsNewState: StateFlow<WhatsNewState?> = showWhatsNew.map { showWhatsNew ->
+        if (showWhatsNew) {
             WhatsNewState(
                 versionName = onboarding.appVersionName,
                 notes = onboarding.getWhatsNewNotes(),
@@ -74,13 +72,20 @@ abstract class BaseHomeViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    init {
+        // Show whats new automatically when the app starts.
+        viewModelScope.launch {
+            showWhatsNew.value = onboarding.showWhatsNew.first()
+        }
+    }
+
     fun onWhatsNewClick() {
-        manuallyShowWhatsNew.value = true
+        showWhatsNew.value = true
     }
 
     fun onDismissWhatsNew() {
         onboarding.showedWhatsNew()
-        manuallyShowWhatsNew.value = false
+        showWhatsNew.value = false
     }
 
     fun launchSettings() {

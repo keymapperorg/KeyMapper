@@ -1297,7 +1297,6 @@
     <string name="purchasing_error_store_problem">Google Play 遇到错误。</string>
     <string name="purchasing_error_payment_pending">我们正在等待 Google Play 确认您的购买是否成功。请于银行卡扣款成功后，重新打开 Key\u00A0Mapper 应用。</string>
     <string name="purchasing_error_purchase_invalid">无效的购买。</string>
-    <string name="purchasing_error_entitlement_not_granted_after_purchase">无法验证购买。您有互联网连接吗？</string>
     <string name="purchasing_pending_error_dialog_title">待付款</string>
     <string name="purchasing_error_dialog_title">出错了 😕</string>
     <string name="purchasing_error_dialog_button_retry">重试</string>

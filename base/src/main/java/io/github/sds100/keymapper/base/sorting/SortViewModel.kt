@@ -72,6 +72,8 @@ class SortViewModel(
             SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
             SortFieldOrder(SortField.CONSTRAINTS),
             SortFieldOrder(SortField.OPTIONS),
+            SortFieldOrder(SortField.ENABLED),
+            SortFieldOrder(SortField.NAME),
         )
     }
 }

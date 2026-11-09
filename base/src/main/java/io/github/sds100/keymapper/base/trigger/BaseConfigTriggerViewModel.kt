@@ -214,10 +214,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     suspend fun navigateToAdvancedTriggers(navKey: String) {
-        val result: TriggerSetupShortcut =
-            navigate(navKey, NavDestination.AdvancedTriggers) ?: return
-
-        showTriggerSetup(result)
+        navigate(navKey, NavDestination.AdvancedTriggers)
     }
 
     private fun buildUiState(

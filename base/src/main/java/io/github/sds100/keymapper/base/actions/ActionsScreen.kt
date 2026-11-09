@@ -51,7 +51,6 @@ import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomS
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
-import io.github.sds100.keymapper.base.onboarding.OnboardingTipModel
 import io.github.sds100.keymapper.base.onboarding.TipCard
 import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
@@ -75,7 +74,11 @@ private val linkRowHeight = 48.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewModel) {
+fun ActionsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigActionsViewModel,
+    tipContent: (@Composable () -> Unit)? = null,
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
@@ -112,10 +115,24 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 
     HandleActionBottomSheets(viewModel.createActionDelegate)
 
+    val onboardingTipContent: (@Composable () -> Unit)? = actionTipModel?.let { tip ->
+        {
+            TipCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                title = tip.title,
+                message = tip.message,
+                isDismissable = tip.isDismissable,
+                onDismiss = viewModel::onActionTipDismiss,
+                buttonText = tip.buttonText,
+                onButtonClick = { viewModel.onTipButtonClick(tip.id) },
+            )
+        }
+    }
+
     ActionsScreen(
         modifier = modifier,
         state = state,
-        tipModel = actionTipModel,
+        tipContent = tipContent ?: onboardingTipContent,
         callback = viewModel,
         onRemoveClick = viewModel::onRemoveClick,
         onAddClick = viewModel::onAddActionClick,
@@ -128,7 +145,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 fun ActionsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigActionsState>,
-    tipModel: OnboardingTipModel? = null,
+    tipContent: (@Composable () -> Unit)? = null,
     callback: ActionListCallback = object : ActionListCallback {},
     onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
@@ -178,7 +195,7 @@ fun ActionsScreen(
                 ActionList(
                     modifier = Modifier.weight(1f),
                     state = state.data,
-                    tipModel = tipModel,
+                    tipContent = tipContent,
                     callback = callback,
                     onRemoveClick = onRemoveClick,
                     onDelayClick = { actionToSetDelay = it },
@@ -226,7 +243,7 @@ interface ActionListCallback {
 private fun ActionList(
     modifier: Modifier = Modifier,
     state: ConfigActionsState,
-    tipModel: OnboardingTipModel?,
+    tipContent: (@Composable () -> Unit)?,
     callback: ActionListCallback,
     onRemoveClick: (String) -> Unit,
     onDelayClick: (String) -> Unit,
@@ -256,19 +273,9 @@ private fun ActionList(
             Arrangement.Top
         },
     ) {
-        // Display action tip if available
-        tipModel?.let { tip ->
-            item {
-                TipCard(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
-                    title = tip.title,
-                    message = tip.message,
-                    isDismissable = tip.isDismissable,
-                    onDismiss = callback::onActionTipDismiss,
-                    buttonText = tip.buttonText,
-                    onButtonClick = { callback.onTipButtonClick(tip.id) },
-                )
+        tipContent?.let { content ->
+            item(key = "tip", contentType = "tip") {
+                content()
 
                 Spacer(Modifier.height(16.dp))
             }
@@ -548,13 +555,15 @@ private fun EmptyWithShortcutsPreview() {
 private fun LoadedPreview() {
     KeyMapperTheme {
         ActionsScreen(
-            tipModel = OnboardingTipModel(
-                id = "id",
-                title = "Use a dedicated action instead",
-                message = "Use the \"Flashlight\" action instead.",
-                isDismissable = false,
-                buttonText = "Replace action",
-            ),
+            tipContent = {
+                TipCard(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    title = "Use a dedicated action instead",
+                    message = "Use the \"Flashlight\" action instead.",
+                    isDismissable = false,
+                    buttonText = "Replace action",
+                )
+            },
             state = State.Data(
                 ConfigActionsState.Loaded(
                     actions = listOf(

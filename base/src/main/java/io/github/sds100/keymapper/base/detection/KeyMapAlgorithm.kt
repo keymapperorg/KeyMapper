@@ -1167,7 +1167,6 @@ class KeyMapAlgorithm(
                                 doublePressTimeout(triggers[triggerIndex])
                             doublePressTimeoutTimes[index] = currentTime + doublePressTimeout
 
-                            imitateKeyAfterDoublePressTimeout.add(doublePressTimeout)
                             matchedDoublePressEventIndex = index
 
                             triggers[triggerIndex].keys.forEachIndexed { keyIndex, key ->
@@ -1176,6 +1175,12 @@ class KeyMapAlgorithm(
                                 ) {
                                     consumeEvent = true
                                 }
+                            }
+
+                            // Only imitate if the event was consumed. Otherwise it was
+                            // already passed through and would be input twice. See #2183.
+                            if (consumeEvent) {
+                                imitateKeyAfterDoublePressTimeout.add(doublePressTimeout)
                             }
                         }
 

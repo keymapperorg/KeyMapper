@@ -453,6 +453,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 isEnabled = applicationInfo.enabled,
                 isLaunchable = isLaunchable,
                 versionCode = PackageInfoCompat.getLongVersionCode(packageInfo),
+                category = applicationInfo.category,
             )
         } catch (e: PackageManager.NameNotFoundException) {
             return null

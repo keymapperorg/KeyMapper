@@ -112,6 +112,8 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.RINGER_MODE -> volumeAdapter.ringerModeFlow.map { dependency }
 
+            ConstraintDependency.DND_MODE -> volumeAdapter.dndModeFlow.map { dependency }
+
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
 
             ConstraintDependency.HINGE_STATE ->

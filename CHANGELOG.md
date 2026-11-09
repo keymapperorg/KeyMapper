@@ -1,3 +1,27 @@
+## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
+
+#### 08 November 2026
+
+## Added
+
+- #2310 Sort key maps by name. Unnamed key maps are last.
+- #2279 Broadcast whether mappings are paused so other apps can respond to it.
+- #2278 Do Not Disturb constraint.
+
+## Changed
+
+- Only use one bundle paywall. The legacy one is removed.
+- #2311 Sort triggers, actions and constraints alphabetically by the text shown in the key map list.
+
+## Fixed
+
+- #2183 Volume key no longer acts as the power button after single pressing a power button double press trigger in Expert Mode.
+- #2304 Expert Mode fails to start on Honor Android 17.
+- #2305 Expert Mode restarts if it is killed shortly after auto starting, and auto starts with Shizuku if Shizuku starts after Key Mapper.
+- #2315 Floating buttons no longer use an out of date display size, which could shift them and trap them in part of the screen while dragging.
+- #2318 Text action works on Android 12 an older in Termux and some other apps.
+- #2308 Cycle keyboard language action changes the physical keyboard language when using the Key Mapper keyboard on Android 14+.
+
 ## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
 
 #### 22 October 2026

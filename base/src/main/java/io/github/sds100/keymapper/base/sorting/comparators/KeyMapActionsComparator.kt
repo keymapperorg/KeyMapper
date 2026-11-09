@@ -1,20 +1,19 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
-import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
+import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.valueOrNull
+import java.text.Collator
 
 class KeyMapActionsComparator(
-    private val displayActions: DisplayActionUseCase,
+    private val getTitle: (Action) -> String,
     /**
      * Each comparator is reversed separately instead of the entire key map list
      * and Comparator.reversed() requires API level 24 so use a custom reverse field.
      */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
+    private val collator = Collator.getInstance()
+
     override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
@@ -29,11 +28,16 @@ class KeyMapActionsComparator(
             val action1 = keyMap.actionList[i]
             val action2 = otherKeyMap.actionList[i]
 
+            val titleResult = collator.compare(getTitle(action1), getTitle(action2))
+
+            if (titleResult != 0) {
+                return invertIfReverse(titleResult)
+            }
+
             val result = compareValuesBy(
                 action1,
                 action2,
                 { it.data.id },
-                { getSecondarySortField(it.data).valueOrNull() ?: it.data.id },
                 { it.repeat },
                 { it.multiplier },
                 { it.repeatLimit },
@@ -58,32 +62,5 @@ class KeyMapActionsComparator(
         result * -1
     } else {
         result
-    }
-
-    private fun getSecondarySortField(action: ActionData): KMResult<String> {
-        return when (action) {
-            is ActionData.App -> displayActions.getAppName(action.packageName)
-            is ActionData.AppShortcut -> Success(action.shortcutTitle)
-            is ActionData.InputKeyEvent -> Success(action.keyCode.toString())
-            is ActionData.Sound.SoundFile -> Success(action.soundDescription)
-            is ActionData.Sound.Ringtone -> Success(action.uri)
-            is ActionData.Volume.Up -> Success(action.volumeStream?.toString() ?: "")
-            is ActionData.Volume.Down -> Success(action.volumeStream?.toString() ?: "")
-            is ActionData.Volume.SetRingerMode -> Success(action.ringerMode.toString())
-            is ActionData.Flashlight -> Success(action.lens.toString())
-            is ActionData.SwitchKeyboard -> Success(action.savedImeName)
-            is ActionData.DoNotDisturb.Toggle -> Success(action.dndMode.toString())
-            is ActionData.DoNotDisturb.Enable -> Success(action.dndMode.toString())
-            is ActionData.ControlMediaForApp -> Success(action.packageName)
-            is ActionData.Intent -> Success(action.description)
-            is ActionData.TapScreen -> Success(action.description ?: "")
-            is ActionData.SwipeScreen -> Success(action.description ?: "")
-            is ActionData.PinchScreen -> Success(action.description ?: "")
-            is ActionData.PhoneCall -> Success(action.number)
-            is ActionData.Url -> Success(action.url)
-            is ActionData.Text -> Success(action.text)
-            is ActionData.Rotation.CycleRotations -> Success(action.orientations.joinToString())
-            else -> Success("")
-        }
     }
 }

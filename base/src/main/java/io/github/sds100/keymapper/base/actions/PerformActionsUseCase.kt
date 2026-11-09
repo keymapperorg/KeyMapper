@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAct
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
@@ -23,6 +24,7 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.vibrate
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
@@ -83,12 +85,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
@@ -130,6 +130,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val settingsAdapter: SettingsAdapter,
     private val vibratorAdapter: VibratorAdapter,
     private val variablesUseCase: VariablesUseCase,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -149,6 +150,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     // This also prevents slow Binder calls that are potentially spammed by the user's key maps
     // from starving the thread pool.
     private val gestureDispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
+
+    private val imeHelper: KeyMapperImeHelper =
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     private val openMenuHelper by lazy {
         OpenMenuHelper(
@@ -299,38 +303,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwitchKeyboard -> {
-                switchImeInterface.switchIme(action.imeId)
-
-                // See issue #1064. Wait for the input method to finish switching before returning.
-                val chosenIme = withTimeoutOrNull(2000.milliseconds) {
-                    inputMethodAdapter.chosenIme.filterNotNull().first { it.id == action.imeId }
-                }
-
-                if (chosenIme == null) {
-                    result = KMError.SwitchImeFailed
-                } else {
-                    result = Success(Unit)
-                }
+                result = imeHelper.switchImeAndWait(action.imeId)
             }
 
             is ActionData.CycleKeyboardLanguage -> {
-                result = inputMethodAdapter.cycleInputMethodSubtype()
+                result = imeHelper.cycleKeyboardLanguage()
             }
 
             is ActionData.CycleKeyboard -> {
                 result = inputMethodAdapter.getNextInputMethod().then { nextIme ->
-                    switchImeInterface.switchIme(nextIme.id)
-
-                    // See issue #1064. Wait for the input method to finish switching before returning.
-                    val chosenIme = withTimeoutOrNull(2000.milliseconds) {
-                        inputMethodAdapter.chosenIme.filterNotNull().first { it.id == nextIme.id }
-                    }
-
-                    if (chosenIme == null) {
-                        KMError.SwitchImeFailed
-                    } else {
-                        Success(Unit)
-                    }
+                    imeHelper.switchImeAndWait(nextIme.id)
                 }
             }
 

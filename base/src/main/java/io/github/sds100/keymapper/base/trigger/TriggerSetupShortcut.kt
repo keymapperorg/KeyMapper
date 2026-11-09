@@ -15,6 +15,4 @@ enum class TriggerSetupShortcut {
     GAMEPAD,
     OTHER,
     NOT_DETECTED,
-    FLOATING_BUTTON_CUSTOM,
-    FLOATING_BUTTON_LOCK_SCREEN,
 }

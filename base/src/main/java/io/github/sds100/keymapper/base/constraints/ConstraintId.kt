@@ -48,6 +48,8 @@ enum class ConstraintId {
     RINGER_MODE_VIBRATE,
     RINGER_MODE_SILENT,
 
+    DND_MODE,
+
     CHARGING,
 
     HINGE_CLOSED,

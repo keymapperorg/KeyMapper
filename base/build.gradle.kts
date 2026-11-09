@@ -150,6 +150,7 @@ dependencies {
 
     // Tests
 
+    testImplementation(project(":test-fixtures"))
     testImplementation(libs.junit)
     testImplementation(libs.hamcrest.all)
     testImplementation(libs.androidx.junit.ktx) // androidx.test.ext:junit-ktx

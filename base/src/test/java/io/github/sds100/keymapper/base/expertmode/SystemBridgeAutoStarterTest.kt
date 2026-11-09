@@ -414,8 +414,9 @@ class SystemBridgeAutoStarterTest {
         fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         // Initially Shizuku is disconnected, and is connected 50 seconds after booting
+        // The permission reads as denied until the binder is received.
         shizukuIsStartedFlow.value = false
-        shizukuPermissionGrantedFlow.value = true
+        shizukuPermissionGrantedFlow.value = false
 
         inOrder(mockConnectionManager) {
             systemBridgeAutoStarter.init()
@@ -424,6 +425,7 @@ class SystemBridgeAutoStarterTest {
 
             // Shizuku starts
             shizukuIsStartedFlow.value = true
+            shizukuPermissionGrantedFlow.value = true
 
             advanceTimeBy(20000)
             verify(mockConnectionManager).startWithShizuku()
@@ -598,37 +600,159 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start within 5 minutes of the last auto start`() = runTest(testDispatcher) {
-        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
-        fakePreferences.set(Keys.isSystemBridgeUsed, true)
-        fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+    fun `only auto restart once if killed repeatedly within 5 minutes of auto starting`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
 
-        isRootGrantedFlow.value = true
-        fakePreferences.set(
-            Keys.systemBridgeLastManualStartTime,
-            // 10 minutes before
-            testScopeClock.unixTimestamp() - 600,
-        )
-
-        inOrder(mockConnectionManager) {
-            systemBridgeAutoStarter.init()
-            advanceTimeBy(6000)
-            // Try auto starting when the process launches
-            verify(mockConnectionManager).startWithRoot()
-            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
-
-            advanceUntilIdle()
-            // It is killed unexpectedly straight after auto starting
-            connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
-                time = 7000,
-                isStoppedByUser = false,
+            isRootGrantedFlow.value = true
+            fakePreferences.set(
+                Keys.systemBridgeLastManualStartTime,
+                // 10 minutes before
+                testScopeClock.unixTimestamp() - 600,
             )
 
-            advanceUntilIdle()
-            // Auto starting fails and so it does not try starting again
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+                // Try auto starting when the process launches
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
+
+                advanceUntilIdle()
+                // It is killed unexpectedly straight after auto starting
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 7000,
+                    isStoppedByUser = false,
+                )
+
+                advanceUntilIdle()
+                // It gets one quick retry
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 8000)
+
+                advanceUntilIdle()
+                // It is killed again
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 9000,
+                    isStoppedByUser = false,
+                )
+
+                advanceUntilIdle()
+                verify(mockConnectionManager, never()).startWithRoot()
+            }
+        }
+
+    @Test
+    fun `quick retry is available again if the system bridge runs for longer than the cooldown`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
+                advanceUntilIdle()
+
+                // Killed straight after, so the quick retry is used.
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 7000,
+                    isStoppedByUser = false,
+                )
+                advanceUntilIdle()
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 8000)
+                advanceUntilIdle()
+
+                // Runs for 6 minutes and is then killed.
+                fakePreferences.set(
+                    Keys.systemBridgeLastAutoStartTime,
+                    testScopeClock.unixTimestamp() - 360,
+                )
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 9000,
+                    isStoppedByUser = false,
+                )
+                advanceUntilIdle()
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 10000)
+                advanceUntilIdle()
+
+                // Killed straight after, and the quick retry is available again.
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 11000,
+                    isStoppedByUser = false,
+                )
+                advanceUntilIdle()
+                verify(mockConnectionManager).startWithRoot()
+            }
+        }
+
+    @Test
+    fun `auto restart if the user started it manually after the quick retry`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
+                advanceUntilIdle()
+
+                // Killed straight after, so the quick retry is used.
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 7000,
+                    isStoppedByUser = false,
+                )
+                advanceUntilIdle()
+                verify(mockConnectionManager).startWithRoot()
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 8000)
+                advanceUntilIdle()
+
+                fakePreferences.set(
+                    Keys.systemBridgeLastManualStartTime,
+                    testScopeClock.unixTimestamp(),
+                )
+
+                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                    time = 9000,
+                    isStoppedByUser = false,
+                )
+                advanceUntilIdle()
+                verify(mockConnectionManager).startWithRoot()
+            }
+        }
+
+    @Test
+    fun `do not auto start on launch within 5 minutes of an auto start by the previous process`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.handledUpgradeToExpertMode, true)
+            fakePreferences.set(
+                Keys.systemBridgeLastAutoStartTime,
+                // 1 minute before
+                testScopeClock.unixTimestamp() - 60,
+            )
+
+            isRootGrantedFlow.value = true
+
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(6000)
+
             verify(mockConnectionManager, never()).startWithRoot()
         }
-    }
 
     @Test
     fun `auto start within 5 minutes of the last auto start if the user started it manually in between`() =
@@ -677,6 +801,15 @@ class SystemBridgeAutoStarterTest {
                 // Set the state as disconnected within the timeout
                 connectionStateFlow.value =
                     SystemBridgeConnectionState.Disconnected(time = 11000, isStoppedByUser = false)
+                advanceTimeBy(1000)
+
+                // The quick retry shows that it is auto starting again
+                verify(mockNotificationAdapter).showNotification(any())
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 12000)
+
+                // Killed again so the cooldown applies
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 13000, isStoppedByUser = false)
                 advanceUntilIdle()
 
                 // Show notification

@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.system.notifications.PostedNotification
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import java.time.LocalTime
@@ -82,6 +83,7 @@ class LazyConstraintSnapshot(
     private val callState: CallState? by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
     private val ringerMode: RingerMode by lazy { volumeAdapter.ringerMode }
+    private val dndMode: DndMode? by lazy { volumeAdapter.dndMode }
 
     private val isLocked: Boolean by lazy {
         lockScreenAdapter.isLocked()
@@ -181,6 +183,13 @@ class LazyConstraintSnapshot(
                     audioVolumeStreams.contains(AudioManager.STREAM_RING)
 
             is ConstraintData.RingerMode -> ringerMode == constraint.data.ringerMode
+
+            is ConstraintData.DoNotDisturb ->
+                if (constraint.data.dndMode == null) {
+                    dndMode != null
+                } else {
+                    dndMode == constraint.data.dndMode
+                }
 
             is ConstraintData.Charging -> isCharging
 

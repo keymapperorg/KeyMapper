@@ -350,6 +350,13 @@
     <string name="constraint_ringer_mode_not_normal">Ringer mode is not: Ring</string>
     <string name="constraint_ringer_mode_not_vibrate">Ringer mode is not: Vibrate</string>
     <string name="constraint_ringer_mode_not_silent">Ringer mode is not: Silent</string>
+    <string name="constraint_dnd_mode">Do Not Disturb</string>
+    <string name="constraint_dnd_mode_on">Do Not Disturb is on</string>
+    <string name="constraint_dnd_mode_off">Do Not Disturb is off</string>
+    <string name="constraint_dnd_mode_formatted">Do Not Disturb: %s</string>
+    <string name="constraint_dnd_mode_not_formatted">Do Not Disturb is not: %s</string>
+    <string name="constraint_dnd_mode_any">Any mode</string>
+    <string name="constraint_dnd_mode_bottom_sheet_title">Choose Do Not Disturb mode</string>
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
@@ -1694,7 +1701,6 @@
     <string name="purchasing_error_store_problem">Google Play encountered an error.</string>
     <string name="purchasing_error_payment_pending">We are waiting for confirmation from Google Play that your purchase was successful. Reopen the Key\u00A0Mapper app when your card has been successfully charged.</string>
     <string name="purchasing_error_purchase_invalid">Invalid purchase.</string>
-    <string name="purchasing_error_entitlement_not_granted_after_purchase">Purchase can not be verified. Do you have an internet connection?</string>
     <string name="purchasing_pending_error_dialog_title">Payment pending</string>
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
@@ -1792,6 +1798,7 @@
     <string name="sort_bottom_sheet_constraints">Constraints</string>
     <string name="sort_bottom_sheet_options">Options</string>
     <string name="sort_bottom_sheet_enabled">Enabled</string>
+    <string name="sort_bottom_sheet_name">Name</string>
     <string name="home_nav_bar_key_maps">Key maps</string>
     <string name="home_nav_bar_floating_buttons">Floating buttons</string>
     <string name="home_fab_new_key_map">New key map</string>
@@ -2216,7 +2223,8 @@
     <string name="trigger_discover_screen_title">Discover</string>
     <string name="trigger_discover_screen_subtitle">What do you want to remap?</string>
     <string name="trigger_discover_section_on_device_buttons">On-device buttons</string>
-    <string name="trigger_discover_section_peripherals_gaming">Peripherals &amp; gaming</string>
+    <string name="trigger_discover_section_peripherals_gaming">Peripherals</string>
+    <string name="trigger_discover_section_gaming">Gaming</string>
     <string name="trigger_discover_section_floating_buttons">Floating buttons</string>
 
     <string name="trigger_discover_shortcut_volume">Volume</string>
@@ -2227,6 +2235,10 @@
     <string name="trigger_discover_shortcut_mouse">Mouse</string>
     <string name="trigger_discover_shortcut_gamepad">Gamepad</string>
     <string name="trigger_discover_shortcut_other">Other</string>
+    <string name="trigger_discover_shortcut_joysticks">Joysticks</string>
+    <string name="trigger_discover_shortcut_triggers">Triggers</string>
+    <string name="trigger_discover_shortcut_dpad">D-pad</string>
+    <string name="trigger_discover_shortcut_mouse_movement">Mouse motion</string>
     <string name="trigger_discover_shortcut_custom">Custom</string>
     <string name="trigger_discover_shortcut_notch">Notch</string>
     <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
@@ -2367,6 +2379,9 @@
     <string name="intent_screen_tab_pause">Pause</string>
     <string name="intent_screen_tab_resume">Resume</string>
     <string name="intent_screen_tab_toggle">Toggle</string>
+    <string name="intent_screen_listen_title">Listen for changes</string>
+    <string name="intent_screen_listen_explanation">Register a broadcast receiver for this action to keep track of whether key maps are paused. Key Mapper sends it whenever they are paused or resumed, each time Key Mapper starts, and when its accessibility service starts. The extra is true when key maps are paused.</string>
+    <string name="intent_screen_label_extra_name_boolean">Boolean extra name</string>
 
     <string name="enable_disable_group_by_intent_title">Enable/disable group by intent</string>
     <string name="intent_screen_enable_group_message">Any app that can send an intent, such as Tasker or Automate, can turn a group on and off without opening Key Mapper. Send a broadcast to Key Mapper with these settings.</string>

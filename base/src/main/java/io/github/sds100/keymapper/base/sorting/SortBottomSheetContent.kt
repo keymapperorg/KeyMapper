@@ -490,6 +490,7 @@ private fun SortHelpCard(
 @Composable
 private fun SortBottomSheetContentPreview() {
     val list = listOf(
+        SortFieldOrder(SortField.NAME, SortOrder.NONE),
         SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
         SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
         SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
@@ -519,6 +520,7 @@ private fun SortBottomSheetContentPreview() {
 @Composable
 private fun SortBottomSheetPreview() {
     val list = listOf(
+        SortFieldOrder(SortField.NAME, SortOrder.NONE),
         SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
         SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
         SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
@@ -559,5 +561,6 @@ private fun sortFieldText(sortField: SortField): String {
         SortField.CONSTRAINTS -> stringResource(R.string.sort_bottom_sheet_constraints)
         SortField.OPTIONS -> stringResource(R.string.sort_bottom_sheet_options)
         SortField.ENABLED -> stringResource(R.string.sort_bottom_sheet_enabled)
+        SortField.NAME -> stringResource(R.string.sort_bottom_sheet_name)
     }
 }
