@@ -103,7 +103,7 @@ class FakePackageManagerAdapter : PackageManagerAdapter {
         throw NotImplementedError()
     }
 
-    override fun getDeviceAssistantPackage(): KMResult<String> {
+    override fun isDeviceAssistantInstalled(): Boolean {
         throw NotImplementedError()
     }
 
