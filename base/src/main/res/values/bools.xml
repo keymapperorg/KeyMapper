@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    Backup is disabled before Android 16 because Auto Backup starts the app in "restricted mode"
+    with the base android.app.Application instead of KeyMapperApp. If the system binds a Hilt
+    component (e.g. the accessibility service) into that process it crashes because there is no
+    Hilt Application. Android 16 lets apps opt out of restricted mode with the
+    PROPERTY_USE_RESTRICTED_BACKUP_MODE manifest property.
+    https://developer.android.com/identity/data/autobackup#ImplementingBackupAgent
+    https://github.com/google/dagger/issues/2584
+    -->
+    <bool name="allow_backup">false</bool>
+</resources>

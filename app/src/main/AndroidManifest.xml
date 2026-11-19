@@ -31,7 +31,7 @@
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
-        android:allowBackup="true"
+        android:allowBackup="@bool/allow_backup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -41,6 +41,12 @@
         android:extractNativeLibs="true"
         tools:ignore="GoogleAppIndexingWarning,MissingTvBanner">
         <!--  Allow clear text traffic due to the HTTP Request Action. -->
+
+        <!-- Use KeyMapperApp during backup and restore so Hilt components don't crash.
+         Only respected on Android 16+. See @bool/allow_backup. -->
+        <property
+            android:name="android.app.backup.PROPERTY_USE_RESTRICTED_BACKUP_MODE"
+            android:value="false" />
 
         <activity
             android:name=".MainActivity"

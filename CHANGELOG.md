@@ -7,6 +7,7 @@
 - Crash when a display is disconnected while floating buttons are showing.
 - Crash in the quick settings tiles due to inconsistent lifecycle state management.
 - Crash when checking Shizuku permission due to a bug in their service.
+- Crash in the accessibility service when Android backs up the app. Backup is now only enabled on Android 16+. This is caused by a feature in AOSP that the Dagger Hilt team can not work around.
 
 ## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
 
