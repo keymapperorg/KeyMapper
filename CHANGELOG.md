@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Fixed
+
+- Crash when a display is disconnected while floating buttons are showing.
+
 ## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
 
 #### 08 November 2026
