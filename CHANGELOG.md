@@ -1,3 +1,7 @@
+## [4.7.1](https://github.com/sds100/KeyMapper/releases/tag/v4.7.1)
+
+#### TO BE RELEASED
+
 ## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
 
 #### 08 November 2026
