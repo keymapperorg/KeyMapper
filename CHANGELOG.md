@@ -1,6 +1,10 @@
 ## [4.7.1](https://github.com/sds100/KeyMapper/releases/tag/v4.7.1)
 
-#### TO BE RELEASED
+#### 19 November 2026
+
+## Added
+
+- More Chinese translations.
 
 ## Fixed
 
