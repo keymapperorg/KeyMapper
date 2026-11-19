@@ -4,6 +4,7 @@
 
 ## Fixed
 
+- Crash on Android 13+ in the accessibility service input method due to a few AOSP bugs. The accessibility service input method feature is now only enabled when necessary. This should reduce the random crashes for users who don't need the feature.
 - Crash when a display is disconnected while floating buttons are showing.
 - Crash in the quick settings tiles due to inconsistent lifecycle state management.
 - Crash when checking Shizuku permission due to a bug in their service.
