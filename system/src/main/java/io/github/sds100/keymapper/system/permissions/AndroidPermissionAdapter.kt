@@ -299,7 +299,13 @@ class AndroidPermissionAdapter @Inject constructor(
         // this check is super quick (~0ms) so this doesn't need to be cached.
         Permission.SHIZUKU -> {
             if (Shizuku.getBinder() != null) {
-                Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+                try {
+                    Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+                } catch (_: IllegalStateException) {
+                    // The Shizuku service can sometimes throw an exception
+                    // java.lang.IllegalStateException: Not an attached client
+                    false
+                }
             } else {
                 false
             }

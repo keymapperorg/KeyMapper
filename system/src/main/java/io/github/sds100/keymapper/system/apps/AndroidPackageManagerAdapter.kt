@@ -19,6 +19,7 @@ import android.os.RemoteException
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import android.speech.RecognizerIntent
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
@@ -148,8 +149,24 @@ class AndroidPackageManagerAdapter @Inject constructor(
     }
 
     override fun launchVoiceAssistant(): KMResult<*> {
+        val voiceCommandComponent = resolveExternalActivity(Intent(Intent.ACTION_VOICE_COMMAND))
+
+        // See issue #2317.
+        // Gemini does not handle ACTION_VOICE_COMMAND properly on some devices, but it does
+        // handle ACTION_WEB_SEARCH, which is what Android launches for KEYCODE_VOICE_ASSIST.
+        // Only use it when necessary so other voice assistants are not affected.
+        val action = if (isGoogleDeviceAssistant() || voiceCommandComponent == null) {
+            RecognizerIntent.ACTION_WEB_SEARCH
+        } else {
+            Intent.ACTION_VOICE_COMMAND
+        }
+
+        val intent = Intent(action)
+        val component = resolveExternalActivity(intent) ?: return KMError.NoVoiceAssistant
+
         try {
-            Intent(Intent.ACTION_VOICE_COMMAND).apply {
+            intent.apply {
+                this.component = component
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
                 // DO NOT use trampoline activity. The voice assistant app
@@ -161,6 +178,23 @@ class AndroidPackageManagerAdapter @Inject constructor(
         } catch (e: ActivityNotFoundException) {
             return KMError.NoVoiceAssistant
         }
+    }
+
+    private fun isGoogleDeviceAssistant(): Boolean {
+        return when (getDeviceAssistantPackageName()) {
+            "com.google.android.googlequicksearchbox", "com.google.android.apps.bard" -> true
+            else -> false
+        }
+    }
+
+    /**
+     * Find an activity for the intent that isn't Key Mapper's assistant activity.
+     */
+    private fun resolveExternalActivity(intent: Intent): ComponentName? {
+        return packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            .map { it.activityInfo }
+            .firstOrNull { it.packageName != ctx.packageName }
+            ?.let { ComponentName(it.packageName, it.name) }
     }
 
     override fun launchDeviceAssistant(): KMResult<*> {
@@ -176,15 +210,18 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
     }
 
-    override fun getDeviceAssistantPackage(): KMResult<String> {
+    override fun isDeviceAssistantInstalled(): Boolean {
+        return getDeviceAssistantPackageName() != null
+    }
+
+    private fun getDeviceAssistantPackageName(): String? {
         val settingValue = Settings.Secure.getString(ctx.contentResolver, "assistant")
 
         if (settingValue.isNullOrEmpty()) {
-            return KMError.NoDeviceAssistant
+            return null
         }
 
-        val packageName = settingValue.split("/").first()
-        return Success(packageName)
+        return settingValue.split("/").first()
     }
 
     override fun enableApp(packageName: String) {
@@ -298,10 +335,8 @@ class AndroidPackageManagerAdapter @Inject constructor(
     }
 
     override fun isVoiceAssistantInstalled(): Boolean {
-        val activityExists =
-            Intent(Intent.ACTION_VOICE_COMMAND).resolveActivityInfo(ctx.packageManager, 0) != null
-
-        return activityExists
+        return resolveExternalActivity(Intent(Intent.ACTION_VOICE_COMMAND)) != null ||
+            resolveExternalActivity(Intent(RecognizerIntent.ACTION_WEB_SEARCH)) != null
     }
 
     override fun launchCameraApp(): KMResult<*> {

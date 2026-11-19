@@ -127,9 +127,20 @@ class ToggleMappingsTile :
     }
 
     override fun onStartListening() {
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        // A queued listening message can arrive after onDestroy.
+        if (lifecycleRegistry.currentState != Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        }
 
         super.onStartListening()
+    }
+
+    override fun onStopListening() {
+        if (lifecycleRegistry.currentState != Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        }
+
+        super.onStopListening()
     }
 
     override fun onDestroy() {

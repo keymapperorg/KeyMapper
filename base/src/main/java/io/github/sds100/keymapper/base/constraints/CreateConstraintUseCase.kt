@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.getDisplaySafe
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
@@ -66,9 +67,9 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         displayAdapter.displays.value.flatMap { it.supportedSizes }.toSet()
 
     override fun getCurrentResolution(): SizeKM {
-        return displayAdapter.getDisplay(
+        return displayAdapter.getDisplaySafe(
             displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY,
-        )!!.physicalSize
+        ).physicalSize
     }
 }
 

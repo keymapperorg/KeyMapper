@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
-import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -310,8 +309,8 @@ class GetActionErrorUseCaseTest {
     fun `show an error for device assistant action when no device assistant is installed`() =
         testScope.runTest {
             whenever(
-                mockPackageManagerAdapter.getDeviceAssistantPackage(),
-            ).thenReturn(KMError.NoDeviceAssistant)
+                mockPackageManagerAdapter.isDeviceAssistantInstalled(),
+            ).thenReturn(false)
 
             val action = ActionData.DeviceAssistant
 
@@ -324,8 +323,8 @@ class GetActionErrorUseCaseTest {
     fun `do not show an error for device assistant action when a device assistant is installed`() =
         testScope.runTest {
             whenever(
-                mockPackageManagerAdapter.getDeviceAssistantPackage(),
-            ).thenReturn(Success("com.google.android.googlequicksearchbox"))
+                mockPackageManagerAdapter.isDeviceAssistantInstalled(),
+            ).thenReturn(true)
 
             val action = ActionData.DeviceAssistant
 
