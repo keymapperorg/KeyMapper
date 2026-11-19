@@ -5,6 +5,7 @@
 ## Fixed
 
 - Crash when a display is disconnected while floating buttons are showing.
+- Crash in the quick settings tiles due to inconsistent lifecycle state management.
 
 ## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
 

@@ -63,7 +63,18 @@ class ToggleKeyMapperKeyboardTile :
     override fun onStartListening() {
         super.onStartListening()
 
-        lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        // A queued listening message can arrive after onDestroy.
+        if (lifecycleRegistry.currentState != Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.STARTED
+        }
+    }
+
+    override fun onStopListening() {
+        if (lifecycleRegistry.currentState != Lifecycle.State.DESTROYED) {
+            lifecycleRegistry.currentState = Lifecycle.State.CREATED
+        }
+
+        super.onStopListening()
     }
 
     override fun onDestroy() {
