@@ -28,7 +28,8 @@ The cases below only apply these.
    key-down.
    Issues: #407 (closed), #1386 (closed).
 4. **R4: More keys win.** A superset combo trigger beats a subset one, and a longer sequence
-   beats a shorter one it contains.
+   beats a shorter one it contains. A combo whose keys are all held but which is still waiting
+   for its long-press delay already counts: a subset that completes first defers to it.
    Issues: #407 (closed), #571 (closed), #653 (closed), #1781 (open), #804 (open),
    #1508 (open), #1526 (open).
 5. **R5: In-order beats any-order.** An ordering generated from an any-order trigger is dropped
@@ -175,6 +176,31 @@ Test: `overlapping triggers 3`.
 
 Because a waiting single key fires on release as a down/up, a hold-down or repeat action on `A`
 doesn't work while `A` is part of a combo trigger that could still complete.
+
+### Long-press single is a key of a long-press combo
+
+```
+Trigger 1: Power (long)
+Trigger 2: Power (long) + Vol up (long)
+
+| Input                                            | Fires                    | Rule                      |
+|--------------------------------------------------|--------------------------|---------------------------|
+| Power↓, Vol up↓, both held past Vol up's delay   | Power + Vol up only      | R4: pending combo         |
+| Power↓, Vol up↓, Vol up↑ before its delay        | Power on Vol up↑         | R4, then R7: still held   |
+| Power↓ held past its delay, then Vol up↓         | Power, then nothing      | R6: Power↓ is claimed     |
+| Power↓ held past its delay, alone                | Power                    |                           |
+```
+
+Issue: #1781 (open). Today both fire. The two triggers complete at different times: Power's
+long press at `Power↓ + delay`, the combo's at `Vol up↓ + delay`, which is later. When the single
+completes, the combo hasn't, so R4 has nothing to compare against. The fix is to treat a combo
+as a competitor while it is pending, meaning all its keys are held and it's waiting for its
+delay. When Power's long press completes, look up the combos containing Power in the key index
+and check whether their other keys are held. That's the same lookup R10 does.
+
+R10 (wait for release) would also prevent the double fire, but it would delay long press Power
+until release whenever the combo could still complete, which defeats firing during the hold
+(#1095). The pending check only defers when the combo is already underway.
 
 ## Sequence vs sequence
 
