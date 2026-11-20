@@ -78,15 +78,19 @@ fun TextFieldDialog(
         keyboardController?.show()
     }
 
-    val submit = {
+    val submit: () -> Unit = {
         scope.launch {
+            if (!canBeEmpty && textFieldValue.text.isBlank()) {
+                error = emptyErrorText
+                return@launch
+            }
+
             error = onSubmitClick(textFieldValue.text)
 
             if (error == null) {
                 onDismissRequest()
             }
         }
-        Unit
     }
 
     CustomDialog(

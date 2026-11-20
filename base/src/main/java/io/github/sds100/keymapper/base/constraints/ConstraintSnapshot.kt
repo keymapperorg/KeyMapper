@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.DisplayInfo
+import io.github.sds100.keymapper.system.display.getDisplaySafe
 import io.github.sds100.keymapper.system.foldable.FoldableAdapter
 import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.foldable.isClosed
@@ -27,6 +28,7 @@ import io.github.sds100.keymapper.system.notifications.PostedNotification
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import java.time.LocalTime
@@ -54,13 +56,13 @@ class LazyConstraintSnapshot(
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy {
         devicesAdapter.connectedBluetoothDevices.value
     }
-    private val orientation: Orientation by lazy { getActiveDisplay()!!.rotation }
+    private val orientation: Orientation by lazy { getActiveDisplay().rotation }
     private val physicalOrientation: PhysicalOrientation by lazy {
         displayAdapter.cachedPhysicalOrientation
     }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val displaySize: SizeKM by lazy {
-        getActiveDisplay()!!.activeSize
+        getActiveDisplay().physicalSize
     }
 
     private val appsPlayingMedia: List<String> by lazy {
@@ -82,6 +84,7 @@ class LazyConstraintSnapshot(
     private val callState: CallState? by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
     private val ringerMode: RingerMode by lazy { volumeAdapter.ringerMode }
+    private val dndMode: DndMode? by lazy { volumeAdapter.dndMode }
 
     private val isLocked: Boolean by lazy {
         lockScreenAdapter.isLocked()
@@ -182,6 +185,13 @@ class LazyConstraintSnapshot(
 
             is ConstraintData.RingerMode -> ringerMode == constraint.data.ringerMode
 
+            is ConstraintData.DoNotDisturb ->
+                if (constraint.data.dndMode == null) {
+                    dndMode != null
+                } else {
+                    dndMode == constraint.data.dndMode
+                }
+
             is ConstraintData.Charging -> isCharging
 
             is ConstraintData.HingeClosed -> {
@@ -252,8 +262,8 @@ class LazyConstraintSnapshot(
         return isSatisfied != constraint.isNot
     }
 
-    private fun getActiveDisplay(): DisplayInfo? {
-        return displayAdapter.getDisplay(accessibilityService.getActiveDisplayId())
+    private fun getActiveDisplay(): DisplayInfo {
+        return displayAdapter.getDisplaySafe(accessibilityService.getActiveDisplayId())
     }
 }
 

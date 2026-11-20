@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.constraints
 import io.github.sds100.keymapper.base.variables.VariableComparison
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode as SystemRingerMode
 import java.time.LocalTime
 import java.util.UUID
@@ -141,6 +142,15 @@ sealed class ConstraintData {
             SystemRingerMode.VIBRATE -> ConstraintId.RINGER_MODE_VIBRATE
             SystemRingerMode.SILENT -> ConstraintId.RINGER_MODE_SILENT
         }
+    }
+
+    /**
+     * @param dndMode the Do Not Disturb mode that must be active. If null then any mode satisfies
+     * this constraint.
+     */
+    @Serializable
+    data class DoNotDisturb(val dndMode: DndMode?) : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.DND_MODE
     }
 
     @Serializable

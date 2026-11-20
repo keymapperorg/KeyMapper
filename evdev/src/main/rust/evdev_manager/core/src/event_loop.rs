@@ -230,7 +230,18 @@ impl EventLoopManager {
                 device
                     .uinput
                     .write_event(event_type, code, value)
-                    .map_err(EvdevError::from)
+                    .map_err(EvdevError::from)?;
+
+                // Without a SYN_REPORT the event sits in the buffer until the next
+                // real event on this device flushes it. See #2183.
+                if event_type != EventType::EV_SYN as u32 {
+                    device
+                        .uinput
+                        .write_event(EventType::EV_SYN as c_uint, EV_SYN::SYN_REPORT as c_uint, 0)
+                        .map_err(EvdevError::from)?;
+                }
+
+                Ok(())
             })
             .ok_or(EvdevError::from_enum(EvdevErrorCode::NoSuchDevice))?
     }

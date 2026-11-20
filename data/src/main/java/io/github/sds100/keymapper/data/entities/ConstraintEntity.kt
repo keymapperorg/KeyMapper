@@ -127,6 +127,8 @@ data class ConstraintEntity(
         const val RINGER_MODE_VIBRATE = "ringer_mode_vibrate"
         const val RINGER_MODE_SILENT = "ringer_mode_silent"
 
+        const val DND_MODE = "constraint_dnd_mode"
+
         const val CHARGING = "charging"
 
         @Deprecated(NOT_DEPRECATION_MESSAGE)
@@ -161,6 +163,8 @@ data class ConstraintEntity(
         const val EXTRA_NOTIFICATION_FIELD = "extra_notification_field"
         const val EXTRA_NOTIFICATION_MATCH_MODE = "extra_notification_match_mode"
         const val EXTRA_NOTIFICATION_VALUE = "extra_notification_value"
+
+        const val EXTRA_DND_MODE = "extra_dnd_mode"
 
         const val EXTRA_RESOLUTION_WIDTH = "extra_resolution_width"
         const val EXTRA_RESOLUTION_HEIGHT = "extra_resolution_height"

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.expertmode
 
+import android.os.Build
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
@@ -22,7 +23,9 @@ abstract class SystemBridgeSetupDelegateImpl(
             ::buildState,
         ).stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            // Use a timeout so it won't potentially call isAdbPaired when the app
+            // is in the background.
+            SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
             State.Loading,
         )
 
@@ -33,16 +36,25 @@ abstract class SystemBridgeSetupDelegateImpl(
 
         when (currentState) {
             is ExpertModeSetupState.AccessibilityService -> useCase.enableAccessibilityService()
+
             is ExpertModeSetupState.NotificationPermission ->
                 useCase.requestNotificationPermission()
+
             is ExpertModeSetupState.LocalNetworkPermission ->
                 useCase.requestLocalNetworkPermission()
+
             is ExpertModeSetupState.SamsungAutoBlocker -> useCase.openSamsungAutoBlockerSettings()
+
             is ExpertModeSetupState.DeveloperOptions -> useCase.enableDeveloperOptions()
+
             is ExpertModeSetupState.WifiNetwork -> useCase.connectWifiNetwork()
+
             is ExpertModeSetupState.WirelessDebugging -> useCase.enableWirelessDebugging()
+
             is ExpertModeSetupState.AdbPairing -> useCase.pairWirelessAdb()
+
             is ExpertModeSetupState.StartService -> useCase.startSystemBridgeWithAdb()
+
             is ExpertModeSetupState.Started -> onFinishClick()
         }
     }
@@ -55,6 +67,10 @@ abstract class SystemBridgeSetupDelegateImpl(
 
     override fun onSamsungAutoBlockerWarningClick() {
         useCase.openSamsungAutoBlockerSettings()
+    }
+
+    override fun onSkipDeveloperOptionsClick() {
+        useCase.skipDeveloperOptionsStep()
     }
 
     private fun buildState(
@@ -99,6 +115,9 @@ abstract class SystemBridgeSetupDelegateImpl(
                     stepNumber = stepNumber,
                     stepCount = stepCount,
                     isSetupAssistantChecked = isSetupAssistantUserEnabled,
+                    // See issue #2289. The developer options setting can be redacted on Android 17+.
+                    showRedactedWarning =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN,
                 )
 
             SystemBridgeSetupStep.WIFI_NETWORK ->
@@ -148,4 +167,5 @@ interface SystemBridgeSetupDelegate {
     fun onSetupStepButtonClick()
     fun onSetupAssistantClick()
     fun onSamsungAutoBlockerWarningClick()
+    fun onSkipDeveloperOptionsClick()
 }

@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.inputmethod.ImeSubtypeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -14,6 +15,10 @@ class FakeInputMethodAdapter : InputMethodAdapter {
     override val inputMethods = MutableStateFlow<List<ImeInfo>>(emptyList())
 
     override val chosenIme = MutableStateFlow<ImeInfo?>(null)
+
+    val enabledSubtypes = mutableMapOf<String, List<ImeSubtypeInfo>>()
+    val lastUsedSubtypes = mutableMapOf<String, ImeSubtypeInfo>()
+    var selectedSubtypeId: Int? = null
 
     override fun getChosenIme(): ImeInfo? {
         return chosenIme.value
@@ -37,7 +42,26 @@ class FakeInputMethodAdapter : InputMethodAdapter {
             ?: KMError.InputMethodNotFound(packageName)
     }
 
-    override fun cycleInputMethodSubtype(): KMResult<Unit> {
+    override fun setDefaultInputMethod(imeId: String): KMResult<Unit> {
+        chosenIme.value = inputMethods.value.firstOrNull { it.id == imeId }
+        return Success(Unit)
+    }
+
+    override fun getEnabledSubtypes(imeId: String): KMResult<List<ImeSubtypeInfo>> {
+        return Success(enabledSubtypes[imeId].orEmpty())
+    }
+
+    override fun getSelectedSubtype(): ImeSubtypeInfo? {
+        return enabledSubtypes[chosenIme.value?.id].orEmpty()
+            .firstOrNull { it.id == selectedSubtypeId }
+    }
+
+    override fun getLastUsedSubtype(imeId: String): ImeSubtypeInfo? {
+        return lastUsedSubtypes[imeId]
+    }
+
+    override fun setSelectedSubtype(subtypeId: Int): KMResult<Unit> {
+        selectedSubtypeId = subtypeId
         return Success(Unit)
     }
 

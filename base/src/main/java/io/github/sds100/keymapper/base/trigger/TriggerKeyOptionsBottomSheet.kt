@@ -44,6 +44,7 @@ import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureTy
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import io.github.sds100.keymapper.system.inputevents.Scancode
@@ -110,12 +111,20 @@ fun TriggerKeyOptionsBottomSheet(
                     isCompact = isCompact,
                 )
 
-                SwitchText(
-                    modifier = Modifier.padding(8.dp),
-                    text = stringResource(R.string.flag_dont_override_default_action),
+                Spacer(Modifier.height(8.dp))
+
+                SwitchPreferenceCompose(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = stringResource(R.string.title_pref_default_do_not_remap),
+                    text = stringResource(R.string.summary_pref_default_do_not_remap),
+                    icon = null,
                     isChecked = state.doNotRemapChecked,
                     onCheckedChange = onCheckDoNotRemap,
                 )
+
+                Spacer(Modifier.height(8.dp))
             }
 
             if (state is TriggerKeyOptionsState.EvdevEvent) {
@@ -131,7 +140,7 @@ fun TriggerKeyOptionsBottomSheet(
 
                 SwitchText(
                     modifier = Modifier.padding(8.dp),
-                    text = stringResource(R.string.flag_dont_override_default_action),
+                    text = stringResource(R.string.title_pref_default_do_not_remap),
                     isChecked = state.doNotRemapChecked,
                     onCheckedChange = onCheckDoNotRemap,
                 )

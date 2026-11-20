@@ -51,6 +51,8 @@ data class ComposeCustomColors(
     val onAmber: Color = Color.Unspecified,
     val amberContainer: Color = Color.Unspecified,
     val onAmberContainer: Color = Color.Unspecified,
+    val gamingContainer: Color = Color.Unspecified,
+    val onGamingContainer: Color = Color.Unspecified,
     val discord: Color = Color.Unspecified,
     val onDiscord: Color = Color.Unspecified,
     val primaryContainerDarker: Color = Color.Unspecified,
@@ -75,6 +77,8 @@ data class ComposeCustomColors(
             onAmber = onAmberLight,
             amberContainer = amberContainerLight,
             onAmberContainer = onAmberContainerLight,
+            gamingContainer = ComposeColors.gamingContainerLight,
+            onGamingContainer = ComposeColors.onGamingContainerLight,
             discord = ComposeColors.discordLight,
             onDiscord = ComposeColors.onDiscordLight,
             primaryContainerDarker = primaryContainerDarkerLight,
@@ -99,6 +103,8 @@ data class ComposeCustomColors(
             onAmber = onAmberDark,
             amberContainer = amberContainerDark,
             onAmberContainer = onAmberContainerDark,
+            gamingContainer = ComposeColors.gamingContainerDark,
+            onGamingContainer = ComposeColors.onGamingContainerDark,
             discord = ComposeColors.discordDark,
             onDiscord = ComposeColors.onDiscordDark,
             primaryContainerDarker = primaryContainerDarkerDark,
@@ -116,6 +122,7 @@ data class ComposeCustomColors(
             shizukuBlue -> onShizukuBlue
             amber -> onAmber
             amberContainer -> onAmberContainer
+            gamingContainer -> onGamingContainer
             discord -> onDiscord
             else -> MaterialTheme.colorScheme.contentColorFor(color)
         }

@@ -1,12 +1,19 @@
 package io.github.sds100.keymapper.base.sorting
 
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapConstraintsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapEnabledComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapNameComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
+import io.github.sds100.keymapper.base.trigger.TriggerUiHelper
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import javax.inject.Inject
@@ -16,8 +23,12 @@ import kotlinx.serialization.json.Json
 
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
-    private val displayKeyMapUseCase: DisplayKeyMapUseCase,
+    displayKeyMapUseCase: DisplayKeyMapUseCase,
+    resourceProvider: ResourceProvider,
 ) : SortKeyMapsUseCase {
+    private val actionUiHelper = ActionUiHelper(displayKeyMapUseCase, resourceProvider)
+    private val constraintUiHelper = ConstraintUiHelper(displayKeyMapUseCase, resourceProvider)
+    private val triggerUiHelper = TriggerUiHelper(resourceProvider)
 
     override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }
 
@@ -41,17 +52,14 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
 
                 val result = runCatching {
                     Json.decodeFromString<List<SortFieldOrder>>(it)
-                }.getOrDefault(defaultOrder).distinct()
+                }.getOrDefault(defaultOrder).distinctBy { sortFieldOrder -> sortFieldOrder.field }
 
-                // If the result is not the expected size it means that the preference is corrupted
-                // or there are missing fields (e.g. a new field was added). In this case, return
-                // the default order.
-
-                if (result.size != SortField.entries.size) {
-                    return@map defaultOrder
-                }
-
-                result
+                // There can be missing fields if a new field was added since the preference was
+                // saved. Add them in their default position at the start so the user's existing
+                // order is kept. They have no sort order so this doesn't change the sorting.
+                defaultOrder.filter { default ->
+                    result.none { sortFieldOrder -> sortFieldOrder.field == default.field }
+                } + result
             }
     }
 
@@ -73,20 +81,40 @@ class SortKeyMapsUseCaseImpl @Inject constructor(
         val reverseOrder = sortFieldOrder.order == SortOrder.DESCENDING
 
         return when (sortFieldOrder.field) {
-            SortField.TRIGGER -> KeyMapTriggerComparator(reverseOrder)
-            SortField.ACTIONS -> KeyMapActionsComparator(displayKeyMapUseCase, reverseOrder)
-            SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
-                displayKeyMapUseCase,
+            SortField.TRIGGER -> KeyMapTriggerComparator(
+                { triggerUiHelper.getKeyNames(it, showDeviceDescriptors = false) },
                 reverseOrder,
             )
 
+            // Titles are cached because they can include an app name, which is slow to look up
+            // and would otherwise be fetched on every comparison.
+            SortField.ACTIONS -> {
+                val titles = HashMap<Action, String>()
+
+                KeyMapActionsComparator(
+                    { titles.getOrPut(it) { actionUiHelper.getTitle(it, false) } },
+                    reverseOrder,
+                )
+            }
+
+            SortField.CONSTRAINTS -> {
+                val titles = HashMap<Constraint, String>()
+
+                KeyMapConstraintsComparator(
+                    { titles.getOrPut(it) { constraintUiHelper.getTitle(it) } },
+                    reverseOrder,
+                )
+            }
+
             SortField.OPTIONS -> KeyMapOptionsComparator(reverseOrder)
             SortField.ENABLED -> KeyMapEnabledComparator(reverseOrder)
+            SortField.NAME -> KeyMapNameComparator(reverseOrder)
         }
     }
 
     companion object {
         val defaultOrder = listOf(
+            SortFieldOrder(SortField.NAME),
             SortFieldOrder(SortField.TRIGGER),
             SortFieldOrder(SortField.ACTIONS),
             SortFieldOrder(SortField.CONSTRAINTS),

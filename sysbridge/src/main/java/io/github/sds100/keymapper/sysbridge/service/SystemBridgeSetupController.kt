@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -26,6 +27,7 @@ import io.github.sds100.keymapper.sysbridge.manager.awaitConnected
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl.Companion.START_TIMEOUT_MS
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
@@ -55,7 +57,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     companion object {
         private const val DEVELOPER_OPTIONS_SETTING = "development_settings_enabled"
         private const val ADB_WIRELESS_SETTING = "adb_wifi_enabled"
+        private const val ADB_USB_SETTING = "adb_enabled"
         private const val START_TIMEOUT_MS = 60_000L
+        private const val ENABLE_USB_DEBUGGING_ATTEMPTS = 3
     }
 
     private val activityManager: ActivityManager by lazy { ctx.getSystemService()!! }
@@ -126,15 +130,31 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
         launchStartJob {
+            // See issue #2294.
+            // Enabling USB debugging on Android 17 QPR1+ resets ADB entirely and kills Shell processes
+            // even if Wireless Debugging is turned on. Previously, preventSystemBridgeKilling()
+            // would enable USB debugging AFTER the system bridge has started, but this now
+            // kills it. So, enable USB debugging before starting the system bridge.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN &&
+
+                // MUST use ADB to check because adb_enabled is a redacted value on
+                // some Android 17 builds. See #2289
+                !isUsbDebuggingEnabledOverAdb()
+            ) {
+                enableUsbDebuggingWithAdb()
+            }
+
             connectionManager.startWithAdb()
 
             // Wait for the service to connect before turning off wireless debugging
-            withTimeoutOrNull(10000L) {
+            val isConnected = withTimeoutOrNull(10000L) {
                 connectionManager.awaitConnected()
             }
 
-            // Disable wireless debugging when done
-            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            if (isConnected != null && canWriteGlobalSettings()) {
+                // Disable wireless debugging when done
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            }
         }
     }
 
@@ -199,11 +219,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
                 SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
 
-                try {
-                    withTimeout(5000L) { isDeveloperOptionsEnabled.first { it } }
-                } catch (_: TimeoutCancellationException) {
-                    return@launch
-                }
+                // Do not abort if this times out. Android 17 can redact the developer options
+                // setting so it always reads as disabled. See issue #2289.
+                withTimeoutOrNull(5000L.milliseconds) { isDeveloperOptionsEnabled.first { it } }
 
                 if (isAdbPaired()) {
                     // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
@@ -214,7 +232,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
                     // Wait for wireless debugging to be enabled before starting with ADB
                     try {
-                        withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
+                        withTimeout(5000L.milliseconds) { isWirelessDebuggingEnabled.first { it } }
                     } catch (_: TimeoutCancellationException) {
                         return@launch
                     }
@@ -222,7 +240,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                     connectionManager.startWithAdb()
 
                     // Wait for the service to connect before turning off wireless debugging
-                    withTimeoutOrNull(10000L) {
+                    withTimeoutOrNull(10000L.milliseconds) {
                         connectionManager.awaitConnected()
                     }
 
@@ -283,6 +301,25 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 setupAssistantStep.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun isUsbDebuggingEnabledOverAdb(): Boolean {
+        return adbManager.executeCommand("settings get global $ADB_USB_SETTING")
+            .valueOrNull() == "1"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun enableUsbDebuggingWithAdb() {
+        repeat(ENABLE_USB_DEBUGGING_ATTEMPTS) {
+            // Do not do anything with a failure result. This command
+            // will kill the ADB process so it may return an error, which is expected.
+            if (adbManager.executeCommand("settings put global $ADB_USB_SETTING 1").isSuccess) {
+                return
+            }
+        }
+
+        Timber.w("Failed to enable USB debugging over ADB.")
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

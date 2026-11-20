@@ -241,7 +241,7 @@ private fun PreviewOneItem() {
     }
 }
 
-@Preview
+@Preview(widthDp = 300)
 @Composable
 private fun PreviewMultipleItems() {
     val ctx = LocalContext.current
@@ -267,7 +267,7 @@ private fun PreviewMultipleItems() {
                     ),
                     ComposeChipModel.Error(
                         id = "2",
-                        text = "Key Mapper not found",
+                        text = "Very very very very long app name not found",
                         error = KMError.AppNotFound("io.github.sds100.keymapper"),
                     ),
                 ),

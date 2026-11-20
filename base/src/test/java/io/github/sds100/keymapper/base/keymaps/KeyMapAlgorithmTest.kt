@@ -559,6 +559,80 @@ class KeyMapAlgorithmTest {
         )
     }
 
+    /**
+     * #2183
+     */
+    @Test
+    fun `do not imitate single press of double press evdev trigger if it is not consumed`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_POWER,
+                    scanCode = Scancode.KEY_POWER,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    consumeEvent = false,
+                ),
+            )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            delay(50L)
+            inputUpEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            advanceUntilIdle()
+
+            verify(detectKeyMapsUseCase, never()).imitateEvdevEvent(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `imitate single press of double press evdev trigger if it is consumed`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_POWER,
+                    scanCode = Scancode.KEY_POWER,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    consumeEvent = true,
+                ),
+            )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            delay(50L)
+            inputUpEvdevEvent(
+                KeyEvent.KEYCODE_POWER,
+                Scancode.KEY_POWER,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            advanceUntilIdle()
+
+            verify(detectKeyMapsUseCase, times(1)).imitateEvdevEvent(
+                any(),
+                any(),
+                eq(Scancode.KEY_POWER),
+                eq(KMEvdevEvent.VALUE_DOWN),
+            )
+            verify(detectKeyMapsUseCase, times(1)).imitateEvdevEvent(
+                any(),
+                any(),
+                eq(Scancode.KEY_POWER),
+                eq(KMEvdevEvent.VALUE_UP),
+            )
+        }
+
     @Test
     fun `Scan code detection fails when device differs for evdev trigger`() =
         runTest(testDispatcher) {
@@ -1557,19 +1631,19 @@ class KeyMapAlgorithmTest {
             )
 
             var motionEvent = createMotionEvent(axisHatY = 1.0f)
-            val consumeDown1 = controller.onMotionEvent(motionEvent)
+            val consumeDown1 = controller.onInputEvent(motionEvent)
             assertThat(consumeDown1, `is`(false))
 
             motionEvent = motionEvent.copy(axisHatX = -1.0f)
-            val consumeDown2 = controller.onMotionEvent(motionEvent)
+            val consumeDown2 = controller.onInputEvent(motionEvent)
             assertThat(consumeDown2, `is`(true))
 
             motionEvent = motionEvent.copy(axisHatX = 0.0f)
-            val consumeUp2 = controller.onMotionEvent(motionEvent)
+            val consumeUp2 = controller.onInputEvent(motionEvent)
             assertThat(consumeUp2, `is`(true))
 
             motionEvent = motionEvent.copy(axisHatY = 0.0f)
-            val consumeUp1 = controller.onMotionEvent(motionEvent)
+            val consumeUp1 = controller.onInputEvent(motionEvent)
             assertThat(consumeUp1, `is`(false))
 
             verify(performActionsUseCase, times(1)).perform(
@@ -5253,7 +5327,7 @@ class KeyMapAlgorithmTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
-    ): Boolean = controller.onMotionEvent(
+    ): Boolean = controller.onInputEvent(
         KMGamePadEvent(
             metaState = 0,
             device = device,

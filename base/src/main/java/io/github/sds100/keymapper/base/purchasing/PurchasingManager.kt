@@ -7,10 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface PurchasingManager {
     val state: Flow<State<KMResult<RevenueCatState>>>
 
-    suspend fun launchPurchasingFlow(
-        packageId: String,
-        verifyEntitlements: Array<RevenueCatEntitlementId>,
-    ): KMResult<Unit>
+    suspend fun launchPurchasingFlow(packageId: String): KMResult<Unit>
 
     suspend fun getPackagePrice(packageId: String): KMResult<String>
     suspend fun getCurrentOfferingId(): KMResult<String?>
@@ -30,7 +27,6 @@ interface PurchasingManager {
      * help. This fails if purchasing isn't implemented.
      */
     suspend fun getCustomerId(): KMResult<String>
-    suspend fun isPackagePurchased(packageId: String): KMResult<Boolean>
     suspend fun getNonSubscriptionPurchaseCount(packageId: String): KMResult<Int>
     suspend fun hasEntitlement(entitlement: RevenueCatEntitlementId): KMResult<Boolean>
     fun refresh()

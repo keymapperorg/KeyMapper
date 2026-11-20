@@ -88,7 +88,6 @@ class ImeInputEventInjectorImpl @Inject constructor(
                 return
             }
         }
-
         // Otherwise, revert to the special key event containing
         // the actual characters.
         val event = KeyEvent(

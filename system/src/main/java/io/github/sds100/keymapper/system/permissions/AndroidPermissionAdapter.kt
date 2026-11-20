@@ -119,6 +119,13 @@ class AndroidPermissionAdapter @Inject constructor(
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
 
+        // The Shizuku permission can only be read while the binder is alive so check it again
+        // whenever the binder is received or dies.
+        shizukuAdapter.isStarted
+            .drop(1)
+            .onEach { onPermissionsChanged() }
+            .launchIn(coroutineScope)
+
         Shizuku.addRequestPermissionResultListener { requestCode, grantResult ->
             coroutineScope.launch {
                 if (requestCode == REQUEST_CODE_SHIZUKU_PERMISSION) {
@@ -292,7 +299,13 @@ class AndroidPermissionAdapter @Inject constructor(
         // this check is super quick (~0ms) so this doesn't need to be cached.
         Permission.SHIZUKU -> {
             if (Shizuku.getBinder() != null) {
-                Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+                try {
+                    Shizuku.checkSelfPermission() == PERMISSION_GRANTED
+                } catch (_: IllegalStateException) {
+                    // The Shizuku service can sometimes throw an exception
+                    // java.lang.IllegalStateException: Not an attached client
+                    false
+                }
             } else {
                 false
             }

@@ -95,6 +95,9 @@ class PerformActionsUseCaseTest {
             settingsAdapter = mock(),
             vibratorAdapter = mock(),
             variablesUseCase = mock(),
+            buildConfigProvider = mock {
+                on { packageName } doReturn "io.github.sds100.keymapper"
+            },
         )
     }
 
@@ -125,7 +128,8 @@ class PerformActionsUseCaseTest {
         whenever(mockDisplayAdapter.getDisplay(any())).doReturn(
             DisplayInfo(
                 id = 0,
-                activeSize = size,
+                physicalSize = size,
+                logicalSize = size,
                 rotation = Orientation.ORIENTATION_0,
                 supportedSizes = setOf(size),
             ),

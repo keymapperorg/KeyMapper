@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.display.getDisplaySafe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,9 +72,11 @@ class ScreenshotPickerDelegate(
      */
     fun screenResolution(): SizeKM {
         val activeDisplay =
-            displayAdapter.getDisplay(displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY)!!
+            displayAdapter.getDisplaySafe(
+                displayAdapter.activityDisplayId ?: Display.DEFAULT_DISPLAY,
+            )
 
-        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.activeSize
+        return screenshotResolution.value ?: loadedResolution.value ?: activeDisplay.logicalSize
     }
 
     fun recycle() {

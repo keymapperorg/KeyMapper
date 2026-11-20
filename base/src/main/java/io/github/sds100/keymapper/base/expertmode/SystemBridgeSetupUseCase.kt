@@ -74,6 +74,17 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.openAutoBlockerSettings()
     }
 
+    /**
+     * See issue #2289. Android 17 can redact the developer options setting so it always
+     * reads as disabled. Let the user skip the step if they know it is enabled.
+     * Not persisted.
+     */
+    private val isDeveloperOptionsSkipped = MutableStateFlow(false)
+
+    override fun skipDeveloperOptionsStep() {
+        isDeveloperOptionsSkipped.value = true
+    }
+
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isExpertModeWarningUnderstood).map { it ?: false }
 
@@ -169,7 +180,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                 combine(
                     isNotificationPermissionGranted,
                     isLocalNetworkPermissionGranted,
-                    systemBridgeSetupController.isDeveloperOptionsEnabled,
+                    combine(
+                        systemBridgeSetupController.isDeveloperOptionsEnabled,
+                        isDeveloperOptionsSkipped,
+                    ) { isEnabled, isSkipped -> isEnabled || isSkipped },
                     networkAdapter.isWifiConnected,
                     systemBridgeSetupController.isWirelessDebuggingEnabled,
                 ) {
@@ -368,7 +382,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
             needsSamsungAutoBlockerStep -> SystemBridgeSetupStep.SAMSUNG_AUTO_BLOCKER
 
-            !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
+            // Wireless debugging can not be enabled without developer options being enabled.
+            // Check both because the developer options setting can be redacted. See #2289.
+            !isDeveloperOptionsEnabled && !isWirelessDebuggingEnabled ->
+                SystemBridgeSetupStep.DEVELOPER_OPTIONS
 
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
 
@@ -425,6 +442,7 @@ interface SystemBridgeSetupUseCase {
     fun stopSystemBridge()
     fun enableAccessibilityService()
     fun enableDeveloperOptions()
+    fun skipDeveloperOptionsStep()
     fun launchDeveloperOptions()
     fun connectWifiNetwork()
     fun enableWirelessDebugging()

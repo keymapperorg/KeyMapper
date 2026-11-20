@@ -40,6 +40,7 @@ sealed class ExpertModeSetupState {
         override val stepNumber: Int,
         override val stepCount: Int,
         override val isSetupAssistantChecked: Boolean,
+        val showRedactedWarning: Boolean,
     ) : ExpertModeSetupState() {
         override val isSetupAssistantButtonEnabled: Boolean = true
     }

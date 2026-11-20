@@ -24,6 +24,13 @@ data class SizeKM(val width: Int, val height: Int) {
 
         return abs(ratio - otherRatio) <= epsilon || abs(ratio - otherRotatedRatio) <= epsilon
     }
+
+    fun rotate(orientation: Orientation): SizeKM {
+        return when (orientation) {
+            Orientation.ORIENTATION_0, Orientation.ORIENTATION_180 -> SizeKM(width, height)
+            Orientation.ORIENTATION_90, Orientation.ORIENTATION_270 -> SizeKM(height, width)
+        }
+    }
 }
 
 val SizeKM.aspectRatio: Float

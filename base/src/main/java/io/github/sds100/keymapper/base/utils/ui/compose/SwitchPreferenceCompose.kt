@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -21,7 +22,7 @@ fun SwitchPreferenceCompose(
     modifier: Modifier = Modifier,
     title: String,
     text: String?,
-    icon: ImageVector,
+    icon: ImageVector?,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     isEnabled: Boolean = true,
@@ -33,6 +34,7 @@ fun SwitchPreferenceCompose(
             onCheckedChange(!isChecked)
         },
         enabled = isEnabled,
+        color = Color.Unspecified,
     ) {
         Row(
             modifier = Modifier
@@ -41,11 +43,13 @@ fun SwitchPreferenceCompose(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = title, style = MaterialTheme.typography.bodyLarge)

@@ -30,7 +30,7 @@ interface PackageManagerAdapter {
     fun launchVoiceAssistant(): KMResult<*>
     fun launchDeviceAssistant(): KMResult<*>
     fun isVoiceAssistantInstalled(): Boolean
-    fun getDeviceAssistantPackage(): KMResult<String>
+    fun isDeviceAssistantInstalled(): Boolean
 
     fun launchCameraApp(): KMResult<*>
     fun launchSettingsApp(): KMResult<*>

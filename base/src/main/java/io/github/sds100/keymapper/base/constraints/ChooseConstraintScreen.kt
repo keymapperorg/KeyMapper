@@ -70,6 +70,7 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
 @Composable
 fun HandleConstraintBottomSheets(delegate: CreateConstraintDelegate) {
     TimeConstraintBottomSheet(delegate)
+    DndConstraintBottomSheet(delegate)
     DisplayResolutionConstraintBottomSheet(delegate)
     VariableConstraintBottomSheet(delegate.variableDelegate)
 }

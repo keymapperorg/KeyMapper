@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAct
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
@@ -23,6 +24,7 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.variables.VariablesUseCase
 import io.github.sds100.keymapper.base.vibration.vibrate
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
@@ -51,6 +53,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.display.DisplayInfo
+import io.github.sds100.keymapper.system.display.getDisplaySafe
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
@@ -77,14 +80,16 @@ import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
@@ -126,6 +131,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val settingsAdapter: SettingsAdapter,
     private val vibratorAdapter: VibratorAdapter,
     private val variablesUseCase: VariablesUseCase,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : PerformActionsUseCase {
 
     companion object {
@@ -139,6 +145,15 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             accessibilityService: IAccessibilityService,
         ): PerformActionsUseCaseImpl
     }
+
+    // Use Dispatchers.IO because it dispatching gestures from accessibility services are
+    // blocking Binder calls. Limit the parallelism to 1 thread so they are dispatched in order.
+    // This also prevents slow Binder calls that are potentially spammed by the user's key maps
+    // from starving the thread pool.
+    private val gestureDispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
+
+    private val imeHelper: KeyMapperImeHelper =
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     private val openMenuHelper by lazy {
         OpenMenuHelper(
@@ -258,7 +273,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
-                    val currentOrientation = getActiveDisplay()!!.rotation
+                    val currentOrientation = getActiveDisplay().rotation
 
                     val index = action.orientations.indexOf(currentOrientation)
 
@@ -289,38 +304,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwitchKeyboard -> {
-                switchImeInterface.switchIme(action.imeId)
-
-                // See issue #1064. Wait for the input method to finish switching before returning.
-                val chosenIme = withTimeoutOrNull(2000) {
-                    inputMethodAdapter.chosenIme.filterNotNull().first { it.id == action.imeId }
-                }
-
-                if (chosenIme == null) {
-                    result = KMError.SwitchImeFailed
-                } else {
-                    result = Success(Unit)
-                }
+                result = imeHelper.switchImeAndWait(action.imeId)
             }
 
             is ActionData.CycleKeyboardLanguage -> {
-                result = inputMethodAdapter.cycleInputMethodSubtype()
+                result = imeHelper.cycleKeyboardLanguage()
             }
 
             is ActionData.CycleKeyboard -> {
                 result = inputMethodAdapter.getNextInputMethod().then { nextIme ->
-                    switchImeInterface.switchIme(nextIme.id)
-
-                    // See issue #1064. Wait for the input method to finish switching before returning.
-                    val chosenIme = withTimeoutOrNull(2000) {
-                        inputMethodAdapter.chosenIme.filterNotNull().first { it.id == nextIme.id }
-                    }
-
-                    if (chosenIme == null) {
-                        KMError.SwitchImeFailed
-                    } else {
-                        Success(Unit)
-                    }
+                    imeHelper.switchImeAndWait(nextIme.id)
                 }
             }
 
@@ -379,15 +372,17 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay().logicalSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
 
-                result = service.tapScreen(point.x, point.y, inputEventAction)
+                result = withContext(gestureDispatcher) {
+                    service.tapScreen(point.x, point.y, inputEventAction)
+                }
             }
 
             is ActionData.SwipeScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay().logicalSize
                 val start = scaleCoordinate(
                     action.xStart,
                     action.yStart,
@@ -397,33 +392,37 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 val end =
                     scaleCoordinate(action.xEnd, action.yEnd, action.screenResolution, displaySize)
 
-                result = service.swipeScreen(
-                    start.x,
-                    start.y,
-                    end.x,
-                    end.y,
-                    action.fingerCount,
-                    action.duration,
-                    inputEventAction,
-                )
+                result = withContext(gestureDispatcher) {
+                    service.swipeScreen(
+                        start.x,
+                        start.y,
+                        end.x,
+                        end.y,
+                        action.fingerCount,
+                        action.duration,
+                        inputEventAction,
+                    )
+                }
             }
 
             is ActionData.PinchScreen -> {
-                val displaySize = getActiveDisplay()!!.activeSize
+                val displaySize = getActiveDisplay().logicalSize
                 val point =
                     scaleCoordinate(action.x, action.y, action.screenResolution, displaySize)
                 val distance =
                     scaleDistance(action.distance, action.screenResolution, displaySize)
 
-                result = service.pinchScreen(
-                    point.x,
-                    point.y,
-                    distance,
-                    action.pinchType,
-                    action.fingerCount,
-                    action.duration,
-                    inputEventAction,
-                )
+                result = withContext(gestureDispatcher) {
+                    service.pinchScreen(
+                        point.x,
+                        point.y,
+                        distance,
+                        action.pinchType,
+                        action.fingerCount,
+                        action.duration,
+                        inputEventAction,
+                    )
+                }
             }
 
             is ActionData.Text -> {
@@ -589,7 +588,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Rotation.SwitchOrientation -> {
-                val currentOrientation = getActiveDisplay()!!.rotation
+                val currentOrientation = getActiveDisplay().rotation
 
                 if (currentOrientation == Orientation.ORIENTATION_180 ||
                     currentOrientation == Orientation.ORIENTATION_0
@@ -879,7 +878,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.SelectAllText -> {
                 result = service.performActionOnNode({ it.isFocused }) { node ->
-                    val text = node.text?.toString().orEmpty()
+                    val text = node.text.orEmpty()
                     if (text.isEmpty()) return@performActionOnNode null
 
                     val extras = mapOf(
@@ -924,7 +923,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         )
                             .onSuccess {
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
-                                delay(3000)
+                                delay(3000.milliseconds)
 
                                 toastAdapter.show(
                                     resourceProvider.getString(
@@ -1301,8 +1300,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         return a != null && b != null && a == b
     }
 
-    private fun getActiveDisplay(): DisplayInfo? =
-        displayAdapter.getDisplay(service.getActiveDisplayId())
+    private fun getActiveDisplay(): DisplayInfo =
+        displayAdapter.getDisplaySafe(service.getActiveDisplayId())
 }
 
 /**

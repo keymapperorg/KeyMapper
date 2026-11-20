@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Point
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.provider.Settings
@@ -321,13 +322,18 @@ class AndroidDisplayAdapter @Inject constructor(
     }
 
     private fun buildDisplayInfo(display: Display): DisplayInfo {
+        val rotation = getDisplayOrientation(display)
+        val logicalSize = Point().also { display.getRealSize(it) }
+
         return DisplayInfo(
             id = display.displayId,
-            activeSize = SizeKM(
+            physicalSize = SizeKM(
                 width = display.mode.physicalWidth,
                 height = display.mode.physicalHeight,
             ),
-            rotation = getDisplayOrientation(display),
+            // getRealSize is in the current rotation so rotate it back to the natural orientation.
+            logicalSize = SizeKM(logicalSize.x, logicalSize.y).rotate(rotation),
+            rotation = rotation,
             supportedSizes = getSupportedResolutions(display),
         )
     }

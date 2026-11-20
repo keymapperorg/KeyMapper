@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.GroupEntityWithChildren
-import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -26,9 +25,6 @@ interface GroupDao {
     @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<GroupEntity>>
 
-    @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:groupUid)")
-    fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup>
-
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
     fun getById(uid: String): GroupEntity?
 
@@ -39,7 +35,7 @@ interface GroupDao {
     fun getByIdFlow(uid: String): Flow<GroupEntity?>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_UID = (:uid)")
-    fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithChildren>
+    fun getGroupWithSubGroups(uid: String): Flow<GroupEntityWithChildren?>
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_PARENT_UID IS (:uid)")
     fun getGroupsByParent(uid: String?): Flow<List<GroupEntity>>

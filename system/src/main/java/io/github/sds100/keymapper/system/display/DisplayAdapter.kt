@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.display
 
+import android.view.Display
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PhysicalOrientation
@@ -32,4 +33,14 @@ interface DisplayAdapter {
     fun decreaseBrightness(stepPercent: Float, display: Int): KMResult<*>
     fun enableAutoBrightness(): KMResult<*>
     fun disableAutoBrightness(): KMResult<*>
+}
+
+/**
+ * Falls back to the default display, and then any display, if [id] does not exist.
+ * E.g the display was just removed.
+ */
+fun DisplayAdapter.getDisplaySafe(id: Int): DisplayInfo {
+    return getDisplay(id)
+        ?: getDisplay(Display.DEFAULT_DISPLAY)
+        ?: displays.value.first()
 }

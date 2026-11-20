@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.GroupEntityWithChildren
-import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -27,10 +26,6 @@ class RoomGroupRepository @Inject constructor(
     override val groups: StateFlow<List<GroupEntity>> =
         dao.getAll().stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    override fun getKeyMapsByGroup(groupUid: String): Flow<KeyMapEntitiesWithGroup> {
-        return dao.getKeyMapsByGroup(groupUid).flowOn(dispatchers.io())
-    }
-
     override suspend fun getGroup(uid: String): GroupEntity? {
         return withContext(dispatchers.io()) { dao.getById(uid) }
     }
@@ -47,7 +42,7 @@ class RoomGroupRepository @Inject constructor(
         return dao.getGroupsByParent(uid).flowOn(dispatchers.io())
     }
 
-    override fun getGroupWithChildren(uid: String): Flow<GroupEntityWithChildren> {
+    override fun getGroupWithChildren(uid: String): Flow<GroupEntityWithChildren?> {
         return dao.getGroupWithSubGroups(uid).flowOn(dispatchers.io())
     }
 

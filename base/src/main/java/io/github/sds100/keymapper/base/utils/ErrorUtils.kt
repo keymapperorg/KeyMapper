@@ -556,11 +556,6 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 R.string.purchasing_error_purchase_invalid,
             )
 
-        PurchasingError.PurchasingProcessError.EntitlementNotGrantedAfterPurchase ->
-            resourceProvider.getString(
-                R.string.purchasing_error_entitlement_not_granted_after_purchase,
-            )
-
         is PurchasingError.PurchasingProcessError.Unexpected ->
             message
 

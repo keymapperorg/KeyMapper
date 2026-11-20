@@ -1,6 +1,77 @@
+## [4.7.1](https://github.com/sds100/KeyMapper/releases/tag/v4.7.1)
+
+#### 19 November 2026
+
+## Added
+
+- More Chinese translations.
+
+## Fixed
+
+- Crash on Android 13+ in the accessibility service input method due to a few AOSP bugs. The accessibility service input method feature is now only enabled when necessary. This should reduce the random crashes for users who don't need the feature.
+- Crash when a display is disconnected while floating buttons are showing.
+- Crash in the quick settings tiles due to inconsistent lifecycle state management.
+- Crash when checking Shizuku permission due to a bug in their service.
+- Crash in the accessibility service when Android backs up the app. Backup is now only enabled on Android 16+. This is caused by a feature in AOSP that the Dagger Hilt team can not work around.
+- #2317 Voice assistant action now works when Gemini is the default assistant.
+
 ## [4.7.0](https://github.com/sds100/KeyMapper/releases/tag/v4.7.0)
 
-#### TO BE RELEASED
+#### 08 November 2026
+
+## Added
+
+- #2310 Sort key maps by name. Unnamed key maps are last.
+- #2279 Broadcast whether mappings are paused so other apps can respond to it.
+- #2278 Do Not Disturb constraint.
+
+## Changed
+
+- Only use one bundle paywall. The legacy one is removed.
+- #2311 Sort triggers, actions and constraints alphabetically by the text shown in the key map list.
+
+## Fixed
+
+- #2183 Volume key no longer acts as the power button after single pressing a power button double press trigger in Expert Mode.
+- #2304 Expert Mode fails to start on Honor Android 17.
+- #2305 Expert Mode restarts if it is killed shortly after auto starting, and auto starts with Shizuku if Shizuku starts after Key Mapper.
+- #2315 Floating buttons no longer use an out of date display size, which could shift them and trap them in part of the screen while dragging.
+- #2318 Text action works on Android 12 an older in Termux and some other apps.
+- #2308 Cycle keyboard language action changes the physical keyboard language when using the Key Mapper keyboard on Android 14+.
+
+## [4.6.2](https://github.com/sds100/KeyMapper/releases/tag/v4.6.2)
+
+#### 22 October 2026
+
+## Fixed
+
+- #2069 dpad triggers work reliably again.
+- Crash when creating launcher shortcut with empty text because the new text field dialog permitted it.
+- Crash navigating to new key map with TriggerSetupShortcut that was not serializable.
+- Fix input dispatching time out ANR when dispatching accessibility service gestures.
+- Fix crash fetching subgroups if parent group does not exist in database.
+- Creating answer and end call does not crash.
+- Crash if unable to find app to open Discord server link in Other trigger setup bottom sheet.
+- Crash if copying system bridge starter files blocked for too long.
+- Do not intentionally crash when a component registered while already registered in InputEventHub.
+- Do not crash when testing actions with an error.
+
+## [4.6.1](https://github.com/sds100/KeyMapper/releases/tag/v4.6.1)
+
+#### 10 October 2026
+
+## Changed
+
+- #2260 the "Do not remap" trigger key option is now called "Passthrough key events".
+
+## Fixed
+
+- Remove button is visible on key map group constraints with long text.
+- #2290 Regression in 4.6. Place floating buttons correctly and tap actions when the display is rotated or resolution is changed.
+- #2287 Key maps that launch different apps open the same app when the device is locked.
+- #2289 Expert Mode setup and auto start no longer get stuck on Android 17 devices that hide whether developer options are enabled.
+- Do not crash if WRITE_SECURE_SETTINGS permission not granted and disabling wireless debugging after starting system bridge.
+- #2294 On Android 17 QPR1 enabling USB debugging while Wireless Debugging is enabled kills the Expert Mode system bridge on startup.
 
 ## [4.6.0](https://github.com/sds100/KeyMapper/releases/tag/v4.6.0)
 

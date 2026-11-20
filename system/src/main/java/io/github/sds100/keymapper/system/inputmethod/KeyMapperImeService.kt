@@ -110,7 +110,21 @@ class KeyMapperImeService : InputMethodService() {
 
     private val keyEventReceiverCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
+            @Suppress("DEPRECATION")
             override fun onKeyEvent(event: KeyEvent?): Boolean {
+                // See issue #2318. Some apps, like Termux, do not respond to ACTION_MULTIPLE
+                // so send text directly instead of a key event.
+                val text = event
+                    ?.takeIf {
+                        it.action == KeyEvent.ACTION_MULTIPLE &&
+                            it.keyCode == KeyEvent.KEYCODE_UNKNOWN
+                    }
+                    ?.characters
+
+                if (text != null) {
+                    return currentInputConnection.commitText(text, 1) ?: false
+                }
+
                 // Only accept key events from Key Mapper
                 return currentInputConnection?.sendKeyEvent(event) ?: false
             }

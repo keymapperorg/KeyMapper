@@ -139,7 +139,6 @@ abstract class BaseAccessibilityServiceController(
             // This is required for receive TYPE_WINDOWS_CHANGED events so can
             // detect when to show/hide overlays.
             .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
-            .withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
             .withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
 
         return@lazy flags
@@ -267,6 +266,44 @@ abstract class BaseAccessibilityServiceController(
                 enableAccessibilityVolumeStream()
             } else {
                 disableAccessibilityVolumeStream()
+            }
+        }.launchIn(service.lifecycleScope)
+
+        /*
+         * Only request the accessibility input method when something uses it, because the
+         * framework has bugs that crash the app whenever FLAG_INPUT_METHOD_EDITOR is set:
+         *
+         * - Android 13: InputMethod$SessionImpl.invalidateInput dereferences a null connection.
+         *   "NullPointerException: ...RemoteAccessibilityInputConnection.isSameConnection(...) on
+         *   a null object reference at android.accessibilityservice.InputMethod$SessionImpl
+         *   .invalidateInput (InputMethod.java:520)". Fixed in Android 14.
+         * - Android 14+: IAccessibilityServiceClientWrapper.startInput dereferences a null
+         *   EditorInfo. "NullPointerException: ...EditorInfo.makeCompatible(int) on a null object
+         *   reference at android.accessibilityservice.AccessibilityService
+         *   $IAccessibilityServiceClientWrapper.lambda$startInput$16
+         *   (AccessibilityService.java:3175)". Not fixed as of Android 17.
+         *
+         * On Android 13+ the Text and IME actions use the accessibility input method's input
+         * connection, and changing the keyboard on input focus uses its onStartInput.
+         */
+        combine(
+            changeImeOnInputFocusFlow,
+            detectKeyMapsUseCase.allKeyMapList,
+        ) { changeImeOnInputFocus, keyMaps ->
+            val useInputMethod = changeImeOnInputFocus ||
+                keyMaps.any { model ->
+                    model.keyMap.isEnabled &&
+                        model.keyMap.actionList.any {
+                            it.data is ActionData.Text || it.data is ActionData.PerformImeAction
+                        }
+                }
+
+            serviceFlags.update { flags ->
+                if (useInputMethod) {
+                    flags.withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
+                } else {
+                    flags.minusFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
+                }
             }
         }.launchIn(service.lifecycleScope)
 
@@ -429,11 +466,7 @@ abstract class BaseAccessibilityServiceController(
         Timber.d("Service received event from UI: $event")
 
         when (event) {
-            is TestActionEvent -> service.lifecycleScope.launch {
-                performActionsUseCase.perform(
-                    event.action,
-                )
-            }
+            is TestActionEvent -> testAction(event)
 
             is AccessibilityServiceEvent.Ping -> service.lifecycleScope.launch {
                 outputEvents.emit(AccessibilityServiceEvent.Pong(event.key))
@@ -478,6 +511,16 @@ abstract class BaseAccessibilityServiceController(
             }
 
             else -> Unit
+        }
+    }
+
+    private fun testAction(event: TestActionEvent) {
+        service.lifecycleScope.launch {
+            val errorSnapshot = performActionsUseCase.getErrorSnapshot()
+
+            if (errorSnapshot.getError(event.action) == null) {
+                performActionsUseCase.perform(event.action)
+            }
         }
     }
 

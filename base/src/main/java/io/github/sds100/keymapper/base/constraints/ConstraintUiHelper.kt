@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.variables.VariableComparison
@@ -142,6 +143,14 @@ class ConstraintUiHelper(
             RingerMode.SILENT -> getString(R.string.constraint_ringer_mode_silent)
         }
 
+        is ConstraintData.DoNotDisturb -> when (val dndMode = constraint.data.dndMode) {
+            null -> getString(R.string.constraint_dnd_mode_on)
+            else -> getString(
+                R.string.constraint_dnd_mode_formatted,
+                getString(DndModeStrings.getLabel(dndMode)),
+            )
+        }
+
         is ConstraintData.Charging -> getString(R.string.constraint_charging)
 
         is ConstraintData.HingeClosed -> getString(R.string.constraint_hinge_closed_description)
@@ -264,6 +273,14 @@ class ConstraintUiHelper(
             RingerMode.NORMAL -> getString(R.string.constraint_ringer_mode_not_normal)
             RingerMode.VIBRATE -> getString(R.string.constraint_ringer_mode_not_vibrate)
             RingerMode.SILENT -> getString(R.string.constraint_ringer_mode_not_silent)
+        }
+
+        is ConstraintData.DoNotDisturb -> when (val dndMode = constraint.data.dndMode) {
+            null -> getString(R.string.constraint_dnd_mode_off)
+            else -> getString(
+                R.string.constraint_dnd_mode_not_formatted,
+                getString(DndModeStrings.getLabel(dndMode)),
+            )
         }
 
         is ConstraintData.HingeClosed ->

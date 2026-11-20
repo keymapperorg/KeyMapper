@@ -14,7 +14,9 @@ private const val MAX_ACTION_TARGET_DEPTH = 10
 
 fun AccessibilityService.getActiveDisplayIdExt(): Int {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        rootInActiveWindow?.window?.displayId ?: Display.DEFAULT_DISPLAY
+        // The window's display id can be INVALID_DISPLAY (-1).
+        (rootInActiveWindow?.window?.displayId ?: Display.DEFAULT_DISPLAY)
+            .coerceAtLeast(Display.DEFAULT_DISPLAY)
     } else {
         Display.DEFAULT_DISPLAY
     }

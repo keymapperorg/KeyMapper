@@ -74,7 +74,7 @@ private fun PreviewNoKeyRecordedComplete() {
 
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,
-            content = { TriggerDiscoverScreen(showFloatingButtons = true) },
+            content = { TriggerDiscoverScreen() },
         )
     }
 }

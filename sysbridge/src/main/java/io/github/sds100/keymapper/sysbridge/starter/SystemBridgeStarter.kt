@@ -272,7 +272,7 @@ class SystemBridgeStarter @Inject constructor(
      * nowhere to copy the starter files to because the shared storage is unavailable, which can
      * happen at any point while the device is running.
      */
-    fun canStartSystemBridge(): Boolean {
+    suspend fun canStartSystemBridge(): Boolean {
         return getStarterFilesDirectory() != null
     }
 
@@ -295,9 +295,9 @@ class SystemBridgeStarter @Inject constructor(
      * getExternalFilesDir returns null while the shared storage is not mounted, which can happen
      * at any point while the device is running and usually resolves itself within a minute.
      */
-    private fun getStarterFilesDirectory(): File? {
+    private suspend fun getStarterFilesDirectory(): File? = withContext(Dispatchers.IO) {
         if (buildConfigProvider.sdkInt > Build.VERSION_CODES.R) {
-            return try {
+            return@withContext try {
                 ctx.getExternalFilesDir(null)?.parentFile
             } catch (e: IOException) {
                 null
@@ -315,7 +315,7 @@ class SystemBridgeStarter @Inject constructor(
             e.printStackTrace()
         }
 
-        return protectedStorageDir
+        return@withContext protectedStorageDir
     }
 
     /**

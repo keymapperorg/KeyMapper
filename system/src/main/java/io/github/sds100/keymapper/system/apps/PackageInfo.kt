@@ -9,4 +9,5 @@ data class PackageInfo(
      */
     val isLaunchable: Boolean,
     val versionCode: Long,
+    val category: Int,
 )

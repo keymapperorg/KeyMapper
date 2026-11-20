@@ -12,6 +12,10 @@ object IntentApi {
     const val ACTION_RESUME_MAPPINGS = "io.github.sds100.keymapper.ACTION_RESUME_MAPPINGS"
     const val ACTION_TOGGLE_MAPPINGS = "io.github.sds100.keymapper.ACTION_TOGGLE_MAPPINGS"
 
+    const val ACTION_MAPPINGS_STATE_CHANGED =
+        "io.github.sds100.keymapper.ACTION_MAPPINGS_STATE_CHANGED"
+    const val EXTRA_MAPPINGS_PAUSED = "io.github.sds100.keymapper.EXTRA_MAPPINGS_PAUSED"
+
     const val PAUSE_RECEIVER_CLASS =
         "io.github.sds100.keymapper.api.PauseMappingsBroadcastReceiver"
 

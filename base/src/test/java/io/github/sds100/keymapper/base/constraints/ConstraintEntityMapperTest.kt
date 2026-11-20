@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.volume.DndMode
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
@@ -394,6 +395,18 @@ class ConstraintEntityMapperTest {
                 ),
             ),
         )
+    }
+
+    @Test
+    fun `do not disturb constraint keeps its mode when saved and read`() {
+        for (dndMode in listOf(null, *DndMode.entries.toTypedArray())) {
+            val constraint = Constraint(uid = UID, data = ConstraintData.DoNotDisturb(dndMode))
+
+            assertThat(
+                ConstraintEntityMapper.fromEntity(ConstraintEntityMapper.toEntity(constraint)),
+                `is`(constraint),
+            )
+        }
     }
 
     private fun assertMigratedToNot(entity: ConstraintEntity, expectedData: ConstraintData) {

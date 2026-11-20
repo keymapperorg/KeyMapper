@@ -1,9 +1,8 @@
 ! Variables | Add to, subtract from or set variables
-! Undo and redo | Undo and redo changes when configuring a key map
-+ • Custom key map names
-* • Edit constraints in place
-+ • Shut down and restart device actions
-+ • Configurable brightness increment
-+ • Group enable/disable by broadcast intent
-* • More concise action text with delay timer chips
+! Key map names | Give key maps custom names and sort them by name
++ • Do Not Disturb constraint
++ • Broadcast whether mappings are paused so other apps can respond
+* • Triggers, actions and constraints are sorted alphabetically
++ • Undo and redo changes when configuring a key map
+- • Expert Mode and floating button fixes
 - • Many other bug fixes and improvements

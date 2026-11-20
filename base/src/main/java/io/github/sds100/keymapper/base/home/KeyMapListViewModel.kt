@@ -637,19 +637,9 @@ class KeyMapListViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
                 TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
                     -> {
-                    val result = navigate(
+                    navigate(
                         "purchase_advanced_trigger",
                         NavDestination.AdvancedTriggers,
-                    ) ?: return@launch
-
-                    val groupUid = listKeyMaps.keyMapGroup.first().group?.uid
-
-                    navigate(
-                        "use_advanced_trigger",
-                        NavDestination.NewKeyMap(
-                            groupUid = groupUid,
-                            triggerSetupShortcut = result,
-                        ),
                     )
                 }
 
