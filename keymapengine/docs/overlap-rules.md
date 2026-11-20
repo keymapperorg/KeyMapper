@@ -66,9 +66,12 @@ Each case below is a table of the key presses, what fires, and the rule that dec
 
 ## Single vs single
 
-### `A`, `A`
+### Same key
 
 ```
+Trigger 1: A
+Trigger 2: A
+
 | Input | Fires              | Rule |
 |-------|--------------------|------|
 | A     | one merged trigger | R9   |
@@ -76,9 +79,12 @@ Each case below is a table of the key presses, what fires, and the rule that dec
 
 ## Single vs sequence
 
-### `A`, `A → B` (single is the first key)
+### Single is the first key
 
 ```
+Trigger 1: A
+Trigger 2: A → B
+
 | Input               | Fires                   | Rule       |
 |---------------------|-------------------------|------------|
 | A, B within timeout | A → B                   | R7 (#1386) |
@@ -88,9 +94,12 @@ Each case below is a table of the key presses, what fires, and the rule that dec
 
 Today the last case never fires.
 
-### `B`, `A → B` (single is a later key)
+### Single is a later key
 
 ```
+Trigger 1: B
+Trigger 2: A → B
+
 | Input   | Fires         | Rule                                     |
 |---------|---------------|------------------------------------------|
 | B alone | B immediately | R7 doesn't apply: root B has no children |
@@ -99,9 +108,12 @@ Today the last case never fires.
 
 Test: `Do not trigger both triggers if sequence trigger is triggered while waiting`.
 
-### `A`, `A → A` (double press)
+### Double press
 
 ```
+Trigger 1: A
+Trigger 2: A → A
+
 | Input                            | Fires | Rule                      |
 |----------------------------------|-------|---------------------------|
 | A, A within double-press timeout | A → A | R7, short per-gap timeout |
@@ -110,9 +122,12 @@ Test: `Do not trigger both triggers if sequence trigger is triggered while waiti
 
 ## Single vs combo
 
-### `A`, `Shift + A` (any order)
+### Single is a key of an any-order combo
 
 ```
+Trigger 1: A
+Trigger 2: Shift + A (any order)
+
 | Input     | Fires                    | Rule          |
 |-----------|--------------------------|---------------|
 | Shift↓ A↓ | Shift + A                | R3, R4        |
@@ -122,25 +137,34 @@ Test: `Do not trigger both triggers if sequence trigger is triggered while waiti
 
 Test: `KeyMapAlgorithmTest.kt:3572`.
 
-### `A`, `Shift + A` (in order)
+### Single is the last key of an in-order combo
 
 ```
+Trigger 1: A
+Trigger 2: Shift + A (in order)
+
 | Input | Fires         | Rule                                |
 |-------|---------------|-------------------------------------|
 | A↓    | A immediately | R10 doesn't apply: Shift isn't held |
 ```
 
-### `A`, `A + B` (in order)
+### Single is the first key of an in-order combo
 
 ```
+Trigger 1: A
+Trigger 2: A + B (in order)
+
 | Input | Fires   | Rule                    |
 |-------|---------|-------------------------|
 | A↓ A↑ | A on A↑ | R10: A is the first key |
 ```
 
-### `Vol down`, `Vol up + Vol down` (in order)
+### Single is the last key of an in-order combo: volume keys
 
 ```
+Trigger 1: Vol down
+Trigger 2: Vol up + Vol down (in order)
+
 | Input             | Fires                | Rule                                 |
 |-------------------|----------------------|--------------------------------------|
 | Vol up↓ Vol down↓ | Vol up + Vol down    | R4                                   |
@@ -154,18 +178,24 @@ doesn't work while `A` is part of a combo trigger that could still complete.
 
 ## Sequence vs sequence
 
-### `A → B`, `A → B → C` (prefix)
+### Prefix
 
 ```
+Trigger 1: A → B
+Trigger 2: A → B → C
+
 | Input        | Fires     | Rule          |
 |--------------|-----------|---------------|
 | A B C        | A → B → C | R4, R7 (#407) |
 | A B, timeout | A → B     | R7            |
 ```
 
-### `A → B → C`, `A → D → E` (shared prefix, then diverge)
+### Shared prefix, then diverge
 
 ```
+Trigger 1: A → B → C
+Trigger 2: A → D → E
+
 | Input     | Fires          | Rule                       |
 |-----------|----------------|----------------------------|
 | A B C     | A → B → C      | R8, no wait                |
@@ -173,18 +203,24 @@ doesn't work while `A` is part of a combo trigger that could still complete.
 | A B D C E | A → B → C only | R8: B committed the branch |
 ```
 
-### `B → C`, `A → B → C` (suffix)
+### Suffix
 
 ```
+Trigger 1: B → C
+Trigger 2: A → B → C
+
 | Input | Fires     | Rule                    |
 |-------|-----------|-------------------------|
 | A B C | A → B → C | R4: both complete on C↓ |
 | B C   | B → C     |                         |
 ```
 
-### `A → B`, `B → A` (same keys, different order)
+### Same keys, different order
 
 ```
+Trigger 1: A → B
+Trigger 2: B → A
+
 | Input | Fires | Rule              |
 |-------|-------|-------------------|
 | A B   | A → B | key-down order    |
@@ -192,9 +228,12 @@ doesn't work while `A` is part of a combo trigger that could still complete.
 | A B A | A → B | R6: B↓ is claimed |
 ```
 
-### `A → A`, `A → A → A` (repeated key)
+### Repeated key
 
 ```
+Trigger 1: A → A
+Trigger 2: A → A → A
+
 | Input | Fires     | Rule                 |
 |-------|-----------|----------------------|
 | A A A | A → A → A | R4, R7 (#804, #1526) |
@@ -205,9 +244,12 @@ doesn't work while `A` is part of a combo trigger that could still complete.
 Any-order and in-order combo triggers differ only when the keys are pressed in the "wrong"
 order.
 
-### `A → B`, `A + B` (same keys, same order)
+### Same keys, same order
 
 ```
+Trigger 1: A → B
+Trigger 2: A + B (any order or in order)
+
 | Input                     | Fires       | Rule                                 |
 |---------------------------|-------------|--------------------------------------|
 | A↓ B↓ (A held)            | A + B       | R3                                   |
@@ -215,35 +257,47 @@ order.
 | A↓ A↑ B↓, A + B in-order  | A → B on B↓ | R10 doesn't apply: A must come first |
 ```
 
-### `A → B`, `B + C` (sequence's last key starts a combo trigger)
+### Sequence's last key starts a combo
 
 ```
+Trigger 1: A → B
+Trigger 2: B + C (any order or in order)
+
 | Input   | Fires       | Rule |
 |---------|-------------|------|
 | A B↓ B↑ | A → B on B↑ | R10  |
 | A B↓ C↓ | B + C       | R3   |
 ```
 
-### `A → B`, `B + A` (in order, opposite order)
+### Same keys, opposite order, in-order combo
 
 ```
+Trigger 1: A → B
+Trigger 2: B + A (in order)
+
 | Input | Fires | Rule                                     |
 |-------|-------|------------------------------------------|
 | A↓ B↓ | A → B | in-order doesn't match, overlap accepted |
 | B↓ A↓ | B + A | R3                                       |
 ```
 
-### `A → B`, `A + B` (any order, opposite order)
+### Same keys, opposite order, any-order combo
 
 ```
+Trigger 1: A → B
+Trigger 2: A + B (any order)
+
 | Input | Fires | Rule                   |
 |-------|-------|------------------------|
 | B↓ A↓ | A + B | sequence doesn't match |
 ```
 
-### `A + B`, `A → B → C` (combo is a prefix of the sequence)
+### Combo is a prefix of the sequence
 
 ```
+Trigger 1: A + B
+Trigger 2: A → B → C
+
 | Input             | Fires                     | Rule   |
 |-------------------|---------------------------|--------|
 | A↓ B↓ (A held), C | A + B on B↓, then nothing | R3, R6 |
@@ -252,18 +306,24 @@ order.
 
 The sequence must be tapped separately.
 
-### `Shift + A`, `A → B` (combo ends with a sequence key)
+### Combo ends with a sequence key
 
 ```
+Trigger 1: Shift + A
+Trigger 2: A → B
+
 | Input        | Fires                   | Rule              |
 |--------------|-------------------------|-------------------|
 | Shift↓ A↓, B | Shift + A, then nothing | R6: A↓ is claimed |
 | A B          | A → B                   |                   |
 ```
 
-### `Shift + B`, `A → B` (combo ends with a later sequence key)
+### Combo ends with a later sequence key
 
 ```
+Trigger 1: Shift + B
+Trigger 2: A → B
+
 | Input        | Fires     | Rule                            |
 |--------------|-----------|---------------------------------|
 | A, Shift↓ B↓ | Shift + B | R3: combo wins on the same down |
@@ -271,9 +331,12 @@ The sequence must be tapped separately.
 
 ## Combo vs combo
 
-### `Ctrl + 1`, `Ctrl + Shift + 1` (subset)
+### Subset
 
 ```
+Trigger 1: Ctrl + 1
+Trigger 2: Ctrl + Shift + 1
+
 | Input                 | Fires            | Rule              |
 |-----------------------|------------------|-------------------|
 | Ctrl↓ Shift↓ 1↓       | Ctrl + Shift + 1 | R4                |
@@ -282,51 +345,68 @@ The sequence must be tapped separately.
 
 Test: `overlapping triggers 1`.
 
-### `Ctrl + 1`, `Ctrl + 2` (shared held key)
+### Shared held key
 
 ```
+Trigger 1: Ctrl + 1
+Trigger 2: Ctrl + 2
+
 | Input          | Fires | Rule                        |
 |----------------|-------|-----------------------------|
 | Ctrl↓ 1↓ 1↑ 2↓ | both  | R6: Ctrl↓ completed nothing |
 ```
 
-### `Ctrl + 1` (re-press)
+### Re-press
 
 ```
+Trigger: Ctrl + 1
+
 | Input          | Fires          | Rule       |
 |----------------|----------------|------------|
 | Ctrl↓ 1↓ 1↑ 1↓ | Ctrl + 1 twice | R6: new 1↓ |
 ```
 
-### `A + B`, `B + C` (partial overlap)
+### Partial overlap
 
 ```
+Trigger 1: A + B
+Trigger 2: B + C
+
 | Input    | Fires      | Rule              |
 |----------|------------|-------------------|
 | A↓ B↓ C↓ | A + B only | R6: B↓ is claimed |
 ```
 
-### `A + B`, `B + A` (both in order)
+### Same keys, both in order
 
 ```
+Trigger 1: A + B (in order)
+Trigger 2: B + A (in order)
+
 | Input | Fires | Rule         |
 |-------|-------|--------------|
 | A↓ B↓ | A + B | order (#591) |
 | B↓ A↓ | B + A | order (#591) |
 ```
 
-### `A + B` (any order), `B + A` (in order)
+### Same keys, any order vs in order
 
 ```
+Trigger 1: A + B (any order)
+Trigger 2: B + A (in order)
+
 | Input | Fires | Rule |
 |-------|-------|------|
 | B↓ A↓ | B + A | R5   |
 | A↓ B↓ | A + B |      |
 ```
 
-### `A + B`, `B + A` (both any order)
+### Same keys, both any order
 
 ```
+Trigger 1: A + B (any order)
+Trigger 2: B + A (any order)
+
 | Input        | Fires              | Rule |
 |--------------|--------------------|------|
 | either order | one merged trigger | R9   |
