@@ -1,0 +1,11 @@
+[package]
+name = "main"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "keymap_engine"
+crate-type = ["cdylib"]
+
+[dependencies]
+keymap_engine_jni = { path = "../jni" }

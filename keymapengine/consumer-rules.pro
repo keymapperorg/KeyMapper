@@ -1,0 +1,1 @@
+-keep class io.github.sds100.keymapper.keymapengine.KeyMapEngine { native <methods>; }

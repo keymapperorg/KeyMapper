@@ -73,6 +73,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             evdev/src/main/rust/evdev_manager/target/
+            keymapengine/src/main/rust/keymap_engine/target/
           key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-rust-
@@ -84,6 +85,14 @@ jobs:
       - name: Run Rust tests
         working-directory: evdev/src/main/rust/evdev_manager
         run: cargo test --package evdev_manager_core
+
+      - name: Check key map engine Rust formatting
+        working-directory: keymapengine/src/main/rust/keymap_engine
+        run: cargo fmt --check
+
+      - name: Run key map engine Rust tests
+        working-directory: keymapengine/src/main/rust/keymap_engine
+        run: cargo test --package keymap_engine_core
 
   apk:
     name: Build APK

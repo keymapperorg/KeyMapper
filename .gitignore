@@ -98,4 +98,5 @@ app/.env
 evdev/build
 evdev/.cxx
 evdev/src/main/rust/*/target
+keymapengine/src/main/rust/*/target
 .kotlin/*
