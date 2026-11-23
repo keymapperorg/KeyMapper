@@ -1,8 +1,9 @@
+mod algorithm;
 mod cursor;
 mod device;
-mod tree;
 mod input;
-mod algorithm;
+mod signal;
+mod tree;
 
 pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
