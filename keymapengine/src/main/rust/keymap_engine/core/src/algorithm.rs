@@ -55,12 +55,16 @@ impl Algorithm {
 mod tests {
     use googletest::{
         assert_that,
-        prelude::{is_false, is_true},
+        prelude::{eq, err, is_false, is_true},
     };
     use tokio::sync::mpsc::{self, error::TryRecvError, UnboundedReceiver};
 
     use crate::{
-        algorithm::Algorithm, device::DeviceHandle, input::InputRef, signal::Signal, tree::Tree,
+        algorithm::Algorithm,
+        device::DeviceHandle,
+        input::InputRef,
+        signal::Signal,
+        tree::{Edge, KeyMapId, Tree},
     };
 
     const TEST_DEVICE: DeviceHandle = DeviceHandle(0);
@@ -70,22 +74,53 @@ mod tests {
         (Algorithm::new(tree, tx), rx)
     }
 
+    #[track_caller]
+    fn assert_down_consumed(algorithm: &Algorithm, input: InputRef) {
+        assert_that!(algorithm.on_input_down(input, TEST_DEVICE), is_true());
+    }
+
+    #[track_caller]
+    fn assert_down_not_consumed(algorithm: &Algorithm, input: InputRef) {
+        assert_that!(algorithm.on_input_down(input, TEST_DEVICE), is_false());
+    }
+
+    #[track_caller]
+    fn assert_up_consumed(algorithm: &Algorithm, input: InputRef) {
+        assert_that!(algorithm.on_input_up(input, TEST_DEVICE), is_true());
+    }
+
+    #[track_caller]
+    fn assert_up_not_consumed(algorithm: &Algorithm, input: InputRef) {
+        assert_that!(algorithm.on_input_up(input, TEST_DEVICE), is_false());
+    }
+
+    #[track_caller]
+    fn assert_no_signal(rx: &mut UnboundedReceiver<Signal>) {
+        assert_that!(rx.try_recv(), err(eq(&TryRecvError::Empty)));
+    }
+
     #[tokio::test]
     async fn do_nothing_with_empty_tree() {
         let (algorithm, mut rx) = create_algorithm(Tree::new());
 
-        assert_that!(
-            algorithm.on_input_down(InputRef(0), TEST_DEVICE),
-            is_false()
-        );
+        assert_down_not_consumed(&algorithm, InputRef(0));
+        assert_up_not_consumed(&algorithm, InputRef(0));
 
-        assert_that!(algorithm.on_input_up(InputRef(0), TEST_DEVICE), is_false());
-
-        assert_eq!(rx.try_recv(), Err(TryRecvError::Empty));
+        assert_no_signal(&mut rx);
     }
 
     #[tokio::test]
     async fn do_nothing_if_input_not_in_tree() {
-        todo!();
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(InputRef(0), &[KeyMapId(0)]);
+        tree.insert_node(tree.root(), edge);
+
+        let (algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_not_consumed(&algorithm, InputRef(0));
+        assert_up_not_consumed(&algorithm, InputRef(0));
+
+        assert_no_signal(&mut rx);
     }
 }

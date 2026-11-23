@@ -8,5 +8,5 @@ pub struct Input {
     time: Instant,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct InputRef(pub u64);

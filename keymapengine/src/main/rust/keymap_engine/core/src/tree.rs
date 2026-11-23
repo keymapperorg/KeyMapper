@@ -26,13 +26,27 @@ impl Tree {
         }
     }
 
-    pub fn root(&self) -> &Node {
-        self.get(self.root)
-            .expect("The root node must always exist")
+    pub fn root(&self) -> NodeId {
+        self.root
     }
 
     pub fn get(&self, id: NodeId) -> Option<&Node> {
         self.nodes.get(id)
+    }
+
+    pub fn insert_node(&mut self, parent: NodeId, edge: Edge) -> NodeId {
+        let child = Node::new();
+        let node_id = self.nodes.insert(child);
+
+        let parent_node = self.nodes.get_mut(parent).expect("Parent node not found");
+        parent_node.insert_child(edge, node_id);
+
+        node_id
+    }
+
+    pub fn insert_leaf(&mut self, parent: NodeId, leaf: Leaf) {
+        let parent_node = self.nodes.get_mut(parent).expect("Parent node not found");
+        parent_node.insert_leaf(leaf);
     }
 }
 
@@ -43,8 +57,27 @@ pub struct Node {
     leaves: Vec<Leaf>,
 }
 
-#[derive(Debug)]
-struct Edge {
+impl Node {
+    fn new() -> Self {
+        Self {
+            children: Vec::new(),
+            leaves: Vec::new(),
+        }
+    }
+
+    fn insert_child(&mut self, edge: Edge, node: NodeId) {
+        // TODO check that the same edge does not already exist.
+        self.children.push((edge, node));
+    }
+
+    fn insert_leaf(&mut self, leaf: Leaf) {
+        // TODO check that the same edge does not already exist.
+        self.leaves.push(leaf);
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Edge {
     input: InputRef,
     /// If None then this edge can match any device.
     device: Option<DeviceHandle>,
@@ -52,11 +85,27 @@ struct Edge {
     key_maps: Vec<KeyMapId>,
 }
 
-impl Node {
-    fn new() -> Self {
+impl Edge {
+    pub fn with_device(input: InputRef, device: DeviceHandle, key_maps: &[KeyMapId]) -> Self {
+        if key_maps.is_empty() {
+            panic!("An edge must correspond to a key map");
+        }
+
         Self {
-            children: Vec::new(),
-            leaves: Vec::new(),
+            input,
+            device: Some(device),
+            key_maps: key_maps.into(),
+        }
+    }
+    pub fn with_any_device(input: InputRef, key_maps: &[KeyMapId]) -> Self {
+        if key_maps.is_empty() {
+            panic!("An edge must correspond to a key map");
+        }
+
+        Self {
+            input,
+            device: None,
+            key_maps: key_maps.into(),
         }
     }
 }
@@ -71,6 +120,5 @@ new_key_type! {
     pub struct NodeId;
 }
 
-new_key_type! {
-    pub struct KeyMapId;
-}
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct KeyMapId(pub u64);
