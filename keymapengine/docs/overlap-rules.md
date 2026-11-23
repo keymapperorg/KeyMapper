@@ -35,9 +35,10 @@ The cases below only apply these.
 5. **R5: In-order beats any-order.** An ordering generated from an any-order trigger is dropped
    when the user explicitly created the same in-order trigger, so only the explicit one fires.
    Issues: #591 (open).
-6. **R6: Claimed downs.** A trigger can't count a key-down that already completed another trigger.
-   The key has to be pressed again. Keys that are only held (Ctrl in `Ctrl + 1`) aren't claimed,
-   so `Ctrl + 1` then `Ctrl + 2` both fire while Ctrl stays held.
+6. **R6: A key press is only used once.** When a trigger fires, the key presses it matched can't
+   count toward another trigger. That key has to be pressed again. A sequence uses all of its key
+   presses. A combo uses only the press that completed it: its other keys are still held and can
+   be part of the next combo, so with Ctrl held, `Ctrl + 1` then `Ctrl + 2` both fire.
    Issues: #2236 (open: the down that completed a double press also fires the single press).
 7. **R7: Wait if something longer could still match.** A sequence (or single key) whose trie node
    has children waits for the next key or the timeout. If its key is still held when the wait
@@ -45,8 +46,11 @@ The cases below only apply these.
    unsatisfied constraints don't cause a wait.
    Issues: #1386 (closed), #521 (closed), #804 (open), #1508 (open), #1526 (open), #1095 (open),
    #2041 (closed). Constraints: #1271 (closed), #2197, #2225, #2274, #2303 (all open).
-8. **R8: The first divergent key commits** a sequence to one branch of the trie.
-   Issues: none.
+8. **R8: Sequences match independently.** A key press that advances one sequence is ignored by
+   the others, like any other key. With `A → B → C` and `A → D → E`, a stray B doesn't stop
+   `A B D E` from firing `A → D → E`. When two sequences progress through the same key presses,
+   R6 makes sure only the first to complete fires.
+   Issues: none. Today each trigger already tracks its own position, so this is unchanged.
 9. **R9: Identical triggers are merged** in preprocessing into one trigger that performs every key
    map's actions. Any-order combo triggers with the same set of keys expand to identical
    orderings, so they merge. Key maps that differ in click type or long-press delay aren't
@@ -115,10 +119,10 @@ Test: `Do not trigger both triggers if sequence trigger is triggered while waiti
 Trigger 1: A
 Trigger 2: A → A
 
-| Input                            | Fires | Rule                      |
-|----------------------------------|-------|---------------------------|
-| A, A within double-press timeout | A → A | R7, short per-gap timeout |
-| A, timeout                       | A     | R7                        |
+| Input                            | Fires | Rule                                   |
+|----------------------------------|-------|----------------------------------------|
+| A, A within double-press timeout | A → A | R7, A → A has the double-press timeout |
+| A, timeout                       | A     | R7                                     |
 ```
 
 ## Single vs combo
@@ -183,12 +187,12 @@ doesn't work while `A` is part of a combo trigger that could still complete.
 Trigger 1: Power (long)
 Trigger 2: Power (long) + Vol up (long)
 
-| Input                                            | Fires                    | Rule                      |
-|--------------------------------------------------|--------------------------|---------------------------|
-| Power↓, Vol up↓, both held past Vol up's delay   | Power + Vol up only      | R4: pending combo         |
-| Power↓, Vol up↓, Vol up↑ before its delay        | Power on Vol up↑         | R4, then R7: still held   |
-| Power↓ held past its delay, then Vol up↓         | Power, then nothing      | R6: Power↓ is claimed     |
-| Power↓ held past its delay, alone                | Power                    |                           |
+| Input                                          | Fires               | Rule                       |
+|------------------------------------------------|---------------------|----------------------------|
+| Power↓, Vol up↓, both held past Vol up's delay | Power + Vol up only | R4: pending combo          |
+| Power↓, Vol up↓, Vol up↑ before its delay      | Power on Vol up↑    | R4, then R7: still held    |
+| Power↓ held past its delay, then Vol up↓       | Power, then nothing | R6: Power↓ is already used |
+| Power↓ held past its delay, alone              | Power               |                            |
 ```
 
 Issue: #1781 (open). Today both fire. The two triggers complete at different times: Power's
@@ -224,9 +228,10 @@ Trigger 2: A → D → E
 
 | Input     | Fires          | Rule                       |
 |-----------|----------------|----------------------------|
-| A B C     | A → B → C      | R8, no wait                |
-| A D E     | A → D → E      | R8, no wait                |
-| A B D C E | A → B → C only | R8: B committed the branch |
+| A B C     | A → B → C      | no wait                    |
+| A D E     | A → D → E      | no wait                    |
+| A B D E   | A → D → E      | R8: B is ignored           |
+| A B D C E | A → B → C only | R8, R6: A↓ is already used |
 ```
 
 ### Suffix
@@ -247,11 +252,11 @@ Trigger 2: A → B → C
 Trigger 1: A → B
 Trigger 2: B → A
 
-| Input | Fires | Rule              |
-|-------|-------|-------------------|
-| A B   | A → B | key-down order    |
-| B A   | B → A | key-down order    |
-| A B A | A → B | R6: B↓ is claimed |
+| Input | Fires | Rule                   |
+|-------|-------|------------------------|
+| A B   | A → B | key-down order         |
+| B A   | B → A | key-down order         |
+| A B A | A → B | R6: B↓ is already used |
 ```
 
 ### Repeated key
@@ -324,13 +329,15 @@ Trigger 2: A + B (any order)
 Trigger 1: A + B
 Trigger 2: A → B → C
 
-| Input             | Fires                     | Rule   |
-|-------------------|---------------------------|--------|
-| A↓ B↓ (A held), C | A + B on B↓, then nothing | R3, R6 |
-| A B C (taps)      | A → B → C                 |        |
+| Input                    | Fires                       | Rule                       |
+|--------------------------|-----------------------------|----------------------------|
+| A↓ B↓ (A held), C        | A + B on B↓, then nothing   | R3, R6: B↓ is already used |
+| A↓ B↓ (A held), then B C | A + B on B↓, then A → B → C | R6: the combo used only B↓ |
+| A B C (taps)             | A → B → C                   |                            |
 ```
 
-The sequence must be tapped separately.
+Holding A and pressing B fires the combo, which uses only B↓. The sequence's cursor at A
+survives, so pressing B again and then C within the timeout still completes `A → B → C`.
 
 ### Combo ends with a sequence key
 
@@ -338,10 +345,10 @@ The sequence must be tapped separately.
 Trigger 1: Shift + A
 Trigger 2: A → B
 
-| Input        | Fires                   | Rule              |
-|--------------|-------------------------|-------------------|
-| Shift↓ A↓, B | Shift + A, then nothing | R6: A↓ is claimed |
-| A B          | A → B                   |                   |
+| Input        | Fires                   | Rule                   |
+|--------------|-------------------------|------------------------|
+| Shift↓ A↓, B | Shift + A, then nothing | R6: A↓ is already used |
+| A B          | A → B                   |                        |
 ```
 
 ### Combo ends with a later sequence key
@@ -363,10 +370,10 @@ Trigger 2: A → B
 Trigger 1: Ctrl + 1
 Trigger 2: Ctrl + Shift + 1
 
-| Input                 | Fires            | Rule              |
-|-----------------------|------------------|-------------------|
-| Ctrl↓ Shift↓ 1↓       | Ctrl + Shift + 1 | R4                |
-| Ctrl↓ 1↓ Shift↓ (any) | Ctrl + 1 only    | R6: 1↓ is claimed |
+| Input                 | Fires            | Rule                   |
+|-----------------------|------------------|------------------------|
+| Ctrl↓ Shift↓ 1↓       | Ctrl + Shift + 1 | R4                     |
+| Ctrl↓ 1↓ Shift↓ (any) | Ctrl + 1 only    | R6: 1↓ is already used |
 ```
 
 Test: `overlapping triggers 1`.
@@ -379,7 +386,7 @@ Trigger 2: Ctrl + 2
 
 | Input          | Fires | Rule                        |
 |----------------|-------|-----------------------------|
-| Ctrl↓ 1↓ 1↑ 2↓ | both  | R6: Ctrl↓ completed nothing |
+| Ctrl↓ 1↓ 1↑ 2↓ | both  | R6: Ctrl↓ is held, not used |
 ```
 
 ### Re-press
@@ -398,9 +405,9 @@ Trigger: Ctrl + 1
 Trigger 1: A + B
 Trigger 2: B + C
 
-| Input    | Fires      | Rule              |
-|----------|------------|-------------------|
-| A↓ B↓ C↓ | A + B only | R6: B↓ is claimed |
+| Input    | Fires      | Rule                   |
+|----------|------------|------------------------|
+| A↓ B↓ C↓ | A + B only | R6: B↓ is already used |
 ```
 
 ### Same keys, both in order
