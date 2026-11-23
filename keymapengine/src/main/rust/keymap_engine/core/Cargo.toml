@@ -8,3 +8,5 @@ name = "keymap_engine_core"
 crate-type = ["rlib"]
 
 [dependencies]
+
+slotmap = "1.0"
