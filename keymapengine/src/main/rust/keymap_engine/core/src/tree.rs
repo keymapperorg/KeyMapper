@@ -101,7 +101,7 @@ pub struct Edge {
     /// This is used for sequence trigger timeouts. A cursor
     /// can only follow this edge if this amount of time has not passed
     /// since the first input in the cursor went down.
-    timeout: Duration,
+    timeout: Option<Duration>,
 }
 
 impl Edge {
@@ -115,7 +115,7 @@ impl Edge {
             device: Some(device),
             key_maps: key_maps.into(),
             hold_duration: Duration::ZERO,
-            timeout: Duration::MAX,
+            timeout: None,
         }
     }
 
@@ -129,7 +129,7 @@ impl Edge {
             device: None,
             key_maps: key_maps.into(),
             hold_duration: Duration::ZERO,
-            timeout: Duration::MAX,
+            timeout: None,
         }
     }
 
@@ -143,20 +143,20 @@ impl Edge {
             device: None,
             key_maps: key_maps.into(),
             hold_duration: Duration::ZERO,
-            timeout,
+            timeout: Some(timeout),
         }
     }
 
-    pub fn timeout(&self) -> Duration {
+    pub fn timeout(&self) -> Option<Duration> {
         self.timeout
     }
 
-    pub fn matches_input(&self, input: InputRef, device: DeviceHandle) -> bool {
-        if self.device.is_some_and(|d| d != device) {
-            return false;
-        }
+    pub fn input(&self) -> InputRef {
+        self.input
+    }
 
-        self.input == input
+    pub fn device(&self) -> Option<DeviceHandle> {
+        self.device
     }
 }
 
