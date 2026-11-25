@@ -253,6 +253,16 @@ mod tests {
         assert_that!(rx.try_recv(), eq(&Ok(expected)));
     }
 
+    #[track_caller]
+    fn assert_dispatched(rx: &mut UnboundedReceiver<Signal>, key_map: KeyMapId) {
+        assert_signal(rx, Signal::DispatchKeyMap { key_map });
+    }
+
+    #[track_caller]
+    fn assert_cancelled(rx: &mut UnboundedReceiver<Signal>, key_map: KeyMapId) {
+        assert_signal(rx, Signal::CancelKeyMap { key_map });
+    }
+
     fn input(name: char) -> InputRef {
         InputRef(name as u64)
     }
@@ -304,12 +314,7 @@ mod tests {
         let (mut algorithm, mut rx) = create_algorithm(tree);
 
         assert_down_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_down_not_consumed(&mut algorithm, input('A'));
         assert_no_signal(&mut rx);
@@ -342,21 +347,11 @@ mod tests {
 
         assert_down_consumed(&mut algorithm, input('A'));
 
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_up_consumed(&mut algorithm, input('A'));
 
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
     }
 
     #[tokio::test]
@@ -370,51 +365,21 @@ mod tests {
         let (mut algorithm, mut rx) = create_algorithm(tree);
 
         assert_down_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
 
         assert_down_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
 
         assert_down_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
     }
 
     #[tokio::test]
@@ -435,20 +400,10 @@ mod tests {
         assert_up_consumed(&mut algorithm, input('A'));
 
         assert_down_consumed(&mut algorithm, input('B'));
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_up_consumed(&mut algorithm, input('B'));
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
     }
 
     #[tokio::test]
@@ -469,12 +424,7 @@ mod tests {
 
         assert_down_consumed(&mut algorithm, input('B'));
 
-        assert_signal(
-            &mut rx,
-            Signal::DispatchKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_dispatched(&mut rx, KeyMapId(0));
 
         assert_up_consumed(&mut algorithm, input('A'));
         // The action should only be cancelled when the last
@@ -482,11 +432,6 @@ mod tests {
         assert_no_signal(&mut rx);
 
         assert_up_consumed(&mut algorithm, input('B'));
-        assert_signal(
-            &mut rx,
-            Signal::CancelKeyMap {
-                key_map: KeyMapId(0),
-            },
-        );
+        assert_cancelled(&mut rx, KeyMapId(0));
     }
 }
