@@ -11,7 +11,7 @@ use crate::{
     device::{DeviceHandle, DeviceSelector},
     input::{Input, InputRef},
     signal::Signal,
-    tree::{Edge, Node, NodeId, Tree},
+    tree::{Edge, KeyMapId, Node, NodeId, Tree},
 };
 
 struct Algorithm {
@@ -21,6 +21,34 @@ struct Algorithm {
     /// Stores which inputs are being held down, and whether that down
     /// event was consumed.
     active_inputs: HashMap<(InputRef, DeviceHandle), bool>,
+    /// Which key maps are currently performing actions.
+    // TODO rename this, and move it into my "Dispatcher" concept.
+    active_key_maps: HashMap<KeyMapId, ActiveKeyMap>,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Hash, Eq)]
+enum CancelHook {
+    OnInputUp {
+        input: InputRef,
+        device: DeviceHandle,
+    },
+    OnKeyMapTriggered {
+        key_map: KeyMapId,
+    },
+}
+
+struct ActiveKeyMap {
+    id: KeyMapId,
+    cancel_hooks: Vec<CancelHook>,
+}
+
+impl ActiveKeyMap {
+    pub fn new(id: KeyMapId, cancel_hooks: &[CancelHook]) -> Self {
+        Self {
+            id,
+            cancel_hooks: Vec::from(cancel_hooks),
+        }
+    }
 }
 
 impl Algorithm {
@@ -31,6 +59,7 @@ impl Algorithm {
             cursors: Vec::new(),
             output,
             active_inputs: HashMap::new(),
+            active_key_maps: HashMap::new(),
         }
     }
 
@@ -89,11 +118,24 @@ impl Algorithm {
         for cursor in self.cursors.iter_mut() {
             if let Some(node) = self.tree.get(cursor.node()) {
                 for leaf in node.leaves() {
-                    let signal = Signal::ActionDown {
-                        key_map: leaf.key_map(),
-                    };
+                    let key_map = leaf.key_map();
 
-                    consume |= self.output.send(signal).is_ok();
+                    let signal = Signal::DispatchKeyMap { key_map };
+
+                    if self.output.send(signal).is_ok() {
+                        consume = true;
+
+                        self.active_key_maps.insert(
+                            key_map,
+                            ActiveKeyMap::new(
+                                key_map,
+                                &[CancelHook::OnInputUp {
+                                    input: input_ref,
+                                    device,
+                                }],
+                            ),
+                        );
+                    }
 
                     cursor.cancel();
                 }
@@ -113,6 +155,20 @@ impl Algorithm {
             return false;
         }
 
+        // TODO this can be done more efficiently
+        for (_, key_map) in self.active_key_maps.iter() {
+            if key_map.cancel_hooks.contains(&CancelHook::OnInputUp {
+                input: input_ref,
+                device,
+            }) {
+                self.output
+                    .send(Signal::CancelKeyMap {
+                        key_map: key_map.id,
+                    })
+                    .ok();
+            }
+        }
+
         // Always consume the up event if the down was also consumed.
         self.active_inputs
             .remove(&(input_ref, device))
@@ -126,7 +182,7 @@ impl Node {
         &'a self,
         input: Input,
         cursor: &'a Cursor,
-    ) -> impl Iterator<Item = NodeId> + '_ {
+    ) -> impl Iterator<Item = NodeId> + 'a {
         self.children().filter_map(move |(edge, node)| {
             if edge.can_cursor_follow(input, cursor) {
                 Some(*node)
@@ -250,7 +306,7 @@ mod tests {
         assert_down_consumed(&mut algorithm, input('A'));
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
@@ -261,7 +317,16 @@ mod tests {
 
     #[tokio::test]
     async fn do_nothing_if_up_event_received_with_no_corresponding_down_event() {
-        todo!();
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let node_id = tree.insert_node(tree.root(), edge);
+        tree.insert_leaf(node_id, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_up_not_consumed(&mut algorithm, input('A'));
+        assert_no_signal(&mut rx);
     }
 
     // TODO these tests should be higher level and not build a tree manually, so the key maps are easier to read.
@@ -279,14 +344,19 @@ mod tests {
 
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
 
         assert_up_consumed(&mut algorithm, input('A'));
 
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
     }
 
     #[tokio::test]
@@ -302,34 +372,49 @@ mod tests {
         assert_down_consumed(&mut algorithm, input('A'));
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
 
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
 
         assert_down_consumed(&mut algorithm, input('A'));
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
 
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
 
         assert_down_consumed(&mut algorithm, input('A'));
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
         assert_up_consumed(&mut algorithm, input('A'));
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
     }
 
     #[tokio::test]
@@ -352,13 +437,18 @@ mod tests {
         assert_down_consumed(&mut algorithm, input('B'));
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
 
         assert_up_consumed(&mut algorithm, input('B'));
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
     }
 
     #[tokio::test]
@@ -381,7 +471,7 @@ mod tests {
 
         assert_signal(
             &mut rx,
-            Signal::ActionDown {
+            Signal::DispatchKeyMap {
                 key_map: KeyMapId(0),
             },
         );
@@ -392,6 +482,11 @@ mod tests {
         assert_no_signal(&mut rx);
 
         assert_up_consumed(&mut algorithm, input('B'));
-        assert_signal(&mut rx, Signal::ActionUp);
+        assert_signal(
+            &mut rx,
+            Signal::CancelKeyMap {
+                key_map: KeyMapId(0),
+            },
+        );
     }
 }

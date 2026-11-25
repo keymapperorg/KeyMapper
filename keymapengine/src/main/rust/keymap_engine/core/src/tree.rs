@@ -165,5 +165,5 @@ new_key_type! {
     pub struct NodeId;
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct KeyMapId(pub u64);

@@ -2,6 +2,6 @@ use crate::tree::KeyMapId;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Signal {
-    ActionDown { key_map: KeyMapId },
-    ActionUp,
+    DispatchKeyMap { key_map: KeyMapId },
+    CancelKeyMap { key_map: KeyMapId },
 }
