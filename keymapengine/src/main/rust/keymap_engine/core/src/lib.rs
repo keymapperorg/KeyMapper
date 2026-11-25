@@ -1,5 +1,6 @@
 mod algorithm;
 mod cursor;
+mod cursor_cleanup;
 mod device;
 mod input;
 mod signal;

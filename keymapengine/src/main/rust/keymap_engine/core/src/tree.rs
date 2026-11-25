@@ -69,14 +69,8 @@ impl Node {
         }
     }
 
-    pub fn children_for_input(
-        &self,
-        input: InputRef,
-        device: DeviceHandle,
-    ) -> impl Iterator<Item = NodeId> + '_ {
-        self.children
-            .iter()
-            .filter_map(move |(edge, node)| edge.matches_input(input, device).then_some(*node))
+    pub fn children(&self) -> impl Iterator<Item = &(Edge, NodeId)> + '_ {
+        self.children.iter()
     }
 
     pub fn leaves(&self) -> impl Iterator<Item = &Leaf> + '_ {
@@ -104,6 +98,10 @@ pub struct Edge {
     /// How long the input needs to be long pressed for this edge
     /// to be followed.
     hold_duration: Duration,
+    /// This is used for sequence trigger timeouts. A cursor
+    /// can only follow this edge if this amount of time has not passed
+    /// since the first input in the cursor went down.
+    timeout: Duration,
 }
 
 impl Edge {
@@ -117,6 +115,7 @@ impl Edge {
             device: Some(device),
             key_maps: key_maps.into(),
             hold_duration: Duration::ZERO,
+            timeout: Duration::MAX,
         }
     }
 
@@ -130,13 +129,19 @@ impl Edge {
             device: None,
             key_maps: key_maps.into(),
             hold_duration: Duration::ZERO,
+            timeout: Duration::MAX,
         }
+    }
+
+    pub fn timeout(&self) -> Duration {
+        self.timeout
     }
 
     pub fn matches_input(&self, input: InputRef, device: DeviceHandle) -> bool {
         if self.device.is_some_and(|d| d != device) {
             return false;
         }
+
         self.input == input
     }
 }

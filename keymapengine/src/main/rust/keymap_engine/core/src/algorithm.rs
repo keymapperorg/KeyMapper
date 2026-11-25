@@ -4,10 +4,11 @@ use tokio::sync::mpsc::UnboundedSender;
 
 use crate::{
     cursor::Cursor,
+    cursor_cleanup::cleanup_cursors,
     device::{DeviceHandle, DeviceSelector},
     input::{Input, InputRef},
     signal::Signal,
-    tree::{NodeId, Tree},
+    tree::{Edge, Node, NodeId, Tree},
 };
 
 struct Algorithm {
@@ -44,28 +45,33 @@ impl Algorithm {
     fn on_input_down(&mut self, input_ref: InputRef, device: DeviceHandle) -> bool {
         let input = Input::now(input_ref, device);
 
-        let mut matching_nodes: Vec<NodeId> = Vec::new();
-        let root_node = self.tree.root_node();
+        // Add a cursor pointing to the root so when iterating over the cursors
+        // it will also check if any edges can be followed.
+        self.cursors.push(Cursor::new(self.tree.root()));
 
-        matching_nodes.extend(root_node.children_for_input(input_ref, device));
+        let mut new_cursors: Vec<Cursor> = Vec::new();
 
-        for cursor in self.cursors.iter() {
+        for cursor in self.cursors.iter_mut() {
             if let Some(node) = self.tree.get(cursor.node()) {
-                matching_nodes.extend(node.children_for_input(input_ref, device));
+                let next_nodes: Vec<NodeId> = node.next_nodes_for_cursor(input, cursor).collect();
+
+                match next_nodes.as_slice() {
+                    [] => continue,
+                    [next] => cursor.advance(*next, input),
+                    next_nodes => {
+                        for next in next_nodes {
+                            new_cursors.push(cursor.branch(*next, input));
+                        }
+                    }
+                }
             }
         }
 
-        self.cursors
-            .extend(matching_nodes.iter().map(|node| Cursor::new(*node)));
-
-        // Deduplicate the cursors. If multiple point to the same node then keep the
-        // most recent one.
-        self.cursors.sort_by_key(|c| c.first_down_time());
-        self.cursors.dedup_by_key(|c| c.node());
+        self.cursors.extend(new_cursors);
 
         let mut consume = false;
 
-        for cursor in self.cursors.iter() {
+        for cursor in self.cursors.iter_mut() {
             if let Some(node) = self.tree.get(cursor.node()) {
                 for leaf in node.leaves() {
                     let signal = Signal::ActionDown {
@@ -73,12 +79,13 @@ impl Algorithm {
                     };
 
                     consume |= self.output.send(signal).is_ok();
+
+                    cursor.cancel();
                 }
             }
         }
 
-        // TODO process the nodes and perform any actions. These cursors need to be cancelled.
-        // TODO assert that the number of cursors is never greater than number of nodes.
+        cleanup_cursors(&mut self.cursors);
 
         consume
     }
@@ -89,6 +96,30 @@ impl Algorithm {
         // The world may have reloaded while a button was held down.
 
         false
+    }
+}
+
+impl Node {
+    // TODO rename?
+    pub fn next_nodes_for_cursor<'a>(
+        &'a self,
+        input: Input,
+        cursor: &'a Cursor,
+    ) -> impl Iterator<Item = NodeId> + '_ {
+        self.children().filter_map(move |(edge, node)| {
+            if edge.can_cursor_follow(input, cursor) {
+                Some(*node)
+            } else {
+                None
+            }
+        })
+    }
+}
+
+impl Edge {
+    // TODO rename
+    pub fn can_cursor_follow(&self, input: Input, cursor: &Cursor) -> bool {
+        self.matches_input(input.id(), input.device()) && cursor.is_active(self.timeout())
     }
 }
 
@@ -174,6 +205,7 @@ mod tests {
         assert_no_signal(&mut rx);
     }
 
+    // TODO these tests should be higher level and not build a tree manually, so the key maps are easier to read.
     #[tokio::test]
     async fn detect_single_key_trigger() {
         let mut tree = Tree::new();
@@ -181,6 +213,77 @@ mod tests {
         let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
         let node_id = tree.insert_node(tree.root(), edge);
         tree.insert_leaf(node_id, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+
+        assert_up_consumed(&mut algorithm, input('A'));
+
+        assert_signal(&mut rx, Signal::ActionUp);
+    }
+
+    #[tokio::test]
+    async fn detect_single_key_trigger_multiple_times() {
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let node_id = tree.insert_node(tree.root(), edge);
+        tree.insert_leaf(node_id, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+
+        assert_up_consumed(&mut algorithm, input('A'));
+        assert_signal(&mut rx, Signal::ActionUp);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+
+        assert_up_consumed(&mut algorithm, input('A'));
+        assert_signal(&mut rx, Signal::ActionUp);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+        assert_up_consumed(&mut algorithm, input('A'));
+        assert_signal(&mut rx, Signal::ActionUp);
+    }
+
+    #[tokio::test]
+    async fn detect_two_key_sequence_trigger() {
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let first_node = tree.insert_node(tree.root(), edge);
+
+        let edge = Edge::with_any_device(input('B'), &[KeyMapId(0)]);
+        let second_node = tree.insert_node(first_node, edge);
+
+        tree.insert_leaf(second_node, Leaf::new(KeyMapId(0)));
 
         let (mut algorithm, mut rx) = create_algorithm(tree);
 

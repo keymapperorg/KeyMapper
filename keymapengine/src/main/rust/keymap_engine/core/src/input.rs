@@ -1,4 +1,3 @@
-
 use tokio::time::Instant;
 
 use crate::device::{DeviceHandle, DeviceSelector};
@@ -17,6 +16,23 @@ impl Input {
             device,
             time: Instant::now(),
         }
+    }
+
+    #[cfg(test)]
+    pub fn at(id: InputRef, device: DeviceHandle, time: Instant) -> Self {
+        Self { id, device, time }
+    }
+
+    pub fn id(&self) -> InputRef {
+        self.id
+    }
+
+    pub fn device(&self) -> DeviceHandle {
+        self.device
+    }
+
+    pub fn time(&self) -> Instant {
+        self.time
     }
 }
 
