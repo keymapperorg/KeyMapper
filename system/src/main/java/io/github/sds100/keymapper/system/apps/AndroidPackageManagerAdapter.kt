@@ -297,7 +297,11 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 return KMError.AppNotFound(packageName)
             }
         } else {
-            startActivityWithTrampoline(packageIntent)
+            try {
+                startActivityWithTrampoline(packageIntent)
+            } catch (e: ActivityNotFoundException) {
+                return KMError.AppNotFound(packageName)
+            }
 
             return Success(Unit)
         }
@@ -321,16 +325,22 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val bundle = ActivityOptions.makeBasic()
-                .setPendingIntentBackgroundActivityStartMode(
-                    ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
-                )
-                .toBundle()
+        // PendingIntent.send throws CanceledException rather than ActivityNotFoundException
+        // if no activity can handle the intent.
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val bundle = ActivityOptions.makeBasic()
+                    .setPendingIntentBackgroundActivityStartMode(
+                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                    )
+                    .toBundle()
 
-            pendingIntent.send(bundle)
-        } else {
-            pendingIntent.send()
+                pendingIntent.send(bundle)
+            } else {
+                pendingIntent.send()
+            }
+        } catch (e: PendingIntent.CanceledException) {
+            throw ActivityNotFoundException(e.message)
         }
     }
 
