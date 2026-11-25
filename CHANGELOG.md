@@ -6,6 +6,7 @@
 
 - Crash when showing a pinch action in Chinese or Turkish.
 - Crash when returning to the home screen after leaving a screen while it was returning a result.
+- Crash when a cycle rotations action has no orientations selected.
 
 ## [4.7.1](https://github.com/sds100/KeyMapper/releases/tag/v4.7.1)
 
