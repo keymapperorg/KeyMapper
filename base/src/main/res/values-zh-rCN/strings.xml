@@ -108,8 +108,8 @@
     <string name="description_tap_coordinate_with_description">点击屏幕 (%s)</string>
     <string name="description_swipe_coordinate_default">用 %d 根手指从 (%d,%d) 划至 (%d,%d)，动作耗时 %d 毫秒</string>
     <string name="description_swipe_coordinate_with_description">以 %d 根手指从 (%d,%d) 划至 (%d,%d)，动作耗时 %d 毫秒 (%s)</string>
-    <string name="description_pinch_coordinate_default">用 %d 根手指在 (%d,%d) 处进行 %s操作，缩放 %d 像素，动作耗时 %d 毫秒</string>
-    <string name="description_pinch_coordinate_with_description">用 %d 根手指在 (%d,%d) 处进行 %s操作，缩放 %d 像素，耗时 %d 毫秒 (%s)</string>
+    <string name="description_pinch_coordinate_default">用 %2$d 根手指在 (%3$d,%4$d) 处进行 %1$s操作，缩放 %5$d 像素，动作耗时 %6$d 毫秒</string>
+    <string name="description_pinch_coordinate_with_description">用 %2$d 根手指在 (%3$d,%4$d) 处进行 %1$s操作，缩放 %5$d 像素，耗时 %6$d 毫秒 (%7$s)</string>
     <string name="description_phone_call">呼叫 %s</string>
     <string name="description_sound">播放音效：%s</string>
     <string name="description_sound_unknown">播放未知声音</string>

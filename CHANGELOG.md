@@ -1,3 +1,11 @@
+## [4.7.2](https://github.com/sds100/KeyMapper/releases/tag/v4.7.2)
+
+#### TO BE RELEASED
+
+## Fixed
+
+- Crash when showing a pinch action in Chinese or Turkish.
+
 ## [4.7.1](https://github.com/sds100/KeyMapper/releases/tag/v4.7.1)
 
 #### 19 November 2026
