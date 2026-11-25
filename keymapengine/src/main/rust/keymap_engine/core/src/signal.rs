@@ -1,5 +1,9 @@
+use crate::tree::KeyMapId;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Signal {
-    ActionDown,
+    ActionDown{
+        key_map: KeyMapId
+    },
     ActionUp,
 }

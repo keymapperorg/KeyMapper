@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::mpsc::Iter, time::Duration};
 
 use slotmap::{new_key_type, SlotMap};
 
@@ -28,6 +28,10 @@ impl Tree {
 
     pub fn root(&self) -> NodeId {
         self.root
+    }
+
+    pub fn root_node(&self) -> &Node {
+        self.get(self.root).unwrap()
     }
 
     pub fn get(&self, id: NodeId) -> Option<&Node> {
@@ -65,6 +69,20 @@ impl Node {
         }
     }
 
+    pub fn children_for_input(
+        &self,
+        input: InputRef,
+        device: DeviceHandle,
+    ) -> impl Iterator<Item = NodeId> + '_ {
+        self.children
+            .iter()
+            .filter_map(move |(edge, node)| edge.matches_input(input, device).then_some(*node))
+    }
+
+    pub fn leaves(&self) -> impl Iterator<Item = &Leaf> + '_ {
+        self.leaves.iter()
+    }
+
     fn insert_child(&mut self, edge: Edge, node: NodeId) {
         // TODO check that the same edge does not already exist.
         self.children.push((edge, node));
@@ -83,6 +101,9 @@ pub struct Edge {
     device: Option<DeviceHandle>,
     /// These are used to check whether constraints are satisfied.
     key_maps: Vec<KeyMapId>,
+    /// How long the input needs to be long pressed for this edge
+    /// to be followed.
+    hold_duration: Duration,
 }
 
 impl Edge {
@@ -95,8 +116,10 @@ impl Edge {
             input,
             device: Some(device),
             key_maps: key_maps.into(),
+            hold_duration: Duration::ZERO,
         }
     }
+
     pub fn with_any_device(input: InputRef, key_maps: &[KeyMapId]) -> Self {
         if key_maps.is_empty() {
             panic!("An edge must correspond to a key map");
@@ -106,19 +129,36 @@ impl Edge {
             input,
             device: None,
             key_maps: key_maps.into(),
+            hold_duration: Duration::ZERO,
         }
+    }
+
+    pub fn matches_input(&self, input: InputRef, device: DeviceHandle) -> bool {
+        if self.device.is_some_and(|d| d != device) {
+            return false;
+        }
+        self.input == input
     }
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct Leaf {
-    id: NodeId,
     key_map: KeyMapId,
+}
+
+impl Leaf {
+    pub fn new(key_map: KeyMapId) -> Self {
+        Self { key_map }
+    }
+
+    pub fn key_map(&self) -> KeyMapId {
+        self.key_map
+    }
 }
 
 new_key_type! {
     pub struct NodeId;
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct KeyMapId(pub u64);
