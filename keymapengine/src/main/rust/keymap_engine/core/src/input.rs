@@ -36,5 +36,7 @@ impl Input {
     }
 }
 
+/// This represents a key code, scan code, floating button etc. Some
+/// type of input.
 #[derive(Copy, Clone, Debug, PartialEq, Hash, Eq)]
 pub struct InputRef(pub u64);

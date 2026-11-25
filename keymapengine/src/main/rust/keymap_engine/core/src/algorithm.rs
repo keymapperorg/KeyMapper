@@ -1,4 +1,7 @@
-use std::{collections::HashSet, time::Duration};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
 
 use tokio::sync::mpsc::UnboundedSender;
 
@@ -15,7 +18,9 @@ struct Algorithm {
     tree: Tree,
     cursors: Vec<Cursor>,
     output: UnboundedSender<Signal>,
-    active_inputs: HashSet<InputRef>,
+    /// Stores which inputs are being held down, and whether that down
+    /// event was consumed.
+    active_inputs: HashMap<(InputRef, DeviceHandle), bool>,
 }
 
 impl Algorithm {
@@ -25,7 +30,7 @@ impl Algorithm {
             tree,
             cursors: Vec::new(),
             output,
-            active_inputs: HashSet::new(),
+            active_inputs: HashMap::new(),
         }
     }
 
@@ -46,11 +51,9 @@ impl Algorithm {
     /// Returns whether to consume the input.
     fn on_input_down(&mut self, input_ref: InputRef, device: DeviceHandle) -> bool {
         // TODO do not process an input ref that is already held down
-        if self.active_inputs.contains(&input_ref) {
+        if self.active_inputs.contains_key(&(input_ref, device)) {
             return false;
         }
-
-        self.active_inputs.insert(input_ref);
 
         let input = Input::now(input_ref, device);
 
@@ -58,6 +61,7 @@ impl Algorithm {
         // it will also check if any edges can be followed.
         self.cursors.push(Cursor::new(self.tree.root()));
 
+        let mut consume = false;
         let mut new_cursors: Vec<Cursor> = Vec::new();
 
         for cursor in self.cursors.iter_mut() {
@@ -66,19 +70,21 @@ impl Algorithm {
 
                 match next_nodes.as_slice() {
                     [] => continue,
-                    [next] => cursor.advance(*next, input),
+                    [next] => {
+                        cursor.advance(*next, input);
+                        consume = true;
+                    }
                     next_nodes => {
                         for next in next_nodes {
                             new_cursors.push(cursor.branch(*next, input));
                         }
+                        consume = true;
                     }
                 }
             }
         }
 
         self.cursors.extend(new_cursors);
-
-        let mut consume = false;
 
         for cursor in self.cursors.iter_mut() {
             if let Some(node) = self.tree.get(cursor.node()) {
@@ -96,18 +102,21 @@ impl Algorithm {
 
         cleanup_cursors(&mut self.cursors);
 
+        self.active_inputs.insert((input_ref, device), consume);
+
         consume
     }
 
     // Returns whether to consume the input.
     fn on_input_up(&mut self, input_ref: InputRef, device: DeviceHandle) -> bool {
-        if !self.active_inputs.contains(&input_ref) {
+        if !self.active_inputs.contains_key(&(input_ref, device)) {
             return false;
         }
 
-        self.active_inputs.remove(&input_ref);
-
-        false
+        // Always consume the up event if the down was also consumed.
+        self.active_inputs
+            .remove(&(input_ref, device))
+            .unwrap_or(false)
     }
 }
 
@@ -190,6 +199,17 @@ mod tests {
 
     fn input(name: char) -> InputRef {
         InputRef(name as u64)
+    }
+
+    #[tokio::test]
+    async fn consume_up_event_if_down_was_consumed() {
+        let (mut algorithm, _) = create_algorithm(Tree::new());
+
+        algorithm
+            .active_inputs
+            .insert((input('A'), DeviceHandle(0)), true);
+
+        assert_up_consumed(&mut algorithm, input('A'));
     }
 
     #[tokio::test]
@@ -313,6 +333,35 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn detect_two_key_sequence_trigger_releasing_each_key() {
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let first_node = tree.insert_node(tree.root(), edge);
+
+        let edge = Edge::with_any_device(input('B'), &[KeyMapId(0)]);
+        let second_node = tree.insert_node(first_node, edge);
+
+        tree.insert_leaf(second_node, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+        assert_up_consumed(&mut algorithm, input('A'));
+
+        assert_down_consumed(&mut algorithm, input('B'));
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+
+        assert_up_consumed(&mut algorithm, input('B'));
+        assert_signal(&mut rx, Signal::ActionUp);
+    }
+
+    #[tokio::test]
     async fn detect_two_key_sequence_trigger() {
         let mut tree = Tree::new();
 
@@ -328,6 +377,8 @@ mod tests {
 
         assert_down_consumed(&mut algorithm, input('A'));
 
+        assert_down_consumed(&mut algorithm, input('B'));
+
         assert_signal(
             &mut rx,
             Signal::ActionDown {
@@ -336,7 +387,11 @@ mod tests {
         );
 
         assert_up_consumed(&mut algorithm, input('A'));
+        // The action should only be cancelled when the last
+        // key in the sequence is released.
+        assert_no_signal(&mut rx);
 
+        assert_up_consumed(&mut algorithm, input('B'));
         assert_signal(&mut rx, Signal::ActionUp);
     }
 }

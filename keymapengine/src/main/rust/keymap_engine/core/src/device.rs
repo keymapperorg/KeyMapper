@@ -1,5 +1,5 @@
 /// An opaque handle on a device.
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct DeviceHandle(pub u64);
 
 pub enum DeviceSelector {
