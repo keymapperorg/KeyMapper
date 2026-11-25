@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 
 use tokio::sync::mpsc::UnboundedSender;
 
@@ -15,6 +15,7 @@ struct Algorithm {
     tree: Tree,
     cursors: Vec<Cursor>,
     output: UnboundedSender<Signal>,
+    active_inputs: HashSet<InputRef>,
 }
 
 impl Algorithm {
@@ -24,6 +25,7 @@ impl Algorithm {
             tree,
             cursors: Vec::new(),
             output,
+            active_inputs: HashSet::new(),
         }
     }
 
@@ -43,6 +45,13 @@ impl Algorithm {
 
     /// Returns whether to consume the input.
     fn on_input_down(&mut self, input_ref: InputRef, device: DeviceHandle) -> bool {
+        // TODO do not process an input ref that is already held down
+        if self.active_inputs.contains(&input_ref) {
+            return false;
+        }
+
+        self.active_inputs.insert(input_ref);
+
         let input = Input::now(input_ref, device);
 
         // Add a cursor pointing to the root so when iterating over the cursors
@@ -92,8 +101,11 @@ impl Algorithm {
 
     // Returns whether to consume the input.
     fn on_input_up(&mut self, input_ref: InputRef, device: DeviceHandle) -> bool {
-        // TODO do not consume an up event that never had a corresponding down event.
-        // The world may have reloaded while a button was held down.
+        if !self.active_inputs.contains(&input_ref) {
+            return false;
+        }
+
+        self.active_inputs.remove(&input_ref);
 
         false
     }
@@ -203,6 +215,33 @@ mod tests {
         assert_up_not_consumed(&mut algorithm, input('B'));
 
         assert_no_signal(&mut rx);
+    }
+
+    #[tokio::test]
+    async fn do_nothing_if_duplicate_down_event_received() {
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let node_id = tree.insert_node(tree.root(), edge);
+        tree.insert_leaf(node_id, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+        assert_signal(
+            &mut rx,
+            Signal::ActionDown {
+                key_map: KeyMapId(0),
+            },
+        );
+
+        assert_down_not_consumed(&mut algorithm, input('A'));
+        assert_no_signal(&mut rx);
+    }
+
+    #[tokio::test]
+    async fn do_nothing_if_up_event_received_with_no_corresponding_down_event() {
+        todo!();
     }
 
     // TODO these tests should be higher level and not build a tree manually, so the key maps are easier to read.
