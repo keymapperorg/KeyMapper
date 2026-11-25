@@ -752,7 +752,8 @@ class CreateActionDelegate(
                 }
 
                 val orientations =
-                    showDialog("pick_orientations", DialogModel.MultiChoice(items)) ?: return null
+                    showDialog("pick_orientations", DialogModel.MultiChoice(items))
+                        ?.takeIf { it.isNotEmpty() } ?: return null
 
                 return ActionData.Rotation.CycleRotations(orientations)
             }

@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.core.os.BundleCompat
+import timber.log.Timber
 
 /**
  * Use an activity trampoline so that the keyguard is dismissed when launching activities from
@@ -36,16 +37,20 @@ class TrampolineActivity : ComponentActivity() {
             val pendingIntent =
                 PendingIntent.getActivity(this, 0, activityIntent, PendingIntent.FLAG_IMMUTABLE)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val bundle = ActivityOptions.makeBasic()
-                    .setPendingIntentBackgroundActivityStartMode(
-                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
-                    )
-                    .toBundle()
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    val bundle = ActivityOptions.makeBasic()
+                        .setPendingIntentBackgroundActivityStartMode(
+                            ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED,
+                        )
+                        .toBundle()
 
-                pendingIntent.send(bundle)
-            } else {
-                pendingIntent.send()
+                    pendingIntent.send(bundle)
+                } else {
+                    pendingIntent.send()
+                }
+            } catch (e: PendingIntent.CanceledException) {
+                Timber.e(e, "Failed to start activity from trampoline")
             }
         }
 

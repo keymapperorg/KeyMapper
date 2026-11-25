@@ -530,9 +530,10 @@ object ActionDataEntityMapper {
                         .then { extraValue ->
                             extraValue
                                 .split(",")
-                                .map { ConstantTypeConverters.ORIENTATION_MAP.getKey(it)!! }
+                                .mapNotNull { ConstantTypeConverters.ORIENTATION_MAP.getKey(it) }
                                 .success()
-                        }.valueOrNull() ?: return null
+                        }.valueOrNull()
+                        ?.takeIf { it.isNotEmpty() } ?: return null
 
                 ActionData.Rotation.CycleRotations(orientations)
             }

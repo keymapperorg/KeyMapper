@@ -172,7 +172,21 @@ suspend inline fun <reified R> NavigationProvider.navigate(
         onNavigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
         onNavResult.filterNotNull()
             .dropWhile { it.key != key }
-            .map { result -> result.data?.let { Json.decodeFromString<R>(it) } },
+            .map { result ->
+                result.data?.let {
+                    // A stray result from another screen can end up here if the back stack
+                    // changed before the result was delivered. Treat it as no result.
+                    try {
+                        Json.decodeFromString<R>(it)
+                    } catch (e: IllegalArgumentException) {
+                        Timber.e(
+                            e,
+                            "Navigation: Ignoring result for $key that could not be decoded",
+                        )
+                        null
+                    }
+                }
+            },
     ).first()
 }
 

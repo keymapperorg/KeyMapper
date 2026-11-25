@@ -81,8 +81,8 @@
     <string name="description_tap_coordinate_with_description">Ekrana dokun (%s)</string>
     <string name="description_swipe_coordinate_default">%d parmakla (%d,%d) noktasından (%d,%d) noktasına %d ms\'de kaydır</string>
     <string name="description_swipe_coordinate_with_description">%d parmakla (%d,%d) noktasından (%d,%d) noktasına %d ms\'de kaydır (%s)</string>
-    <string name="description_pinch_coordinate_default">%d parmakla (%d,%d) noktasında %d px mesafeyle %d ms\'de %s yap</string>
-    <string name="description_pinch_coordinate_with_description">%d parmakla (%d,%d) noktasında %d px mesafeyle %d ms\'de %s yap (%s)</string>
+    <string name="description_pinch_coordinate_default">%2$d parmakla (%3$d,%4$d) noktasında %5$d px mesafeyle %6$d ms\'de %1$s yap</string>
+    <string name="description_pinch_coordinate_with_description">%2$d parmakla (%3$d,%4$d) noktasında %5$d px mesafeyle %6$d ms\'de %1$s yap (%7$s)</string>
     <string name="description_phone_call">%s numarayı ara</string>
     <string name="description_sound">Ses çal: %s</string>
     <string name="description_sound_unknown">Bilinmeyen sesi oynat</string>
