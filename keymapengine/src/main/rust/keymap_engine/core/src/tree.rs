@@ -133,6 +133,20 @@ impl Edge {
         }
     }
 
+    pub fn with_timeout(input: InputRef, key_maps: &[KeyMapId], timeout: Duration) -> Self {
+        if key_maps.is_empty() {
+            panic!("An edge must correspond to a key map");
+        }
+
+        Self {
+            input,
+            device: None,
+            key_maps: key_maps.into(),
+            hold_duration: Duration::ZERO,
+            timeout,
+        }
+    }
+
     pub fn timeout(&self) -> Duration {
         self.timeout
     }

@@ -202,11 +202,16 @@ impl Edge {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use googletest::{
         assert_that,
         prelude::{eq, err, is_false, is_true},
     };
-    use tokio::sync::mpsc::{self, error::TryRecvError, UnboundedReceiver};
+    use tokio::{
+        sync::mpsc::{self, error::TryRecvError, UnboundedReceiver},
+        time::advance,
+    };
 
     use crate::{
         algorithm::Algorithm,
@@ -217,6 +222,7 @@ mod tests {
     };
 
     const TEST_DEVICE: DeviceHandle = DeviceHandle(0);
+    const TIMEOUT: Duration = Duration::from_millis(500);
 
     fn create_algorithm(tree: Tree) -> (Algorithm, UnboundedReceiver<Signal>) {
         let (tx, rx) = mpsc::unbounded_channel();
@@ -433,5 +439,27 @@ mod tests {
 
         assert_up_consumed(&mut algorithm, input('B'));
         assert_cancelled(&mut rx, KeyMapId(0));
+    }
+
+    #[tokio::test(start_paused=true)]
+    async fn two_key_sequence_trigger_times_out() {
+        let mut tree = Tree::new();
+
+        let edge = Edge::with_any_device(input('A'), &[KeyMapId(0)]);
+        let first_node = tree.insert_node(tree.root(), edge);
+
+        let edge = Edge::with_timeout(input('B'), &[KeyMapId(0)], TIMEOUT);
+        let second_node = tree.insert_node(first_node, edge);
+
+        tree.insert_leaf(second_node, Leaf::new(KeyMapId(0)));
+
+        let (mut algorithm, mut rx) = create_algorithm(tree);
+
+        assert_down_consumed(&mut algorithm, input('A'));
+
+        advance(TIMEOUT + Duration::from_millis(100)).await;
+
+        assert_down_not_consumed(&mut algorithm, input('B'));
+        assert_no_signal(&mut rx);
     }
 }
