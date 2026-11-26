@@ -24,7 +24,7 @@ struct Pending {
 }
 
 impl KeyMapScheduler {
-    pub fn new(output: Sender<SchedulerSignal>) -> Self {
+    pub fn new() -> Self {
         Self {
             pending: Vec::new(),
             active_key_maps: HashMap::new(),

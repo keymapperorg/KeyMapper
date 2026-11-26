@@ -15,7 +15,11 @@ pub struct Detector {
 }
 
 impl Detector {
-    fn new(tree: Tree) -> Self {
+    pub fn empty() -> Self {
+        Self::new(Tree::new())
+    }
+
+    pub fn new(tree: Tree) -> Self {
         // TODO support multiple trees
         Self {
             tree,
@@ -170,15 +174,12 @@ mod tests {
         device::DeviceHandle,
         input::InputRef,
         signal::{CancelCondition, SchedulerSignal, StopCondition},
+        test_utils::{input, single_key_tree},
         tree::{Edge, KeyMapId, Leaf, Tree},
     };
 
     const TEST_DEVICE: DeviceHandle = DeviceHandle(0);
     const TIMEOUT: Duration = Duration::from_millis(500);
-
-    fn input(name: char) -> InputRef {
-        InputRef(name as u64)
-    }
 
     fn signal_key_map_advanced(key_map: KeyMapId) -> SchedulerSignal {
         SchedulerSignal::KeyMapAdvanced { key_map }
@@ -236,17 +237,6 @@ mod tests {
                 }]
             );
         }
-    }
-
-    /// Key map 0 = Trigger 'A'
-    fn single_key_tree() -> Tree {
-        let mut tree = Tree::new();
-        let node = tree.insert_node(
-            tree.root(),
-            Edge::with_any_device(input('A'), &[KeyMapId(0)]),
-        );
-        tree.insert_leaf(node, Leaf::new(KeyMapId(0)));
-        tree
     }
 
     /// Key map 0 = Trigger 'A -> B'

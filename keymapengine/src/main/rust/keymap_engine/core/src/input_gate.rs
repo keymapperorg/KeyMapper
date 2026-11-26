@@ -57,3 +57,43 @@ impl InputGate {
         self.active_inputs.remove(&(input, device)).unwrap_or(false)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use crate::{
+        detector::Detector,
+        device::DeviceHandle,
+        input_gate::InputGate,
+        scheduler::KeyMapScheduler,
+        test_utils::{input, single_key_tree},
+    };
+
+    #[test]
+    fn ignore_duplicate_down_event() {
+        let detector = Detector::new(single_key_tree());
+
+        let mut gate = InputGate::new(detector, KeyMapScheduler::new());
+
+        assert_eq!(gate.on_input_down(input('A'), DeviceHandle(0)), true);
+        assert_eq!(gate.on_input_down(input('A'), DeviceHandle(0)), false);
+    }
+
+    #[test]
+    fn consume_up_event_if_down_consumed() {
+        let detector = Detector::new(single_key_tree());
+
+        let mut gate = InputGate::new(detector, KeyMapScheduler::new());
+
+        assert_eq!(gate.on_input_down(input('A'), DeviceHandle(0)), true);
+        assert_eq!(gate.on_input_up(input('A'), DeviceHandle(0)), true);
+    }
+
+    #[test]
+    fn ignore_up_event_with_no_down_event() {
+        let mut gate = InputGate::new(Detector::empty(), KeyMapScheduler::new());
+
+        assert_eq!(gate.on_input_up(input('A'), DeviceHandle(0)), false);
+    }
+}
