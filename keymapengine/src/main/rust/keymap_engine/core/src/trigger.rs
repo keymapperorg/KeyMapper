@@ -1,16 +1,19 @@
 use crate::{device::DeviceHandle, input::InputRef, tree::KeyMapId};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Trigger {
-    key_map: KeyMapId,
-    inputs: Vec<TriggerInput>,
-    mode: TriggerMode,
+    pub key_map: KeyMapId,
+    pub inputs: Vec<TriggerInput>,
+    pub mode: TriggerMode,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct TriggerInput {
-    input: InputRef,
-    device: Option<DeviceHandle>,
+    pub input: InputRef,
+    pub device: Option<DeviceHandle>,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum TriggerMode {
     Combo,
     Sequence,

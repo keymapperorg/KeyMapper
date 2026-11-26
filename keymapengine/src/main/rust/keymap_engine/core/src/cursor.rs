@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{future::pending, time::Duration};
 
 use tokio::time::{self, Instant};
 
@@ -12,6 +12,7 @@ pub struct Cursor {
     node: NodeId,
     inputs: Vec<Input>,
     is_canceled: bool,
+    pending_deadline: Option<Instant>,
 }
 
 impl Cursor {
@@ -20,17 +21,37 @@ impl Cursor {
             node,
             inputs: Vec::new(),
             is_canceled: false,
+            pending_deadline: None,
         }
+    }
+
+    fn set_pending(&mut self, timeout: Duration) {
+        if timeout.is_zero() {
+            return;
+        }
+
+        self.pending_deadline = Some(Instant::now() + timeout)
+    }
+
+    pub fn is_pending(&self) -> bool {
+        self.pending_deadline
+            .is_some_and(|deadline| deadline > Instant::now())
+    }
+
+    pub fn pending_time_remaining(&self) -> Duration {
+        self.pending_deadline
+            .map_or_else(|| Duration::ZERO, |deadline| deadline - Instant::now())
     }
 
     /// Create a new cursor that is advanced from this one.
     /// The caller can decide whether to keep or discard the old
     /// cursor.
-    pub fn advance(&self, next_node: NodeId, input: Input) -> Self {
+    pub fn advance(&self, next_node: NodeId, input: Input, pending_timeout: Duration) -> Self {
         let mut clone = self.clone();
 
         clone.node = next_node;
         clone.inputs.push(input);
+        clone.set_pending(pending_timeout);
 
         clone
     }

@@ -46,7 +46,11 @@ mod tests {
                 let mut cursor = Cursor::new(ids[*node]);
                 for ms in times {
                     let time = base + Duration::from_millis(*ms);
-                    cursor.advance(ids[*node], Input::at(InputRef(0), DeviceHandle(0), time));
+                    cursor.advance(
+                        ids[*node],
+                        Input::at(InputRef(0), DeviceHandle(0), time),
+                        Duration::ZERO,
+                    );
                 }
                 if *canceled {
                     cursor.cancel();

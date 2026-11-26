@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::mpsc::Iter, time::Duration};
+use std::{collections::HashMap, fmt, sync::mpsc::Iter, time::Duration};
 
 use slotmap::{new_key_type, SlotMap};
 
@@ -7,7 +7,6 @@ use crate::{
     input::InputRef,
 };
 
-#[derive(Debug)]
 pub struct Tree {
     root: NodeId,
     nodes: SlotMap<NodeId, Node>,
@@ -52,6 +51,31 @@ impl Tree {
         let parent_node = self.nodes.get_mut(parent).expect("Parent node not found");
         parent_node.insert_leaf(leaf);
     }
+
+    fn fmt_node(&self, f: &mut fmt::Formatter<'_>, id: NodeId, depth: usize) -> fmt::Result {
+        let node = &self.nodes[id];
+        let pad = "    ".repeat(depth);
+
+        for leaf in &node.leaves {
+            writeln!(f, "{pad}leaf {:?}", leaf.key_map)?;
+        }
+
+        for (edge, child) in &node.children {
+            writeln!(f, "{pad}{edge:?}")?;
+            self.fmt_node(f, *child, depth + 1)?;
+        }
+
+        Ok(())
+    }
+}
+
+/// Prints the tree as an indented outline instead of dumping the SlotMap,
+/// so failed assert_eq! diffs only show structural differences.
+impl fmt::Debug for Tree {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Tree")?;
+        self.fmt_node(f, self.root, 1)
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -83,6 +107,8 @@ impl Node {
 
     fn insert_child(&mut self, edge: Edge, node: NodeId) {
         // TODO check that the same edge does not already exist.
+        //
+        // TODO can multiple edges point to the same node? I think no. Look at my short, long, double press example on paper.
         self.children.push((edge, node));
     }
 
@@ -137,6 +163,24 @@ impl Edge {
         }
     }
 
+    pub fn with_long_press(
+        input: InputRef,
+        hold_duration: Duration,
+        key_maps: &[KeyMapId],
+    ) -> Self {
+        if key_maps.is_empty() {
+            panic!("An edge must correspond to a key map");
+        }
+
+        Self {
+            input,
+            device: None,
+            key_maps: key_maps.into(),
+            hold_duration,
+            timeout: None,
+        }
+    }
+
     pub fn with_timeout(input: InputRef, key_maps: &[KeyMapId], timeout: Duration) -> Self {
         if key_maps.is_empty() {
             panic!("An edge must correspond to a key map");
@@ -153,6 +197,10 @@ impl Edge {
 
     pub fn key_maps(&self) -> impl Iterator<Item = &KeyMapId> {
         self.key_maps.iter()
+    }
+
+    pub fn hold_duration(&self) -> Duration {
+        self.hold_duration
     }
 
     pub fn timeout(&self) -> Option<Duration> {
@@ -189,3 +237,16 @@ new_key_type! {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct KeyMapId(pub u64);
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        test_utils::edge_any,
+        tree::{Node, NodeId, Tree},
+    };
+
+    #[test]
+    fn use_existing_edge_() {
+        let tree = Tree::build(|root| {});
+    }
+}

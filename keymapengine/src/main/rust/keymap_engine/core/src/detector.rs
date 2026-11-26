@@ -20,7 +20,6 @@ impl Detector {
     }
 
     pub fn new(tree: Tree) -> Self {
-        // TODO support multiple trees
         Self {
             tree,
             cursors: Vec::new(),
@@ -59,12 +58,19 @@ impl Detector {
         let mut new_cursors: Vec<Cursor> = Vec::new();
 
         for cursor in self.cursors.iter_mut() {
+            if cursor.is_pending() {
+                continue;
+            }
+
             if let Some(node) = self.tree.get(cursor.node()) {
                 let next_nodes: Vec<(&Edge, NodeId)> =
                     node.next_cursor_targets(input, cursor.clone()).collect();
 
                 for (edge, next) in next_nodes.iter() {
-                    new_cursors.push(cursor.advance(*next, input));
+                    // The cursor must wait for the long press
+                    // before advancing to the node after this one.
+                    let advanced = cursor.advance(*next, input, edge.hold_duration());
+                    new_cursors.push(advanced);
 
                     for key_map in edge.key_maps() {
                         signals.push(SchedulerSignal::KeyMapAdvanced { key_map: *key_map });
@@ -88,6 +94,7 @@ impl Detector {
 
             if let Some(node) = self.tree.get(cursor.node()) {
                 let longer_triggers = node.children().flat_map(|(edge, _)| edge.key_maps());
+
                 let cancel_conditions: Vec<CancelCondition> = longer_triggers
                     .map(|key_map| CancelCondition::KeyMapAdvanced { key_map: *key_map })
                     .collect();
@@ -95,7 +102,7 @@ impl Detector {
                 for leaf in node.leaves() {
                     let key_map = leaf.key_map();
 
-                    let delay: Duration = node.get_max_delay();
+                    let delay: Duration = cursor.pending_time_remaining();
 
                     let stop_conditions = vec![StopCondition::Released {
                         input: input_ref,
@@ -120,6 +127,8 @@ impl Detector {
         }
 
         cleanup_cursors(&mut self.cursors);
+
+        signals.dedup();
 
         signals
     }
@@ -153,13 +162,6 @@ impl Node {
             (input_matches && is_active).then_some((edge, *node))
         })
     }
-
-    pub fn get_max_delay(&self) -> Duration {
-        self.children()
-            .filter_map(|(edge, _)| edge.timeout())
-            .max()
-            .unwrap_or(Duration::ZERO)
-    }
 }
 
 #[cfg(test)]
@@ -174,12 +176,13 @@ mod tests {
         device::DeviceHandle,
         input::InputRef,
         signal::{CancelCondition, SchedulerSignal, StopCondition},
-        test_utils::{input, single_key_tree},
-        tree::{Edge, KeyMapId, Leaf, Tree},
+        test_utils::{edge_any, edge_long_press, input, single_key_tree},
+        tree::{Edge, KeyMapId, Tree},
     };
 
     const TEST_DEVICE: DeviceHandle = DeviceHandle(0);
     const TIMEOUT: Duration = Duration::from_millis(500);
+    const LONG_PRESS: Duration = Duration::from_millis(400);
 
     fn signal_key_map_advanced(key_map: KeyMapId) -> SchedulerSignal {
         SchedulerSignal::KeyMapAdvanced { key_map }
@@ -206,6 +209,14 @@ mod tests {
     /// `key_map` runs immediately until `input` is released.
     fn signal_schedule_until_released(key_map: KeyMapId, input: InputRef) -> SchedulerSignal {
         signal_schedule(key_map, Duration::ZERO, &[], &[stop_when_released(input)])
+    }
+
+    fn signal_schedule_long_press(
+        key_map: KeyMapId,
+        input: InputRef,
+        delay: Duration,
+    ) -> SchedulerSignal {
+        signal_schedule(key_map, delay, &[], &[stop_when_released(input)])
     }
 
     fn stop_when_released(input: InputRef) -> StopCondition {
@@ -241,15 +252,16 @@ mod tests {
 
     /// Key map 0 = Trigger 'A -> B'
     fn two_key_sequence_tree(second_edge: Edge) -> Tree {
-        let mut tree = Tree::new();
-        let first = tree.insert_node(
-            tree.root(),
-            Edge::with_any_device(input('A'), &[KeyMapId(0)]),
-        );
-        let second = tree.insert_node(first, second_edge);
-        tree.insert_leaf(second, Leaf::new(KeyMapId(0)));
-        tree
+        Tree::build(|root| {
+            root.edge(edge_any('A', &[KeyMapId(0)]), |n| {
+                n.edge(second_edge, |n| {
+                    n.leaf(KeyMapId(0));
+                });
+            });
+        })
     }
+
+    // TODO sort these tests categorized into separate files
 
     #[tokio::test]
     async fn do_nothing_with_empty_tree() {
@@ -279,6 +291,174 @@ mod tests {
         detector.assert_up_releases(input('A'));
     }
 
+    #[tokio::test(start_paused = true)]
+    async fn detect_long_press_trigger() {
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.leaf(KeyMapId(0));
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_long_press(KeyMapId(0), input('A'), LONG_PRESS),
+            ],
+        );
+
+        advance(LONG_PRESS).await;
+
+        detector.assert_up_releases(input('A'));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn timeout_first_key_in_double_long_press() {
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.edge(edge_long_press('B', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                    n.leaf(KeyMapId(0));
+                });
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
+
+        // A is not held down long enough
+        advance(Duration::from_millis(50)).await;
+
+        detector.assert_up_releases(input('A'));
+
+        // Pressing B should not do anything because A was not long pressed.
+        detector.assert_down_ignored(input('B'));
+
+        advance(LONG_PRESS).await;
+        // Do not advance time. Release immediately so it times out.
+        detector.assert_up_releases(input('B'));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn timeout_last_key_in_double_long_press_same_key() {
+        // Key map: A 400ms -> A 400ms -> $
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                    n.leaf(KeyMapId(0));
+                });
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
+        advance(LONG_PRESS).await;
+        detector.assert_up_releases(input('A'));
+
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_long_press(KeyMapId(0), input('A'), LONG_PRESS),
+            ],
+        );
+
+        // Do not advance time. Release immediately so it times out.
+        detector.assert_up_releases(input('A'));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn detect_double_long_press_same_key() {
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                    n.leaf(KeyMapId(0));
+                });
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
+        advance(LONG_PRESS).await;
+        detector.assert_up_releases(input('A'));
+
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_long_press(KeyMapId(0), input('A'), LONG_PRESS),
+            ],
+        );
+
+        advance(LONG_PRESS).await;
+        detector.assert_up_releases(input('A'));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn detect_double_long_press_different_keys() {
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.edge(edge_long_press('B', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                    n.leaf(KeyMapId(0));
+                });
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
+        advance(LONG_PRESS).await;
+        detector.assert_up_releases(input('A'));
+
+        detector.assert_down_signals(
+            input('B'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_long_press(KeyMapId(0), input('B'), LONG_PRESS),
+            ],
+        );
+
+        advance(LONG_PRESS).await;
+        detector.assert_up_releases(input('B'));
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn cancel_long_press_trigger() {
+        let tree = Tree::build(|root| {
+            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
+                n.leaf(KeyMapId(0));
+            });
+        });
+
+        let mut detector = Detector::new(tree);
+
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_long_press(KeyMapId(0), input('A'), LONG_PRESS),
+            ],
+        );
+
+        // Do not advance time. Immediately release.
+
+        detector.assert_up_releases(input('A'));
+    }
+
+    #[tokio::test]
+    async fn detect_overlapping_short_and_long_press_triggers() {
+        panic!();
+    }
+
+    #[tokio::test]
+    async fn detect_overlapping_short_and_long_and_double_press_triggers() {
+        panic!();
+    }
+
     #[tokio::test]
     async fn detect_single_key_trigger_multiple_times() {
         let mut detector = Detector::new(single_key_tree());
@@ -297,7 +477,7 @@ mod tests {
 
     #[tokio::test]
     async fn detect_two_key_sequence_trigger_releasing_each_key() {
-        let tree = two_key_sequence_tree(Edge::with_any_device(input('B'), &[KeyMapId(0)]));
+        let tree = two_key_sequence_tree(edge_any('B', &[KeyMapId(0)]));
         let mut detector = Detector::new(tree);
 
         detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
@@ -315,7 +495,7 @@ mod tests {
 
     #[tokio::test]
     async fn detect_two_key_sequence_trigger() {
-        let tree = two_key_sequence_tree(Edge::with_any_device(input('B'), &[KeyMapId(0)]));
+        let tree = two_key_sequence_tree(edge_any('B', &[KeyMapId(0)]));
         let mut detector = Detector::new(tree);
 
         detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
@@ -354,18 +534,16 @@ mod tests {
          * root -> A
          *           -> C -> $
          */
-        let mut tree = Tree::new();
-
-        let node_a = tree.insert_node(
-            tree.root(),
-            Edge::with_any_device(input('A'), &[KeyMapId(0), KeyMapId(1)]),
-        );
-
-        let node_b = tree.insert_node(node_a, Edge::with_any_device(input('B'), &[KeyMapId(0)]));
-        let node_c = tree.insert_node(node_a, Edge::with_any_device(input('C'), &[KeyMapId(1)]));
-
-        tree.insert_leaf(node_b, Leaf::new(KeyMapId(0)));
-        tree.insert_leaf(node_c, Leaf::new(KeyMapId(1)));
+        let tree = Tree::build(|root| {
+            root.edge(edge_any('A', &[KeyMapId(0), KeyMapId(1)]), |n| {
+                n.edge(edge_any('B', &[KeyMapId(0)]), |n| {
+                    n.leaf(KeyMapId(0));
+                });
+                n.edge(edge_any('C', &[KeyMapId(1)]), |n| {
+                    n.leaf(KeyMapId(1));
+                });
+            });
+        });
 
         let mut detector = Detector::new(tree);
 
@@ -403,18 +581,17 @@ mod tests {
          *           -> B -> $
          */
 
-        let mut tree = Tree::new();
-        let node_a = tree.insert_node(
-            tree.root(),
-            Edge::with_any_device(input('A'), &[KeyMapId(0), KeyMapId(1)]),
-        );
-        let node_b = tree.insert_node(
-            node_a,
-            Edge::with_timeout(input('B'), &[KeyMapId(1)], TIMEOUT),
-        );
-
-        tree.insert_leaf(node_a, Leaf::new(KeyMapId(0)));
-        tree.insert_leaf(node_b, Leaf::new(KeyMapId(1)));
+        let tree = Tree::build(|root| {
+            root.edge(edge_any('A', &[KeyMapId(0), KeyMapId(1)]), |n| {
+                n.leaf(KeyMapId(0));
+                n.edge(
+                    Edge::with_timeout(input('B'), &[KeyMapId(1)], TIMEOUT),
+                    |n| {
+                        n.leaf(KeyMapId(1));
+                    },
+                );
+            });
+        });
 
         let mut detector = Detector::new(tree);
 
