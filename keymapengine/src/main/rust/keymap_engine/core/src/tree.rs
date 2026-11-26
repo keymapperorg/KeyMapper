@@ -73,6 +73,10 @@ impl Node {
         self.children.iter()
     }
 
+    pub fn children_len(&self) -> usize {
+        self.children.len()
+    }
+
     pub fn leaves(&self) -> impl Iterator<Item = &Leaf> + '_ {
         self.leaves.iter()
     }
@@ -88,7 +92,7 @@ impl Node {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Edge {
     input: InputRef,
     /// If None then this edge can match any device.
@@ -145,6 +149,10 @@ impl Edge {
             hold_duration: Duration::ZERO,
             timeout: Some(timeout),
         }
+    }
+
+    pub fn key_maps(&self) -> impl Iterator<Item = &KeyMapId> {
+        self.key_maps.iter()
     }
 
     pub fn timeout(&self) -> Option<Duration> {

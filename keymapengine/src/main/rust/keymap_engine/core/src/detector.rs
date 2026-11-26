@@ -5,8 +5,8 @@ use crate::{
     cursor_cleanup::cleanup_cursors,
     device::DeviceHandle,
     input::{Input, InputRef},
-    signal::{ScheduleSignal, Until},
-    tree::{Node, NodeId, Tree},
+    signal::{CancelCondition, SchedulerSignal, StopCondition},
+    tree::{Edge, Node, NodeId, Tree},
 };
 
 pub struct Detector {
@@ -43,10 +43,10 @@ impl Detector {
         &mut self,
         input_ref: InputRef,
         device: DeviceHandle,
-    ) -> Vec<ScheduleSignal> {
+    ) -> Vec<SchedulerSignal> {
         let input = Input::now(input_ref, device);
 
-        let mut signals: Vec<ScheduleSignal> = Vec::new();
+        let mut signals: Vec<SchedulerSignal> = Vec::new();
 
         // Add a cursor pointing to the root so when iterating over the cursors
         // it will also check if any edges can be followed.
@@ -56,44 +56,60 @@ impl Detector {
 
         for cursor in self.cursors.iter_mut() {
             if let Some(node) = self.tree.get(cursor.node()) {
-                let next_nodes: Vec<NodeId> = node.next_cursor_targets(input, cursor).collect();
+                let next_nodes: Vec<(&Edge, NodeId)> =
+                    node.next_cursor_targets(input, cursor.clone()).collect();
 
-                match next_nodes.as_slice() {
-                    [] => continue,
-                    [next] => {
-                        cursor.advance(*next, input);
-                    }
-                    next_nodes => {
-                        for next in next_nodes {
-                            new_cursors.push(cursor.branch(*next, input));
-                        }
+                for (edge, next) in next_nodes.iter() {
+                    new_cursors.push(cursor.advance(*next, input));
+
+                    for key_map in edge.key_maps() {
+                        signals.push(SchedulerSignal::KeyMapAdvanced { key_map: *key_map });
                     }
                 }
 
-                signals.push(ScheduleSignal::TriggerAdvanced);
+                // If all nodes are followed then the old cursor should
+                // be canceled.
+                if next_nodes.len() == node.children_len() {
+                    cursor.cancel();
+                }
             }
         }
 
         self.cursors.extend(new_cursors);
 
         for cursor in self.cursors.iter_mut() {
+            if cursor.is_canceled() {
+                continue;
+            }
+
             if let Some(node) = self.tree.get(cursor.node()) {
+                let longer_triggers = node.children().flat_map(|(edge, _)| edge.key_maps());
+                let cancel_conditions: Vec<CancelCondition> = longer_triggers
+                    .map(|key_map| CancelCondition::KeyMapAdvanced { key_map: *key_map })
+                    .collect();
+
                 for leaf in node.leaves() {
                     let key_map = leaf.key_map();
 
                     let delay: Duration = node.get_max_delay();
 
-                    let signal = ScheduleSignal::ScheduleKeyMap {
+                    let stop_conditions = vec![StopCondition::Released {
+                        input: input_ref,
+                        device,
+                    }];
+
+                    let signal = SchedulerSignal::ScheduleKeyMap {
                         key_map,
                         delay,
-                        until: Vec::from(&[Until::Released {
-                            input: input_ref,
-                            device,
-                        }]),
+                        cancel_if: cancel_conditions.clone(),
+                        stop_when: stop_conditions,
                     };
 
                     signals.push(signal);
+                }
 
+                // Cancel the cursor if its reached the end of the tree.
+                if node.children_len() == 0 {
                     cursor.cancel();
                 }
             }
@@ -108,8 +124,8 @@ impl Detector {
         &mut self,
         input_ref: InputRef,
         device: DeviceHandle,
-    ) -> Vec<ScheduleSignal> {
-        Vec::from(&[ScheduleSignal::Released {
+    ) -> Vec<SchedulerSignal> {
+        Vec::from(&[SchedulerSignal::InputReleased {
             input: input_ref,
             device,
         }])
@@ -117,11 +133,11 @@ impl Detector {
 }
 
 impl Node {
-    pub fn next_cursor_targets<'a>(
-        &'a self,
+    pub fn next_cursor_targets(
+        &self,
         input: Input,
-        cursor: &'a Cursor,
-    ) -> impl Iterator<Item = NodeId> + 'a {
+        cursor: Cursor,
+    ) -> impl Iterator<Item = (&Edge, NodeId)> {
         self.children().filter_map(move |(edge, node)| {
             // An edge without a device matches any device.
             let input_matches =
@@ -130,7 +146,7 @@ impl Node {
             // An edge without a timeout never expires.
             let is_active = cursor.is_active(edge.timeout().unwrap_or(Duration::MAX));
 
-            (input_matches && is_active).then_some(*node)
+            (input_matches && is_active).then_some((edge, *node))
         })
     }
 
@@ -138,22 +154,22 @@ impl Node {
         self.children()
             .filter_map(|(edge, _)| edge.timeout())
             .max()
-            .unwrap_or_else(|| Duration::ZERO)
+            .unwrap_or(Duration::ZERO)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
+    use std::{time::Duration, vec};
 
-    use googletest::{assert_that, prelude::eq};
+    use pretty_assertions::assert_eq;
     use tokio::time::advance;
 
     use crate::{
         detector::Detector,
         device::DeviceHandle,
         input::InputRef,
-        signal::{ScheduleSignal, Until},
+        signal::{CancelCondition, SchedulerSignal, StopCondition},
         tree::{Edge, KeyMapId, Leaf, Tree},
     };
 
@@ -164,10 +180,44 @@ mod tests {
         InputRef(name as u64)
     }
 
+    fn signal_key_map_advanced(key_map: KeyMapId) -> SchedulerSignal {
+        SchedulerSignal::KeyMapAdvanced { key_map }
+    }
+
+    fn cancel_if_key_map_advanced(key_map: KeyMapId) -> CancelCondition {
+        CancelCondition::KeyMapAdvanced { key_map }
+    }
+
+    fn signal_schedule(
+        key_map: KeyMapId,
+        delay: Duration,
+        cancel_if: &[CancelCondition],
+        stop_when: &[StopCondition],
+    ) -> SchedulerSignal {
+        SchedulerSignal::ScheduleKeyMap {
+            key_map,
+            delay,
+            cancel_if: cancel_if.to_vec(),
+            stop_when: stop_when.to_vec(),
+        }
+    }
+
+    /// `key_map` runs immediately until `input` is released.
+    fn signal_schedule_until_released(key_map: KeyMapId, input: InputRef) -> SchedulerSignal {
+        signal_schedule(key_map, Duration::ZERO, &[], &[stop_when_released(input)])
+    }
+
+    fn stop_when_released(input: InputRef) -> StopCondition {
+        StopCondition::Released {
+            input,
+            device: TEST_DEVICE,
+        }
+    }
+
     impl Detector {
         #[track_caller]
-        fn assert_down_signals(&mut self, input: InputRef, expected: &[ScheduleSignal]) {
-            assert_that!(self.on_input_down(input, TEST_DEVICE), eq(expected));
+        fn assert_down_signals(&mut self, input: InputRef, expected: &[SchedulerSignal]) {
+            assert_eq!(self.on_input_down(input, TEST_DEVICE), expected);
         }
 
         /// The input is not part of any trigger.
@@ -176,40 +226,14 @@ mod tests {
             self.assert_down_signals(input, &[]);
         }
 
-        /// The input is part of a trigger but does not complete it.
-        #[track_caller]
-        fn assert_down_advances_trigger(&mut self, input: InputRef) {
-            self.assert_down_signals(input, &[ScheduleSignal::TriggerAdvanced]);
-        }
-
-        /// The input completes the trigger of `key_map`, which is scheduled
-        /// to run after `delay` until the input is released.
-        #[track_caller]
-        fn assert_down_schedules(&mut self, input: InputRef, key_map: KeyMapId, delay: Duration) {
-            self.assert_down_signals(
-                input,
-                &[
-                    ScheduleSignal::TriggerAdvanced,
-                    ScheduleSignal::ScheduleKeyMap {
-                        key_map,
-                        delay,
-                        until: vec![Until::Released {
-                            input,
-                            device: TEST_DEVICE,
-                        }],
-                    },
-                ],
-            );
-        }
-
         #[track_caller]
         fn assert_up_releases(&mut self, input: InputRef) {
-            assert_that!(
+            assert_eq!(
                 self.on_input_up(input, TEST_DEVICE),
-                eq(&[ScheduleSignal::Released {
+                [SchedulerSignal::InputReleased {
                     input,
                     device: TEST_DEVICE,
-                }])
+                }]
             );
         }
     }
@@ -255,7 +279,13 @@ mod tests {
     async fn detect_single_key_trigger() {
         let mut detector = Detector::new(single_key_tree());
 
-        detector.assert_down_schedules(input('A'), KeyMapId(0), Duration::ZERO);
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_until_released(KeyMapId(0), input('A')),
+            ],
+        );
         detector.assert_up_releases(input('A'));
     }
 
@@ -264,7 +294,13 @@ mod tests {
         let mut detector = Detector::new(single_key_tree());
 
         for _ in 0..3 {
-            detector.assert_down_schedules(input('A'), KeyMapId(0), Duration::ZERO);
+            detector.assert_down_signals(
+                input('A'),
+                &[
+                    signal_key_map_advanced(KeyMapId(0)),
+                    signal_schedule_until_released(KeyMapId(0), input('A')),
+                ],
+            );
             detector.assert_up_releases(input('A'));
         }
     }
@@ -274,10 +310,16 @@ mod tests {
         let tree = two_key_sequence_tree(Edge::with_any_device(input('B'), &[KeyMapId(0)]));
         let mut detector = Detector::new(tree);
 
-        detector.assert_down_advances_trigger(input('A'));
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
         detector.assert_up_releases(input('A'));
 
-        detector.assert_down_schedules(input('B'), KeyMapId(0), Duration::ZERO);
+        detector.assert_down_signals(
+            input('B'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_until_released(KeyMapId(0), input('B')),
+            ],
+        );
         detector.assert_up_releases(input('B'));
     }
 
@@ -286,8 +328,14 @@ mod tests {
         let tree = two_key_sequence_tree(Edge::with_any_device(input('B'), &[KeyMapId(0)]));
         let mut detector = Detector::new(tree);
 
-        detector.assert_down_advances_trigger(input('A'));
-        detector.assert_down_schedules(input('B'), KeyMapId(0), Duration::ZERO);
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
+        detector.assert_down_signals(
+            input('B'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_until_released(KeyMapId(0), input('B')),
+            ],
+        );
 
         // The key map runs until B is released, so releasing A
         // does not stop it. The scheduler decides that from `until`.
@@ -300,7 +348,7 @@ mod tests {
         let tree = two_key_sequence_tree(Edge::with_timeout(input('B'), &[KeyMapId(0)], TIMEOUT));
         let mut detector = Detector::new(tree);
 
-        detector.assert_down_advances_trigger(input('A'));
+        detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
 
         advance(TIMEOUT + Duration::from_millis(100)).await;
 
@@ -308,24 +356,101 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn delay_key_map_until_longer_overlapping_sequence_trigger_times_out() {
+    async fn two_sequence_triggers_sharing_the_first_key() {
+        /*
+         * Tree looks like
+         *
+         *           -> B -> $
+         * root -> A
+         *           -> C -> $
+         */
         let mut tree = Tree::new();
-        let first = tree.insert_node(
+
+        let node_a = tree.insert_node(
             tree.root(),
-            Edge::with_any_device(input('A'), &[KeyMapId(0)]),
+            Edge::with_any_device(input('A'), &[KeyMapId(0), KeyMapId(1)]),
         );
-        let second = tree.insert_node(
-            first,
-            Edge::with_timeout(input('B'), &[KeyMapId(1)], TIMEOUT),
-        );
-        tree.insert_leaf(first, Leaf::new(KeyMapId(0)));
-        tree.insert_leaf(second, Leaf::new(KeyMapId(1)));
+
+        let node_b = tree.insert_node(node_a, Edge::with_any_device(input('B'), &[KeyMapId(0)]));
+        let node_c = tree.insert_node(node_a, Edge::with_any_device(input('C'), &[KeyMapId(1)]));
+
+        tree.insert_leaf(node_b, Leaf::new(KeyMapId(0)));
+        tree.insert_leaf(node_c, Leaf::new(KeyMapId(1)));
 
         let mut detector = Detector::new(tree);
 
-        // Key map 0 waits for A -> B to time out. Waiting is the
-        // scheduler's job, so only the delay is checked here.
-        detector.assert_down_schedules(input('A'), KeyMapId(0), TIMEOUT);
-        detector.assert_down_schedules(input('B'), KeyMapId(1), Duration::ZERO);
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_key_map_advanced(KeyMapId(1)),
+            ],
+        );
+
+        detector.assert_down_signals(
+            input('B'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_schedule_until_released(KeyMapId(0), input('B')),
+            ],
+        );
+
+        detector.assert_down_signals(
+            input('C'),
+            &[
+                signal_key_map_advanced(KeyMapId(1)),
+                signal_schedule_until_released(KeyMapId(1), input('C')),
+            ],
+        );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn delay_key_map_until_longer_overlapping_sequence_trigger_times_out() {
+        /*
+         * Tree looks like
+         *           -> $
+         * root -> A
+         *           -> B -> $
+         */
+
+        let mut tree = Tree::new();
+        let node_a = tree.insert_node(
+            tree.root(),
+            Edge::with_any_device(input('A'), &[KeyMapId(0), KeyMapId(1)]),
+        );
+        let node_b = tree.insert_node(
+            node_a,
+            Edge::with_timeout(input('B'), &[KeyMapId(1)], TIMEOUT),
+        );
+
+        tree.insert_leaf(node_a, Leaf::new(KeyMapId(0)));
+        tree.insert_leaf(node_b, Leaf::new(KeyMapId(1)));
+
+        let mut detector = Detector::new(tree);
+
+        // Key map 0 waits for A -> B to time out by cancelling
+        // when Key map 1 advanced to B.
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_key_map_advanced(KeyMapId(1)),
+                signal_schedule(
+                    KeyMapId(0),
+                    TIMEOUT,
+                    &[cancel_if_key_map_advanced(KeyMapId(1))],
+                    &[stop_when_released(input('A'))],
+                ),
+            ],
+        );
+
+        // Trigger Key map 1: A -> B
+        detector.assert_down_signals(
+            input('B'),
+            &[
+                signal_key_map_advanced(KeyMapId(1)),
+                signal_schedule_until_released(KeyMapId(1), input('B')),
+            ],
+        );
     }
 }

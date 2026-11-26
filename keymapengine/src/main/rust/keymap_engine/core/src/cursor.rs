@@ -23,19 +23,14 @@ impl Cursor {
         }
     }
 
-    /// Advance this cursor to a new node.
-    pub fn advance(&mut self, next_node: NodeId, input: Input) {
-        self.node = next_node;
-        self.inputs.push(input);
-    }
-
     /// Create a new cursor that is advanced from this one.
-    /// This should be called when there are multiple nodes
-    /// a cursor can advance to at once.
-    pub fn branch(&self, next_node: NodeId, input: Input) -> Self {
+    /// The caller can decide whether to keep or discard the old
+    /// cursor.
+    pub fn advance(&self, next_node: NodeId, input: Input) -> Self {
         let mut clone = self.clone();
 
-        clone.advance(next_node, input);
+        clone.node = next_node;
+        clone.inputs.push(input);
 
         clone
     }
