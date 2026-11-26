@@ -54,7 +54,7 @@ impl Tree {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Node {
     /// A list of child nodes and the input as the edge.
     children: Vec<(Edge, NodeId)>,
@@ -92,7 +92,7 @@ impl Node {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Edge {
     input: InputRef,
     /// If None then this edge can match any device.
@@ -168,7 +168,7 @@ impl Edge {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Leaf {
     key_map: KeyMapId,
 }

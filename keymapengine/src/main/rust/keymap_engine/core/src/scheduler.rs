@@ -34,9 +34,11 @@ impl KeyMapScheduler {
     }
 
     pub fn process_signals(&mut self, signals: &[SchedulerSignal]) -> Vec<PerformSignal> {
-        // TODO parallel key maps have priority over sequence key maps. Is that checked here?
+        // TODO parallel key maps have priority over sequence key maps. Is that checked here? See Rule 3
 
         // TODO delay of zero means perform immediately now, do not schedule
+
+        // TODO do not start a key map again if it is already running. E.g any-order combo trigger.
 
         let mut output_signals: Vec<PerformSignal> = Vec::new();
 
