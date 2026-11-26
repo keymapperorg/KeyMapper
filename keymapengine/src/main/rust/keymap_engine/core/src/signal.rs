@@ -40,7 +40,7 @@ pub enum StopCondition {
     },
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum PerformSignal {
     Start { key_map: KeyMapId },
     Stop { key_map: KeyMapId },
