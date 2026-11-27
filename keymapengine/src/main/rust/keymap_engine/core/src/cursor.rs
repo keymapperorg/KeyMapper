@@ -12,6 +12,10 @@ pub struct Cursor {
     node: NodeId,
     inputs: Vec<Input>,
     is_canceled: bool,
+    /// The cursor needs to wait for this deadline
+    /// before it can advance. This is used for long presses
+    /// in a sequence trigger. The cursor can only advance
+    /// if it has been long pressed.
     pending_deadline: Option<Instant>,
 }
 
@@ -38,11 +42,6 @@ impl Cursor {
             .is_some_and(|deadline| deadline > Instant::now())
     }
 
-    pub fn pending_time_remaining(&self) -> Duration {
-        self.pending_deadline
-            .map_or_else(|| Duration::ZERO, |deadline| deadline - Instant::now())
-    }
-
     /// Create a new cursor that is advanced from this one.
     /// The caller can decide whether to keep or discard the old
     /// cursor.
@@ -58,6 +57,13 @@ impl Cursor {
 
     pub fn first_down_time(&self) -> Option<Instant> {
         self.inputs.first().map(Input::time)
+    }
+
+    pub fn time_since_first_down(&self) -> Duration {
+        match self.first_down_time() {
+            Some(down_time) => Instant::now() - down_time,
+            None => Duration::ZERO,
+        }
     }
 
     pub fn node(&self) -> NodeId {

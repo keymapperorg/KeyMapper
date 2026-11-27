@@ -12,7 +12,9 @@ pub enum SchedulerSignal {
     ScheduleKeyMap {
         key_map: KeyMapId,
         delay: Duration,
+        /// The conditions to cancel the key map while it is still pending
         cancel_if: Vec<CancelCondition>,
+        /// Once the key map is active, these conditions will stop it.
         stop_when: Vec<StopCondition>,
     },
 
@@ -24,11 +26,18 @@ pub enum SchedulerSignal {
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum CancelCondition {
-    // TODO write a test that a pending key map is cancelled when a longer one advanced.
-    // E.g key maps: A and A -> B -> C. A is scheduled when A is pressed without releasing, and then canceled when B pressed down.
     /// A key map was advanced to the next key.
-    KeyMapAdvanced {
+    Advanced {
         key_map: KeyMapId,
+    },
+    // A key map was performed.
+    Performed {
+        key_map: KeyMapId,
+    },
+    /// Cancel the pending key map when this input is released.
+    Released {
+        input: InputRef,
+        device: DeviceHandle,
     },
 }
 

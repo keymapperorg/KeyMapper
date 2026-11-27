@@ -34,7 +34,7 @@ impl KeyMapScheduler {
     }
 
     pub fn process_signals(&mut self, signals: &[SchedulerSignal]) -> Vec<PerformSignal> {
-        // TODO parallel key maps have priority over sequence key maps. Is that checked here? See Rule 3
+        // TODO combo triggers have priority over sequence triggers. Is that checked here? See Rule 3
 
         // TODO delay of zero means perform immediately now, do not schedule
 
@@ -200,5 +200,13 @@ mod tests {
 
         assert_eq!(output, &[stop_signal(KeyMapId(0))]);
         assert_eq!(scheduler.active_key_maps.len(), 0);
+    }
+
+    #[test]
+    fn short_and_long_press_scheduled_simultaneously() {
+        // Key map 0: short press A.
+        // Key map 1: long press A.
+        // If the scheduler gets signals to schedule two key maps
+        // at once then
     }
 }
