@@ -42,6 +42,11 @@ impl Cursor {
             .is_some_and(|deadline| deadline > Instant::now())
     }
 
+    pub fn pending_time_remaining(&self) -> Option<Duration> {
+        self.pending_deadline
+            .map(|deadline| deadline - Instant::now())
+    }
+
     /// Create a new cursor that is advanced from this one.
     /// The caller can decide whether to keep or discard the old
     /// cursor.

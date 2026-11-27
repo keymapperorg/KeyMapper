@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::{device::DeviceHandle, input::InputRef, tree::KeyMapId};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord)]
 pub enum SchedulerSignal {
     // Some trigger was advanced to the next key.
     KeyMapAdvanced {
@@ -24,7 +24,7 @@ pub enum SchedulerSignal {
     },
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Eq, Ord)]
 pub enum CancelCondition {
     /// A key map was advanced to the next key.
     Advanced {
@@ -41,7 +41,7 @@ pub enum CancelCondition {
     },
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd,Eq, Ord)]
 pub enum StopCondition {
     Released {
         input: InputRef,
@@ -49,7 +49,7 @@ pub enum StopCondition {
     },
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd,Eq, Ord)]
 pub enum PerformSignal {
     Start { key_map: KeyMapId },
     Stop { key_map: KeyMapId },

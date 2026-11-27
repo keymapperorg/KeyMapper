@@ -1,5 +1,5 @@
 use core::error;
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 
 use crate::{
     cursor::Cursor,
@@ -106,9 +106,15 @@ impl Detector {
                 for leaf in node.leaves() {
                     let key_map = leaf.key_map();
 
-                    let delay: Duration = match longer_trigger_timeout {
-                        Some(it) => it - cursor.time_since_first_down(),
-                        None => Duration::ZERO,
+                    let long_press_delay = cursor.pending_time_remaining();
+
+                    let delay: Duration = match (long_press_delay, longer_trigger_timeout) {
+                        (Some(long_press_delay), Some(timeout)) => {
+                            long_press_delay.min(timeout - cursor.time_since_first_down())
+                        }
+                        (Some(long_press_delay), None) => long_press_delay,
+                        (None, Some(timeout)) => timeout - cursor.time_since_first_down(),
+                        (None, None) => Duration::ZERO,
                     };
 
                     let stop_conditions = vec![StopCondition::Released {
@@ -116,10 +122,19 @@ impl Detector {
                         device,
                     }];
 
+                    let mut cancel_if: Vec<CancelCondition> = cancel_conditions.clone();
+
+                    if long_press_delay.is_some_and(|it| !it.is_zero()) {
+                        cancel_if.push(CancelCondition::Released {
+                            input: input_ref,
+                            device,
+                        });
+                    }
+
                     let signal = SchedulerSignal::ScheduleKeyMap {
                         key_map,
                         delay,
-                        cancel_if: cancel_conditions.clone(),
+                        cancel_if,
                         stop_when: stop_conditions,
                     };
 
@@ -135,6 +150,7 @@ impl Detector {
 
         cleanup_cursors(&mut self.cursors);
 
+        signals.sort();
         signals.dedup();
 
         signals
@@ -185,7 +201,7 @@ mod tests {
         device::DeviceHandle,
         input::InputRef,
         signal::{CancelCondition, SchedulerSignal, StopCondition},
-        test_utils::{edge_any, edge_long_press, input, single_key_tree},
+        test_utils::{edge_any, edge_long_press, edge_long_press_timeout, input, single_key_tree},
         tree::{Edge, KeyMapId, Tree},
     };
 
@@ -224,6 +240,10 @@ mod tests {
     /// `key_map` runs immediately until `input` is released.
     fn signal_schedule_until_released(key_map: KeyMapId, input: InputRef) -> SchedulerSignal {
         signal_schedule(key_map, Duration::ZERO, &[], &[stop_when_released(input)])
+    }
+
+    fn signal_input_released(input: InputRef, device: DeviceHandle) -> SchedulerSignal {
+        SchedulerSignal::InputReleased { input, device }
     }
 
     fn signal_schedule_long_press(
@@ -379,14 +399,27 @@ mod tests {
     }
 
     #[tokio::test(start_paused = true)]
+    async fn double_long_press_sequence_never_fires_if_timeout_too_short() {
+        // TODO same as below, but make the timeout be 500ms. There should be no schedule signal.
+
+        todo!()
+    }
+
+    #[tokio::test(start_paused = true)]
     async fn timeout_last_key_in_double_long_press_same_key() {
         // Key map: A 400ms -> A 400ms -> $
         let tree = Tree::build(|root| {
-            root.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
-                n.edge(edge_long_press('A', LONG_PRESS, &[KeyMapId(0)]), |n| {
-                    n.leaf(KeyMapId(0));
-                });
-            });
+            root.edge(
+                edge_long_press_timeout('A', LONG_PRESS, TIMEOUT_1000, &[KeyMapId(0)]),
+                |n| {
+                    n.edge(
+                        edge_long_press_timeout('A', LONG_PRESS, TIMEOUT_1000, &[KeyMapId(0)]),
+                        |n| {
+                            n.leaf(KeyMapId(0));
+                        },
+                    );
+                },
+            );
         });
 
         let mut detector = Detector::new(tree);
@@ -394,6 +427,9 @@ mod tests {
         detector.assert_down_signals(input('A'), &[signal_key_map_advanced(KeyMapId(0))]);
         advance(LONG_PRESS).await;
         detector.assert_up_releases(input('A'));
+
+        // Add a small delay between each press.
+        advance(Duration::from_millis(100)).await;
 
         detector.assert_down_signals(
             input('A'),
@@ -529,16 +565,19 @@ mod tests {
         // Key map 1: A -> A -> $
 
         let tree = Tree::build(|root| {
-            root.edge(edge_any('A', &[KeyMapId(0), KeyMapId(1)]), |n| {
-                n.leaf(KeyMapId(0));
+            root.edge(
+                Edge::with_timeout(input('A'), &[KeyMapId(0), KeyMapId(1)], TIMEOUT_500),
+                |n| {
+                    n.leaf(KeyMapId(0));
 
-                n.edge(
-                    Edge::with_timeout(input('A'), &[KeyMapId(1)], TIMEOUT_500),
-                    |n| {
-                        n.leaf(KeyMapId(1));
-                    },
-                );
-            });
+                    n.edge(
+                        Edge::with_timeout(input('A'), &[KeyMapId(1)], TIMEOUT_500),
+                        |n| {
+                            n.leaf(KeyMapId(1));
+                        },
+                    );
+                },
+            );
         });
 
         let mut detector = Detector::new(tree);
@@ -550,15 +589,37 @@ mod tests {
                 signal_key_map_advanced(KeyMapId(1)),
                 signal_schedule(
                     KeyMapId(0),
-                    Duration::ZERO,
-                    &[cancel_if_key_map_performed(KeyMapId(1))],
+                    TIMEOUT_500,
+                    &[cancel_if_key_map_advanced(KeyMapId(1))],
                     &[stop_when_released(input('A'))],
                 ),
-                signal_schedule_long_press(KeyMapId(1), input('A'), LONG_PRESS),
             ],
         );
 
         detector.assert_up_releases(input('A'));
+
+        advance(Duration::from_millis(100)).await;
+
+        detector.assert_down_signals(
+            input('A'),
+            &[
+                signal_key_map_advanced(KeyMapId(0)),
+                signal_key_map_advanced(KeyMapId(1)),
+                // A fresh cursor is mamde for Key map 0.
+                signal_schedule(
+                    KeyMapId(0),
+                    TIMEOUT_500,
+                    &[cancel_if_key_map_advanced(KeyMapId(1))],
+                    &[stop_when_released(input('A'))],
+                ),
+                signal_schedule(
+                    KeyMapId(1),
+                    Duration::ZERO,
+                    &[],
+                    &[stop_when_released(input('A'))],
+                ),
+            ],
+        );
     }
 
     #[tokio::test(start_paused = true)]
@@ -590,15 +651,6 @@ mod tests {
                 signal_key_map_advanced(KeyMapId(0)),
                 signal_key_map_advanced(KeyMapId(1)),
                 signal_key_map_advanced(KeyMapId(2)),
-                signal_schedule(
-                    KeyMapId(0),
-                    Duration::ZERO,
-                    &[
-                        cancel_if_key_map_performed(KeyMapId(1)),
-                        cancel_if_key_map_performed(KeyMapId(2)),
-                    ],
-                    &[stop_when_released(input('A'))],
-                ),
                 signal_schedule_long_press(KeyMapId(1), input('A'), XLONG_PRESS),
                 signal_schedule(
                     KeyMapId(2),
@@ -609,7 +661,16 @@ mod tests {
             ],
         );
 
-        detector.assert_up_releases(input('A'));
+        // Only the short press should be triggered.
+        advance(Duration::from_millis(100)).await;
+
+        detector.assert_up_signals(
+            input('A'),
+            &[
+                signal_input_released(input('A'), TEST_DEVICE),
+                signal_schedule(KeyMapId(0), Duration::ZERO, &[], &[]),
+            ],
+        );
     }
 
     #[tokio::test]

@@ -22,6 +22,15 @@ pub fn edge_long_press(name: char, hold_duration: Duration, key_maps: &[KeyMapId
     Edge::with_long_press(input(name), hold_duration, key_maps)
 }
 
+pub fn edge_long_press_timeout(
+    name: char,
+    hold_duration: Duration,
+    timeout: Duration,
+    key_maps: &[KeyMapId],
+) -> Edge {
+    Edge::with_long_press_timeout(input(name), hold_duration, timeout, key_maps)
+}
+
 /// Key map 0 = Trigger 'A'
 pub fn single_key_tree() -> Tree {
     Tree::build(|root| {

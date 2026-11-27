@@ -181,6 +181,25 @@ impl Edge {
         }
     }
 
+    pub fn with_long_press_timeout(
+        input: InputRef,
+        hold_duration: Duration,
+        timeout: Duration,
+        key_maps: &[KeyMapId],
+    ) -> Self {
+        if key_maps.is_empty() {
+            panic!("An edge must correspond to a key map");
+        }
+
+        Self {
+            input,
+            device: None,
+            key_maps: key_maps.into(),
+            hold_duration,
+            timeout: Some(timeout),
+        }
+    }
+
     pub fn with_timeout(input: InputRef, key_maps: &[KeyMapId], timeout: Duration) -> Self {
         if key_maps.is_empty() {
             panic!("An edge must correspond to a key map");
@@ -235,7 +254,7 @@ new_key_type! {
     pub struct NodeId;
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash,PartialOrd, Ord)]
 pub struct KeyMapId(pub u64);
 
 #[cfg(test)]
@@ -248,5 +267,6 @@ mod tests {
     #[test]
     fn use_existing_edge_() {
         let tree = Tree::build(|root| {});
+        todo!();
     }
 }
